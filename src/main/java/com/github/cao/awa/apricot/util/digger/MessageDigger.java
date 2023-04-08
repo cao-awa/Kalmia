@@ -82,12 +82,6 @@ public class MessageDigger {
         }
     }
 
-    public static String to36(String source) {
-        return new BigInteger(source,
-                              16
-        ).toString(36);
-    }
-
     @Deprecated
     public enum Sha1 implements Sha {
         SHA("SHA-1");

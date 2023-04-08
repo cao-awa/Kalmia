@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.mathematic;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -20,6 +21,14 @@ public class Mathematics {
             }
         }
         return max;
+    }
+
+    public static byte[] toBytes(BigInteger integer) {
+        return integer.toByteArray();
+    }
+
+    public static byte[] toBytes(String value, int radix) {
+        return new BigInteger(value, radix).toByteArray();
     }
 
 //    public static <T extends Number> T max(T t1, T t2, T t3) {
