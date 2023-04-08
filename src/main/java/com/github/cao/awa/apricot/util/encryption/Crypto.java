@@ -2,17 +2,18 @@ package com.github.cao.awa.apricot.util.encryption;
 
 import com.github.cao.awa.apricot.anntations.Stable;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.Security;
+import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 @Stable
 public class Crypto {
@@ -97,5 +98,31 @@ public class Crypto {
                     privateKey
         );
         return cipher.doFinal(content);
+    }
+
+    public static byte[] encodeRsaPubkey(RSAPublicKey key) {
+        return key.getEncoded();
+    }
+
+    public static RSAPublicKey decodeRsaPubkey(byte[] key) {
+        try {
+            X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(key);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return EntrustEnvironment.cast(keyFactory.generatePublic(encodedKeySpec));
+        }
+        catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static RSAPrivateKey decodeRsaPrikey(byte[] key) {
+        try {
+            PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(key);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return EntrustEnvironment.cast(keyFactory.generatePrivate(encodedKeySpec));
+        }
+        catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
     }
 }

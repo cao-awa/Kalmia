@@ -3,8 +3,9 @@ package com.github.cao.awa.kalmia.network.packet.factor.unsolve;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
+import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.UnsolvedHandshakeAesKeyPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedClientHelloPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.rsa.pubkey.UnsolvedHandshakeRsaPubkeyPacket;
+import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.rsa.pubkey.UnsolvedHandshakeRsaPubkeyPacket;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -21,7 +22,9 @@ public class UnsolvedPacketFactor {
     }
 
     public static void register(long id, Function<byte[], UnsolvedPacket<?>> creator) {
-        factories.put(id, creator);
+        factories.put(id,
+                      creator
+        );
     }
 
     public static void register() {
@@ -30,6 +33,9 @@ public class UnsolvedPacketFactor {
         );
         UnsolvedPacketFactor.register(1,
                                       UnsolvedHandshakeRsaPubkeyPacket :: new
+        );
+        UnsolvedPacketFactor.register(2,
+                                      UnsolvedHandshakeAesKeyPacket :: new
         );
     }
 }

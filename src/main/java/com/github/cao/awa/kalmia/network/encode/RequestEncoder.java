@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.encode;
 
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import io.netty.buffer.ByteBuf;
@@ -21,7 +22,8 @@ public class RequestEncoder extends MessageToByteEncoder<WritablePacket> {
         out.writeInt(data.length);
         out.writeBytes(data);
 
-        System.out.println("Writed: " + Arrays.toString(data));
+        System.out.println("Write: " + Arrays.toString(data));
+
         out.markWriterIndex();
     }
 }

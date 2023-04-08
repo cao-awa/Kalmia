@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.network.encode;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.mathematic.base.Base256;
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import io.netty.buffer.ByteBuf;
@@ -28,11 +28,11 @@ public class RequestDecoder extends ByteToMessageDecoder {
 
             data = this.router.decode(data);
 
-            System.out.println("Readed: " + Arrays.toString(data));
+            System.out.println("Read: " + Arrays.toString(data));
 
             BytesReader reader = new BytesReader(data);
 
-            long id = Base256.longFromBuf(reader.read(8));
+            long id = SkippedBase256.readLong(reader);
 
             out.add(UnsolvedPacketFactor.create(id,
                                                 reader.all()

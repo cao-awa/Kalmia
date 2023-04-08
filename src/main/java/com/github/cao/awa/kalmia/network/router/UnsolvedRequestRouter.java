@@ -7,7 +7,7 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
-import com.github.cao.awa.kalmia.network.packet.request.hello.ClientHelloRequest;
+import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
 import io.netty.channel.ChannelHandlerContext;
 
 public class UnsolvedRequestRouter extends NetworkRouter {
