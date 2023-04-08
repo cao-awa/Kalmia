@@ -1,4 +1,4 @@
-package com.github.cao.awa.apricot.mathematic.integer;
+package com.github.cao.awa.kalmia.mathematic.integer;
 
 public class IntegerReceptacle {
     private int value;

@@ -46,7 +46,7 @@ dependencies {
 
     shadow 'com.esotericsoftware:kryo:5.4.0'
 
-    testCompileOnly  'org.java-websocket:Java-WebSocket:1.5.3'
+    shadow  'org.java-websocket:Java-WebSocket:1.5.3'
 }
 
 tasks.withType(JavaCompile).configureEach {

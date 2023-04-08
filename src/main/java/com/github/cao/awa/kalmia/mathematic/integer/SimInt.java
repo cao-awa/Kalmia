@@ -1,4 +1,4 @@
-package com.github.cao.awa.apricot.mathematic.integer;
+package com.github.cao.awa.kalmia.mathematic.integer;
 
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.receptacle.*;
 
@@ -32,10 +32,12 @@ public class SimInt {
         }
     }
 
-    public SimInt(int size, String init) {
+    public SimInt(String init, int radix) {
+        BigInteger integer = new BigInteger(init, radix);
+        int size = integer.toString(2).length();
         this.size = size;
         this.bits = new boolean[size];
-        char[] charArray = init
+        char[] charArray = integer.toString(2)
                 .toCharArray();
         int index = 0;
         for (int i = charArray.length - 1; i > - 1; i--) {
@@ -46,6 +48,10 @@ public class SimInt {
             );
             index++;
         }
+    }
+
+    public int binLength() {
+        return this.bits.length;
     }
 
     public void set(int index, boolean value) {
@@ -231,10 +237,10 @@ public class SimInt {
         );
     }
 
-    public static SimInt of(String integer) {
+    public static SimInt of(String integer, int radix) {
         return new SimInt(
-                integer.length(),
-                integer
+                integer,
+                 radix
         );
     }
 

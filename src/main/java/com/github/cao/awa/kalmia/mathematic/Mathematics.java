@@ -1,4 +1,4 @@
-package com.github.cao.awa.apricot.mathematic;
+package com.github.cao.awa.kalmia.mathematic;
 
 import java.util.Arrays;
 import java.util.Comparator;

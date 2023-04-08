@@ -73,4 +73,8 @@ public class BytesReader {
     public void back(int range) {
         this.cursor -= range;
     }
+
+    public byte[] all() {
+        return read(this.bytes.length - this.cursor);
+    }
 }
