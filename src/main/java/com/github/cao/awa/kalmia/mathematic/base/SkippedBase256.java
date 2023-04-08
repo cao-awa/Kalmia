@@ -45,6 +45,6 @@ public class SkippedBase256 {
             );
             return result;
         }
-        return buf;
+        return BytesUtil.concat(new byte[]{-1},buf);
     }
 }

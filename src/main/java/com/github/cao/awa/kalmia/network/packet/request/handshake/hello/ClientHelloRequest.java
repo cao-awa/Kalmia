@@ -18,7 +18,9 @@ public class ClientHelloRequest extends WritablePacket {
     public byte[] data() {
         String helloInfo = "CLIENT HELLO";
 
-        return  BytesUtil.concat(Base256.tagToBuf(helloInfo.length()), helloInfo.getBytes());
+        return BytesUtil.concat(Base256.tagToBuf(helloInfo.length()),
+                                helloInfo.getBytes()
+        );
     }
 
     @Override

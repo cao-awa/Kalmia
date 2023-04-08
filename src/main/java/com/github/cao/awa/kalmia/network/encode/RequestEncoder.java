@@ -1,6 +1,5 @@
 package com.github.cao.awa.kalmia.network.encode;
 
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import io.netty.buffer.ByteBuf;

@@ -1,9 +1,11 @@
 package com.github.cao.awa.kalmia.message.digest;
 
+import com.github.cao.awa.kalmia.convert.BytesValueConvertable;
+
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
-public class MessageDigest {
+public class MessageDigest extends BytesValueConvertable {
     private final String type;
     private final byte[] value;
 
@@ -17,18 +19,6 @@ public class MessageDigest {
 
     public String value10() {
         return new BigInteger(this.value).toString(10);
-    }
-
-    public String value16() {
-        return new BigInteger(this.value).toString(16);
-    }
-
-    public String value36() {
-        return new BigInteger(this.value).toString(36);
-    }
-
-    public String value256() {
-        return new String(this.value, StandardCharsets.ISO_8859_1);
     }
 
     public MessageDigest(String type, byte[] value) {
