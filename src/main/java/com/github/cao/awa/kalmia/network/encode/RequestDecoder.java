@@ -28,7 +28,7 @@ public class RequestDecoder extends ByteToMessageDecoder {
 
             data = this.router.decode(data);
 
-            System.out.println("Read: " + Arrays.toString(data));
+//            System.out.println("Read: " + Arrays.toString(data));
 
             BytesReader reader = new BytesReader(data);
 

@@ -1,6 +1,5 @@
 package com.github.cao.awa.kalmia.network.packet.request.handshake.hello;
 
-import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
 import com.github.cao.awa.kalmia.network.packet.handshake.hello.ClientHelloPacket;
@@ -16,11 +15,8 @@ public class ClientHelloRequest extends WritablePacket {
 
     @Override
     public byte[] data() {
-        String helloInfo = "CLIENT HELLO";
-
-        return BytesUtil.concat(Base256.tagToBuf(helloInfo.length()),
-                                helloInfo.getBytes()
-        );
+        // Status packet, do not write any data here.
+        return BytesUtil.EMPTY;
     }
 
     @Override

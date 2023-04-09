@@ -26,6 +26,19 @@ public class MessageDigger {
         return result.toString();
     }
 
+    public static String digest(byte[] message, DigestAlgorithm sha) {
+        MessageDigest digest = EntrustEnvironment.trys(() -> MessageDigest.getInstance(sha.instanceName()));
+        if (digest == null) {
+            return null;
+        }
+        digest.update(message);
+        StringBuilder result = new StringBuilder();
+        digest(digest,
+               result
+        );
+        return result.toString();
+    }
+
     public static String digestFile(File file, DigestAlgorithm sha) throws Exception {
         if (! file.isFile()) {
             return "0";

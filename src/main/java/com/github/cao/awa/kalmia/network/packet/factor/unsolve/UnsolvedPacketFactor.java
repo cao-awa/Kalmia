@@ -3,9 +3,10 @@ package com.github.cao.awa.kalmia.network.packet.factor.unsolve;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.UnsolvedHandshakeAesKeyPacket;
+import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.UnsolvedHandshakeAesCipherPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedClientHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.rsa.pubkey.UnsolvedHandshakeRsaPubkeyPacket;
+import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedServerHelloPacket;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -35,7 +36,10 @@ public class UnsolvedPacketFactor {
                                       UnsolvedHandshakeRsaPubkeyPacket :: new
         );
         UnsolvedPacketFactor.register(2,
-                                      UnsolvedHandshakeAesKeyPacket :: new
+                                      UnsolvedHandshakeAesCipherPacket :: new
+        );
+        UnsolvedPacketFactor.register(3,
+                                      UnsolvedServerHelloPacket :: new
         );
     }
 }

@@ -17,20 +17,16 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
  */
 @Server
 public class ClientHelloPacket extends ReadonlyPacket {
-    private final String helloKey;
-
-    public ClientHelloPacket(String helloKey) {
-        this.helloKey = helloKey;
+    public ClientHelloPacket() {
     }
 
-    public static ClientHelloPacket create(BytesReader data) {
-        int length = Base256.tagFromBuf(data.read(2));
-        return new ClientHelloPacket(new String(data.read(length)));
+    public static ClientHelloPacket create(BytesReader reader) {
+        return new ClientHelloPacket();
     }
 
     @Override
     public void inbound(UnsolvedRequestRouter router, PacketHandler<?> handler) {
-        System.out.println("Hello Key: " + this.helloKey);
+        System.out.println("Client Hello!");
         router.send(new HandshakeRsaPubkeyRequest(EntrustEnvironment.cast(handler)));
     }
 }
