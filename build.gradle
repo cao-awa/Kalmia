@@ -47,6 +47,8 @@ dependencies {
     shadow 'com.esotericsoftware:kryo:5.4.0'
 
     shadow  'org.java-websocket:Java-WebSocket:1.5.3'
+
+    shadow 'org.bouncycastle:bcprov-jdk18on:1.72'
 }
 
 tasks.withType(JavaCompile).configureEach {

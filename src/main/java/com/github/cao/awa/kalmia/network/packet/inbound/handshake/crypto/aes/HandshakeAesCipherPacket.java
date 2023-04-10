@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.packet.handshake.crypto.aes;
+package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes;
 
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
@@ -14,11 +14,10 @@ import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.Han
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.UnsolvedHandshakeAesCipherPacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Arrays;
 
 /**
  * @see HandshakeAesCipherRequest
@@ -46,11 +45,13 @@ public class HandshakeAesCipherPacket extends ReadonlyPacket {
                                               Crypto.decodeRsaPrikey(((HandshakeHandler) handler).getRsaPrikey())
             );
 
-            // Create a random identifier for cipher testing.
+            // Back the cipher to client using the given cipher.
             // Let client verify the sha of decrypted text for check server cipher is same to self.
-            byte[] testKey = BytesRandomIdentifier.create(16);
+            byte[] testKey = cipher.clone();
 
+            // Setup crypto and waiting for client login.
             router.setCrypto(new AesCrypto(cipher));
+            router.setStatus(RequestStatus.AUTH);
 
             // Send request, the sha should calculate in plain text as not ciphertext.
             router.send(new ServerHelloRequest(router.encode(testKey),

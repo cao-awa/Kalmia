@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello;
 
-import com.github.cao.awa.kalmia.network.packet.handshake.hello.ClientHelloPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.ClientHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.UnsolvedHandshakePacket;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 

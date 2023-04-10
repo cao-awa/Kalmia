@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes;
 
-import com.github.cao.awa.kalmia.network.packet.handshake.crypto.aes.HandshakeAesCipherPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes.HandshakeAesCipherPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.UnsolvedHandshakePacket;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 

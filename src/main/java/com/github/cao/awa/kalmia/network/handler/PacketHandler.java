@@ -11,14 +11,20 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import java.util.Set;
 
 public abstract class PacketHandler<T extends UnsolvedPacket<?>> {
-    public abstract ReadonlyPacket handle(T packet);
+    public ReadonlyPacket handle(T packet) {
+        return packet.toPacket();
+    }
 
     public ReadonlyPacket tryHandle(UnsolvedPacket<?> packet) {
         T t = EntrustEnvironment.cast(packet);
         if (t == null) {
-            throw new InvalidPacketException("Not supported to handle in this handler");
+            throw new InvalidPacketException("Unsupported packet '" + packet + "'  in this handler: " + this);
         }
-        return handle(t);
+        try {
+            return handle(t);
+        }catch (Exception e) {
+            throw new InvalidPacketException("Unsupported packet '" + t + "'  in this handler: " + this);
+        }
     }
 
     public abstract void inbound(ReadonlyPacket packet, UnsolvedRequestRouter router);
@@ -30,7 +36,7 @@ public abstract class PacketHandler<T extends UnsolvedPacket<?>> {
                     router
             );
         } else {
-            throw new InvalidStatusException("The router status '" + router.getStatus() + "' are not allowed in this handler: " + allowStatus());
+            throw new InvalidStatusException("The router status '" + router.getStatus() + "' are not allowed in this handler, allows: " + allowStatus());
         }
     }
 

@@ -29,6 +29,6 @@ public class AesCrypto extends SymmetricCrypto {
                                      cipher()
             );
         }
-        return null;
+        return reader.all();
     }
 }

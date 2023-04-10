@@ -28,6 +28,10 @@ public class SymmetricTransportLayer {
         }
     }
 
+    public boolean isCipherEquals(byte[] cipher) {
+        return this.crypto.isCipherEquals(cipher);
+    }
+
     public void setCrypto(SymmetricCrypto crypto) {
         this.crypto = crypto;
     }

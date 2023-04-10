@@ -1,25 +1,35 @@
 package com.github.cao.awa.kalmia.network.router;
 
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.encode.crypto.SymmetricTransportLayer;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
+import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.util.Map;
+
 public class UnsolvedRequestRouter extends NetworkRouter {
+    private final Map<RequestStatus, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(), handlers -> {
+        handlers.put(RequestStatus.HELLO, new HandshakeHandler());
+        handlers.put(RequestStatus.AUTH, new LoginHandler());
+    });
     private final SymmetricTransportLayer transportLayer = new SymmetricTransportLayer();
-    private RequestStatus status = RequestStatus.HELLO;
-    private PacketHandler<?> handler = new HandshakeHandler();
+    private RequestStatus status;
+    private PacketHandler<?> handler;
     private ChannelHandlerContext context;
     private final boolean isClient;
 
     public UnsolvedRequestRouter(boolean isClient) {
         this.isClient = isClient;
+        setStatus(RequestStatus.HELLO);
     }
 
     public RequestStatus getStatus() {
@@ -28,6 +38,7 @@ public class UnsolvedRequestRouter extends NetworkRouter {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
+        this.handler = handlers.get(status);
     }
 
     @Override
@@ -58,6 +69,10 @@ public class UnsolvedRequestRouter extends NetworkRouter {
 
     public byte[] encode(byte[] plainText) {
         return this.transportLayer.encode(plainText);
+    }
+
+    public boolean isCipherEquals(byte[] cipher) {
+        return this.transportLayer.isCipherEquals(cipher);
     }
 
     public void send(WritablePacket packet) {

@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.packet.handshake.crypto.rsa.pubkey;
+package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.rsa.pubkey;
 
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
