@@ -1,8 +1,18 @@
 # 数据包
 
-# 握手
+每个数据包均需要以"数据包ID"开头，以 [Base256](/doc/zh_cn/standard/transport/number/number_encode_standard.md)
+进行数字编码，请见：[数据包标准](/doc/zh_cn/standard/transport/packet/packet_standard.md)
 
-Kalmia在首次连接时不安全！
+## 格式
+
+|   长度   | 2 ~ 9 字节 |  1 字节   | 2~9 字节  | X 字节  |
+|:------:|:--------:|:-------:|:-------:|:-----:|
+|   作用   |  数据包长度   |  加密类型   |  数据包ID  | 数据包数据 |
+|   定值   |          |         |         |       |
+| 值（或候选） |  数据包的长度  | 加密类型ID  |  数据包ID  | 数据包数据 |
+|   描述   | 确定要读多少数据 | 用于网络序列化 | 用于网络序列化 | 数据包数据 |
+
+# 握手
 
 ## Client Hello
 
