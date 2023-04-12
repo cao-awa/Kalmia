@@ -20,9 +20,5 @@ public class RequestEncoder extends MessageToByteEncoder<WritablePacket> {
         byte[] data = msg.encode(this.router);;
         out.writeInt(data.length);
         out.writeBytes(data);
-
-//        System.out.println("Write: " + Arrays.toString(data));
-
-        out.markWriterIndex();
     }
 }

@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.handler.handshake;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.UnsolvedHandshakePacket;
@@ -9,17 +10,16 @@ import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.*;
 import java.util.Set;
 
 @Server
 public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>> {
-    private static final Set<RequestStatus> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(), set -> {
-        set.add(RequestStatus.HELLO);
-    });
+    private static final Set<RequestStatus> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
+                                                                                        set -> {
+                                                                                            set.add(RequestStatus.HELLO);
+                                                                                        }
+    );
     private final byte[] rsaPrikey;
     private final byte[] rsaPubkey;
 
@@ -33,11 +33,9 @@ public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>> 
 
     public HandshakeHandler() {
         try {
-            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
-            keyPairGen.initialize(4096);
-            KeyPair keyPair = keyPairGen.generateKeyPair();
-            RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-            RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+            KeyPair keyPair = Crypto.rsaKeypair(4096);
+            PublicKey publicKey = keyPair.getPublic();
+            PrivateKey privateKey = keyPair.getPrivate();
 
             this.rsaPrikey = privateKey.getEncoded();
             this.rsaPubkey = publicKey.getEncoded();
@@ -49,7 +47,9 @@ public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>> 
 
     @Override
     public void inbound(ReadonlyPacket packet, UnsolvedRequestRouter router) {
-        packet.inbound(router, this);
+        packet.inbound(router,
+                       this
+        );
     }
 
     @Override

@@ -48,12 +48,13 @@ public class ServerHelloPacket extends ReadonlyPacket {
 
         byte[] provideCipher = router.decode(this.testKey);
 
-        System.out.println("Server Sent Hello: " + Arrays.toString(Mathematics.toBytes(MessageDigger.digest(provideCipher,
+        System.out.println("Server Sent Hello: " + Mathematics.radix(MessageDigger.digest(provideCipher,
                                                                                     MessageDigger.Sha3.SHA_512
                                                                ),
-                                                               16
-        )));
-        System.out.println("Server Provide Hello: " + Arrays.toString(this.testSha));
+                                                               16,
+                                                               36
+        ));
+        System.out.println("Server Provide Hello: " + Mathematics.radix(this.testSha, 36));
 
         if (router.isCipherEquals(provideCipher)) {
             System.out.println("Server is no or skipped MITM!");

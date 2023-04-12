@@ -5,6 +5,7 @@ import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -19,11 +20,15 @@ import java.security.spec.X509EncodedKeySpec;
 public class Crypto {
     private static final Logger DEBUG = LogManager.getLogger("Debugger");
     private static final byte[] KEY_VI = "0000000000000000".getBytes();
+    public static final String RSA_ALGORITHM = "RSA";
+    public static final String RSA_PROVIDER = "BC";
+    public static final SecureRandom RANDOM = new SecureRandom();
 
     static {
         Security.setProperty("crypto.policy",
                              "unlimited"
         );
+        Security.addProvider(new BouncyCastleProvider());
     }
 
     public static byte[] aesDecrypt(byte[] content, byte[] cipher) throws Exception {
@@ -48,52 +53,30 @@ public class Crypto {
         return instance.doFinal(content);
     }
 
-    public static void main(String[] args) {
-        try {
-            String message = "xxx";
-
-            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
-            keyPairGen.initialize(8192);
-            KeyPair keyPair = keyPairGen.generateKeyPair();
-            RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-            RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-
-            long start = TimeUtil.millions();
-
-            byte[] e = rsaEncrypt(message.getBytes(),
-                                  publicKey
-            );
-
-            DEBUG.info("Encrypt done in {}ms",
-                       TimeUtil.processMillion(start)
-            );
-            DEBUG.info("Message：" + new String(e));
-
-            start = TimeUtil.millions();
-
-            byte[] de = rsaDecrypt(e,
-                                   privateKey
-            );
-
-            DEBUG.info("Decrypt done in {}ms",
-                       TimeUtil.processMillion(start)
-            );
-            DEBUG.info("Message：" + new String(de));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static KeyPair rsaKeypair(int size) throws NoSuchAlgorithmException, NoSuchProviderException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(RSA_ALGORITHM,
+                                                                         RSA_PROVIDER
+        );
+        keyPairGenerator.initialize(size,
+                                    RANDOM
+        );
+        return keyPairGenerator.genKeyPair();
     }
 
     public static byte[] rsaEncrypt(byte[] content, RSAPublicKey publicKey) throws Exception {
-        Cipher instance = Cipher.getInstance("RSA");
-        instance.init(Cipher.ENCRYPT_MODE,
-                      publicKey
+        Cipher cipher = Cipher.getInstance(RSA_ALGORITHM,
+                                           RSA_PROVIDER
         );
-        return instance.doFinal(content);
+        cipher.init(Cipher.ENCRYPT_MODE,
+                    publicKey
+        );
+        return cipher.doFinal(content);
     }
 
     public static byte[] rsaDecrypt(byte[] content, RSAPrivateKey privateKey) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance(RSA_ALGORITHM,
+                                           RSA_PROVIDER
+        );
         cipher.init(Cipher.DECRYPT_MODE,
                     privateKey
         );
@@ -109,8 +92,7 @@ public class Crypto {
             X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(key);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return EntrustEnvironment.cast(keyFactory.generatePublic(encodedKeySpec));
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
     }
@@ -120,8 +102,7 @@ public class Crypto {
             PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(key);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return EntrustEnvironment.cast(keyFactory.generatePrivate(encodedKeySpec));
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
     }

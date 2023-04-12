@@ -112,7 +112,7 @@ public class MessageDigger {
     }
 
     public enum Sha3 implements Sha {
-        SHA_224("SHA3-224"), SHA_256("SHA3-256"), SHA_512("SHA3-512");
+        SHA_224("SHA-224"), SHA_256("SHA-256"), SHA_512("SHA-512");
 
         private final String instance;
 
