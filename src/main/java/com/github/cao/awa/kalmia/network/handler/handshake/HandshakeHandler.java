@@ -8,20 +8,23 @@ import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.UnsolvedHandsh
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
-import java.security.*;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Set;
 
 @Server
-public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>> {
+public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>, HandshakeHandler> {
     private static final Set<RequestStatus> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
                                                                                         set -> {
                                                                                             set.add(RequestStatus.HELLO);
                                                                                         }
     );
-    private final byte[] rsaPrikey;
-    private final byte[] rsaPubkey;
+    private byte[] rsaPrikey = BytesUtil.EMPTY;
+    private byte[] rsaPubkey = BytesUtil.EMPTY;
 
     public byte[] getRsaPrikey() {
         return this.rsaPrikey;
@@ -32,6 +35,10 @@ public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>> 
     }
 
     public HandshakeHandler() {
+
+    }
+
+    public void setupRsa() {
         try {
             KeyPair keyPair = Crypto.rsaKeypair(4096);
             PublicKey publicKey = keyPair.getPublic();
@@ -46,7 +53,7 @@ public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>> 
     }
 
     @Override
-    public void inbound(ReadonlyPacket packet, UnsolvedRequestRouter router) {
+    public void inbound(ReadonlyPacket<HandshakeHandler> packet, UnsolvedRequestRouter router) {
         packet.inbound(router,
                        this
         );

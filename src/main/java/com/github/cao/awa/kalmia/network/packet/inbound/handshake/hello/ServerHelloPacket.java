@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
-import com.github.cao.awa.kalmia.network.handler.PacketHandler;
+import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.LoginWithPasswordRequest;
@@ -12,14 +12,12 @@ import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.Unsolved
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
-import java.util.Arrays;
-
 /**
  * @see ServerHelloRequest
  * @see UnsolvedServerHelloPacket
  */
 @Client
-public class ServerHelloPacket extends ReadonlyPacket {
+public class ServerHelloPacket extends ReadonlyPacket<HandshakeHandler> {
     public static ServerHelloPacket create(BytesReader reader) {
         return new ServerHelloPacket(reader.read(Base256.tagFromBuf(reader.read(2))),
                                      reader.read(reader.read())
@@ -43,16 +41,16 @@ public class ServerHelloPacket extends ReadonlyPacket {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, PacketHandler<?> handler) {
+    public void inbound(UnsolvedRequestRouter router, HandshakeHandler handler) {
         System.out.println("Server Hello!");
 
         byte[] provideCipher = router.decode(this.testKey);
 
         System.out.println("Server Sent Hello: " + Mathematics.radix(MessageDigger.digest(provideCipher,
-                                                                                    MessageDigger.Sha3.SHA_512
-                                                               ),
-                                                               16,
-                                                               36
+                                                                                          MessageDigger.Sha3.SHA_512
+                                                                     ),
+                                                                     16,
+                                                                     36
         ));
         System.out.println("Server Provide Hello: " + Mathematics.radix(this.testSha, 36));
 

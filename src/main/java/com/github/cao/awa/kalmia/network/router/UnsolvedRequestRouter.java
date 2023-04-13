@@ -17,13 +17,19 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.Map;
 
 public class UnsolvedRequestRouter extends NetworkRouter {
-    private final Map<RequestStatus, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(), handlers -> {
-        handlers.put(RequestStatus.HELLO, new HandshakeHandler());
-        handlers.put(RequestStatus.AUTH, new LoginHandler());
-    });
+    private final Map<RequestStatus, PacketHandler<?, ?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
+                                                                                                  handlers -> {
+                                                                                                      handlers.put(RequestStatus.HELLO,
+                                                                                                                   new HandshakeHandler()
+                                                                                                      );
+                                                                                                      handlers.put(RequestStatus.AUTH,
+                                                                                                                   new LoginHandler()
+                                                                                                      );
+                                                                                                  }
+    );
     private final SymmetricTransportLayer transportLayer = new SymmetricTransportLayer();
     private RequestStatus status;
-    private PacketHandler<?> handler;
+    private PacketHandler<?, ?> handler;
     private ChannelHandlerContext context;
     private final boolean isClient;
 

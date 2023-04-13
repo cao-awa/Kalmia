@@ -1,13 +1,11 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes;
 
-import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.aes.AesCrypto;
-import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.HandshakeAesCipherRequest;
@@ -24,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  * @see UnsolvedHandshakeAesCipherPacket
  */
 @Server
-public class HandshakeAesCipherPacket extends ReadonlyPacket {
+public class HandshakeAesCipherPacket extends ReadonlyPacket<HandshakeHandler> {
     private static final Logger LOGGER = LogManager.getLogger("HandshakeAesCipher");
     private final byte[] cipher;
 
@@ -38,11 +36,11 @@ public class HandshakeAesCipherPacket extends ReadonlyPacket {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, PacketHandler<?> handler) {
+    public void inbound(UnsolvedRequestRouter router, HandshakeHandler handler) {
         try {
             // Decrypt aes cipher.
             byte[] cipher = Crypto.rsaDecrypt(this.cipher,
-                                              Crypto.decodeRsaPrikey(((HandshakeHandler) handler).getRsaPrikey())
+                                              Crypto.decodeRsaPrikey(handler.getRsaPrikey())
             );
 
             // Back the cipher to client using the given cipher.

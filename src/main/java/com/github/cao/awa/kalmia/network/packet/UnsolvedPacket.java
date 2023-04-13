@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.network.packet;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 
-public abstract class UnsolvedPacket<T extends ReadonlyPacket> extends Packet {
+public abstract class UnsolvedPacket<T extends ReadonlyPacket<?>> extends Packet {
     private final byte[] data;
 
     public byte[] data() {
