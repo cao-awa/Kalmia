@@ -10,7 +10,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
  */
 @Server
 public class TryPingResponseRequest extends WritablePacket {
-    public static final byte[] ID = SkippedBase256.longToBuf(- 2);
+    public static final byte[] ID = SkippedBase256.longToBuf(5);
 
     private final long startTime;
 

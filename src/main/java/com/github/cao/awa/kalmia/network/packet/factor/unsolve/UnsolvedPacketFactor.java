@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.Han
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.rsa.pubkey.HandshakeRsaPubkeyRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
+import com.github.cao.awa.kalmia.network.packet.request.login.LoginWithPasswordRequest;
 import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingRequest;
 import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingResponseRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.UnsolvedHandshakeAesCipherPacket;
@@ -46,18 +47,6 @@ public class UnsolvedPacketFactor {
     }
 
     public static void register() {
-        // Ping
-        register(
-                // -2
-                TryPingResponseRequest.ID,
-                UnsolvedTryPingResponsePacket :: new
-        );
-        register(
-                // -1
-                TryPingRequest.ID,
-                UnsolvedTryPingPacket :: new
-        );
-
         // Handshake
         register(
                 // 0
@@ -80,9 +69,23 @@ public class UnsolvedPacketFactor {
                 UnsolvedServerHelloPacket :: new
         );
 
+        // Ping
+        register(
+                // 4
+                TryPingRequest.ID,
+                UnsolvedTryPingPacket :: new
+        );
+        register(
+                // 5
+                TryPingResponseRequest.ID,
+                UnsolvedTryPingResponsePacket :: new
+        );
+
         // Login
-        register(4,
-                 UnsolvedLoginWithPasswordPacket :: new
+        register(
+                // 6
+                LoginWithPasswordRequest.ID,
+                UnsolvedLoginWithPasswordPacket :: new
         );
     }
 }

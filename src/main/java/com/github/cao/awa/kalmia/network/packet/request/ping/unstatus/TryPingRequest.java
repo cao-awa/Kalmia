@@ -11,7 +11,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
  */
 @Client
 public class TryPingRequest extends WritablePacket {
-    public static final byte[] ID = SkippedBase256.longToBuf(- 1);
+    public static final byte[] ID = SkippedBase256.longToBuf(4);
 
     @Override
     public byte[] data() {
