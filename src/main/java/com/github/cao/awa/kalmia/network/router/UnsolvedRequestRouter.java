@@ -50,12 +50,11 @@ public class UnsolvedRequestRouter extends NetworkRouter {
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, UnsolvedPacket msg) throws Exception {
         try {
-//            ReadonlyPacket packet = this.handler.tryHandle(msg);
-//            System.out.println(packet);
             this.handler.tryInbound(msg,
                                  this
             );
         } catch (InvalidPacketException e) {
+            // TODO
             e.printStackTrace();
         }
     }
@@ -91,5 +90,9 @@ public class UnsolvedRequestRouter extends NetworkRouter {
 
     public void setCrypto(SymmetricCrypto crypto) {
         this.transportLayer.setCrypto(crypto);
+    }
+
+    public void setIv(byte[] iv) {
+        this.transportLayer.setIv(iv);
     }
 }

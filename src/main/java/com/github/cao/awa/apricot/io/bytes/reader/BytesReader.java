@@ -1,5 +1,7 @@
 package com.github.cao.awa.apricot.io.bytes.reader;
 
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
+
 public class BytesReader {
     private final byte[] bytes;
     private int cursor = 0;
@@ -29,6 +31,9 @@ public class BytesReader {
     }
 
     public byte[] read(int length) {
+        if (length == 0) {
+            return BytesUtil.EMPTY;
+        }
         if (length + this.cursor > this.bytes.length) {
             return new byte[length];
         } else {

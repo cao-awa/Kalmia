@@ -13,7 +13,8 @@ public class AesCrypto extends SymmetricCrypto {
     @Override
     public byte[] encode(byte[] plains) throws Exception {
         return BytesUtil.concat(Crypto.aesEncrypt(plains,
-                                                  cipher()
+                                                  cipher(),
+                                                  iv()
                                 )
         );
     }
@@ -22,7 +23,8 @@ public class AesCrypto extends SymmetricCrypto {
     public byte[] decode(byte[] ciphertext) throws Exception {
         BytesReader reader = new BytesReader(ciphertext);
         return Crypto.aesDecrypt(reader.all(),
-                                 cipher()
+                                 cipher(),
+                                 iv()
         );
     }
 }

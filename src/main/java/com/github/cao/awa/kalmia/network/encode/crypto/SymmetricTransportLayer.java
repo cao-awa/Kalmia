@@ -35,4 +35,12 @@ public class SymmetricTransportLayer {
     public void setCrypto(SymmetricCrypto crypto) {
         this.crypto = crypto;
     }
+
+    public void setCipher(byte[] cipher) {
+        this.crypto.cipher(cipher);
+    }
+
+    public void setIv(byte[] iv) {
+        this.crypto.iv(iv);
+    }
 }

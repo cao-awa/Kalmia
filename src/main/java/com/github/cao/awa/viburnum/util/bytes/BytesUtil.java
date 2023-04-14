@@ -65,7 +65,15 @@ public class BytesUtil {
         byte[] result = new byte[length];
         int cur = 0;
         for (byte[] array : arrays) {
-            System.arraycopy(array, 0, result, cur, array.length);
+            if (array.length == 0) {
+                continue;
+            }
+            System.arraycopy(array,
+                             0,
+                             result,
+                             cur,
+                             array.length
+            );
             cur += array.length;
         }
         return result;
