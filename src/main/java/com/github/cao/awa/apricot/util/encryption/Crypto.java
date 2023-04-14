@@ -35,7 +35,6 @@ public class Crypto {
                           cipher,
                           DEFALUT_KEY_IV
         );
-        ;
     }
 
     public static byte[] aesEncrypt(byte[] content, byte[] cipher) throws Exception {
