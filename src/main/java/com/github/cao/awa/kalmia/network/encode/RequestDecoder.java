@@ -44,9 +44,6 @@ public class RequestDecoder extends ByteToMessageDecoder {
             out.add(UnsolvedPacketFactor.create(id,
                                                 reader.all()
             ));
-
-            System.out.println("---DECODED---");
-            TrafficCount.show();
         }
     }
 }

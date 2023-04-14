@@ -23,8 +23,5 @@ public class RequestEncoder extends MessageToByteEncoder<WritablePacket> {
         out.writeBytes(length);
         out.writeBytes(data);
         TrafficCount.send(data.length + length.length);
-
-        System.out.println("---ENCODED---");
-        TrafficCount.show();
     }
 }

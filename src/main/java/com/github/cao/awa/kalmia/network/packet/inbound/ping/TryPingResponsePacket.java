@@ -25,6 +25,6 @@ public class TryPingResponsePacket extends PingPacket {
 
     @Override
     public void inbound(UnsolvedRequestRouter router, PingHandler handler) {
-        long responseMillions = TimeUtil.processNano(startTime()) / 1000000;
+        double responseMillions = TimeUtil.processNano(startTime()) / 1000000D;
     }
 }
