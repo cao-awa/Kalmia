@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
+import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotation.crypto.NotDecoded;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
@@ -72,9 +73,15 @@ public class ServerHelloPacket extends ReadonlyPacket<HandshakeHandler> {
             LOGGER.info("This transport are current under MITM attack!");
         }
 
-        LOGGER.info("Server IV: " + router.decode(this.iv));
+        if (this.iv.length == 16) {
+            LOGGER.info("Server IV: " + Mathematics.radix(router.decode(this.iv),
+                                                          36
+            ));
 
-        router.setIv(router.decode(this.iv));
+            router.setIv(router.decode(this.iv));
+        } else {
+            router.setIv(Crypto.defaultIv());
+        }
 
         router.send(new LoginWithPasswordRequest());
     }

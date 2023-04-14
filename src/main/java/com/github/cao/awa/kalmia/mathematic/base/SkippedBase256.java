@@ -10,12 +10,26 @@ public class SkippedBase256 {
 
     public static long readLong(BytesReader reader) {
         int length = reader.read();
-        if (length == -1) {
+        if (length == - 1) {
             return Base256.longFromBuf(reader.read(8));
         } else if (length == 0) {
             return 0;
         }
-        return Base256.longFromBuf(reader.reverseRound(8, length));
+        return Base256.longFromBuf(reader.reverseRound(8,
+                                                       length
+        ));
+    }
+
+    public static int readInt(BytesReader reader) {
+        int length = reader.read();
+        if (length == - 1) {
+            return Base256.intFromBuf(reader.read(4));
+        } else if (length == 0) {
+            return 0;
+        }
+        return Base256.intFromBuf(reader.reverseRound(4,
+                                                      length
+        ));
     }
 
     public static byte[] longToBuf(long l) {

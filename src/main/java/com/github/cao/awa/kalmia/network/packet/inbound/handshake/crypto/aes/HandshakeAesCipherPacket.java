@@ -57,7 +57,7 @@ public class HandshakeAesCipherPacket extends ReadonlyPacket<HandshakeHandler> {
 
             // Use the different initialization vector to anyone session.
             // For prevent the latent feature extraction.
-            byte[] iv = SHOULD_SESSION_IV ? BytesRandomIdentifier.create(16) : BytesUtil.EMPTY;
+            byte[] iv = router.encode(SHOULD_SESSION_IV ? BytesRandomIdentifier.create(16) : BytesUtil.EMPTY);
 
             // Send request, the sha should calculate in plain text as not ciphertext.
             router.send(new ServerHelloRequest(

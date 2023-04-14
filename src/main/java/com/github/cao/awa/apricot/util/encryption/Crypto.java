@@ -18,7 +18,7 @@ import java.security.spec.X509EncodedKeySpec;
 @Stable
 public class Crypto {
     private static final Logger DEBUG = LogManager.getLogger("Debugger");
-    private static final byte[] DEFALUT_KEY_IV = new byte[]{102, - 123, 114, - 106, - 40, - 35, 71, - 2, - 89, 81, 13, 47, - 79, 89, 121, - 23};
+    private static final byte[] DEFAULT_KEY_IV = new byte[]{102, - 123, 114, - 106, - 40, - 35, 71, - 2, - 89, 81, 13, 47, - 79, 89, 121, - 23};
     public static final String RSA_ALGORITHM = "RSA";
     public static final String BC_PROVIDER = "BC";
     public static final SecureRandom RANDOM = new SecureRandom();
@@ -30,23 +30,27 @@ public class Crypto {
         Security.addProvider(new BouncyCastleProvider());
     }
 
+    public static byte[] defaultIv() {
+        return DEFAULT_KEY_IV.clone();
+    }
+
     public static byte[] aesDecrypt(byte[] content, byte[] cipher) throws Exception {
         return aesDecrypt(content,
                           cipher,
-                          DEFALUT_KEY_IV
+                          DEFAULT_KEY_IV
         );
     }
 
     public static byte[] aesEncrypt(byte[] content, byte[] cipher) throws Exception {
         return aesEncrypt(content,
                           cipher,
-                          DEFALUT_KEY_IV
+                          DEFAULT_KEY_IV
         );
     }
 
     public static byte[] aesDecrypt(byte[] content, byte[] cipher, byte[] iv) throws Exception {
         if (iv.length != 16) {
-            iv = DEFALUT_KEY_IV;
+            iv = DEFAULT_KEY_IV;
         }
         Cipher instance = Cipher.getInstance("AES/CBC/PKCS5Padding");
         instance.init(Cipher.DECRYPT_MODE,
@@ -60,7 +64,7 @@ public class Crypto {
 
     public static byte[] aesEncrypt(byte[] content, byte[] cipher, byte[] iv) throws Exception {
         if (iv.length != 16) {
-            iv = DEFALUT_KEY_IV;
+            iv = DEFAULT_KEY_IV;
         }
         Cipher instance = Cipher.getInstance("AES/CBC/PKCS5Padding");
         instance.init(Cipher.ENCRYPT_MODE,
