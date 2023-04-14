@@ -7,9 +7,11 @@ import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
+import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
+import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedPingPacket;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,6 +32,7 @@ public class UnsolvedRequestRouter extends NetworkRouter {
     private final SymmetricTransportLayer transportLayer = new SymmetricTransportLayer();
     private RequestStatus status;
     private PacketHandler<?, ?> handler;
+    private final PingHandler pingHandler = new PingHandler();
     private ChannelHandlerContext context;
     private final boolean isClient;
 
@@ -50,9 +53,15 @@ public class UnsolvedRequestRouter extends NetworkRouter {
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, UnsolvedPacket msg) throws Exception {
         try {
-            this.handler.tryInbound(msg,
-                                 this
-            );
+            if (msg instanceof UnsolvedPingPacket<?> pingPacket) {
+                this.pingHandler.tryInbound(pingPacket,
+                                            this
+                );
+            } else {
+                this.handler.tryInbound(msg,
+                                        this
+                );
+            }
         } catch (InvalidPacketException e) {
             // TODO
             e.printStackTrace();

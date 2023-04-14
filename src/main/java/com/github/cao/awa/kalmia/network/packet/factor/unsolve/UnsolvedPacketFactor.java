@@ -9,11 +9,15 @@ import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.Han
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.rsa.pubkey.HandshakeRsaPubkeyRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
+import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingRequest;
+import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingResponseRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.UnsolvedHandshakeAesCipherPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedClientHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.rsa.pubkey.UnsolvedHandshakeRsaPubkeyPacket;
+import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedClientHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedServerHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.login.UnsolvedLoginWithPasswordPacket;
+import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingPacket;
+import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingResponsePacket;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -42,23 +46,43 @@ public class UnsolvedPacketFactor {
     }
 
     public static void register() {
+        // Ping
+        register(
+                // -2
+                TryPingResponseRequest.ID,
+                UnsolvedTryPingResponsePacket :: new
+        );
+        register(
+                // -1
+                TryPingRequest.ID,
+                UnsolvedTryPingPacket :: new
+        );
+
         // Handshake
-        UnsolvedPacketFactor.register(ClientHelloRequest.ID,
-                                      UnsolvedClientHelloPacket :: new
+        register(
+                // 0
+                ClientHelloRequest.ID,
+                UnsolvedClientHelloPacket :: new
         );
-        UnsolvedPacketFactor.register(HandshakeRsaPubkeyRequest.ID,
-                                      UnsolvedHandshakeRsaPubkeyPacket :: new
+        register(
+                // 1
+                HandshakeRsaPubkeyRequest.ID,
+                UnsolvedHandshakeRsaPubkeyPacket :: new
         );
-        UnsolvedPacketFactor.register(HandshakeAesCipherRequest.ID,
-                                      UnsolvedHandshakeAesCipherPacket :: new
+        register(
+                // 2
+                HandshakeAesCipherRequest.ID,
+                UnsolvedHandshakeAesCipherPacket :: new
         );
-        UnsolvedPacketFactor.register(ServerHelloRequest.ID,
-                                      UnsolvedServerHelloPacket :: new
+        register(
+                // 3
+                ServerHelloRequest.ID,
+                UnsolvedServerHelloPacket :: new
         );
 
         // Login
-        UnsolvedPacketFactor.register(4,
-                                      UnsolvedLoginWithPasswordPacket :: new
+        register(4,
+                 UnsolvedLoginWithPasswordPacket :: new
         );
     }
 }
