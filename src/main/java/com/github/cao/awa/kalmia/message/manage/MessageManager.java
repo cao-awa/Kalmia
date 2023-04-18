@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.message.manage;
 
-import com.github.cao.awa.kalmia.mathematic.base.Base256;
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.database.message.MessageDatabase;
 
@@ -15,23 +15,31 @@ public class MessageManager {
     }
 
     public synchronized long send(long sid, Message msg) {
-        return this.database.send(Base256.longToBuf(sid), msg);
+        return this.database.send(SkippedBase256.longToBuf(sid),
+                                  msg
+        );
     }
 
     public synchronized long delete(long sid, long seq) {
-        this.database.delete(Base256.longToBuf(sid), Base256.longToBuf(seq));
+        this.database.delete(SkippedBase256.longToBuf(sid),
+                             SkippedBase256.longToBuf(seq)
+        );
         return seq;
     }
 
     public synchronized Message get(long sid, long seq) {
-        return this.database.get(Base256.longToBuf(sid), Base256.longToBuf(seq));
+        return this.database.get(SkippedBase256.longToBuf(sid),
+                                 SkippedBase256.longToBuf(seq)
+        );
     }
 
     public synchronized void operation(long sid, BiConsumer<Long, Message> action) {
-        this.database.operation(Base256.longToBuf(sid), action);
+        this.database.operation(SkippedBase256.longToBuf(sid),
+                                action
+        );
     }
 
     public synchronized void deleteAll(long sid) {
-        this.database.deleteAll(Base256.longToBuf(sid));
+        this.database.deleteAll(SkippedBase256.longToBuf(sid));
     }
 }

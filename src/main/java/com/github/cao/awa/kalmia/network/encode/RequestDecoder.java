@@ -10,10 +10,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class RequestDecoder extends ByteToMessageDecoder {
     private final UnsolvedRequestRouter router;
+    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
+    private long lengthMarker = 0;
+    private long currentLength = 0;
 
     public RequestDecoder(UnsolvedRequestRouter router) {
         this.router = router;
@@ -21,32 +25,80 @@ public class RequestDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        if (in.readableBytes() > 1) {
-            byte skipped = in.readByte();
+        if (in.readableBytes() > 0) {
+            int dataLength;
+            // Length marker is zero means the packet is first frame to here.
+            // Need to update the marker.
+            if (this.lengthMarker == 0) {
+                // Mark byte in SkippedBase256.
+                byte skipped = in.readByte();
 
-            byte[] length = new byte[skipped == - 1 ? 4 : skipped];
-            in.readBytes(length);
-            byte[] data = new byte[SkippedBase256.readInt(new BytesReader(BytesUtil.concat(new byte[]{skipped},
-                                                                                           length
-            )))];
+                // The mark is -1 means this number is not skipped, use the full Base256 decoding.
+                byte[] lengthMarker = new byte[skipped == - 1 ? 4 : skipped];
+                in.readBytes(lengthMarker);
+
+                // Let it skipped(full Base256 will auto decoded in here).
+                dataLength = SkippedBase256.readInt(new BytesReader(BytesUtil.concat(new byte[]{skipped},
+                                                                                     lengthMarker
+                )));
+
+                // Mark the packet length.
+                this.lengthMarker = dataLength;
+
+                // Re length.
+                dataLength = Math.min(in.readableBytes(),
+                                      dataLength
+                );
+            } else {
+                dataLength = in.readableBytes();
+            }
+
+            // Read the data of this packet frame.
+            byte[] data = new byte[dataLength];
             in.readBytes(data);
 
+            // Commit traffic count.
             TrafficCount.receive(4 + data.length);
 
-            data = this.router.decode(data);
+            // Write to buffer and update current length.
+            this.output.write(data);
 
-            TrafficCount.decode(data.length);
+            this.currentLength += data.length;
 
-            BytesReader reader = new BytesReader(data);
+            // The current length should equal to marker, then done this packet reading, process it.
+            if (this.currentLength == this.lengthMarker) {
+                // Processes...
+                done(this.output.toByteArray(),
+                     out
+                );
 
-            long id = SkippedBase256.readLong(reader);
-
-            byte[] receipt = reader.read() == - 1 ? reader.non() : reader.read(16);
-
-            out.add(UnsolvedPacketFactor.create(id,
-                                                reader.all(),
-                                                receipt
-            ));
+                // Reset to prepare reading next packet.
+                this.output.reset();
+                this.lengthMarker = 0;
+                this.currentLength = 0;
+            }
         }
+    }
+
+    private void done(byte[] data, List<Object> out) {
+        // Decode it by router.
+        data = this.router.decode(data);
+
+        // Commit traffic count.
+        TrafficCount.decode(data.length);
+
+        BytesReader reader = new BytesReader(data);
+
+        // Read packet id.
+        long id = SkippedBase256.readLong(reader);
+
+        // Read receipt identity.
+        byte[] receipt = reader.read() == - 1 ? reader.non() : reader.read(16);
+
+        // Create the packet and let it be processed in later handlers.
+        out.add(UnsolvedPacketFactor.create(id,
+                                            reader.all(),
+                                            receipt
+        ));
     }
 }

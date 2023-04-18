@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia;
 
+import com.github.cao.awa.kalmia.chat.session.manager.SessionManager;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.io.KalmiaServerNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
@@ -9,13 +10,18 @@ public class KalmiaServer {
     private final KalmiaServerNetworkIo networkIo;
     private final MessageManager messageManager;
     private final UserManager userManager;
+    private final SessionManager sessionManager;
 
-    public UserManager getUserManager() {
+    public UserManager userManager() {
         return this.userManager;
     }
 
-    public MessageManager getMessageManager() {
+    public MessageManager messageManager() {
         return this.messageManager;
+    }
+
+    public SessionManager sessionManager() {
+        return this.sessionManager;
     }
 
     public KalmiaServer() {
@@ -23,7 +29,8 @@ public class KalmiaServer {
             this.networkIo = new KalmiaServerNetworkIo(this);
             this.messageManager = new MessageManager("data/msg");
             this.userManager = new UserManager("data/usr");
-        }catch (Exception e) {
+            this.sessionManager = new SessionManager("data/session");
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -1,5 +1,6 @@
-package com.github.cao.awa.kalmia.user.database;
+package com.github.cao.awa.kalmia.chat.session.database;
 
+import com.github.cao.awa.apricot.anntations.Unsupported;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
@@ -15,11 +16,13 @@ import java.io.IOException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class UserDatabase {
+// TODO
+@Unsupported
+public class SessionDatabase {
     private static final byte[] HEAD = new byte[]{1};
     private final DB database;
 
-    public UserDatabase(String path) throws IOException {
+    public SessionDatabase(String path) throws IOException {
         this.database = new Iq80DBFactory().open(new File(path),
                                                  new Options().createIfMissing(true)
                                                               .writeBufferSize(1048560 * 16)

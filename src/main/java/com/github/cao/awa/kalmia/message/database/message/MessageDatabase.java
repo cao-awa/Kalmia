@@ -1,7 +1,9 @@
 package com.github.cao.awa.kalmia.message.database.message;
 
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.mathematic.base.Base256;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -16,8 +18,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static com.github.cao.awa.viburnum.util.bytes.BytesUtil.concat;
-
 public class MessageDatabase {
     private final DB database;
 
@@ -30,11 +30,9 @@ public class MessageDatabase {
     }
 
     public void operation(byte[] sid, BiConsumer<Long, Message> action) {
-        byte[] seqByte = this.database.get(concat(sid,
-                                                  "/".getBytes()
-        ));
+        byte[] seqByte = this.database.get(sid);
 
-        long count = seqByte == null ? - 1 : Base256.longFromBuf(seqByte);
+        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
         count++;
 
@@ -42,7 +40,7 @@ public class MessageDatabase {
             for (long seq = 0; seq < count; seq++) {
                 action.accept(seq,
                               get(sid,
-                                  Base256.longToBuf(seq)
+                                  SkippedBase256.longToBuf(seq)
                               )
                 );
             }
@@ -70,11 +68,9 @@ public class MessageDatabase {
     }
 
     public void seqAll(byte[] sid, Consumer<Long> action) {
-        byte[] seqByte = this.database.get(concat(sid,
-                                                  "/".getBytes()
-        ));
+        byte[] seqByte = this.database.get(sid);
 
-        long count = seqByte == null ? - 1 : Base256.longFromBuf(seqByte);
+        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
         count++;
 
@@ -89,7 +85,7 @@ public class MessageDatabase {
         seqAll(sid,
                seq -> {
                    delete(sid,
-                          Base256.longToBuf(seq)
+                          SkippedBase256.longToBuf(seq)
                    );
                }
         );
@@ -98,12 +94,6 @@ public class MessageDatabase {
     public byte[] key(byte[] sid, byte[] seq) {
         return BytesUtil.concat(sid,
                                 seq
-        );
-    }
-
-    public byte[] seq(byte[] sid) {
-        return concat(sid,
-                      "/".getBytes()
         );
     }
 
@@ -122,15 +112,15 @@ public class MessageDatabase {
     }
 
     public long send(byte[] sid, Message msg) {
-        byte[] seqByte = this.database.get(concat(sid,
-                                                  "/".getBytes()
-        ));
+        Kalmia.SERVER.sessionManager();
 
-        long seq = seqByte == null ? - 1 : Base256.longFromBuf(seqByte);
+        byte[] seqByte = this.database.get(sid);
+
+        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
         long nextSeq = seq + 1;
 
-        byte[] nextSeqByte = Base256.longToBuf(nextSeq);
+        byte[] nextSeqByte = SkippedBase256.longToBuf(nextSeq);
 
         this.database.put(key(sid,
                               nextSeqByte
@@ -138,7 +128,7 @@ public class MessageDatabase {
                           msg.toBytes()
         );
 
-        this.database.put(seq(sid),
+        this.database.put(sid,
                           nextSeqByte
         );
 
