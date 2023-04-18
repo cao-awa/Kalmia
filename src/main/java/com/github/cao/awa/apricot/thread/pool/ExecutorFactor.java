@@ -4,9 +4,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ExecutorFactor {
-    public static ExecutorService virtual() {
-        return Executors.newVirtualThreadPerTaskExecutor();
-    }
+//    public static ExecutorService virtual() {
+//        return Executors.newVirtualThreadPerTaskExecutor();
+//    }
 
     public static ExecutorService cached() {
         return Executors.newCachedThreadPool();
@@ -21,7 +21,8 @@ public class ExecutorFactor {
     }
 
     public static ExecutorService intensiveIo() {
-        return virtual();
+//        return virtual();
+        return intensiveCpu();
     }
 
     public static ExecutorService intensiveCpu() {
