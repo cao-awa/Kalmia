@@ -89,6 +89,8 @@ public class ServerHelloPacket extends ReadonlyPacket<HandshakeHandler> {
 
         // TODO
         //     Try login(will delete in releases).
-        router.send(new LoginWithPasswordRequest(123456));
+        router.send(new LoginWithPasswordRequest(123456,
+                                                 "awaawa".getBytes()
+        ));
     }
 }

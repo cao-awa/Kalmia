@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.Han
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.rsa.pubkey.HandshakeRsaPubkeyRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
+import com.github.cao.awa.kalmia.network.packet.request.invalid.operation.OperationInvalidRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.failed.LoginFailedRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.password.LoginWithPasswordRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.success.LoginSuccessRequest;
@@ -19,6 +20,7 @@ import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.Uns
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.rsa.pubkey.UnsolvedHandshakeRsaPubkeyPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedClientHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedServerHelloPacket;
+import com.github.cao.awa.kalmia.network.packet.unsolve.invalid.operation.UnsolvedOperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.login.failed.UnsolvedLoginFailedPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.login.password.UnsolvedLoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.login.success.UnsolvedLoginSuccessPacket;
@@ -110,6 +112,12 @@ public class UnsolvedPacketFactor {
                 // 10
                 SendMessageRequest.ID,
                 UnsolvedSendMessagePacket :: new
+        );
+
+        // Invalid operation
+        register(
+                OperationInvalidRequest.ID,
+                UnsolvedOperationInvalidPacket :: new
         );
     }
 }

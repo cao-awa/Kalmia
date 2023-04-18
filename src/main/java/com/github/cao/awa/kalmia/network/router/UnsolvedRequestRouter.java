@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.router;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.event.controller.cancel.EventCancelException;
 import com.github.cao.awa.kalmia.network.encode.crypto.SymmetricTransportLayer;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
@@ -70,6 +71,10 @@ public class UnsolvedRequestRouter extends NetworkRouter {
         } catch (InvalidPacketException e) {
             // TODO
             e.printStackTrace();
+
+            send(new OperationInvalidRequest());
+        } catch (EventCancelException cancel) {
+            cancel.printStackTrace();
 
             send(new OperationInvalidRequest());
         }

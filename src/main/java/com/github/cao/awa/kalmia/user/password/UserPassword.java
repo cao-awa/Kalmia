@@ -15,7 +15,7 @@ public class UserPassword extends BytesValueConvertable {
         this.password = password;
     }
 
-    public UserPassword(String password) {
+    public UserPassword(byte[] password) {
         this.isSha = true;
         this.password = Mathematics.toBytes(MessageDigger.digest(password,
                                                                  MessageDigger.Sha3.SHA_512

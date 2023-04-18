@@ -9,6 +9,7 @@ import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,15 +46,19 @@ public class UserDatabase {
         }
     }
 
+    @Nullable
     public User get(byte[] uid) {
         byte[] userBytes = this.database.get(uid);
+        if (userBytes == null || userBytes.length == 0) {
+            return null;
+        }
         return User.create(userBytes);
     }
 
     public void delete(byte[] uid) {
         User source = get(uid);
-        this.database.put(uid,
-                          new DeletedUser(TimeUtil.nano()).toBytes()
+        set(uid,
+            new DeletedUser(TimeUtil.nano())
         );
     }
 
@@ -97,5 +102,11 @@ public class UserDatabase {
         );
 
         return nextSeq;
+    }
+
+    public void set(byte[] seq, User user) {
+        this.database.put(seq,
+                          user.toBytes()
+        );
     }
 }

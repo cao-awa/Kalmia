@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.network.packet.inbound.login.success;
 
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.event.network.login.success.LoginSuccessEvent;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
@@ -35,6 +36,12 @@ public class LoginSuccessPacket extends ReadonlyPacket<SolvedRequestHandler> {
 
     @Override
     public void inbound(UnsolvedRequestRouter router, SolvedRequestHandler handler) {
+        // Trigger the pre handlers.
+        LoginSuccessEvent.trigger(this,
+                                  router,
+                                  handler
+        );
+
         System.out.println("---Login success---");
         System.out.println("UID: " + this.uid);
         System.out.println("Token: " + Mathematics.radix(this.token,

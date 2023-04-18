@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.login.failed;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.event.network.login.failed.LoginFailedEvent;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
@@ -29,6 +30,12 @@ public class LoginFailedPacket extends ReadonlyPacket<SolvedRequestHandler> {
 
     @Override
     public void inbound(UnsolvedRequestRouter router, SolvedRequestHandler handler) {
+        // Trigger the pre handlers.
+        LoginFailedEvent.trigger(this,
+                                 router,
+                                 handler
+        );
+
         System.out.println("---Login failed---");
         System.out.println("UID: " + this.uid);
     }
