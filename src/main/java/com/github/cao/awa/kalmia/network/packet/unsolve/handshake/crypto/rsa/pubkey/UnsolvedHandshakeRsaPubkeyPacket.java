@@ -14,7 +14,7 @@ public class UnsolvedHandshakeRsaPubkeyPacket extends UnsolvedHandshakePacket<Ha
     }
 
     @Override
-    public HandshakeRsaPubkeyPacket toPacket() {
+    public HandshakeRsaPubkeyPacket packet() {
         return HandshakeRsaPubkeyPacket.create(reader());
     }
 }

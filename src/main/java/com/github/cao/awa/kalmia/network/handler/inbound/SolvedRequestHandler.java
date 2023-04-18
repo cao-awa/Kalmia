@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.handler.ping;
+package com.github.cao.awa.kalmia.network.handler.inbound;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
@@ -10,15 +10,25 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 
 import java.util.Set;
 
-public class PingHandler extends PacketHandler<UnsolvedPacket<?>, PingHandler> {
+public class SolvedRequestHandler extends PacketHandler<UnsolvedPacket<?>, SolvedRequestHandler> {
     private static final Set<RequestStatus> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
                                                                                         set -> {
-                                                                                            set.addAll(RequestStatus.all());
+                                                                                            set.add(RequestStatus.AUTHED);
                                                                                         }
     );
 
+    private long uid;
+
+    public long getUid() {
+        return this.uid;
+    }
+
+    public void setUid(long uid) {
+        this.uid = uid;
+    }
+
     @Override
-    public void inbound(ReadonlyPacket<PingHandler> packet, UnsolvedRequestRouter router) {
+    public void inbound(ReadonlyPacket<SolvedRequestHandler> packet, UnsolvedRequestRouter router) {
         packet.inbound(router,
                        this
         );

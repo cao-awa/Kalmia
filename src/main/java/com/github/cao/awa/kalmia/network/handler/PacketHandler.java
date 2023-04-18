@@ -12,7 +12,7 @@ import java.util.Set;
 
 public abstract class PacketHandler<T extends UnsolvedPacket<?>, H extends PacketHandler<T, H>> {
     public ReadonlyPacket<H> handle(T packet) {
-        return EntrustEnvironment.cast(packet.toPacket());
+        return EntrustEnvironment.cast(packet.packet());
     }
 
     public ReadonlyPacket<H> tryHandle(UnsolvedPacket<?> packet) {

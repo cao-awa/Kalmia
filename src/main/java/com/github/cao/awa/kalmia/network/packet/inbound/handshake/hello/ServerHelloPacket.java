@@ -9,9 +9,10 @@ import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
-import com.github.cao.awa.kalmia.network.packet.request.login.LoginWithPasswordRequest;
+import com.github.cao.awa.kalmia.network.packet.request.login.password.LoginWithPasswordRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedServerHelloPacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -83,6 +84,11 @@ public class ServerHelloPacket extends ReadonlyPacket<HandshakeHandler> {
             router.setIv(Crypto.defaultIv());
         }
 
-        router.send(new LoginWithPasswordRequest());
+        // Prepare authed status to enable SolvedRequestHandler.
+        router.setStatus(RequestStatus.AUTHED);
+
+        // TODO
+        //     Try login(will delete in releases).
+        router.send(new LoginWithPasswordRequest(123456));
     }
 }

@@ -82,4 +82,8 @@ public class BytesReader {
     public byte[] all() {
         return read(this.bytes.length - this.cursor);
     }
+
+    public byte[] non() {
+        return BytesUtil.EMPTY;
+    }
 }

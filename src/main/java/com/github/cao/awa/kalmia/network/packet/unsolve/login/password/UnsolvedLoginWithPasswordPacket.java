@@ -1,7 +1,7 @@
-package com.github.cao.awa.kalmia.network.packet.unsolve.login;
+package com.github.cao.awa.kalmia.network.packet.unsolve.login.password;
 
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.login.LoginWithPasswordPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 /**
@@ -14,7 +14,7 @@ public class UnsolvedLoginWithPasswordPacket extends UnsolvedPacket<LoginWithPas
     }
 
     @Override
-    public LoginWithPasswordPacket toPacket() {
-        return new LoginWithPasswordPacket();
+    public LoginWithPasswordPacket packet() {
+        return LoginWithPasswordPacket.create(reader());
     }
 }

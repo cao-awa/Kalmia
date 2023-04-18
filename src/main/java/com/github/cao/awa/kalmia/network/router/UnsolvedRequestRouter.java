@@ -6,11 +6,13 @@ import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
+import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
+import com.github.cao.awa.kalmia.network.packet.request.invalid.operation.OperationInvalidRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedPingPacket;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -26,6 +28,9 @@ public class UnsolvedRequestRouter extends NetworkRouter {
                                                                                                       );
                                                                                                       handlers.put(RequestStatus.AUTH,
                                                                                                                    new LoginHandler()
+                                                                                                      );
+                                                                                                      handlers.put(RequestStatus.AUTHED,
+                                                                                                                   new SolvedRequestHandler()
                                                                                                       );
                                                                                                   }
     );
@@ -47,7 +52,7 @@ public class UnsolvedRequestRouter extends NetworkRouter {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
-        this.handler = handlers.get(status);
+        this.handler = this.handlers.get(status);
     }
 
     @Override
@@ -65,6 +70,8 @@ public class UnsolvedRequestRouter extends NetworkRouter {
         } catch (InvalidPacketException e) {
             // TODO
             e.printStackTrace();
+
+            send(new OperationInvalidRequest());
         }
     }
 
@@ -103,5 +110,9 @@ public class UnsolvedRequestRouter extends NetworkRouter {
 
     public void setIv(byte[] iv) {
         this.transportLayer.setIv(iv);
+    }
+
+    public PacketHandler<?, ?> getHandler() {
+        return this.handlers.get(this.status);
     }
 }

@@ -7,7 +7,6 @@ import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.UnsolvedHandshakePacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
-import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
@@ -16,7 +15,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Set;
 
-@Server
 public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>, HandshakeHandler> {
     private static final Set<RequestStatus> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
                                                                                         set -> {

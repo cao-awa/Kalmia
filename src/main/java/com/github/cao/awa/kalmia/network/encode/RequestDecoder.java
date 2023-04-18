@@ -41,8 +41,11 @@ public class RequestDecoder extends ByteToMessageDecoder {
 
             long id = SkippedBase256.readLong(reader);
 
+            byte[] receipt = reader.read() == - 1 ? reader.non() : reader.read(16);
+
             out.add(UnsolvedPacketFactor.create(id,
-                                                reader.all()
+                                                reader.all(),
+                                                receipt
             ));
         }
     }

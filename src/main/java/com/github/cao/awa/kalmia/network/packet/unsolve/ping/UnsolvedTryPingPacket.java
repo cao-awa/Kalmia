@@ -13,7 +13,7 @@ public class UnsolvedTryPingPacket extends UnsolvedPingPacket<TryPingPacket> {
     }
 
     @Override
-    public TryPingPacket toPacket() {
+    public TryPingPacket packet() {
         return TryPingPacket.create(reader());
     }
 }

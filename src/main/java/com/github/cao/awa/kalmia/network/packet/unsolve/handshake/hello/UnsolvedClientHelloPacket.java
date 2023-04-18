@@ -14,7 +14,7 @@ public class UnsolvedClientHelloPacket extends UnsolvedHandshakePacket<ClientHel
     }
 
     @Override
-    public ClientHelloPacket toPacket() {
+    public ClientHelloPacket packet() {
         return ClientHelloPacket.create(reader());
     }
 }

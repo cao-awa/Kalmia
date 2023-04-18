@@ -14,7 +14,7 @@ public class UnsolvedHandshakeAesCipherPacket extends UnsolvedHandshakePacket<Ha
     }
 
     @Override
-    public HandshakeAesCipherPacket toPacket() {
+    public HandshakeAesCipherPacket packet() {
         return HandshakeAesCipherPacket.create(reader());
     }
 }
