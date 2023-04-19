@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.network.io;
 
-import com.github.cao.awa.apricot.anntations.Stable;
-import com.github.cao.awa.apricot.thread.pool.*;
+import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.kalmia.KalmiaServer;
 import com.github.cao.awa.kalmia.network.io.channel.KalmiaServerChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;

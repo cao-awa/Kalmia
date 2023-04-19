@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.chat.session.database;
 
-import com.github.cao.awa.apricot.anntations.Unsupported;
+import com.github.cao.awa.apricot.anntation.Unsupported;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 // TODO
 @Unsupported
 public class SessionDatabase {
-    private static final byte[] HEAD = new byte[]{1};
+    private static final byte[] ROOT = new byte[]{- 2};
     private final DB database;
 
     public SessionDatabase(String path) throws IOException {
@@ -31,9 +31,7 @@ public class SessionDatabase {
     }
 
     public void operation(BiConsumer<Long, User> action) {
-        byte[] seqByte = this.database.get(
-                HEAD
-        );
+        byte[] seqByte = this.database.get(ROOT);
 
         long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
@@ -61,7 +59,7 @@ public class SessionDatabase {
     }
 
     public void seqAll(Consumer<Long> action) {
-        byte[] seqByte = this.database.get(HEAD);
+        byte[] seqByte = this.database.get(ROOT);
 
         long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
@@ -81,9 +79,7 @@ public class SessionDatabase {
     }
 
     public long add(User user) {
-        byte[] seqByte = this.database.get(
-                HEAD
-        );
+        byte[] seqByte = this.database.get(ROOT);
 
         long seq = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
@@ -95,7 +91,7 @@ public class SessionDatabase {
                           user.toBytes()
         );
 
-        this.database.put(HEAD,
+        this.database.put(ROOT,
                           nextSeqByte
         );
 

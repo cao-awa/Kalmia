@@ -1,6 +1,6 @@
 package com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.function;
 
-import com.github.cao.awa.apricot.anntations.*;
+import com.github.cao.awa.apricot.anntation.Stable;
 
 @Stable
 @FunctionalInterface

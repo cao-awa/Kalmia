@@ -1,11 +1,10 @@
 package com.github.cao.awa.apricot.util.digger;
 
-import com.github.cao.awa.apricot.anntations.Stable;
+import com.github.cao.awa.apricot.anntation.Stable;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.io.File;
 import java.io.RandomAccessFile;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 

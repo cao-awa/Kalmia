@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.io.channel;
 
-import com.github.cao.awa.apricot.anntations.Stable;
+import com.github.cao.awa.apricot.anntation.Stable;
 import com.github.cao.awa.kalmia.network.encode.RequestDecoder;
 import com.github.cao.awa.kalmia.network.encode.RequestEncoder;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;

@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.event.controller;
 
-import com.github.cao.awa.apricot.anntations.Unsupported;
+import com.github.cao.awa.apricot.anntation.Unsupported;
 import com.github.cao.awa.kalmia.event.controller.cancel.EventCancelException;
 
 @Unsupported("NOT_SAFELY_CANCEL")

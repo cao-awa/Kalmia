@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.chat.session.manager;
 
-import com.github.cao.awa.apricot.anntations.Unsupported;
+import com.github.cao.awa.apricot.anntation.Unsupported;
 import com.github.cao.awa.kalmia.chat.session.database.SessionDatabase;
 
 import java.io.IOException;

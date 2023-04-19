@@ -17,7 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class UserDatabase {
-    private static final byte[] HEAD = new byte[]{1};
+    private static final byte[] ROOT = new byte[]{- 2};
     private final DB database;
 
     public UserDatabase(String path) throws IOException {
@@ -30,7 +30,7 @@ public class UserDatabase {
 
     public void operation(BiConsumer<Long, User> action) {
         byte[] seqByte = this.database.get(
-                HEAD
+                ROOT
         );
 
         long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
@@ -63,7 +63,7 @@ public class UserDatabase {
     }
 
     public void seqAll(Consumer<Long> action) {
-        byte[] seqByte = this.database.get(HEAD);
+        byte[] seqByte = this.database.get(ROOT);
 
         long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
@@ -83,9 +83,7 @@ public class UserDatabase {
     }
 
     public long add(User user) {
-        byte[] seqByte = this.database.get(
-                HEAD
-        );
+        byte[] seqByte = this.database.get(ROOT);
 
         long seq = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
@@ -97,7 +95,7 @@ public class UserDatabase {
                           user.toBytes()
         );
 
-        this.database.put(HEAD,
+        this.database.put(ROOT,
                           nextSeqByte
         );
 

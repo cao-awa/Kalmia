@@ -1,6 +1,6 @@
 package com.github.cao.awa.apricot.identifier;
 
-import com.github.cao.awa.apricot.anntations.Stable;
+import com.github.cao.awa.apricot.anntation.Stable;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.util.Random;

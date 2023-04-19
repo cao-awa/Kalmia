@@ -1,4 +1,4 @@
-package com.github.cao.awa.apricot.anntations;
+package com.github.cao.awa.apricot.anntation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
