@@ -1,7 +1,6 @@
 package com.github.cao.awa.kalmia.network.router;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.event.controller.cancel.EventCancelException;
 import com.github.cao.awa.kalmia.network.encode.crypto.SymmetricTransportLayer;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
@@ -22,22 +21,22 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.Map;
 
 public class UnsolvedRequestRouter extends NetworkRouter {
-    private final Map<RequestStatus, PacketHandler<?, ?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
-                                                                                                  handlers -> {
-                                                                                                      handlers.put(RequestStatus.HELLO,
-                                                                                                                   new HandshakeHandler()
-                                                                                                      );
-                                                                                                      handlers.put(RequestStatus.AUTH,
-                                                                                                                   new LoginHandler()
-                                                                                                      );
-                                                                                                      handlers.put(RequestStatus.AUTHED,
-                                                                                                                   new SolvedRequestHandler()
-                                                                                                      );
+    private final Map<RequestStatus, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
+                                                                                               handlers -> {
+                                                                                                   handlers.put(RequestStatus.HELLO,
+                                                                                                                new HandshakeHandler()
+                                                                                                   );
+                                                                                                   handlers.put(RequestStatus.AUTH,
+                                                                                                                new LoginHandler()
+                                                                                                   );
+                                                                                                   handlers.put(RequestStatus.AUTHED,
+                                                                                                                new SolvedRequestHandler()
+                                                                                                   );
                                                                                                   }
     );
     private final SymmetricTransportLayer transportLayer = new SymmetricTransportLayer();
     private RequestStatus status;
-    private PacketHandler<?, ?> handler;
+    private PacketHandler<?> handler;
     private final PingHandler pingHandler = new PingHandler();
     private ChannelHandlerContext context;
     private final boolean isClient;
@@ -71,10 +70,6 @@ public class UnsolvedRequestRouter extends NetworkRouter {
         } catch (InvalidPacketException e) {
             // TODO
             e.printStackTrace();
-
-            send(new OperationInvalidRequest());
-        } catch (EventCancelException cancel) {
-            cancel.printStackTrace();
 
             send(new OperationInvalidRequest());
         }
@@ -117,7 +112,7 @@ public class UnsolvedRequestRouter extends NetworkRouter {
         this.transportLayer.setIv(iv);
     }
 
-    public PacketHandler<?, ?> getHandler() {
+    public PacketHandler<?> getHandler() {
         return this.handlers.get(this.status);
     }
 }

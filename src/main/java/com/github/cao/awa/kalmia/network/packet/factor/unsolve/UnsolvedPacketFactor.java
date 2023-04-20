@@ -5,26 +5,10 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.HandshakeAesCipherRequest;
-import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.rsa.pubkey.HandshakeRsaPubkeyRequest;
-import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
-import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
 import com.github.cao.awa.kalmia.network.packet.request.invalid.operation.OperationInvalidRequest;
-import com.github.cao.awa.kalmia.network.packet.request.login.failed.LoginFailedRequest;
-import com.github.cao.awa.kalmia.network.packet.request.login.password.LoginWithPasswordRequest;
-import com.github.cao.awa.kalmia.network.packet.request.login.success.LoginSuccessRequest;
-import com.github.cao.awa.kalmia.network.packet.request.message.send.SendMessageRequest;
 import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingRequest;
 import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingResponseRequest;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.UnsolvedHandshakeAesCipherPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.rsa.pubkey.UnsolvedHandshakeRsaPubkeyPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedClientHelloPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.hello.UnsolvedServerHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.invalid.operation.UnsolvedOperationInvalidPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.login.failed.UnsolvedLoginFailedPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.login.password.UnsolvedLoginWithPasswordPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.login.success.UnsolvedLoginSuccessPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.message.send.UnsolvedSendMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingResponsePacket;
 
@@ -56,28 +40,6 @@ public class UnsolvedPacketFactor {
     }
 
     public static void register() {
-        // Handshake
-        register(
-                // 0
-                ClientHelloRequest.ID,
-                UnsolvedClientHelloPacket :: new
-        );
-        register(
-                // 1
-                HandshakeRsaPubkeyRequest.ID,
-                UnsolvedHandshakeRsaPubkeyPacket :: new
-        );
-        register(
-                // 2
-                HandshakeAesCipherRequest.ID,
-                UnsolvedHandshakeAesCipherPacket :: new
-        );
-        register(
-                // 3
-                ServerHelloRequest.ID,
-                UnsolvedServerHelloPacket :: new
-        );
-
         // Ping
         register(
                 // 4
@@ -90,29 +52,6 @@ public class UnsolvedPacketFactor {
                 UnsolvedTryPingResponsePacket :: new
         );
 
-        // Login
-        register(
-                // 6
-                LoginWithPasswordRequest.ID,
-                UnsolvedLoginWithPasswordPacket :: new
-        );
-        register(
-                // 8
-                LoginFailedRequest.ID,
-                UnsolvedLoginFailedPacket :: new
-        );
-        register(
-                // 9
-                LoginSuccessRequest.ID,
-                UnsolvedLoginSuccessPacket :: new
-        );
-
-        // Send messages
-        register(
-                // 10
-                SendMessageRequest.ID,
-                UnsolvedSendMessagePacket :: new
-        );
 
         // Invalid operation
         register(

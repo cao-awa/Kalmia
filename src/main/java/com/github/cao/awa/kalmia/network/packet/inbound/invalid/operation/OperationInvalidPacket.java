@@ -11,7 +11,7 @@ import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
  * @see OperationInvalidRequest
  * @see UnsolvedOperationInvalidPacket
  */
-public class OperationInvalidPacket<T extends PacketHandler<?, T>> extends ReadonlyPacket<T> {
+public class OperationInvalidPacket<T extends PacketHandler<T>> extends ReadonlyPacket<T> {
     @Override
     public void inbound(UnsolvedRequestRouter router, T handler) {
         System.out.println("Canceled...");

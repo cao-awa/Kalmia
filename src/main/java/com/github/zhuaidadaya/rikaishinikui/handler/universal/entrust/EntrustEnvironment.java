@@ -379,7 +379,7 @@ public class EntrustEnvironment {
      */
     @NotNull
     public static Thread thread(Runnable action) {
-        return new Thread(action::run);
+        return new Thread(action);
     }
 
 //    /**

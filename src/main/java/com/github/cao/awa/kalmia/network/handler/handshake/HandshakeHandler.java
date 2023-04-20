@@ -4,7 +4,6 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.UnsolvedHandshakePacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -15,7 +14,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Set;
 
-public class HandshakeHandler extends PacketHandler<UnsolvedHandshakePacket<?>, HandshakeHandler> {
+public class HandshakeHandler extends PacketHandler<HandshakeHandler> {
     private static final Set<RequestStatus> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
                                                                                         set -> {
                                                                                             set.add(RequestStatus.HELLO);

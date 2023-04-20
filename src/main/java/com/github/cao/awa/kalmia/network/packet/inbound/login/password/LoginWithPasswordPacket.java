@@ -3,8 +3,8 @@ package com.github.cao.awa.kalmia.network.packet.inbound.login.password;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
+import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
-import com.github.cao.awa.kalmia.event.network.login.password.LoginWithPasswordEvent;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
@@ -13,7 +13,6 @@ import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.login.failed.LoginFailedRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.password.LoginWithPasswordRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.success.LoginSuccessRequest;
-import com.github.cao.awa.kalmia.network.packet.unsolve.login.password.UnsolvedLoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.kalmia.user.DefaultUser;
@@ -24,22 +23,16 @@ import java.util.Arrays;
 
 /**
  * @see LoginWithPasswordRequest
- * @see UnsolvedLoginWithPasswordPacket
  */
 @Server
+@AutoSolvedPacket(6)
 public class LoginWithPasswordPacket extends ReadonlyPacket<LoginHandler> {
     private final long uid;
     private final byte[] password;
 
-    public LoginWithPasswordPacket(long uid, byte[] password) {
-        this.uid = uid;
-        this.password = password;
-    }
-
-    public static LoginWithPasswordPacket create(BytesReader reader) {
-        return new LoginWithPasswordPacket(SkippedBase256.readLong(reader),
-                                           reader.read(reader.read())
-        );
+    public LoginWithPasswordPacket(BytesReader reader) {
+        this.uid = SkippedBase256.readLong(reader);
+        this.password = reader.read(reader.read());
     }
 
     public long getUid() {
@@ -52,12 +45,6 @@ public class LoginWithPasswordPacket extends ReadonlyPacket<LoginHandler> {
 
     @Override
     public void inbound(UnsolvedRequestRouter router, LoginHandler handler) {
-        // Trigger the pre handlers.
-        LoginWithPasswordEvent.trigger(this,
-                                       router,
-                                       handler
-        );
-
         // Start login here.
         User user = Kalmia.SERVER.userManager()
                                  .get(this.uid);

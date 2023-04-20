@@ -10,20 +10,16 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 
 import java.util.Set;
 
-public abstract class PacketHandler<T extends UnsolvedPacket<?>, H extends PacketHandler<T, H>> {
-    public ReadonlyPacket<H> handle(T packet) {
+public abstract class PacketHandler<H extends PacketHandler<H>> {
+    public ReadonlyPacket<H> handle(UnsolvedPacket<?> packet) {
         return EntrustEnvironment.cast(packet.packet());
     }
 
     public ReadonlyPacket<H> tryHandle(UnsolvedPacket<?> packet) {
-        T t = EntrustEnvironment.cast(packet);
-        if (t == null) {
-            throw new InvalidPacketException("Unsupported packet '" + packet + "'  in this handler: " + this);
-        }
         try {
-            return handle(t);
+            return handle(packet);
         } catch (Exception e) {
-            throw new InvalidPacketException("Unsupported packet '" + t + "'  in this handler: " + this);
+            throw new InvalidPacketException("Unsupported packet '" + packet + "'  in this handler: " + this);
         }
     }
 

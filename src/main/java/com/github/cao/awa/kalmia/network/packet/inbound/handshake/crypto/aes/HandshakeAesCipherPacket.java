@@ -4,6 +4,7 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
+import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.aes.AesCrypto;
@@ -11,7 +12,6 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.HandshakeAesCipherRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
-import com.github.cao.awa.kalmia.network.packet.unsolve.handshake.crypto.aes.UnsolvedHandshakeAesCipherPacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
@@ -21,22 +21,17 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @see HandshakeAesCipherRequest
- * @see UnsolvedHandshakeAesCipherPacket
  */
 @Server
+@AutoSolvedPacket(2)
 public class HandshakeAesCipherPacket extends ReadonlyPacket<HandshakeHandler> {
     private static final Logger LOGGER = LogManager.getLogger("HandshakeAesCipher");
     // Dev definition, the value always should be true
     private static final boolean SHOULD_SESSION_IV = true;
     private final byte[] cipher;
 
-    public HandshakeAesCipherPacket(byte[] cipher) {
-        this.cipher = cipher;
-    }
-
-    public static HandshakeAesCipherPacket create(BytesReader reader) {
-        int length = Base256.tagFromBuf(reader.read(2));
-        return new HandshakeAesCipherPacket(reader.read(length));
+    public HandshakeAesCipherPacket(BytesReader reader) {
+        this.cipher = reader.read(Base256.tagFromBuf(reader.read(2)));
     }
 
     @Override

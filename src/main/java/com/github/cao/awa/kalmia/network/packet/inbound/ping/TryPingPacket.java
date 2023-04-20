@@ -15,12 +15,8 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
  */
 @Server
 public class TryPingPacket extends PingPacket {
-    public TryPingPacket(long start) {
-        super(start);
-    }
-
-    public static TryPingPacket create(BytesReader reader) {
-        return new TryPingPacket(SkippedBase256.readLong(reader));
+    public TryPingPacket(BytesReader reader) {
+        super(SkippedBase256.readLong(reader));
     }
 
     @Override

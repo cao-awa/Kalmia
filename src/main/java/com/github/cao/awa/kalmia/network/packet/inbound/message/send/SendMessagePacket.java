@@ -1,12 +1,12 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.message.send;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.message.send.SendMessageRequest;
-import com.github.cao.awa.kalmia.network.packet.unsolve.message.send.UnsolvedSendMessagePacket;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
@@ -14,25 +14,18 @@ import java.util.Arrays;
 
 /**
  * @see SendMessageRequest
- * @see UnsolvedSendMessagePacket
  */
 @Server
+@AutoSolvedPacket(10)
 public class SendMessagePacket extends ReadonlyPacket<SolvedRequestHandler> {
     private final long sessionId;
     private final byte[] identity;
     private final byte[] msg;
 
-    public SendMessagePacket(long sessionId, byte[] identity, byte[] msg) {
-        this.sessionId = sessionId;
-        this.identity = identity;
-        this.msg = msg;
-    }
-
-    public static SendMessagePacket create(BytesReader reader) {
-        return new SendMessagePacket(SkippedBase256.readLong(reader),
-                                     reader.read(16),
-                                     reader.all()
-        );
+    public SendMessagePacket(BytesReader reader) {
+        this.sessionId = SkippedBase256.readLong(reader);
+        this.identity = reader.read(16);
+        this.msg = reader.all();
     }
 
     @Override
