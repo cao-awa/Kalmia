@@ -4,6 +4,7 @@ import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.KalmiaEnv;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
@@ -14,6 +15,7 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 public class UnsolvedPacketFramework extends ReflectionFramework {
@@ -79,16 +81,26 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
 
         @Override
         public ReadonlyPacket<?> packet() {
-            return EntrustEnvironment.trys(() -> EntrustEnvironment.cast(ensureAccessible(this.clazz.getConstructor(BytesReader.class)).newInstance(reader())),
+            return EntrustEnvironment.trys(this :: create,
                                            ex -> {
-                                               return EntrustEnvironment.trys(() -> ensureAccessible(this.clazz.getConstructor()).newInstance(),
+                                               return EntrustEnvironment.trys(this :: alternative,
                                                                               e -> {
-                                                                                  e.printStackTrace();
+                                                                                  BugTrace.trace(e,
+                                                                                                 "Please report this bug, it is because the readonly packet are missing standard constructor when using @AutoSolvedPacket"
+                                                                                  );
                                                                                   return null;
                                                                               }
                                                );
                                            }
             );
+        }
+
+        private ReadonlyPacket<?> create() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+            return ensureAccessible(this.clazz.getConstructor(BytesReader.class)).newInstance(reader());
+        }
+
+        private ReadonlyPacket<?> alternative() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+            return ensureAccessible(this.clazz.getConstructor()).newInstance();
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.router;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.network.encode.crypto.SymmetricTransportLayer;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
@@ -72,6 +73,10 @@ public class UnsolvedRequestRouter extends NetworkRouter {
             e.printStackTrace();
 
             send(new OperationInvalidRequest());
+        } catch (Exception e) {
+            BugTrace.trace(e,
+                           "Event pipeline happened exception or packet deserialize not completed, please check last bug trace and report theses trace"
+            );
         }
     }
 
