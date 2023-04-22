@@ -2,11 +2,14 @@ package com.github.cao.awa.kalmia.network.packet.inbound.message.send;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.message.PlainMessage;
 import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.message.send.SendMessageRequest;
+import com.github.cao.awa.kalmia.network.packet.request.message.send.SentMessageRequest;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
@@ -36,5 +39,26 @@ public class SendMessagePacket extends ReadonlyPacket<SolvedRequestHandler> {
                                                        36
         ));
         System.out.println("MSG: " + Arrays.toString(this.msg));
+
+        long seq = Kalmia.SERVER.messageManager()
+                                .send(this.sessionId,
+                                      new PlainMessage(new String(this.msg),
+                                                       handler.getUid()
+                                      )
+                                );
+
+        // Response to client the seq.
+        router.send(new SentMessageRequest(seq,
+                                           this.identity
+        ));
+
+//        Kalmia.SERVER.messageManager().operation(123, (s, m) -> {
+//            System.out.println("---");
+//            if (m instanceof PlainMessage plain) {
+//                System.out.println(s + ": " + plain.getMsg());
+//            } else {
+//                System.out.println(s + ": " + "<DELETED>");
+//            }
+//        });
     }
 }

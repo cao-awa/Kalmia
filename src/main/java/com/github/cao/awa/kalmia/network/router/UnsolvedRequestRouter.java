@@ -12,7 +12,6 @@ import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
-import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
 import com.github.cao.awa.kalmia.network.packet.request.invalid.operation.OperationInvalidRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedPingPacket;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
@@ -20,6 +19,7 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import io.netty.channel.ChannelHandlerContext;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class UnsolvedRequestRouter extends NetworkRouter {
     private final Map<RequestStatus, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
@@ -33,17 +33,17 @@ public class UnsolvedRequestRouter extends NetworkRouter {
                                                                                                    handlers.put(RequestStatus.AUTHED,
                                                                                                                 new SolvedRequestHandler()
                                                                                                    );
-                                                                                                  }
+                                                                                               }
     );
     private final SymmetricTransportLayer transportLayer = new SymmetricTransportLayer();
     private RequestStatus status;
     private PacketHandler<?> handler;
     private final PingHandler pingHandler = new PingHandler();
     private ChannelHandlerContext context;
-    private final boolean isClient;
+    private final Consumer<UnsolvedRequestRouter> activeCallback;
 
-    public UnsolvedRequestRouter(boolean isClient) {
-        this.isClient = isClient;
+    public UnsolvedRequestRouter(Consumer<UnsolvedRequestRouter> activeCallback) {
+        this.activeCallback = activeCallback;
         setStatus(RequestStatus.HELLO);
     }
 
@@ -84,9 +84,7 @@ public class UnsolvedRequestRouter extends NetworkRouter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.context = ctx;
-        if (this.isClient) {
-            send(new ClientHelloRequest());
-        }
+        this.activeCallback.accept(this);
     }
 
     public byte[] decode(byte[] cipherText) {

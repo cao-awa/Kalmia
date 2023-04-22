@@ -52,7 +52,6 @@ public class UnsolvedPacketFactor {
                 UnsolvedTryPingResponsePacket :: new
         );
 
-
         // Invalid operation
         register(
                 OperationInvalidRequest.ID,

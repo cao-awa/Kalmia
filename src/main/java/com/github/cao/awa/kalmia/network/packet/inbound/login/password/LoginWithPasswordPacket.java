@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.network.packet.inbound.login.password;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
+import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
@@ -67,6 +68,13 @@ public class LoginWithPasswordPacket extends ReadonlyPacket<LoginHandler> {
                                                 token
             ));
         } else {
+            // TODO Test only
+            Kalmia.SERVER.userManager()
+                         .set(123456,
+                              new DefaultUser(TimeUtil.nano(),
+                                              "awa".getBytes()
+                              )
+                         );
             router.send(new LoginFailedRequest(this.uid));
         }
     }

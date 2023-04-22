@@ -47,6 +47,27 @@ public class MessageDatabase {
         }
     }
 
+    public void operation(byte[] sid, long from, long to, BiConsumer<Long, Message> action) {
+        byte[] seqByte = this.database.get(sid);
+
+        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+
+        count++;
+
+        if (count > 0) {
+            long endIndex = Math.min(to,
+                                     count
+            );
+            for (long seq = from; seq < endIndex; seq++) {
+                action.accept(seq,
+                              get(sid,
+                                  SkippedBase256.longToBuf(seq)
+                              )
+                );
+            }
+        }
+    }
+
     public Message get(byte[] sid, byte[] seq) {
         byte[] msgBytes = this.database.get(key(sid,
                                                 seq
@@ -112,6 +133,7 @@ public class MessageDatabase {
     }
 
     public long send(byte[] sid, Message msg) {
+        // TODO
         Kalmia.SERVER.sessionManager();
 
         byte[] seqByte = this.database.get(sid);

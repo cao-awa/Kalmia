@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.io.channel;
 
 import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.kalmia.client.KalmiaClient;
 import com.github.cao.awa.kalmia.network.encode.RequestDecoder;
 import com.github.cao.awa.kalmia.network.encode.RequestEncoder;
 import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
@@ -18,12 +19,17 @@ import io.netty.channel.socket.SocketChannel;
  */
 @Stable
 public class KalmiaClientChannelInitializer extends ChannelInitializer<SocketChannel> {
+    private final KalmiaClient client;
+
+    public KalmiaClientChannelInitializer(KalmiaClient client) {
+        this.client = client;
+    }
+
     /**
      * This method will be called once the {@link Channel} was registered. After the method returns this instance
      * will be removed from the {@link ChannelPipeline} of the {@link Channel}.
      *
-     * @param ch
-     *         the {@link Channel} which was registered.
+     * @param ch the {@link Channel} which was registered.
      */
     @Override
     protected void initChannel(SocketChannel ch) {
@@ -32,7 +38,7 @@ public class KalmiaClientChannelInitializer extends ChannelInitializer<SocketCha
         ChannelPipeline pipeline = ch.pipeline();
         // Do decodes
 //        pipeline.addLast(new RequestCodec());
-        UnsolvedRequestRouter router = new UnsolvedRequestRouter(true);
+        UnsolvedRequestRouter router = new UnsolvedRequestRouter(this.client.activeCallback());
         pipeline.addLast(new RequestDecoder(router));
         pipeline.addLast(new RequestEncoder(router));
         // Do handle

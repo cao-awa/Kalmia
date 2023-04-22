@@ -5,6 +5,7 @@ import com.github.cao.awa.kalmia.message.digest.MessageDigest;
 
 public abstract class Message {
     public abstract byte[] toBytes();
+
     public abstract MessageDigest getDigest();
 
     public abstract long getSender();
@@ -18,10 +19,28 @@ public abstract class Message {
     }
 
     public static DeletedMessage createDeleted(byte[] data) {
-        return DeletedMessage.create(new BytesReader(data));
+        return createDeleted(new BytesReader(data));
     }
 
     public static PlainMessage createPlain(byte[] data) {
-        return PlainMessage.create(new BytesReader(data));
+        return createPlain(new BytesReader(data));
+    }
+
+    public static Message create(BytesReader reader) {
+        reader.flag();
+        PlainMessage plain = createPlain(reader);
+        if (plain == null) {
+            reader.back();
+            return createDeleted(reader);
+        }
+        return plain;
+    }
+
+    public static DeletedMessage createDeleted(BytesReader reader) {
+        return DeletedMessage.create(reader);
+    }
+
+    public static PlainMessage createPlain(BytesReader reader) {
+        return PlainMessage.create(reader);
     }
 }

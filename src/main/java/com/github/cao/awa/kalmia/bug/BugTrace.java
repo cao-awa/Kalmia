@@ -7,8 +7,25 @@ public class BugTrace {
     private static final Logger LOGGER = LogManager.getLogger("BugTracer");
 
     public static void trace(Exception exception, String info) {
-        LOGGER.error(info,
+        trace(exception,
+              info,
+              false
+        );
+    }
+
+    public static void trace(Exception exception, String info, boolean pleaseReport) {
+        LOGGER.error((pleaseReport ? "[Please report this] " : "") + info,
                      exception
         );
+    }
+
+    public static void trace(String info) {
+        trace(info,
+              false
+        );
+    }
+
+    public static void trace(String info, boolean pleaseReport) {
+        LOGGER.error((pleaseReport ? "[Please report this] " : "") + info);
     }
 }

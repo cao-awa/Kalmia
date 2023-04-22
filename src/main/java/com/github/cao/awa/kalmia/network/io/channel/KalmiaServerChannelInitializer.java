@@ -39,7 +39,8 @@ public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketCha
         ChannelPipeline pipeline = ch.pipeline();
         // Do decodes
 //        pipeline.addLast(new RequestCodec());
-        UnsolvedRequestRouter router = new UnsolvedRequestRouter(false);
+        UnsolvedRequestRouter router = new UnsolvedRequestRouter(r -> {
+        });
         pipeline.addLast(new RequestDecoder(router));
         pipeline.addLast(new RequestEncoder(router));
         // Do handle

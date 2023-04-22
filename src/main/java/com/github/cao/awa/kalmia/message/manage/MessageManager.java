@@ -39,6 +39,14 @@ public class MessageManager {
         );
     }
 
+    public synchronized void operation(long sid, long from, long to, BiConsumer<Long, Message> action) {
+        this.database.operation(SkippedBase256.longToBuf(sid),
+                                from,
+                                to,
+                                action
+        );
+    }
+
     public synchronized void deleteAll(long sid) {
         this.database.deleteAll(SkippedBase256.longToBuf(sid));
     }

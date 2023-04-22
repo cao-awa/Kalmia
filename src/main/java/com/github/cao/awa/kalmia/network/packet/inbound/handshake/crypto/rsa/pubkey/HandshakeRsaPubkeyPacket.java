@@ -3,7 +3,6 @@ package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.rsa.pu
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
-import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.aes.AesCrypto;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
@@ -28,9 +27,6 @@ public class HandshakeRsaPubkeyPacket extends ReadonlyPacket<HandshakeHandler> {
 
     @Override
     public void inbound(UnsolvedRequestRouter router, HandshakeHandler handler) {
-        System.out.println("RSA Key..." + Mathematics.radix(this.pubkey,
-                                                            36
-        ));
         router.send(new HandshakeAesCipherRequest(this.pubkey,
                                                   AES_CIPHER
         ));

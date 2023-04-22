@@ -3,6 +3,7 @@ package com.github.cao.awa.apricot.io.bytes.reader;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public class BytesReader {
+    private int flag = 0;
     private final byte[] bytes;
     private int cursor = 0;
 
@@ -63,7 +64,7 @@ public class BytesReader {
     }
 
     public boolean readable(int length) {
-        return this.bytes.length >= this.cursor + length;
+        return readable() >= length;
     }
 
     public int read() {
@@ -79,11 +80,24 @@ public class BytesReader {
         this.cursor -= range;
     }
 
+    public void back() {
+        this.cursor = this.flag;
+    }
+
     public byte[] all() {
         return read(this.bytes.length - this.cursor);
     }
 
     public byte[] non() {
         return BytesUtil.EMPTY;
+    }
+
+    public int flag() {
+        this.flag = this.cursor;
+        return this.flag;
+    }
+
+    public int readable() {
+        return this.bytes.length - this.cursor;
     }
 }
