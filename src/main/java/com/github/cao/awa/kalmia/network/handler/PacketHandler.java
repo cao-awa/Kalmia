@@ -4,7 +4,7 @@ import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.exception.InvalidStatusException;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
@@ -23,9 +23,9 @@ public abstract class PacketHandler<H extends PacketHandler<H>> {
         }
     }
 
-    public abstract void inbound(ReadonlyPacket<H> packet, UnsolvedRequestRouter router);
+    public abstract void inbound(ReadonlyPacket<H> packet, RequestRouter router);
 
-    public void tryInbound(UnsolvedPacket<?> packet, UnsolvedRequestRouter router) {
+    public void tryInbound(UnsolvedPacket<?> packet, RequestRouter router) {
         if (allowStatus().contains(router.getStatus())) {
             ReadonlyPacket<H> readonly = tryHandle(packet);
             inbound(readonly,

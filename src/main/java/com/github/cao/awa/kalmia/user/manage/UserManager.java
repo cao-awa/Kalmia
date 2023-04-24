@@ -5,13 +5,12 @@ import com.github.cao.awa.kalmia.user.User;
 import com.github.cao.awa.kalmia.user.database.UserDatabase;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.function.BiConsumer;
 
 public class UserManager {
     private final UserDatabase database;
 
-    public UserManager(String path) throws IOException {
+    public UserManager(String path) throws Exception {
         this.database = new UserDatabase(path);
     }
 

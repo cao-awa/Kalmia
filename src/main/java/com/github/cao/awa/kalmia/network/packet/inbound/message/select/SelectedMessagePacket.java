@@ -7,10 +7,10 @@ import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.PlainMessage;
-import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
+import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.message.select.SelectedMessageRequest;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Client
 @AutoSolvedPacket(13)
-public class SelectedMessagePacket extends ReadonlyPacket<SolvedRequestHandler> {
+public class SelectedMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
     private final long sessionId;
     private final long from;
     private final long to;
@@ -37,7 +37,7 @@ public class SelectedMessagePacket extends ReadonlyPacket<SolvedRequestHandler> 
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, SolvedRequestHandler handler) {
+    public void inbound(RequestRouter router, AuthedRequestHandler handler) {
         System.out.println("Received msg of session " + this.sessionId);
         System.out.println("Range is " + this.from + " to " + this.to);
 

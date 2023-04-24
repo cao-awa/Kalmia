@@ -11,7 +11,7 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.password.LoginWithPasswordRequest;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +46,7 @@ public class ServerHelloPacket extends ReadonlyPacket<HandshakeHandler> {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, HandshakeHandler handler) {
+    public void inbound(RequestRouter router, HandshakeHandler handler) {
         LOGGER.info("Server Hello!");
 
         byte[] provideCipher = router.decode(this.testKey);

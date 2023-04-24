@@ -3,16 +3,12 @@ package com.github.cao.awa.kalmia.chat.session.database;
 import com.github.cao.awa.apricot.anntation.Unsupported;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
+import com.github.cao.awa.kalmia.database.DatabaseProvide;
+import com.github.cao.awa.kalmia.database.KeyValueDatabase;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.user.DeletedUser;
 import com.github.cao.awa.kalmia.user.User;
-import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.Options;
-import org.iq80.leveldb.impl.Iq80DBFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -20,14 +16,10 @@ import java.util.function.Consumer;
 @Unsupported
 public class SessionDatabase {
     private static final byte[] ROOT = new byte[]{- 2};
-    private final DB database;
+    private final KeyValueDatabase database;
 
-    public SessionDatabase(String path) throws IOException {
-        this.database = new Iq80DBFactory().open(new File(path),
-                                                 new Options().createIfMissing(true)
-                                                              .writeBufferSize(1048560 * 16)
-                                                              .compressionType(CompressionType.SNAPPY)
-        );
+    public SessionDatabase(String path) throws Exception {
+        this.database = DatabaseProvide.kv(path);
     }
 
     public void operation(BiConsumer<Long, User> action) {

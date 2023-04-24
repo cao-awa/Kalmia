@@ -3,16 +3,16 @@ package com.github.cao.awa.kalmia.message;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.message.digest.MessageDigest;
+import com.github.cao.awa.kalmia.message.digest.MessageDigestData;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.nio.charset.StandardCharsets;
 
 public class DeletedMessage extends Message {
     private final long sender;
-    private final MessageDigest digest;
+    private final MessageDigestData digest;
 
-    public DeletedMessage(long sender, MessageDigest digest) {
+    public DeletedMessage(long sender, MessageDigestData digest) {
         this.sender = sender;
         this.digest = digest;
     }
@@ -51,8 +51,8 @@ public class DeletedMessage extends Message {
             digest = reader.read(digestLength);
 
             return new DeletedMessage(sender,
-                                      new MessageDigest(type,
-                                                        digest
+                                      new MessageDigestData(type,
+                                                            digest
                                       )
             );
         } else {
@@ -61,7 +61,7 @@ public class DeletedMessage extends Message {
     }
 
     @Override
-    public MessageDigest getDigest() {
+    public MessageDigestData getDigest() {
         return this.digest;
     }
 }

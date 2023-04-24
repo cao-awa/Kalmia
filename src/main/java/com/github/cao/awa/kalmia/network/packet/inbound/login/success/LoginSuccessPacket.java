@@ -4,11 +4,11 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
+import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.login.success.LoginSuccessRequest;
 import com.github.cao.awa.kalmia.network.packet.request.message.select.SelectMessageRequest;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 /**
@@ -16,7 +16,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
  */
 @Client
 @AutoSolvedPacket(9)
-public class LoginSuccessPacket extends ReadonlyPacket<SolvedRequestHandler> {
+public class LoginSuccessPacket extends ReadonlyPacket<AuthedRequestHandler> {
     private final long uid;
     private final byte[] token;
 
@@ -26,14 +26,14 @@ public class LoginSuccessPacket extends ReadonlyPacket<SolvedRequestHandler> {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, SolvedRequestHandler handler) {
+    public void inbound(RequestRouter router, AuthedRequestHandler handler) {
         System.out.println("---Login success---");
         System.out.println("UID: " + this.uid);
         System.out.println("Token: " + Mathematics.radix(this.token,
                                                          36
         ));
 
-        ((SolvedRequestHandler) router.getHandler()).setUid(this.uid);
+        ((AuthedRequestHandler) router.getHandler()).setUid(this.uid);
 
 //        router.send(new SendMessageRequest(123,
 //                                           BytesRandomIdentifier.create(16),

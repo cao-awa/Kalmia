@@ -9,7 +9,7 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.HandshakeAesCipherRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.rsa.pubkey.HandshakeRsaPubkeyRequest;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 /**
@@ -26,7 +26,7 @@ public class HandshakeRsaPubkeyPacket extends ReadonlyPacket<HandshakeHandler> {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, HandshakeHandler handler) {
+    public void inbound(RequestRouter router, HandshakeHandler handler) {
         router.send(new HandshakeAesCipherRequest(this.pubkey,
                                                   AES_CIPHER
         ));

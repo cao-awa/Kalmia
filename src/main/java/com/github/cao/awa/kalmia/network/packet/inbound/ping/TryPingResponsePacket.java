@@ -6,7 +6,7 @@ import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
 import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingResponseRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingResponsePacket;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 /**
@@ -20,7 +20,7 @@ public class TryPingResponsePacket extends PingPacket {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, PingHandler handler) {
+    public void inbound(RequestRouter router, PingHandler handler) {
         double responseMillions = TimeUtil.processNano(startTime()) / 1000000D;
     }
 }

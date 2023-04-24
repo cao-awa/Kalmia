@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -50,7 +50,7 @@ public class HandshakeHandler extends PacketHandler<HandshakeHandler> {
     }
 
     @Override
-    public void inbound(ReadonlyPacket<HandshakeHandler> packet, UnsolvedRequestRouter router) {
+    public void inbound(ReadonlyPacket<HandshakeHandler> packet, RequestRouter router) {
         packet.inbound(router,
                        this
         );

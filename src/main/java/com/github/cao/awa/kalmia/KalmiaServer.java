@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia;
 
 import com.github.cao.awa.kalmia.chat.session.manager.SessionManager;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;
-import com.github.cao.awa.kalmia.network.io.KalmiaServerNetworkIo;
+import com.github.cao.awa.kalmia.network.io.server.KalmiaServerNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.user.manage.UserManager;
 

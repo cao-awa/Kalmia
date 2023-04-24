@@ -18,8 +18,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
-    shadow 'io.netty:netty-all:5.0.0.Alpha2'
-    shadow 'io.netty:netty5-transport-native-epoll:5.0.0.Alpha5'
+    shadow 'io.netty:netty-all:4.1.91.Final'
+    shadow 'io.netty:netty-transport-native-epoll:4.1.91.Final'
     shadow 'com.alibaba.fastjson2:fastjson2:2.0.22'
 
     shadow 'org.slf4j:slf4j-api:2.0.6'
@@ -29,9 +29,8 @@ dependencies {
     shadow 'commons-codec:commons-codec:1.15'
     shadow 'commons-logging:commons-logging:1.2'
     shadow 'commons-io:commons-io:2.11.0'
-//    shadow 'it.unimi.dsi:fastutil:8.5.11'
-    shadow 'com.github.oshi:oshi-core:6.4.0'
-//    shadow 'org.iq80.leveldb:leveldb:0.12'
+    //    shadow 'it.unimi.dsi:fastutil:8.5.11'
+    shadow 'com.github.oshi:oshi-core:6.4.1'
     shadow 'io.github.pcmind:leveldb:1.2'
     shadow 'org.lz4:lz4-java:1.8.0'
     shadow 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
@@ -42,18 +41,14 @@ dependencies {
 
     shadow 'org.reflections:reflections:0.10.2'
 
-    shadow 'org.ansj:ansj_seg:5.1.6'
-
-    shadow 'com.esotericsoftware:kryo:5.4.0'
-
     shadow 'org.java-websocket:Java-WebSocket:1.5.3'
 
     shadow 'org.bouncycastle:bcprov-jdk18on:1.72'
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs += ['--enable-preview']
-}
+//tasks.withType(JavaCompile).configureEach {
+//    options.compilerArgs += ['--enable-preview']
+//}
 
 java {
     withSourcesJar()

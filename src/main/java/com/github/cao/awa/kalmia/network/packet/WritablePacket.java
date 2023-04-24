@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet;
 
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public abstract class WritablePacket extends Packet {
@@ -10,14 +10,14 @@ public abstract class WritablePacket extends Packet {
 
     public abstract byte[] id();
 
-    public byte[] encode(UnsolvedRequestRouter router) {
+    public byte[] encode(RequestRouter router) {
         return router.encode(BytesUtil.concat(id(),
                                               receipt(),
                                               data()
         ));
     }
 
-    public byte[] decode(UnsolvedRequestRouter router) {
+    public byte[] decode(RequestRouter router) {
         return router.decode(data());
     }
 

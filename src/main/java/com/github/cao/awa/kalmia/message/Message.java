@@ -1,12 +1,12 @@
 package com.github.cao.awa.kalmia.message;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.message.digest.MessageDigest;
+import com.github.cao.awa.kalmia.message.digest.MessageDigestData;
 
 public abstract class Message {
     public abstract byte[] toBytes();
 
-    public abstract MessageDigest getDigest();
+    public abstract MessageDigestData getDigest();
 
     public abstract long getSender();
 

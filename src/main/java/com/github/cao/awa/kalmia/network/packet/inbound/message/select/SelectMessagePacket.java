@@ -6,11 +6,11 @@ import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
+import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.message.select.SelectMessageRequest;
 import com.github.cao.awa.kalmia.network.packet.request.message.select.SelectedMessageRequest;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Server
 @AutoSolvedPacket(12)
-public class SelectMessagePacket extends ReadonlyPacket<SolvedRequestHandler> {
+public class SelectMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
     private final long sessionId;
     private final long from;
     private final long to;
@@ -32,7 +32,7 @@ public class SelectMessagePacket extends ReadonlyPacket<SolvedRequestHandler> {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, SolvedRequestHandler handler) {
+    public void inbound(RequestRouter router, AuthedRequestHandler handler) {
         long current = this.from;
         int realSelected;
 

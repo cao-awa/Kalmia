@@ -7,7 +7,7 @@ import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
-import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
+import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
@@ -21,7 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class UnsolvedRequestRouter extends NetworkRouter {
+public class RequestRouter extends NetworkRouter {
     private final Map<RequestStatus, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
                                                                                                handlers -> {
                                                                                                    handlers.put(RequestStatus.HELLO,
@@ -31,7 +31,7 @@ public class UnsolvedRequestRouter extends NetworkRouter {
                                                                                                                 new LoginHandler()
                                                                                                    );
                                                                                                    handlers.put(RequestStatus.AUTHED,
-                                                                                                                new SolvedRequestHandler()
+                                                                                                                new AuthedRequestHandler()
                                                                                                    );
                                                                                                }
     );
@@ -40,9 +40,9 @@ public class UnsolvedRequestRouter extends NetworkRouter {
     private PacketHandler<?> handler;
     private final PingHandler pingHandler = new PingHandler();
     private ChannelHandlerContext context;
-    private final Consumer<UnsolvedRequestRouter> activeCallback;
+    private final Consumer<RequestRouter> activeCallback;
 
-    public UnsolvedRequestRouter(Consumer<UnsolvedRequestRouter> activeCallback) {
+    public RequestRouter(Consumer<RequestRouter> activeCallback) {
         this.activeCallback = activeCallback;
         setStatus(RequestStatus.HELLO);
     }
@@ -57,7 +57,7 @@ public class UnsolvedRequestRouter extends NetworkRouter {
     }
 
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, UnsolvedPacket msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, UnsolvedPacket<?> msg) throws Exception {
         try {
             if (msg instanceof UnsolvedPingPacket<?> pingPacket) {
                 this.pingHandler.tryInbound(pingPacket,

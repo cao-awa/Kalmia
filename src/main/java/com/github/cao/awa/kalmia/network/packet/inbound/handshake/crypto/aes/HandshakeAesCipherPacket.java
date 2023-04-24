@@ -12,7 +12,7 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes.HandshakeAesCipherRequest;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ServerHelloRequest;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -35,7 +35,7 @@ public class HandshakeAesCipherPacket extends ReadonlyPacket<HandshakeHandler> {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, HandshakeHandler handler) {
+    public void inbound(RequestRouter router, HandshakeHandler handler) {
         try {
             // Decrypt aes cipher.
             byte[] cipher = Crypto.rsaDecrypt(this.cipher,

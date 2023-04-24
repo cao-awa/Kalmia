@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,12 +14,12 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class RequestDecoder extends ByteToMessageDecoder {
-    private final UnsolvedRequestRouter router;
+    private final RequestRouter router;
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
     private long lengthMarker = 0;
     private long currentLength = 0;
 
-    public RequestDecoder(UnsolvedRequestRouter router) {
+    public RequestDecoder(RequestRouter router) {
         this.router = router;
     }
 

@@ -6,7 +6,7 @@ import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
 import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingRequest;
 import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingResponseRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingPacket;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 /**
@@ -20,7 +20,7 @@ public class TryPingPacket extends PingPacket {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, PingHandler handler) {
+    public void inbound(RequestRouter router, PingHandler handler) {
         router.send(new TryPingResponseRequest(startTime()));
     }
 }

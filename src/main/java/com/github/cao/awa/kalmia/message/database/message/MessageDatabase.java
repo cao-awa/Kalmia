@@ -3,30 +3,22 @@ package com.github.cao.awa.kalmia.message.database.message;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.database.DatabaseProvide;
+import com.github.cao.awa.kalmia.database.KeyValueDatabase;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
-import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.Options;
-import org.iq80.leveldb.impl.Iq80DBFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MessageDatabase {
-    private final DB database;
+    private final KeyValueDatabase database;
 
-    public MessageDatabase(String path) throws IOException {
-        this.database = new Iq80DBFactory().open(new File(path),
-                                                 new Options().createIfMissing(true)
-                                                              .writeBufferSize(1048560 * 16)
-                                                              .compressionType(CompressionType.SNAPPY)
-        );
+    public MessageDatabase(String path) throws Exception {
+        this.database = DatabaseProvide.kv(path);
     }
 
     public void operation(byte[] sid, BiConsumer<Long, Message> action) {

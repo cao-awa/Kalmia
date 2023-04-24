@@ -3,15 +3,15 @@ package com.github.cao.awa.kalmia.network.encode;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.packet.WritablePacket;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 public class RequestEncoder extends MessageToByteEncoder<WritablePacket> {
-    private final UnsolvedRequestRouter router;
+    private final RequestRouter router;
 
-    public RequestEncoder(UnsolvedRequestRouter router) {
+    public RequestEncoder(RequestRouter router) {
         this.router = router;
     }
 

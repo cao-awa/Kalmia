@@ -4,13 +4,12 @@ import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.database.message.MessageDatabase;
 
-import java.io.IOException;
 import java.util.function.BiConsumer;
 
 public class MessageManager {
     private final MessageDatabase database;
 
-    public MessageManager(String path) throws IOException {
+    public MessageManager(String path) throws Exception {
         this.database = new MessageDatabase(path);
     }
 

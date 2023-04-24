@@ -8,13 +8,13 @@ import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.handler.inbound.SolvedRequestHandler;
+import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.login.failed.LoginFailedRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.password.LoginWithPasswordRequest;
 import com.github.cao.awa.kalmia.network.packet.request.login.success.LoginSuccessRequest;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.User;
@@ -45,7 +45,7 @@ public class LoginWithPasswordPacket extends ReadonlyPacket<LoginHandler> {
     }
 
     @Override
-    public void inbound(UnsolvedRequestRouter router, LoginHandler handler) {
+    public void inbound(RequestRouter router, LoginHandler handler) {
         // Start login here.
         User user = Kalmia.SERVER.userManager()
                                  .get(this.uid);
@@ -60,7 +60,7 @@ public class LoginWithPasswordPacket extends ReadonlyPacket<LoginHandler> {
                                                                             )
         )) {
             router.setStatus(RequestStatus.AUTHED);
-            ((SolvedRequestHandler) router.getHandler()).setUid(this.uid);
+            ((AuthedRequestHandler) router.getHandler()).setUid(this.uid);
 
             byte[] token = BytesRandomIdentifier.create(16);
 

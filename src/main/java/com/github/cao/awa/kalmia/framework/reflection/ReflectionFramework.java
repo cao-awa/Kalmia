@@ -30,6 +30,8 @@ public abstract class ReflectionFramework {
         return REFLECTIONS;
     }
 
+    public abstract void work();
+
     public boolean checkFields(String target, List<String> field) {
         if (field.size() > 0) {
             LOGGER.error("'{}' has missing required field(s): {}",

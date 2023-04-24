@@ -1,15 +1,15 @@
 package com.github.cao.awa.kalmia.client;
 
 import com.github.cao.awa.apricot.util.time.TimeUtil;
-import com.github.cao.awa.kalmia.network.router.UnsolvedRequestRouter;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 
 import java.util.function.Consumer;
 
 public class KalmiaClient {
-    private Consumer<UnsolvedRequestRouter> activeCallback;
+    private Consumer<RequestRouter> activeCallback;
     private boolean activated;
 
-    public KalmiaClient activeCallback(Consumer<UnsolvedRequestRouter> activeCallback) {
+    public KalmiaClient activeCallback(Consumer<RequestRouter> activeCallback) {
         this.activeCallback = router -> {
             activeCallback.accept(router);
             this.activated = true;
@@ -17,7 +17,7 @@ public class KalmiaClient {
         return this;
     }
 
-    public Consumer<UnsolvedRequestRouter> activeCallback() {
+    public Consumer<RequestRouter> activeCallback() {
         return this.activeCallback;
     }
 
