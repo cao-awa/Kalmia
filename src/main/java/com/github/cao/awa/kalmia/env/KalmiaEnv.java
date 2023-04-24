@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia;
+package com.github.cao.awa.kalmia.env;
 
 import com.github.cao.awa.kalmia.framework.network.unsolve.UnsolvedPacketFramework;
 import com.github.cao.awa.kalmia.protocol.RequestProtocol;

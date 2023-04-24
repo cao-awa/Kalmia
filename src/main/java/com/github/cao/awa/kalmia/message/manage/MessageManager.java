@@ -46,6 +46,14 @@ public class MessageManager {
         );
     }
 
+    public synchronized long seq(long sid) {
+        return this.database.seq(SkippedBase256.longToBuf(sid));
+    }
+
+    public synchronized long curSeq(long sid) {
+        return this.database.curSeq(SkippedBase256.longToBuf(sid));
+    }
+
     public synchronized void deleteAll(long sid) {
         this.database.deleteAll(SkippedBase256.longToBuf(sid));
     }

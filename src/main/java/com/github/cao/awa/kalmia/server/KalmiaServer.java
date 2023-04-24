@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia;
+package com.github.cao.awa.kalmia.server;
 
 import com.github.cao.awa.kalmia.chat.session.manager.SessionManager;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;

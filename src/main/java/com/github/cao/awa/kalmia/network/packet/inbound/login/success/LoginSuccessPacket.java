@@ -43,7 +43,7 @@ public class LoginSuccessPacket extends ReadonlyPacket<AuthedRequestHandler> {
         // TODO Test only
         router.send(new SelectMessageRequest(123,
                                              0,
-                                             100
+                                             114514
         ));
     }
 }

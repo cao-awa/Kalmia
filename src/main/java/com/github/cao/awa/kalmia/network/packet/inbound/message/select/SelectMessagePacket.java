@@ -6,6 +6,7 @@ import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;
+import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.message.select.SelectMessageRequest;
@@ -36,23 +37,34 @@ public class SelectMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
         long current = this.from;
         int realSelected;
 
+        MessageManager manager = Kalmia.SERVER.messageManager();
+
+        long curSeq = manager.seq(this.sessionId);
+
+        if (current > curSeq) {
+            return;
+        }
+
         List<Message> messages = ApricotCollectionFactor.newArrayList(150);
 
-        while (current < this.to) {
-            long selected = Math.min(this.to - current,
+        long to = Math.min(this.to,
+                           curSeq
+        );
+
+        while (current < to) {
+            long selected = Math.min(to - current,
                                      150
             );
 
             long endSelect = current + selected;
 
-            Kalmia.SERVER.messageManager()
-                         .operation(this.sessionId,
-                                    current,
-                                    endSelect,
-                                    (seq, msg) -> {
-                                        messages.add(msg);
-                                    }
-                         );
+            manager.operation(this.sessionId,
+                              current,
+                              endSelect,
+                              (seq, msg) -> {
+                                  messages.add(msg);
+                              }
+            );
 
             realSelected = messages.size() - 1;
 
@@ -62,7 +74,7 @@ public class SelectMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
                                                    messages
             ));
 
-            current += selected;
+            current += selected + 1;
 
             messages.clear();
         }

@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.bootstrap;
 
-import com.github.cao.awa.kalmia.KalmiaEnv;
-import com.github.cao.awa.kalmia.KalmiaServer;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.server.KalmiaServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

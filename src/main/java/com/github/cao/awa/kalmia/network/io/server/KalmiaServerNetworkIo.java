@@ -2,8 +2,8 @@ package com.github.cao.awa.kalmia.network.io.server;
 
 import com.github.cao.awa.apricot.anntation.Stable;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
-import com.github.cao.awa.kalmia.KalmiaServer;
 import com.github.cao.awa.kalmia.network.io.server.channel.KalmiaServerChannelInitializer;
+import com.github.cao.awa.kalmia.server.KalmiaServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;

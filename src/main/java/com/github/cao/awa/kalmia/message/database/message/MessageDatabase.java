@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.message.database.message;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.annotation.number.encode.ShouldSkipped;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.database.DatabaseProvide;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
@@ -21,53 +22,40 @@ public class MessageDatabase {
         this.database = DatabaseProvide.kv(path);
     }
 
-    public void operation(byte[] sid, BiConsumer<Long, Message> action) {
-        byte[] seqByte = this.database.get(sid);
-
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
-
-        count++;
-
-        if (count > 0) {
-            for (long seq = 0; seq < count; seq++) {
-                action.accept(seq,
-                              get(sid,
-                                  SkippedBase256.longToBuf(seq)
-                              )
-                );
-            }
-        }
+    public void operation(@ShouldSkipped byte[] sid, BiConsumer<Long, Message> action) {
+        seqAll(sid,
+               seq -> {
+                   action.accept(seq,
+                                 get(sid,
+                                     SkippedBase256.longToBuf(seq)
+                                 )
+                   );
+               }
+        );
     }
 
-    public void operation(byte[] sid, long from, long to, BiConsumer<Long, Message> action) {
-        byte[] seqByte = this.database.get(sid);
-
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
-
-        count++;
-
-        if (count > 0) {
-            long endIndex = Math.min(to,
-                                     count
-            );
-            for (long seq = from; seq < endIndex; seq++) {
-                action.accept(seq,
-                              get(sid,
-                                  SkippedBase256.longToBuf(seq)
-                              )
-                );
-            }
-        }
+    public void operation(@ShouldSkipped byte[] sid, long from, long to, BiConsumer<Long, Message> action) {
+        seqAll(sid,
+               from,
+               to,
+               seq -> {
+                   action.accept(seq,
+                                 get(sid,
+                                     SkippedBase256.longToBuf(seq)
+                                 )
+                   );
+               }
+        );
     }
 
-    public Message get(byte[] sid, byte[] seq) {
+    public Message get(@ShouldSkipped byte[] sid, @ShouldSkipped byte[] seq) {
         byte[] msgBytes = this.database.get(key(sid,
                                                 seq
         ));
         return Message.create(msgBytes);
     }
 
-    public void delete(byte[] sid, byte[] seq) {
+    public void delete(@ShouldSkipped byte[] sid, @ShouldSkipped byte[] seq) {
         Message source = get(sid,
                              seq
         );
@@ -80,7 +68,7 @@ public class MessageDatabase {
         );
     }
 
-    public void seqAll(byte[] sid, Consumer<Long> action) {
+    public void seqAll(@ShouldSkipped byte[] sid, Consumer<Long> action) {
         byte[] seqByte = this.database.get(sid);
 
         long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
@@ -88,13 +76,44 @@ public class MessageDatabase {
         count++;
 
         if (count > 0) {
-            for (long seq = 0; seq < count; seq++) {
+            for (long seq = 0; ; seq++) {
+                if (seq > count) {
+                    break;
+                }
                 action.accept(seq);
             }
         }
     }
 
-    public void deleteAll(byte[] sid) {
+    public void seqAll(@ShouldSkipped byte[] sid, long from, long to, Consumer<Long> action) {
+        long count = curSeq(sid);
+
+        if (count > 0) {
+            long endIndex = Math.min(to,
+                                     count
+            );
+            for (long seq = from; ; seq++) {
+                if (seq > endIndex) {
+                    break;
+                }
+                action.accept(seq);
+            }
+        }
+    }
+
+    public long seq(@ShouldSkipped byte[] sid) {
+        byte[] seqByte = this.database.get(sid);
+
+        return seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+    }
+
+    public long curSeq(@ShouldSkipped byte[] sid) {
+        byte[] seqByte = this.database.get(sid);
+
+        return seqByte == null ? 0 : SkippedBase256.readLong(new BytesReader(seqByte)) + 1;
+    }
+
+    public void deleteAll(@ShouldSkipped byte[] sid) {
         seqAll(sid,
                seq -> {
                    delete(sid,
@@ -104,13 +123,13 @@ public class MessageDatabase {
         );
     }
 
-    public byte[] key(byte[] sid, byte[] seq) {
+    public byte[] key(@ShouldSkipped byte[] sid, @ShouldSkipped byte[] seq) {
         return BytesUtil.concat(sid,
                                 seq
         );
     }
 
-    public Set<Long> search(byte[] sid, String target) {
+    public Set<Long> search(@ShouldSkipped byte[] sid, String target) {
         Set<Long> result = ApricotCollectionFactor.newHashSet();
 
         operation(sid,
@@ -124,7 +143,7 @@ public class MessageDatabase {
         return result;
     }
 
-    public long send(byte[] sid, Message msg) {
+    public long send(@ShouldSkipped byte[] sid, Message msg) {
         // TODO
         Kalmia.SERVER.sessionManager();
 

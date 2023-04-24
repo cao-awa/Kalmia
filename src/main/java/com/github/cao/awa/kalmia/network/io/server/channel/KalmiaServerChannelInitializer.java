@@ -1,10 +1,10 @@
 package com.github.cao.awa.kalmia.network.io.server.channel;
 
 import com.github.cao.awa.apricot.anntation.Stable;
-import com.github.cao.awa.kalmia.KalmiaServer;
 import com.github.cao.awa.kalmia.network.encode.RequestDecoder;
 import com.github.cao.awa.kalmia.network.encode.RequestEncoder;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.server.KalmiaServer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

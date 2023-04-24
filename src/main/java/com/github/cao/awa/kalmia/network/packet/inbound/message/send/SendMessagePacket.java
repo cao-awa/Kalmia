@@ -42,9 +42,7 @@ public class SendMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
 
         long seq = Kalmia.SERVER.messageManager()
                                 .send(this.sessionId,
-                                      new PlainMessage(new String(this.msg),
-                                                       handler.getUid()
-                                      )
+                                      PlainMessage.create(this.msg)
                                 );
 
         // Response to client the seq.
