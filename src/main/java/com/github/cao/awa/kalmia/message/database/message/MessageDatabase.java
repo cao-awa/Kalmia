@@ -63,7 +63,7 @@ public class MessageDatabase {
                               seq
                           ),
                           new DeletedMessage(source.getSender(),
-                                             source.getDigest()
+                                             source.getDigestData()
                           ).toBytes()
         );
     }

@@ -141,7 +141,6 @@ public class MessageDigger {
         }
     }
 
-    @Deprecated
     public enum MD5 implements MD {
         MD_5("MD5");
 

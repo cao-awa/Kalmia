@@ -45,7 +45,8 @@ public class SelectedMessagePacket extends ReadonlyPacket<AuthedRequestHandler> 
             if (message instanceof PlainMessage plain) {
                 System.out.println("PLAINS: " + plain.getMsg());
             } else if (message instanceof DeletedMessage deleted) {
-                System.out.println("DELETED: " + deleted.getDigest());
+                System.out.println("DELETED: " + deleted.getDigestData()
+                                                        .value36());
             }
         }
     }

@@ -12,8 +12,14 @@ import com.github.cao.awa.kalmia.network.router.RequestRouter;
  * @see UnsolvedOperationInvalidPacket
  */
 public class OperationInvalidPacket<T extends PacketHandler<T>> extends ReadonlyPacket<T> {
+    private final String reason;
+
+    public OperationInvalidPacket(String reason) {
+        this.reason = reason;
+    }
+
     @Override
     public void inbound(RequestRouter router, T handler) {
-        System.out.println("Invalid...");
+        System.out.println("Invalid packet because: " + this.reason);
     }
 }

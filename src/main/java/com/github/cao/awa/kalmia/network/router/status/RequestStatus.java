@@ -5,11 +5,12 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 
 public enum RequestStatus {
-    HELLO, AUTH, AUTHED;
+    HELLO, AUTH, AUTHED, DISABLED;
 
     private static final Set<RequestStatus> ALL = new ImmutableSet.Builder<RequestStatus>().add(HELLO,
                                                                                                 AUTH,
-                                                                                                AUTHED
+                                                                                                AUTHED,
+                                                                                                DISABLED
                                                                                            )
                                                                                            .build();
 

@@ -76,12 +76,14 @@ public class BytesReader {
         return this;
     }
 
-    public void back(int range) {
+    public BytesReader back(int range) {
         this.cursor -= range;
+        return this;
     }
 
-    public void back() {
+    public BytesReader back() {
         this.cursor = this.flag;
+        return this;
     }
 
     public byte[] all() {

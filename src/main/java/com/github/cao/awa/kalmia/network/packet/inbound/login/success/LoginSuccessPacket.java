@@ -35,15 +35,27 @@ public class LoginSuccessPacket extends ReadonlyPacket<AuthedRequestHandler> {
 
         ((AuthedRequestHandler) router.getHandler()).setUid(this.uid);
 
-//        router.send(new SendMessageRequest(123,
-//                                           BytesRandomIdentifier.create(16),
-//                                           "fuck cao_awa".getBytes()
-//        ));
+//        EntrustEnvironment.thread(() -> {
+//                              for (int i = 0; i < 500; i++) {
+//                                  router.send(new SendMessageRequest(123,
+//                                                                     BytesRandomIdentifier.create(16),
+//                                                                     new PlainMessage("fuck cao_awa " + i + " times",
+//                                                                                      this.uid
+//                                                                     ).toBytes()
+//                                  ));
+//                              }
+//                          })
+//                          .start();
 
-        // TODO Test only
         router.send(new SelectMessageRequest(123,
                                              0,
                                              114514
         ));
+
+//        // TODO Test only
+//        router.send(new DeleteMessageRequest(123,
+//                                             2
+//        ));
+//        router.send(new DisableInstanceRequest());
     }
 }

@@ -6,7 +6,7 @@ import com.github.cao.awa.kalmia.message.digest.MessageDigestData;
 public abstract class Message {
     public abstract byte[] toBytes();
 
-    public abstract MessageDigestData getDigest();
+    public abstract MessageDigestData getDigestData();
 
     public abstract long getSender();
 

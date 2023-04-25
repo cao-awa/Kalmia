@@ -115,4 +115,24 @@ SelectedMessage
 
 ## 14
 
+```
+接收方：服务端
+```
+
+DeleteMessage
+
 ## 15
+
+```
+接收方：客户端
+```
+
+DeletedMessage
+
+## 68943
+
+```
+接收方：服务端
+```
+
+DisableInstance

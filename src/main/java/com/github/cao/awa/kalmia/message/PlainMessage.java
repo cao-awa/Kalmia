@@ -32,7 +32,7 @@ public class PlainMessage extends Message {
     public PlainMessage(String msg, long sender) {
         this.msg = msg;
         this.sender = sender;
-        this.digest = new MessageDigestData(MessageDigger.Sha3.SHA_512.instanceName(),
+        this.digest = new MessageDigestData(MessageDigger.Sha3.SHA_512,
                                             Mathematics.toBytes(MessageDigger.digest(msg,
                                                                                      MessageDigger.Sha3.SHA_512
                                                                 ),
@@ -74,7 +74,7 @@ public class PlainMessage extends Message {
     }
 
     @Override
-    public MessageDigestData getDigest() {
+    public MessageDigestData getDigestData() {
         return this.digest;
     }
 }

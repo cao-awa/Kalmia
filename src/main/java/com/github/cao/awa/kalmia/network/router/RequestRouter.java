@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
+import com.github.cao.awa.kalmia.network.handler.inbound.disabled.DisabledRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
@@ -17,6 +18,7 @@ import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedPingPacket;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import io.netty.channel.ChannelHandlerContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -32,6 +34,9 @@ public class RequestRouter extends NetworkRouter {
                                                                                                    );
                                                                                                    handlers.put(RequestStatus.AUTHED,
                                                                                                                 new AuthedRequestHandler()
+                                                                                                   );
+                                                                                                   handlers.put(RequestStatus.DISABLED,
+                                                                                                                new DisabledRequestHandler()
                                                                                                    );
                                                                                                }
     );
@@ -72,7 +77,7 @@ public class RequestRouter extends NetworkRouter {
             // TODO
             e.printStackTrace();
 
-            send(new OperationInvalidRequest());
+            send(new OperationInvalidRequest("Server internal error"));
         } catch (Exception e) {
             BugTrace.trace(e,
                            "Event pipeline happened exception or packet deserialize not completed, please check last bug trace and report theses trace"
@@ -81,7 +86,7 @@ public class RequestRouter extends NetworkRouter {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(@NotNull ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.context = ctx;
         this.activeCallback.accept(this);

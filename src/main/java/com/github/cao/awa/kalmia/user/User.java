@@ -6,18 +6,17 @@ public abstract class User {
     public abstract byte[] toBytes();
 
     public static User create(byte[] data) {
-        DeletedUser deleted = createDeleted(data);
-        if (deleted == null) {
-            return createDefault(data);
-        }
-        return deleted;
-    }
+        BytesReader reader = new BytesReader(data);
 
-    public static DeletedUser createDeleted(byte[] data) {
-        return DeletedUser.create(new BytesReader(data));
-    }
+        int id = reader.read();
 
-    public static DefaultUser createDefault(byte[] data) {
-        return DefaultUser.create(new BytesReader(data));
+        reader.back(1);
+
+        return switch (id) {
+            case - 1 -> DeletedUser.create(reader);
+            case 0 -> DefaultUser.create(reader);
+            case 1 -> DisabledUser.create(reader);
+            default -> null;
+        };
     }
 }

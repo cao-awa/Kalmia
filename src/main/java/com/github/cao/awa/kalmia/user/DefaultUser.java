@@ -32,10 +32,16 @@ public class DefaultUser extends User {
             long timestamp = SkippedBase256.readLong(reader);
             UserPassword password = UserPassword.create(reader);
 
-            return new DefaultUser(timestamp, password);
+            return new DefaultUser(timestamp,
+                                   password
+            );
         } else {
             return null;
         }
+    }
+
+    public DisabledUser disable() {
+        return new DisabledUser(this);
     }
 
     @Override
