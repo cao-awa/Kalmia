@@ -2,7 +2,9 @@ package com.github.cao.awa.kalmia.network.io.server;
 
 import com.github.cao.awa.apricot.anntation.Stable;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.io.server.channel.KalmiaServerChannelInitializer;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -17,6 +19,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -41,10 +45,11 @@ public class KalmiaServerNetworkIo {
     private final KalmiaServerChannelInitializer channelInitializer;
     private final KalmiaServer server;
     private ChannelFuture channelFuture;
+    private final List<RequestRouter> connections = Collections.synchronizedList(ApricotCollectionFactor.newArrayList());
 
     public KalmiaServerNetworkIo(KalmiaServer server) {
         this.server = server;
-        this.channelInitializer = new KalmiaServerChannelInitializer(server);
+        this.channelInitializer = new KalmiaServerChannelInitializer(server).subscribe(this.connections);
     }
 
     public void start(final int port) throws Exception {
@@ -76,7 +81,7 @@ public class KalmiaServerNetworkIo {
                                                   ChannelOption.SO_BACKLOG,
                                                   256
                                           )
-                                          .option(
+                                          .childOption(
                                                   // Real-time response is necessary
                                                   // Enable TCP no delay to improve response speeds
                                                   ChannelOption.TCP_NODELAY,
@@ -96,6 +101,7 @@ public class KalmiaServerNetworkIo {
 
     public void shutdown() {
         try {
+            this.connections.forEach(RequestRouter :: disconnect);
             this.channelFuture.channel()
                               .close()
                               .sync();

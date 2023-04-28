@@ -11,6 +11,8 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.socket.SocketChannel;
 
+import java.util.List;
+
 /**
  * Channel initializer of kalmia server network.
  *
@@ -20,17 +22,43 @@ import io.netty.channel.socket.SocketChannel;
 @Stable
 public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketChannel> {
     private final KalmiaServer server;
+    private List<RequestRouter> subscriber;
 
     public KalmiaServerChannelInitializer(KalmiaServer server) {
         this.server = server;
+    }
+
+    public KalmiaServerChannelInitializer subscribe(List<RequestRouter> routers) {
+        this.subscriber = routers;
+        return this;
+    }
+
+    public KalmiaServerChannelInitializer active(RequestRouter router) {
+        if (this.subscriber != null) {
+            this.subscriber.add(router);
+            System.out.println("Active connection, current: " + this.subscriber.size());
+        }
+        return this;
+    }
+
+    public KalmiaServerChannelInitializer unsubscribe() {
+        this.subscriber = null;
+        return this;
+    }
+
+    public KalmiaServerChannelInitializer inactive(RequestRouter router) {
+        if (this.subscriber != null) {
+            this.subscriber.remove(router);
+            System.out.println("Inactive connection, current: " + this.subscriber.size());
+        }
+        return this;
     }
 
     /**
      * This method will be called once the {@link Channel} was registered. After the method returns this instance
      * will be removed from the {@link ChannelPipeline} of the {@link Channel}.
      *
-     * @param ch
-     *         the {@link Channel} which was registered.
+     * @param ch the {@link Channel} which was registered.
      */
     @Override
     protected void initChannel(SocketChannel ch) {
@@ -40,10 +68,12 @@ public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketCha
         // Do decodes
 //        pipeline.addLast(new RequestCodec());
         RequestRouter router = new RequestRouter(r -> {
-        });
+        }).funeral(this :: inactive);
         pipeline.addLast(new RequestDecoder(router));
         pipeline.addLast(new RequestEncoder(router));
         // Do handle
         pipeline.addLast(router);
+
+        active(router);
     }
 }

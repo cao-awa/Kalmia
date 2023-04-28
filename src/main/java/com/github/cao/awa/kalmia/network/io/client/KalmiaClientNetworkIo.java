@@ -25,7 +25,7 @@ import java.util.function.Supplier;
  * @author cao_awa
  * @since 1.0.0
  */
-public class ClientNetworkIo {
+public class KalmiaClientNetworkIo {
     private static final Logger LOGGER = LogManager.getLogger("KalmiaNetworkIo");
     private static final Supplier<NioEventLoopGroup> DEFAULT_CHANNEL = () -> new NioEventLoopGroup(
             0,
@@ -38,13 +38,15 @@ public class ClientNetworkIo {
 
     private final KalmiaClientChannelInitializer channelInitializer;
     private ChannelFuture channelFuture;
+    private final KalmiaClient client;
 
-    public ClientNetworkIo(KalmiaClient client) {
+    public KalmiaClientNetworkIo(KalmiaClient client) {
         this.channelInitializer = new KalmiaClientChannelInitializer(client);
+        this.client = client;
     }
 
     public void connect(final String ip, final int port) throws Exception {
-        boolean expectEpoll = true;
+        boolean expectEpoll = this.client.useEpoll();
         boolean epoll = Epoll.isAvailable();
 
         LOGGER.info(expectEpoll ?

@@ -26,4 +26,8 @@ public class KalmiaClient {
             TimeUtil.coma(10);
         }
     }
+
+    public boolean useEpoll() {
+        return true;
+    }
 }

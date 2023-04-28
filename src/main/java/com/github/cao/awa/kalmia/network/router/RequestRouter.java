@@ -16,14 +16,20 @@ import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.request.invalid.operation.OperationInvalidRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedPingPacket;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.SocketException;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public class RequestRouter extends NetworkRouter {
+    private static final Logger LOGGER = LogManager.getLogger("RequestRouter");
     private final Map<RequestStatus, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
                                                                                                handlers -> {
                                                                                                    handlers.put(RequestStatus.HELLO,
@@ -46,6 +52,7 @@ public class RequestRouter extends NetworkRouter {
     private final PingHandler pingHandler = new PingHandler();
     private ChannelHandlerContext context;
     private final Consumer<RequestRouter> activeCallback;
+    private final Affair funeral = Affair.empty();
 
     public RequestRouter(Consumer<RequestRouter> activeCallback) {
         this.activeCallback = activeCallback;
@@ -86,10 +93,42 @@ public class RequestRouter extends NetworkRouter {
     }
 
     @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (cause instanceof SocketException) {
+            disconnect();
+        } else {
+            LOGGER.error("Unhandled exception",
+                         cause
+            );
+        }
+    }
+
+    @Override
     public void channelActive(@NotNull ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.context = ctx;
         this.activeCallback.accept(this);
+        this.context.channel()
+                    .closeFuture()
+                    .addListener(this :: disconnect);
+    }
+
+    public void disconnect() {
+        this.context.disconnect();
+    }
+
+    public void disconnect(Future<? super Void> future) {
+        this.funeral.done();
+    }
+
+    public RequestRouter funeral(Runnable action) {
+        this.funeral.add(action);
+        return this;
+    }
+
+    public RequestRouter funeral(Consumer<RequestRouter> action) {
+        this.funeral.add(() -> action.accept(this));
+        return this;
     }
 
     public byte[] decode(byte[] cipherText) {
