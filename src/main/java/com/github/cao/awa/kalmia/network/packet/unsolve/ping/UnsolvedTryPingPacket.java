@@ -14,6 +14,6 @@ public class UnsolvedTryPingPacket extends UnsolvedPingPacket<TryPingPacket> {
 
     @Override
     public TryPingPacket packet() {
-        return new TryPingPacket(reader());
+        return new TryPingPacket(reader()).receipt(receipt());
     }
 }

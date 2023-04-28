@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.network.encode;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
+import com.github.cao.awa.kalmia.network.packet.ReceiptRequest;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -93,7 +94,7 @@ public class RequestDecoder extends ByteToMessageDecoder {
         long id = SkippedBase256.readLong(reader);
 
         // Read receipt identity.
-        byte[] receipt = reader.read() == - 1 ? reader.non() : reader.read(16);
+        byte[] receipt = reader.read() == - 1 ? reader.non() : ReceiptRequest.read(reader);
 
         // Create the packet and let it be processed in later handlers.
         out.add(UnsolvedPacketFactor.create(id,

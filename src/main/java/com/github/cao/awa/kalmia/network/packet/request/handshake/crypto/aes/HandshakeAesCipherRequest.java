@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.aes;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.packet.WritablePacket;
+import com.github.cao.awa.kalmia.network.packet.Request;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes.HandshakeAesCipherPacket;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -12,7 +12,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
  * @see HandshakeAesCipherPacket
  */
 @Client
-public class HandshakeAesCipherRequest extends WritablePacket {
+public class HandshakeAesCipherRequest extends Request {
     public static final byte[] ID = SkippedBase256.longToBuf(2);
     private final byte[] pubkey;
     private final byte[] cipher;

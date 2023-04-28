@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.network.packet.request.handshake.hello;
 import com.github.cao.awa.kalmia.annotation.crypto.CryptoEncoded;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.packet.WritablePacket;
+import com.github.cao.awa.kalmia.network.packet.Request;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.ServerHelloPacket;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -12,7 +12,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
  * @see ServerHelloPacket
  */
 @Server
-public class ServerHelloRequest extends WritablePacket {
+public class ServerHelloRequest extends Request {
     public static final byte[] ID = SkippedBase256.longToBuf(3);
     private final byte[] testKey;
     private final byte[] testSha;

@@ -11,6 +11,7 @@ import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Generic;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.trtr.util.string.StringConcat;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -48,7 +49,7 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
 //                    readonly.getName()
 //        );
 
-        String mode = readonly.isAnnotationPresent(Server.class) ? "S" : readonly.isAnnotationPresent(Client.class) ? "C" : "Unknown";
+        String mode = readonly.isAnnotationPresent(Generic.class) ? "C/S" : readonly.isAnnotationPresent(Server.class) ? "S" : readonly.isAnnotationPresent(Client.class) ? "C" : "Unknown";
 
         // Check the packet mode and cancel register.
         if (KalmiaEnv.isServer) {
@@ -159,7 +160,8 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
         private ReadonlyPacket<?> create() throws InvocationTargetException, InstantiationException, IllegalAccessException {
             return this.framework.solve(this.clazz,
                                         reader()
-            );
+                       )
+                                 .receipt(receipt());
         }
     }
 }

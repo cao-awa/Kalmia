@@ -12,6 +12,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
 /**
  * @see TryPingResponseRequest
  * @see UnsolvedTryPingResponsePacket
+ * @see TryPingPacket
  */
 @Client
 public class TryPingResponsePacket extends PingPacket {

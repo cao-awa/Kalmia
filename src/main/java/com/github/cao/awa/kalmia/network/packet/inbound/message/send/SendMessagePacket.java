@@ -22,12 +22,10 @@ import java.util.Arrays;
 @AutoSolvedPacket(10)
 public class SendMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
     private final long sessionId;
-    private final byte[] identity;
     private final byte[] msg;
 
     public SendMessagePacket(BytesReader reader) {
         this.sessionId = SkippedBase256.readLong(reader);
-        this.identity = reader.read(16);
         this.msg = reader.all();
     }
 
@@ -35,7 +33,7 @@ public class SendMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
     public void inbound(RequestRouter router, AuthedRequestHandler handler) {
         System.out.println("UID: " + handler.getUid());
         System.out.println("SID: " + this.sessionId);
-        System.out.println("IDT: " + Mathematics.radix(this.identity,
+        System.out.println("IDT: " + Mathematics.radix(receipt(),
                                                        36
         ));
         System.out.println("MSG: " + Arrays.toString(this.msg));
@@ -47,16 +45,7 @@ public class SendMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
 
         // Response to client the seq.
         router.send(new SentMessageRequest(seq,
-                                           this.identity
+                                           receipt()
         ));
-
-//        Kalmia.SERVER.messageManager().operation(123, (s, m) -> {
-//            System.out.println("---");
-//            if (m instanceof PlainMessage plain) {
-//                System.out.println(s + ": " + plain.getMsg());
-//            } else {
-//                System.out.println(s + ": " + "<DELETED>");
-//            }
-//        });
     }
 }

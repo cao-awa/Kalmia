@@ -11,8 +11,8 @@ import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.disabled.DisabledRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
+import com.github.cao.awa.kalmia.network.packet.Request;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.packet.WritablePacket;
 import com.github.cao.awa.kalmia.network.packet.request.invalid.operation.OperationInvalidRequest;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedPingPacket;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
@@ -104,7 +104,7 @@ public class RequestRouter extends NetworkRouter {
         return this.transportLayer.isCipherEquals(cipher);
     }
 
-    public void send(WritablePacket packet) {
+    public void send(Request packet) {
         this.context.writeAndFlush(packet);
     }
 

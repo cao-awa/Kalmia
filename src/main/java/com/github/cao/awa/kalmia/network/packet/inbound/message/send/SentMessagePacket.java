@@ -17,17 +17,15 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
 @AutoSolvedPacket(11)
 public class SentMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
     private final long seq;
-    private final byte[] identity;
 
     public SentMessagePacket(BytesReader reader) {
         this.seq = SkippedBase256.readLong(reader);
-        this.identity = reader.read(16);
     }
 
     @Override
     public void inbound(RequestRouter router, AuthedRequestHandler handler) {
         System.out.println("UID: " + handler.getUid());
-        System.out.println("IDT: " + Mathematics.radix(this.identity,
+        System.out.println("IDT: " + Mathematics.radix(receipt(),
                                                        36
         ));
         System.out.println("SEQ: " + this.seq);

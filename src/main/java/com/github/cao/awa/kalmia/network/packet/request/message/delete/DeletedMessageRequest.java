@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.network.packet.request.message.delete;
 
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.packet.WritablePacket;
+import com.github.cao.awa.kalmia.network.packet.Request;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.delete.DeletedMessagePacket;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -10,7 +10,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
  * @see DeletedMessagePacket
  */
 @Server
-public class DeletedMessageRequest extends WritablePacket {
+public class DeletedMessageRequest extends Request {
     public static final byte[] ID = SkippedBase256.longToBuf(15);
     private final long sid;
     private final long seq;

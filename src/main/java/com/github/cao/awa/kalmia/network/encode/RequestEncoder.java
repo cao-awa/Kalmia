@@ -2,13 +2,13 @@ package com.github.cao.awa.kalmia.network.encode;
 
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
-import com.github.cao.awa.kalmia.network.packet.WritablePacket;
+import com.github.cao.awa.kalmia.network.packet.Request;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-public class RequestEncoder extends MessageToByteEncoder<WritablePacket> {
+public class RequestEncoder extends MessageToByteEncoder<Request> {
     private final RequestRouter router;
 
     public RequestEncoder(RequestRouter router) {
@@ -16,7 +16,7 @@ public class RequestEncoder extends MessageToByteEncoder<WritablePacket> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, WritablePacket msg, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, Request msg, ByteBuf out) throws Exception {
         // Commit traffic count.
         TrafficCount.encode(msg.data().length + msg.id().length);
 

@@ -12,6 +12,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 /**
  * @see TryPingRequest
  * @see UnsolvedTryPingPacket
+ * @see TryPingResponsePacket
  */
 @Server
 public class TryPingPacket extends PingPacket {
@@ -21,6 +22,8 @@ public class TryPingPacket extends PingPacket {
 
     @Override
     public void inbound(RequestRouter router, PingHandler handler) {
-        router.send(new TryPingResponseRequest(startTime()));
+        router.send(new TryPingResponseRequest(startTime(),
+                                               receipt()
+        ));
     }
 }

@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.network.packet.request.message.select;
 
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.network.packet.WritablePacket;
+import com.github.cao.awa.kalmia.network.packet.Request;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectedMessagePacket;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -14,7 +14,7 @@ import java.util.List;
  * @see SelectedMessagePacket
  */
 @Server
-public class SelectedMessageRequest extends WritablePacket {
+public class SelectedMessageRequest extends Request {
     public static final byte[] ID = SkippedBase256.longToBuf(13);
     private final long sessionId;
     private final long from;
