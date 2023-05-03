@@ -8,16 +8,18 @@ import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes.Han
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
+import java.security.interfaces.RSAPublicKey;
+
 /**
  * @see HandshakeAesCipherPacket
  */
 @Client
 public class HandshakeAesCipherRequest extends Request {
     public static final byte[] ID = SkippedBase256.longToBuf(2);
-    private final byte[] pubkey;
+    private final RSAPublicKey pubkey;
     private final byte[] cipher;
 
-    public HandshakeAesCipherRequest(byte[] pubkey, byte[] cipher) {
+    public HandshakeAesCipherRequest(RSAPublicKey pubkey, byte[] cipher) {
         this.pubkey = pubkey;
         this.cipher = cipher;
     }
@@ -26,7 +28,7 @@ public class HandshakeAesCipherRequest extends Request {
     public byte[] data() {
         try {
             byte[] encrypted = Crypto.rsaEncrypt(cipher,
-                                                 Crypto.decodeRsaPubkey(this.pubkey)
+                                                 this.pubkey
             );
             return BytesUtil.concat(Base256.tagToBuf(encrypted.length),
                                     encrypted

@@ -39,7 +39,7 @@ public class HandshakeAesCipherPacket extends ReadonlyPacket<HandshakeHandler> {
         try {
             // Decrypt aes cipher.
             byte[] cipher = Crypto.rsaDecrypt(this.cipher,
-                                              Crypto.decodeRsaPrikey(handler.getRsaPrikey())
+                                              handler.getRsaPrikey()
             );
 
             // Back the cipher to client using the given cipher.

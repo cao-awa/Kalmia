@@ -1,8 +1,9 @@
 package com.github.cao.awa.kalmia.network.packet.request.handshake.hello;
 
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.Request;
-import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.rsa.pubkey.HandshakeRsaPubkeyPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.rsa.pubkey.HandshakePreSharedRsaPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.ClientHelloPacket;
 import com.github.cao.awa.kalmia.protocol.RequestProtocolName;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -12,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * @see ClientHelloPacket
- * @see HandshakeRsaPubkeyPacket
+ * @see HandshakePreSharedRsaPacket
  */
 @Client
 public class ClientHelloRequest extends Request {
@@ -22,17 +23,27 @@ public class ClientHelloRequest extends Request {
     public static final byte[] ID = SkippedBase256.longToBuf(0);
     private final RequestProtocolName majorProtocol;
     private final String clientVersion;
+    private final String expectCipherKey;
+
+    public ClientHelloRequest(RequestProtocolName majorProtocol, String clientVersion, String expectCipherKey) {
+        this.majorProtocol = majorProtocol;
+        this.clientVersion = clientVersion;
+        this.expectCipherKey = expectCipherKey;
+    }
 
     public ClientHelloRequest(RequestProtocolName majorProtocol, String clientVersion) {
         this.majorProtocol = majorProtocol;
         this.clientVersion = clientVersion;
+        this.expectCipherKey = KalmiaEnv.expectCipherKey;
     }
 
     @Override
     public byte[] data() {
         return BytesUtil.concat(this.majorProtocol.toBytes(),
                                 new byte[]{(byte) this.clientVersion.length()},
-                                this.clientVersion.getBytes(StandardCharsets.UTF_8)
+                                this.clientVersion.getBytes(StandardCharsets.UTF_8),
+                                new byte[]{(byte) this.expectCipherKey.length()},
+                                this.expectCipherKey.getBytes(StandardCharsets.US_ASCII)
         );
     }
 

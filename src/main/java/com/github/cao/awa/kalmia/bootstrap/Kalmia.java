@@ -11,9 +11,9 @@ public class Kalmia {
 
     public static void main(String[] args) {
         try {
-            SERVER = new KalmiaServer();
-
             KalmiaEnv.setupServer();
+
+            SERVER = new KalmiaServer();
 
             SERVER.startup();
         } catch (Exception e) {

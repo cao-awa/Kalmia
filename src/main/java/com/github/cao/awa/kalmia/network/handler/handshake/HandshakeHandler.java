@@ -1,17 +1,15 @@
 package com.github.cao.awa.kalmia.network.handler.handshake;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.apricot.util.encryption.Crypto;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Set;
 
 public class HandshakeHandler extends PacketHandler<HandshakeHandler> {
@@ -20,29 +18,32 @@ public class HandshakeHandler extends PacketHandler<HandshakeHandler> {
                                                                                             set.add(RequestStatus.HELLO);
                                                                                         }
     );
-    private byte[] rsaPrikey = BytesUtil.EMPTY;
-    private byte[] rsaPubkey = BytesUtil.EMPTY;
+    private RSAPublicKey rsaPubkey;
+    private RSAPrivateKey rsaPrikey;
 
-    public byte[] getRsaPrikey() {
-        return this.rsaPrikey;
+    public byte[] getRsaPrikeyData() {
+        return this.rsaPrikey.getEncoded();
     }
 
-    public byte[] getRsaPubkey() {
-        return this.rsaPubkey;
+    public byte[] getRsaPubkeyData() {
+        return this.rsaPubkey.getEncoded();
+    }
+
+    public RSAPublicKey getRsaPubkey() {
+        return rsaPubkey;
+    }
+
+    public RSAPrivateKey getRsaPrikey() {
+        return rsaPrikey;
     }
 
     public HandshakeHandler() {
 
     }
 
-    public void setupRsa() {
+    public void setupRsa(String cipherKey) {
         try {
-            KeyPair keyPair = Crypto.rsaKeypair(4096);
-            PublicKey publicKey = keyPair.getPublic();
-            PrivateKey privateKey = keyPair.getPrivate();
-
-            this.rsaPrikey = privateKey.getEncoded();
-            this.rsaPubkey = publicKey.getEncoded();
+            this.rsaPrikey = KalmiaEnv.DEFAULT_PRE_PRIKEY.get(cipherKey);
         } catch (Exception e) {
             // TODO
             throw new RuntimeException(e);

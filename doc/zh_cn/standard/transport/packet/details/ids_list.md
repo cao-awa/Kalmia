@@ -14,7 +14,7 @@ ClientHello
 接收方：客户端
 ```
 
-HandshakeRsaPubkey
+HandshakePreShared
 
 ## 2
 
