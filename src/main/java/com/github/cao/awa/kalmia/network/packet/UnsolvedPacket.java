@@ -1,11 +1,10 @@
 package com.github.cao.awa.kalmia.network.packet;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public abstract class UnsolvedPacket<T extends ReadonlyPacket<?>> extends Packet {
     private final byte[] data;
-    private byte[] receipt = BytesUtil.EMPTY;
+    private byte[] receipt = Request.RECEIPT;
 
     public byte[] data() {
         return this.data;

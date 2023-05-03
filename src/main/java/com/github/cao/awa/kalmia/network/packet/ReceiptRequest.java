@@ -3,6 +3,8 @@ package com.github.cao.awa.kalmia.network.packet;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
+import java.util.Arrays;
+
 public abstract class ReceiptRequest extends Request {
     private final byte[] receipt;
 
@@ -17,6 +19,11 @@ public abstract class ReceiptRequest extends Request {
     }
 
     public static byte[] check(byte[] receipt) {
+        if (Arrays.equals(Request.RECEIPT,
+                          receipt
+        )) {
+            return receipt;
+        }
         if (receipt.length != 16) {
             throw new IllegalArgumentException("Receipt data only allowed 16 bytes");
         }

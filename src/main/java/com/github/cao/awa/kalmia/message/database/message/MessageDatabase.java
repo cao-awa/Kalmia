@@ -3,7 +3,6 @@ package com.github.cao.awa.kalmia.message.database.message;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotation.number.encode.ShouldSkipped;
-import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.database.DatabaseProvide;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
@@ -52,6 +51,9 @@ public class MessageDatabase {
         byte[] msgBytes = this.database.get(key(sid,
                                                 seq
         ));
+        if (msgBytes == null) {
+            return null;
+        }
         return Message.create(msgBytes);
     }
 
@@ -101,6 +103,10 @@ public class MessageDatabase {
         }
     }
 
+    public boolean present(byte[] key) {
+        return this.database.get(key) != null;
+    }
+
     public long seq(@ShouldSkipped byte[] sid) {
         byte[] seqByte = this.database.get(sid);
 
@@ -145,7 +151,7 @@ public class MessageDatabase {
 
     public long send(@ShouldSkipped byte[] sid, Message msg) {
         // TODO
-        Kalmia.SERVER.sessionManager();
+//        Kalmia.SERVER.sessionManager();
 
         byte[] seqByte = this.database.get(sid);
 

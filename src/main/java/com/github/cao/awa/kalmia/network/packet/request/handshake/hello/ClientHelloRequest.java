@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.network.packet.request.handshake.hello;
 
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.Request;
+import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.rsa.pubkey.HandshakeRsaPubkeyPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.ClientHelloPacket;
 import com.github.cao.awa.kalmia.protocol.RequestProtocolName;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -11,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * @see ClientHelloPacket
+ * @see HandshakeRsaPubkeyPacket
  */
 @Client
 public class ClientHelloRequest extends Request {

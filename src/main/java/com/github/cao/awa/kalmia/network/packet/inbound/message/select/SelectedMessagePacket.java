@@ -4,9 +4,8 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.message.PlainMessage;
+import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.message.select.SelectedMessageRequest;
@@ -41,13 +40,15 @@ public class SelectedMessagePacket extends ReadonlyPacket<AuthedRequestHandler> 
         System.out.println("Received msg of session " + this.sessionId);
         System.out.println("Range is " + this.from + " to " + this.to);
 
-        for (Message message : this.messages) {
-            if (message instanceof PlainMessage plain) {
-                System.out.println("PLAINS: " + plain.getMsg());
-            } else if (message instanceof DeletedMessage deleted) {
-                System.out.println("DELETED: " + deleted.getDigestData()
-                                                        .value36());
-            }
-        }
+//        for (Message message : this.messages) {
+//            if (message instanceof PlainMessage plain) {
+//                System.out.println("PLAINS: " + plain.getMsg());
+//            } else if (message instanceof DeletedMessage deleted) {
+//                System.out.println("DELETED: " + deleted.getDigestData()
+//                                                        .value36());
+//            }
+//        }
+
+        TrafficCount.show();
     }
 }

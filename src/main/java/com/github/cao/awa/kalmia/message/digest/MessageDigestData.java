@@ -5,7 +5,6 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.kalmia.convert.ByteArrayConvertable;
 import com.github.cao.awa.kalmia.convert.BytesValueConvertable;
-import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.math.BigInteger;
@@ -68,7 +67,7 @@ public class MessageDigestData extends BytesValueConvertable implements ByteArra
     @Override
     public byte[] toBytes() {
         return BytesUtil.concat(new byte[]{typeToId.get(type()).byteValue()},
-                                Base256.tagToBuf(value().length),
+                                new byte[]{(byte) value().length},
                                 value()
         );
     }
@@ -76,7 +75,7 @@ public class MessageDigestData extends BytesValueConvertable implements ByteArra
     public static MessageDigestData create(BytesReader reader) {
         MessageDigger.DigestAlgorithm type = idToType.get(reader.read());
 
-        byte[] value = reader.read(Base256.tagFromBuf(reader.read(2)));
+        byte[] value = reader.read(reader.read());
 
         return new MessageDigestData(type,
                                      value

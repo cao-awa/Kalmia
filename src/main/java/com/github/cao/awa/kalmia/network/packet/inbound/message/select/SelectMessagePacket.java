@@ -53,7 +53,7 @@ public class SelectMessagePacket extends ReadonlyPacket<AuthedRequestHandler> {
 
         while (current < to) {
             long selected = Math.min(to - current,
-                                     150
+                                     200
             );
 
             long endSelect = current + selected;

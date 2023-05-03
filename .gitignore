@@ -29,3 +29,4 @@ test/
 configs/
 databases/
 data/
+src/main/resources/secret/kalmiagram/main/SECRET_PRIVATE

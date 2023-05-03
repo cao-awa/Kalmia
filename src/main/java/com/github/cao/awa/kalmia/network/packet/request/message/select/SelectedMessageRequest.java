@@ -32,6 +32,9 @@ public class SelectedMessageRequest extends Request {
     public byte[] data() {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             for (Message msg : this.messages) {
+                if (msg == null) {
+                    continue;
+                }
                 output.write(msg.toBytes());
             }
             return BytesUtil.concat(SkippedBase256.longToBuf(this.sessionId),
@@ -40,6 +43,7 @@ public class SelectedMessageRequest extends Request {
                                     output.toByteArray()
             );
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

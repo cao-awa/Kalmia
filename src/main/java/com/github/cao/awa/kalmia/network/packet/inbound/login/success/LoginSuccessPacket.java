@@ -4,6 +4,7 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.login.success.LoginSuccessRequest;
@@ -47,10 +48,17 @@ public class LoginSuccessPacket extends ReadonlyPacket<AuthedRequestHandler> {
 //                          })
 //                          .start();
 
-        router.send(new SelectMessageRequest(123,
+        TrafficCount.show();
+
+        router.send(new SelectMessageRequest(123456,
                                              0,
-                                             114514
+                                             200
         ));
+
+//        router.send(new SelectMessageRequest(123,
+//                                             0,
+//                                             114514
+//        ));
 
 //        // TODO Test only
 //        router.send(new DeleteMessageRequest(123,

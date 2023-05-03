@@ -7,10 +7,12 @@ import org.apache.logging.log4j.Logger;
 
 public class Kalmia {
     private static final Logger LOGGER = LogManager.getLogger("Kalmia");
-    public static final KalmiaServer SERVER = new KalmiaServer();
+    public static KalmiaServer SERVER;
 
     public static void main(String[] args) {
         try {
+            SERVER = new KalmiaServer();
+
             KalmiaEnv.setupServer();
 
             SERVER.startup();

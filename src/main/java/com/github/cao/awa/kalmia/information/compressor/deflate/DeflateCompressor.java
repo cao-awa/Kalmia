@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.information.compressor.deflater;
+package com.github.cao.awa.kalmia.information.compressor.deflate;
 
 import com.github.cao.awa.apricot.anntation.Stable;
 import com.github.cao.awa.apricot.util.io.IOUtil;
@@ -11,8 +11,8 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 @Stable
-public class DeflaterCompressor implements InformationCompressor {
-    public static final DeflaterCompressor INSTANCE = new DeflaterCompressor();
+public class DeflateCompressor implements InformationCompressor {
+    public static final DeflateCompressor INSTANCE = new DeflateCompressor();
 
     /**
      * Compress using deflater with best compression

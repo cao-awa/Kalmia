@@ -23,10 +23,10 @@ public class TrafficCount {
     }
 
     public static void show() {
-//        System.out.println("----Traffic");
-//        System.out.println("Sent: " + sent + " (bytes)");
-//        System.out.println("Encoded: " + encoded + " (bytes)");
-//        System.out.println("Received: " + received + " (bytes)");
-//        System.out.println("Decoded: " + decoded + " (bytes)");
+        System.out.println("----Traffic");
+        System.out.println("Sent: " + sent + " (bytes)");
+        System.out.println("Encoded: " + encoded + " (bytes)");
+        System.out.println("Received: " + received + " (bytes)");
+        System.out.println("Decoded: " + decoded + " (bytes)");
     }
 }
