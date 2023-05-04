@@ -3,10 +3,10 @@ package com.github.cao.awa.kalmia.network.encode.crypto;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.no.NoCrypto;
 
-public class SymmetricTransportLayer {
-    private SymmetricCrypto crypto;
+public class CryptoTransportLayer {
+    private LayerCrypto crypto;
 
-    public SymmetricTransportLayer() {
+    public CryptoTransportLayer() {
         this.crypto = new NoCrypto();
     }
 
@@ -29,18 +29,25 @@ public class SymmetricTransportLayer {
     }
 
     public boolean isCipherEquals(byte[] cipher) {
-        return this.crypto.isCipherEquals(cipher);
+        if (this.crypto instanceof SymmetricCrypto symmetric) {
+            return symmetric.isCipherEquals(cipher);
+        }
+        return false;
     }
 
-    public void setCrypto(SymmetricCrypto crypto) {
+    public void setCrypto(LayerCrypto crypto) {
         this.crypto = crypto;
     }
 
     public void setCipher(byte[] cipher) {
-        this.crypto.cipher(cipher);
+        if (this.crypto instanceof SymmetricCrypto symmetric) {
+            symmetric.cipher(cipher);
+        }
     }
 
     public void setIv(byte[] iv) {
-        this.crypto.iv(iv);
+        if (this.crypto instanceof SymmetricCrypto symmetric) {
+            symmetric.iv(iv);
+        }
     }
 }

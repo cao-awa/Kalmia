@@ -3,7 +3,6 @@ package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
-import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
@@ -37,17 +36,12 @@ public class HandshakeAesCipherPacket extends ReadonlyPacket<HandshakeHandler> {
     @Override
     public void inbound(RequestRouter router, HandshakeHandler handler) {
         try {
-            // Decrypt aes cipher.
-            byte[] cipher = Crypto.rsaDecrypt(this.cipher,
-                                              handler.getRsaPrikey()
-            );
-
             // Back the cipher to client using the given cipher.
             // Let client verify the sha of decrypted text for check server cipher is same to self.
-            byte[] testKey = cipher.clone();
+            byte[] testKey = this.cipher.clone();
 
             // Setup crypto and waiting for client login.
-            router.setCrypto(new AesCrypto(cipher));
+            router.setCrypto(new AesCrypto(this.cipher));
             router.setStatus(RequestStatus.AUTH);
 
             // Use the different initialization vector to anyone session.

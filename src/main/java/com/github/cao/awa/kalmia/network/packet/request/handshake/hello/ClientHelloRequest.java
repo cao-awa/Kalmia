@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.request.handshake.hello;
 
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.env.KalmiaPreSharedKey;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.Request;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.rsa.pubkey.HandshakePreSharedRsaPacket;
@@ -34,7 +34,7 @@ public class ClientHelloRequest extends Request {
     public ClientHelloRequest(RequestProtocolName majorProtocol, String clientVersion) {
         this.majorProtocol = majorProtocol;
         this.clientVersion = clientVersion;
-        this.expectCipherKey = KalmiaEnv.expectCipherKey;
+        this.expectCipherKey = KalmiaPreSharedKey.expectCipherKey;
     }
 
     @Override

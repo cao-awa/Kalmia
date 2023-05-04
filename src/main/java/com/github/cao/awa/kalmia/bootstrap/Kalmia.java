@@ -9,15 +9,15 @@ public class Kalmia {
     private static final Logger LOGGER = LogManager.getLogger("Kalmia");
     public static KalmiaServer SERVER;
 
-    public static void main(String[] args) {
-        try {
-            KalmiaEnv.setupServer();
+    public static void main(String[] args) throws Exception {
+        startServer();
+    }
 
-            SERVER = new KalmiaServer();
+    public static void startServer() throws Exception {
+        KalmiaEnv.setupServer();
 
-            SERVER.startup();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SERVER = new KalmiaServer();
+
+        SERVER.startup();
     }
 }

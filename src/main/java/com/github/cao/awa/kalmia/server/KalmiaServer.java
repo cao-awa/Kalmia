@@ -11,6 +11,11 @@ public class KalmiaServer {
     private final MessageManager messageManager;
     private final UserManager userManager;
     private final SessionManager sessionManager;
+    private boolean started;
+
+    public boolean isStarted() {
+        return this.started;
+    }
 
     public UserManager userManager() {
         return this.userManager;
@@ -41,6 +46,8 @@ public class KalmiaServer {
 
     public void setupNetwork() throws Exception {
         UnsolvedPacketFactor.register();
+
+        this.started = true;
 
         this.networkIo.start(12345);
     }

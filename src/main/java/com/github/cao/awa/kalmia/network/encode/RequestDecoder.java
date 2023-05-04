@@ -11,11 +11,14 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class RequestDecoder extends ByteToMessageDecoder {
+    private static final Logger LOGGER = LogManager.getLogger("RequestDecoder");
     private final RequestRouter router;
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
     private long lengthMarker = 0;

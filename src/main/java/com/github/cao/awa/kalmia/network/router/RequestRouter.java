@@ -2,8 +2,8 @@ package com.github.cao.awa.kalmia.network.router;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
-import com.github.cao.awa.kalmia.network.encode.crypto.SymmetricTransportLayer;
-import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto;
+import com.github.cao.awa.kalmia.network.encode.crypto.CryptoTransportLayer;
+import com.github.cao.awa.kalmia.network.encode.crypto.LayerCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
@@ -46,7 +46,7 @@ public class RequestRouter extends NetworkRouter {
                                                                                                    );
                                                                                                }
     );
-    private final SymmetricTransportLayer transportLayer = new SymmetricTransportLayer();
+    private final CryptoTransportLayer transportLayer = new CryptoTransportLayer();
     private RequestStatus status;
     private PacketHandler<?> handler;
     private final PingHandler pingHandler = new PingHandler();
@@ -151,7 +151,7 @@ public class RequestRouter extends NetworkRouter {
         this.context.writeAndFlush(bytes);
     }
 
-    public void setCrypto(SymmetricCrypto crypto) {
+    public void setCrypto(LayerCrypto crypto) {
         this.transportLayer.setCrypto(crypto);
     }
 

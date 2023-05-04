@@ -1,10 +1,11 @@
 package com.github.cao.awa.kalmia.network.encode.crypto.symmetric;
 
+import com.github.cao.awa.kalmia.network.encode.crypto.LayerCrypto;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.util.Arrays;
 
-public abstract class SymmetricCrypto {
+public abstract class SymmetricCrypto extends LayerCrypto {
     private byte[] cipher;
     private byte[] iv = BytesUtil.EMPTY;
 
@@ -38,8 +39,4 @@ public abstract class SymmetricCrypto {
                              cipher
         );
     }
-
-    public abstract byte[] encode(byte[] plains) throws Exception;
-
-    public abstract byte[] decode(byte[] ciphertext) throws Exception;
 }

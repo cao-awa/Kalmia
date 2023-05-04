@@ -3,7 +3,8 @@ package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.rsa.pu
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.env.KalmiaPreSharedKey;
+import com.github.cao.awa.kalmia.network.encode.crypto.asymmetric.rsa.RsaCrypto;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.aes.AesCrypto;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
@@ -34,13 +35,13 @@ public class HandshakePreSharedRsaPacket extends ReadonlyPacket<HandshakeHandler
 
     @Override
     public void inbound(RequestRouter router, HandshakeHandler handler) {
-        if (! this.cipherKey.equals(KalmiaEnv.expectCipherKey)) {
-            LOGGER.warn("The server sent cipher key is not same to client expected: " + this.cipherKey + " (server) / " + KalmiaEnv.expectCipherKey + " (client)");
+        if (! this.cipherKey.equals(KalmiaPreSharedKey.expectCipherKey)) {
+            LOGGER.warn("The server sent cipher key is not same to client expected: " + this.cipherKey + " (server) / " + KalmiaPreSharedKey.expectCipherKey + " (client)");
         }
-        router.send(new HandshakeAesCipherRequest(KalmiaEnv.DEFAULT_PRE_PUBKEY.get(this.cipherKey)
-                                                                              .cipher(),
-                                                  AES_CIPHER
+        router.setCrypto(new RsaCrypto(KalmiaPreSharedKey.pubkeyManager.get(this.cipherKey),
+                                       null
         ));
+        router.send(new HandshakeAesCipherRequest(AES_CIPHER));
         router.setCrypto(new AesCrypto(AES_CIPHER));
     }
 }

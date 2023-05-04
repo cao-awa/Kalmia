@@ -8,7 +8,6 @@ import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.login.success.LoginSuccessRequest;
-import com.github.cao.awa.kalmia.network.packet.request.message.select.SelectMessageRequest;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
@@ -50,10 +49,10 @@ public class LoginSuccessPacket extends ReadonlyPacket<AuthedRequestHandler> {
 
         TrafficCount.show();
 
-        router.send(new SelectMessageRequest(123456,
-                                             0,
-                                             200
-        ));
+//        router.send(new SelectMessageRequest(123456,
+//                                             0,
+//                                             200
+//        ));
 
 //        router.send(new SelectMessageRequest(123,
 //                                             0,

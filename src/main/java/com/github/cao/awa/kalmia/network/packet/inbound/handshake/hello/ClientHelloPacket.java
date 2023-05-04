@@ -3,6 +3,8 @@ package com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.env.KalmiaPreSharedKey;
+import com.github.cao.awa.kalmia.network.encode.crypto.asymmetric.rsa.RsaCrypto;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
 import com.github.cao.awa.kalmia.network.packet.request.handshake.crypto.rsa.pubkey.HandshakePreSharedRsaRequest;
@@ -41,8 +43,10 @@ public class ClientHelloPacket extends ReadonlyPacket<HandshakeHandler> {
         if (this.majorProtocol.version() > KalmiaEnv.STANDARD_REQUEST_PROTOCOL.version()) {
             System.out.println("WARN: the protocol is future version, not compatible!");
         }
-        String usingCipherKey = KalmiaEnv.DEFAULT_PRE_PRIKEY.containsKey(this.expectCipherKey) ? this.expectCipherKey : KalmiaEnv.defaultCipherKey;
-        handler.setupRsa(usingCipherKey);
+        String usingCipherKey = KalmiaPreSharedKey.prikeyManager.has(this.expectCipherKey) ? this.expectCipherKey : KalmiaPreSharedKey.defaultCipherKey;
+        router.setCrypto(new RsaCrypto(null,
+                                       KalmiaPreSharedKey.prikeyManager.get(usingCipherKey)
+        ));
         router.send(new HandshakePreSharedRsaRequest(usingCipherKey));
     }
 }
