@@ -1,6 +1,7 @@
 package com.github.cao.awa.apricot.util.encryption;
 
 import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +11,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -21,6 +24,7 @@ public class Crypto {
     private static final byte[] DEFAULT_KEY_IV = new byte[]{102, - 123, 114, - 106, - 40, - 35, 71, - 2, - 89, 81, 13, 47, - 79, 89, 121, - 23};
     public static final String RSA_ALGORITHM = "RSA";
     public static final String BC_PROVIDER = "BC";
+    public static final String EC_ALGORITHM = "EC";
     public static final SecureRandom RANDOM = new SecureRandom();
 
     static {
@@ -112,9 +116,9 @@ public class Crypto {
 
     public static RSAPublicKey decodeRsaPubkey(byte[] key) {
         try {
-            X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(key);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return EntrustEnvironment.cast(keyFactory.generatePublic(encodedKeySpec));
+            return EntrustEnvironment.cast(keyFactory.generatePublic(keySpec));
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
@@ -122,11 +126,111 @@ public class Crypto {
 
     public static RSAPrivateKey decodeRsaPrikey(byte[] key) {
         try {
-            PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(key);
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(key);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return EntrustEnvironment.cast(keyFactory.generatePrivate(encodedKeySpec));
+            return EntrustEnvironment.cast(keyFactory.generatePrivate(keySpec));
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    public static KeyPair ecKeyPair(int keySize) throws Exception {
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(EC_ALGORITHM,
+                                                                   BC_PROVIDER
+        );
+        keyPairGen.initialize(keySize,
+                              RANDOM
+        );
+        return keyPairGen.generateKeyPair();
+    }
+
+    public static byte[] ecEncrypt(byte[] data, ECPublicKey publicKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("ECIES",
+                                           "BC"
+        );
+        cipher.init(Cipher.ENCRYPT_MODE,
+                    publicKey
+        );
+        return cipher.doFinal(data);
+
+    }
+
+    public static byte[] ecDecrypt(byte[] encryptedData, ECPrivateKey privateKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("ECIES",
+                                           "BC"
+        );
+        cipher.init(Cipher.DECRYPT_MODE,
+                    privateKey
+        );
+        return cipher.doFinal(encryptedData);
+    }
+
+    public static ECPublicKey decodeEcPubkey(byte[] key) {
+        try {
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);
+            KeyFactory keyFactory = KeyFactory.getInstance("EC");
+            return EntrustEnvironment.cast(keyFactory.generatePublic(keySpec));
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static ECPrivateKey decodeEcPrikey(byte[] key) {
+        try {
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(key);
+            KeyFactory keyFactory = KeyFactory.getInstance("EC");
+            return EntrustEnvironment.cast(keyFactory.generatePrivate(keySpec));
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static byte[] ecSign(byte[] content, byte[] priKey) throws Exception {
+        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(priKey);
+        KeyFactory keyFactory = KeyFactory.getInstance("EC");
+        ECPrivateKey privateK = (ECPrivateKey) keyFactory.generatePrivate(pkcs8KeySpec);
+        Signature sign = Signature.getInstance("SHA256withECDSA");
+        sign.initSign(privateK);
+        sign.update(content);
+        return sign.sign();
+    }
+
+    public static void main(String[] args) {
+        try {
+            //初始化获取公钥和私钥
+            KeyPair keypair = ecKeyPair(384);
+
+            PublicKey publicKey = keypair.getPublic();
+            PrivateKey privateKey = keypair.getPrivate();
+
+            System.out.println(privateKey.getClass());
+
+            System.out.println(Mathematics.radix(publicKey.getEncoded(),
+                                                 36
+            ));
+            System.out.println(Mathematics.radix(privateKey.getEncoded(),
+                                                 36
+            ));
+
+//            String publicKeyBase64 = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+//            String privateKeyBase64 = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+
+            String con = "Test www";
+            System.out.println("w: " + con);
+            //加密
+            byte[] content = ecEncrypt(con.getBytes(),
+                                       (ECPublicKey) publicKey
+            );
+            //解密
+            String contentDe = new String(ecDecrypt(content,
+                                                    (ECPrivateKey) privateKey
+            ));
+            //解密之后
+            String deStr = contentDe;
+            System.out.println("e: " + deStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

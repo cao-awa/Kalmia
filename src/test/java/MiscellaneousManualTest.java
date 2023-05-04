@@ -2,15 +2,27 @@ import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 
+import java.security.KeyPair;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 public class MiscellaneousManualTest {
     public static void main(String[] args) {
         try {
+            rsa();
+            ec();
+
+            System.out.println("---Test start---");
             long start = TimeUtil.millions();
 
             rsa();
+
+            System.out.println(TimeUtil.processMillion(start) + "ms");
+            start = TimeUtil.millions();
+
+            ec();
 
             System.out.println(TimeUtil.processMillion(start) + "ms");
 
@@ -80,15 +92,15 @@ public class MiscellaneousManualTest {
     }
 
     public static void rsa() throws Exception {
-//        KeyPair pair = Crypto.rsaKeypair(8192);
-//        System.out.println(Mathematics.radix(pair.getPublic()
-//                                                 .getEncoded(),
-//                                             36
-//        ));
-//        System.out.println(Mathematics.radix(pair.getPrivate()
-//                                                 .getEncoded(),
-//                                             36
-//        ));
+        KeyPair pair = Crypto.rsaKeypair(4096);
+        System.out.println(Mathematics.radix(pair.getPublic()
+                                                 .getEncoded(),
+                                             36
+        ));
+        System.out.println(Mathematics.radix(pair.getPrivate()
+                                                 .getEncoded(),
+                                             36
+        ));
 
         RSAPublicKey publicKey = Crypto.decodeRsaPubkey(Mathematics.toBytes("nz02b2aac6hyht2sw5ry3hiyfi3h2xlgruxvpuolw2cg4rvut0mog6y0y3isvvy05txuvjbra02e1i6g8rwdtzvyewodtpik1rekl65sr37kw6748qvr4dwc5ptv53hbhtx4ray6szcj89xwmotbuxoy9sp2wqgqyymcgc1k7rbfrvvo9a8sad2pgll80du4zy8julo8rkijicxxx40eq61pinmp7tp1t75uns9todd8tu4jx6opvoflfno6qxhaccerfmo6u4cv9ajnialmv2lmhcruu6nmhfrhwskbp3h872j68xatl8r20r2h55eg5s7ncovtp4lukblnj539sfo9lfgzlfdwq81iokuwqoe0s29q1ff0dtublxkg062itejvycyfo7ft5le25elbkyjietesixq4t84ztwxjyluf4jvoten2acdv0qrv67fxixmumsockgbzl1988yjfrlh4pfqky6ovj6u2mv0dqusfgc2jbxon2gh3z1nd75f2n4e87mxu1pwk3gih1szf5ahjlkxwppa1a2ofj3q749x7h1c3rfo6k4z9touh44fzjw9uqdhvnq3euwnajiv7qexsww2k3aftkp8gkekqcozj5batdx834rqmihqykrv6u38m85lshxgotghuk9pbkswbl5eui6awbilaf90zc6k9601ms33ac19bz1sbcmqf1hdf4qwwcg7alt6twr5wixb10j6hrc9q14qsv8grtr6r9fj2b84o0m54fdyo2u5a62jcj2nin6bwyv9gchi4lc40nmqklgz80k108925eg0qn0bxybswnkdd59uea0ubs6x81mxxntizla58j5z99y8ehe6rwb1ok3mvadd28b8mjmnz7l2tl419fr8ohvuan6yzfh53gi7naqzle3nwo098e6ff5nb135msreqagkyyphxsgc029lmq5by69x2kkvrfyzdh13zivcn4ivre4pyto8lb9brkkwusmsrpakvh436kovxz1jzo5jpliazu0erp0wb9o6mlod6f639hghmnj218l3lfkuauxakn4kaltyoma2b6ws7jlcjbvrr451x875bb1gvp96lh05rvvzzkd3j9g28eo023l32aixwhvalggl2g30e7gdzn1k38q909p5sdc4eeh70oxllc7qjzbt6ee1c6pb7utp4ovmx3f4vpidr0qcjydgvo65zewb4bu4i1yldfmlj5t0ptmjxkmz8vkr7ouryewl0kef1kxrqehqjtgwesp8901jxd55jmqx4ffy3u4i4rar4wqdmuzo6m8r6yph6ld9icrqnr6c3pyzjw9db7ipnkw930kf838mgz4nb3sz34b9if0ixktaycpn3dr7jstwdkk9e50k5zofpkoaj1c93rdufeb8yy09lzajafung1gu1oe271evbdnqr0pl8g8ok1pxpp4ksnsn44zuu4qakg11osc5glcwsbdh5pes2teek0xgiuieoznqpgeuq4rthl6se1idv0zupru0j1k4zdlshjs8spc73m8jwryt69ogcfzkcctorjxlxwqgmmtq4ps358o0djmspch28st8af2h5l59nye8xrcqmblzt137g7yx4s0splc1zlz36y730o2rl",
                                                                             36
@@ -103,6 +115,34 @@ public class MiscellaneousManualTest {
 
         System.out.println(new String(Crypto.rsaDecrypt(ciphertext,
                                                         privateKey
+        )));
+    }
+
+    public static void ec() throws Exception {
+        KeyPair keypair = Crypto.ecKeyPair(384);
+
+        System.out.println(Mathematics.radix(keypair.getPublic()
+                                                    .getEncoded(),
+                                             36
+        ));
+        System.out.println(Mathematics.radix(keypair.getPrivate()
+                                                    .getEncoded(),
+                                             36
+        ));
+
+        ECPublicKey publicKey = Crypto.decodeEcPubkey(Mathematics.toBytes("28lbr8j2ese9enb00e8kwy62v8zky2peyojoepyntitqufu4o77qpndw1y0k8kjwdzb9way1r6fkhqlaznid8udyx3azxsc2744ly1iyfifytsfq4qqfsvnmrd64r9jkizuzr3e9i4w2oslxphcxjvvyknb3ish8sx70mdvxsok7z27mh7ijh3clmb",
+                                                                          36
+        ));
+        ECPrivateKey privateKey = Crypto.decodeEcPrikey(Mathematics.toBytes("duumyfr69utbni86zki6mhah52785oqn0lfhh08qcr7t0cht01jn8smbvu0isu4jncsmwww82sr4wdxay221d9ctaahszwyxsokafl8kpj9gqfnjps9q8gnux16uqr9yawx21aodp85vznc420cje4897p04te9cklsdn1j97mum1v7dhx3raodldd9b4warajakeilzpfryxqn564wcd3u7cll323vkj35etr8wbm3kbku83sfmmkhsyciz8nla78hvm292iohvbuoyl5ejqdseoycoxk5dqnefi8e9cdbn",
+                                                                            36
+        ));
+
+        byte[] ciphertext = Crypto.ecEncrypt("awaqwq".getBytes(),
+                                             publicKey
+        );
+
+        System.out.println(new String(Crypto.ecDecrypt(ciphertext,
+                                                       privateKey
         )));
     }
 }

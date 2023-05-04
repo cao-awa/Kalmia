@@ -13,7 +13,8 @@ import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
 import com.github.cao.awa.kalmia.network.packet.Request;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.packet.request.invalid.operation.OperationInvalidRequest;
+import com.github.cao.awa.kalmia.network.packet.dual.DualPacket;
+import com.github.cao.awa.kalmia.network.packet.dual.invalid.operation.OperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedPingPacket;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
@@ -84,7 +85,7 @@ public class RequestRouter extends NetworkRouter {
             // TODO
             e.printStackTrace();
 
-            send(new OperationInvalidRequest("Server internal error"));
+            send(new OperationInvalidPacket<>("Server internal error"));
         } catch (Exception e) {
             BugTrace.trace(e,
                            "Event pipeline happened exception or packet deserialize not completed, please check last bug trace and report theses trace"
@@ -144,6 +145,10 @@ public class RequestRouter extends NetworkRouter {
     }
 
     public void send(Request packet) {
+        this.context.writeAndFlush(packet);
+    }
+
+    public void send(DualPacket<?> packet) {
         this.context.writeAndFlush(packet);
     }
 

@@ -2,26 +2,28 @@ import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.client.KalmiaClient;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
+import com.github.cao.awa.kalmia.network.packet.dual.handshake.hello.client.ClientHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
-import com.github.cao.awa.kalmia.network.packet.request.handshake.hello.ClientHelloRequest;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
-import org.junit.jupiter.api.Test;
 
 public class ConnectTest {
-    @Test
-    public void testConnect() throws Exception {
-        EntrustEnvironment.thread(() -> {
-                              try {
-                                  startServer();
-                              } catch (Exception e) {
-                                  throw new RuntimeException(e);
-                              }
-                          })
-                          .start();
+    public static void main(String[] args) throws Exception {
+        new ConnectTest().testConnect();
+    }
 
-        while (Kalmia.SERVER == null || ! Kalmia.SERVER.isStarted()) {
-            Thread.sleep(10);
-        }
+    //    @Test
+    public void testConnect() throws Exception {
+//        EntrustEnvironment.thread(() -> {
+//                              try {
+//                                  startServer();
+//                              } catch (Exception e) {
+//                                  throw new RuntimeException(e);
+//                              }
+//                          })
+//                          .start();
+//
+//        while (Kalmia.SERVER == null || ! Kalmia.SERVER.isStarted()) {
+//            Thread.sleep(10);
+//        }
 
         KalmiaEnv.setupClient();
 
@@ -30,8 +32,12 @@ public class ConnectTest {
         KalmiaClient client = new KalmiaClient();
 
         client.activeCallback(router -> {
-            router.send(new ClientHelloRequest(KalmiaEnv.STANDARD_REQUEST_PROTOCOL,
-                                               "KalmiaWww v1.0.0"
+//            router.send(new ClientHelloRequest(KalmiaEnv.STANDARD_REQUEST_PROTOCOL,
+//                                               "KalmiaWww v1.0.0"
+//            ));
+
+            router.send(new ClientHelloPacket(KalmiaEnv.STANDARD_REQUEST_PROTOCOL,
+                                              "KalmiaWww v1.0.1"
             ));
 
 //                            System.out.println("W: " + Mathematics.radix(test,

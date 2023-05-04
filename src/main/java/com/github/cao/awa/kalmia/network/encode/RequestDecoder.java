@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 public class RequestDecoder extends ByteToMessageDecoder {
@@ -86,6 +87,8 @@ public class RequestDecoder extends ByteToMessageDecoder {
     }
 
     private void done(byte[] data, List<Object> out) {
+        System.out.println(Arrays.toString(data));
+
         // Decode it by router.
         data = this.router.decode(data);
 

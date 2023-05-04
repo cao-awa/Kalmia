@@ -7,8 +7,9 @@ import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
-import com.github.cao.awa.kalmia.network.packet.ReadonlyPacket;
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
+import com.github.cao.awa.kalmia.network.packet.dual.DualPacket;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Generic;
@@ -25,7 +26,8 @@ import java.util.function.Function;
 
 public class UnsolvedPacketFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("UnsolvedPacketFramework");
-    private final Map<Class<? extends ReadonlyPacket<?>>, Constructor<? extends ReadonlyPacket<?>>> constructors = ApricotCollectionFactor.newHashMap();
+    private final Map<Class<? extends DualPacket<?>>, Constructor<? extends DualPacket<?>>> constructors = ApricotCollectionFactor.newHashMap();
+    private final Map<Class<? extends DualPacket<?>>, byte[]> ids = ApricotCollectionFactor.newHashMap();
 
     public void work() {
         // Working stream...
@@ -37,14 +39,14 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
     }
 
     public boolean match(Class<?> clazz) {
-        return clazz.isAnnotationPresent(AutoSolvedPacket.class) && ReadonlyPacket.class.isAssignableFrom(clazz);
+        return clazz.isAnnotationPresent(AutoSolvedPacket.class) && DualPacket.class.isAssignableFrom(clazz);
     }
 
-    public Class<? extends ReadonlyPacket<?>> cast(Class<?> clazz) {
+    public Class<? extends DualPacket<?>> cast(Class<?> clazz) {
         return EntrustEnvironment.cast(clazz);
     }
 
-    public void build(Class<? extends ReadonlyPacket<?>> readonly) {
+    public void build(Class<? extends DualPacket<?>> readonly) {
 //        LOGGER.info("Building function for: {}",
 //                    readonly.getName()
 //        );
@@ -65,24 +67,24 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
         long id = readonly.getAnnotation(AutoSolvedPacket.class)
                           .value();
 
-        Constructor<? extends ReadonlyPacket<?>> constructor = EntrustEnvironment.trys(() -> EntrustEnvironment.cast(ensureAccessible(readonly.getConstructor(BytesReader.class))),
-                                                                                       ex -> {
-                                                                                           return EntrustEnvironment.trys(() -> ensureAccessible(readonly.getConstructor()),
-                                                                                                                          ex0 -> {
-                                                                                                                              BugTrace.trace(ex0,
-                                                                                                                                             StringConcat.concat(
-                                                                                                                                                     "Readonly packet '",
-                                                                                                                                                     readonly.getName(),
-                                                                                                                                                     "' are missing the standard constructor, but it using @AutoSolvedPacket annotation to invert control by id '",
-                                                                                                                                                     id,
-                                                                                                                                                     "'"
-                                                                                                                                             ),
-                                                                                                                                             true
-                                                                                                                              );
-                                                                                                                              return null;
-                                                                                                                          }
-                                                                                           );
-                                                                                       }
+        Constructor<? extends DualPacket<?>> constructor = EntrustEnvironment.trys(() -> EntrustEnvironment.cast(ensureAccessible(readonly.getConstructor(BytesReader.class))),
+                                                                                   ex -> {
+                                                                                       return EntrustEnvironment.trys(() -> ensureAccessible(readonly.getConstructor()),
+                                                                                                                      ex0 -> {
+                                                                                                                          BugTrace.trace(ex0,
+                                                                                                                                         StringConcat.concat(
+                                                                                                                                                 "Readonly packet '",
+                                                                                                                                                 readonly.getName(),
+                                                                                                                                                 "' are missing the standard constructor, but it using @AutoSolvedPacket annotation to invert control by id '",
+                                                                                                                                                 id,
+                                                                                                                                                 "'"
+                                                                                                                                         ),
+                                                                                                                                         true
+                                                                                                                          );
+                                                                                                                          return null;
+                                                                                                                      }
+                                                                                       );
+                                                                                   }
         );
 
         if (constructor == null) {
@@ -95,6 +97,9 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
         } else {
             this.constructors.put(readonly,
                                   constructor
+            );
+            this.ids.put(readonly,
+                         SkippedBase256.longToBuf(id)
             );
         }
 
@@ -113,7 +118,7 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
         );
     }
 
-    public ReadonlyPacket<?> solve(Class<? extends ReadonlyPacket<?>> clazz, BytesReader reader) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+    public DualPacket<?> solve(Class<? extends DualPacket<?>> clazz, BytesReader reader) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         try {
             return this.constructors.get(clazz)
                                     .newInstance(reader);
@@ -122,23 +127,27 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
         }
     }
 
-    public ReadonlyPacket<?> solve(Class<? extends ReadonlyPacket<?>> clazz) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+    public DualPacket<?> solve(Class<? extends DualPacket<?>> clazz) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         return this.constructors.get(clazz)
                                 .newInstance();
     }
 
-    private static final class AutoUnsolved extends UnsolvedPacket<ReadonlyPacket<?>> {
-        private final Class<? extends ReadonlyPacket<?>> clazz;
+    public byte[] id(Class<? extends DualPacket<?>> type) {
+        return this.ids.get(type);
+    }
+
+    private static final class AutoUnsolved extends UnsolvedPacket<DualPacket<?>> {
+        private final Class<? extends DualPacket<?>> clazz;
         private final UnsolvedPacketFramework framework;
 
-        public AutoUnsolved(byte[] data, Class<? extends ReadonlyPacket<?>> clazz, UnsolvedPacketFramework framework) {
+        public AutoUnsolved(byte[] data, Class<? extends DualPacket<?>> clazz, UnsolvedPacketFramework framework) {
             super(data);
             this.clazz = clazz;
             this.framework = framework;
         }
 
         @Override
-        public ReadonlyPacket<?> packet() {
+        public DualPacket<?> packet() {
             return EntrustEnvironment.trys(this :: create,
                                            ex -> {
                                                BugTrace.trace(ex,
@@ -157,7 +166,7 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
             );
         }
 
-        private ReadonlyPacket<?> create() throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        private DualPacket<?> create() throws InvocationTargetException, InstantiationException, IllegalAccessException {
             return this.framework.solve(this.clazz,
                                         reader()
                        )

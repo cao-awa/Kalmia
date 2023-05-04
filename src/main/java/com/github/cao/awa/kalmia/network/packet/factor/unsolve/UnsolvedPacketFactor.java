@@ -5,9 +5,9 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.packet.request.invalid.operation.OperationInvalidRequest;
-import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingRequest;
-import com.github.cao.awa.kalmia.network.packet.request.ping.unstatus.TryPingResponseRequest;
+import com.github.cao.awa.kalmia.network.packet.dual.invalid.operation.OperationInvalidPacket;
+import com.github.cao.awa.kalmia.network.packet.dual.ping.unstatus.TryPingPacket;
+import com.github.cao.awa.kalmia.network.packet.dual.ping.unstatus.TryPingResponsePacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.invalid.operation.UnsolvedOperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingResponsePacket;
@@ -43,18 +43,18 @@ public class UnsolvedPacketFactor {
         // Ping
         register(
                 // 4
-                TryPingRequest.ID,
+                TryPingPacket.ID,
                 UnsolvedTryPingPacket :: new
         );
         register(
                 // 5
-                TryPingResponseRequest.ID,
+                TryPingResponsePacket.ID,
                 UnsolvedTryPingResponsePacket :: new
         );
 
         // Invalid operation
         register(
-                OperationInvalidRequest.ID,
+                OperationInvalidPacket.ID,
                 UnsolvedOperationInvalidPacket :: new
         );
     }

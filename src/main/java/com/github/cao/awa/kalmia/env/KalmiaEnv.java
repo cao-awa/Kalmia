@@ -13,7 +13,7 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.ECPublicKey;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -53,10 +53,10 @@ public class KalmiaEnv {
         if (isServer) {
             KalmiaPreSharedKey.prikeyManager.add(KalmiaPreSharedKey.defaultCipherKey,
                                                  nullThenThrow(EntrustEnvironment.trys(() -> {
-                                                                   return Crypto.decodeRsaPrikey(Mathematics.toBytes(IOUtil.read(new InputStreamReader(ResourcesLoader.get("secret/kalmiagram/main/SECRET_PRIVATE"),
-                                                                                                                                                       StandardCharsets.UTF_8
-                                                                                                                     )),
-                                                                                                                     36
+                                                                   return Crypto.decodeEcPrikey(Mathematics.toBytes(IOUtil.read(new InputStreamReader(ResourcesLoader.get("secret/kalmiagram/main/SECRET_PRIVATE"),
+                                                                                                                                                      StandardCharsets.UTF_8
+                                                                                                                    )),
+                                                                                                                    36
                                                                    ));
                                                                }),
                                                                PreShareKeyNotFoundException :: new
@@ -65,14 +65,14 @@ public class KalmiaEnv {
         }
 
         // Client pubkey init.
-        RSAPublicKey kalmiaMainPrikey = nullThenThrow(EntrustEnvironment.trys(() -> {
-                                                          return Crypto.decodeRsaPubkey(Mathematics.toBytes(IOUtil.read(new InputStreamReader(ResourcesLoader.get("secret/kalmiagram/main/SECRET_PUBLIC"),
-                                                                                                                                              StandardCharsets.UTF_8
-                                                                                                            )),
-                                                                                                            36
-                                                          ));
-                                                      }),
-                                                      PreShareKeyNotFoundException :: new
+        ECPublicKey kalmiaMainPrikey = nullThenThrow(EntrustEnvironment.trys(() -> {
+                                                         return Crypto.decodeEcPubkey(Mathematics.toBytes(IOUtil.read(new InputStreamReader(ResourcesLoader.get("secret/kalmiagram/main/SECRET_PUBLIC"),
+                                                                                                                                            StandardCharsets.UTF_8
+                                                                                                          )),
+                                                                                                          36
+                                                         ));
+                                                     }),
+                                                     PreShareKeyNotFoundException :: new
         );
 
         KalmiaPreSharedKey.pubkeyManager.add(KalmiaPreSharedKey.defaultCipherKey,
