@@ -15,7 +15,6 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 @Generic
 @AutoSolvedPacket(9)
 public class LoginSuccessPacket extends DualPacket<AuthedRequestHandler> {
-    public static final byte[] ID = SkippedBase256.longToBuf(9);
     private final long uid;
     private final byte[] token;
 

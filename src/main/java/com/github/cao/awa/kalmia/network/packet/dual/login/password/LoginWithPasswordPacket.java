@@ -27,7 +27,6 @@ import java.util.Arrays;
 @Generic
 @AutoSolvedPacket(6)
 public class LoginWithPasswordPacket extends DualPacket<LoginHandler> {
-    public static final byte[] ID = SkippedBase256.longToBuf(6);
     private final long uid;
     private final byte[] password;
 

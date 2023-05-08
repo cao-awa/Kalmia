@@ -4,7 +4,6 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.env.KalmiaPreSharedKey;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.encode.crypto.asymmetric.ac.EcCrypto;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.dual.DualPacket;
@@ -22,7 +21,6 @@ public class ClientHelloPacket extends DualPacket<HandshakeHandler> {
     private static final boolean SHOULD_RSA = true;
     private static final boolean SHOULD_SYM = true;
     private static final long SYM_ID = - 1;
-    public static final byte[] ID = SkippedBase256.longToBuf(0);
     private final RequestProtocolName majorProtocol;
     private final String clientVersion;
     private final String expectCipherKey;

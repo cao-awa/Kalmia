@@ -1,7 +1,6 @@
 package com.github.cao.awa.apricot.util.encryption;
 
 import com.github.cao.awa.apricot.anntation.Stable;
-import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -185,52 +184,33 @@ public class Crypto {
         }
     }
 
-    public static byte[] ecSign(byte[] content, byte[] priKey) throws Exception {
-        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(priKey);
-        KeyFactory keyFactory = KeyFactory.getInstance("EC");
-        ECPrivateKey privateK = (ECPrivateKey) keyFactory.generatePrivate(pkcs8KeySpec);
-        Signature sign = Signature.getInstance("SHA256withECDSA");
-        sign.initSign(privateK);
+    public static byte[] ecSign(byte[] content, ECPrivateKey privateKey) throws Exception {
+        Signature sign = Signature.getInstance("SHA512WithECDSA");
+        sign.initSign(privateKey);
         sign.update(content);
         return sign.sign();
     }
 
-    public static void main(String[] args) {
-        try {
-            //初始化获取公钥和私钥
-            KeyPair keypair = ecKeyPair(384);
 
-            PublicKey publicKey = keypair.getPublic();
-            PrivateKey privateKey = keypair.getPrivate();
+    public static Boolean ecVerify(byte[] contentSource, byte[] contentSign, PublicKey pubKey) throws Exception {
+        Signature sign = Signature.getInstance("SHA512WithECDSA");
+        sign.initVerify(pubKey);
+        sign.update(contentSource);
+        return sign.verify(contentSign);
+    }
 
-            System.out.println(privateKey.getClass());
+    public static byte[] rsaSign(byte[] content, RSAPrivateKey privateKey) throws Exception {
+        Signature sign = Signature.getInstance("SHA512WithRSA");
+        sign.initSign(privateKey);
+        sign.update(content);
+        return sign.sign();
+    }
 
-            System.out.println(Mathematics.radix(publicKey.getEncoded(),
-                                                 36
-            ));
-            System.out.println(Mathematics.radix(privateKey.getEncoded(),
-                                                 36
-            ));
 
-//            String publicKeyBase64 = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-//            String privateKeyBase64 = Base64.getEncoder().encodeToString(privateKey.getEncoded());
-
-            String con = "Test www";
-            System.out.println("w: " + con);
-            //加密
-            byte[] content = ecEncrypt(con.getBytes(),
-                                       (ECPublicKey) publicKey
-            );
-            //解密
-            String contentDe = new String(ecDecrypt(content,
-                                                    (ECPrivateKey) privateKey
-            ));
-            //解密之后
-            String deStr = contentDe;
-            System.out.println("e: " + deStr);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    public static Boolean rsaVerify(byte[] contentSource, byte[] contentSign, PublicKey pubKey) throws Exception {
+        Signature sign = Signature.getInstance("SHA512WithRSA");
+        sign.initVerify(pubKey);
+        sign.update(contentSource);
+        return sign.verify(contentSign);
     }
 }
