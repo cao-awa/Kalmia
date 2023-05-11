@@ -4,10 +4,10 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
+import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.disabled.DisabledRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
@@ -20,33 +20,24 @@ import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.DisabledUser;
 import com.github.cao.awa.kalmia.user.User;
 import com.github.cao.awa.modmdo.annotation.platform.Generic;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.util.Arrays;
 
 @Generic
 @AutoSolvedPacket(6)
 public class LoginWithPasswordPacket extends Packet<LoginHandler> {
-    private final long uid;
-    private final byte[] password;
-
+    @AutoData
+    private long uid;
+    @AutoData
+    private byte[] password;
 
     public LoginWithPasswordPacket(long uid, byte[] password) {
         this.uid = uid;
         this.password = password;
     }
 
-    @Override
-    public byte[] data() {
-        return BytesUtil.concat(SkippedBase256.longToBuf(this.uid),
-                                new byte[]{(byte) this.password.length},
-                                this.password
-        );
-    }
-
     public LoginWithPasswordPacket(BytesReader reader) {
-        this.uid = SkippedBase256.readLong(reader);
-        this.password = reader.read(reader.read());
+        super(reader);
     }
 
     public long getUid() {

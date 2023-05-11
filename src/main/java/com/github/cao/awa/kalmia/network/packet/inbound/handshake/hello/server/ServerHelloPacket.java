@@ -5,17 +5,15 @@ import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotation.crypto.CryptoEncoded;
 import com.github.cao.awa.kalmia.annotation.crypto.NotDecoded;
+import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.mathematic.base.Base256;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.modmdo.annotation.platform.Generic;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,13 +22,14 @@ import org.apache.logging.log4j.Logger;
 public class ServerHelloPacket extends Packet<HandshakeHandler> {
     private static final Logger LOGGER = LogManager.getLogger("ServerHello");
 
+    @AutoData
     @NotDecoded
-    private final byte[] testKey;
-    private final byte[] testSha;
+    private byte[] testKey;
+    @AutoData
+    private byte[] testSha;
+    @AutoData
     @NotDecoded
-    private final byte[] iv;
-
-    public static final byte[] ID = SkippedBase256.longToBuf(3);
+    private byte[] iv;
 
     public ServerHelloPacket(@CryptoEncoded byte[] testKey, byte[] testSha, @CryptoEncoded byte[] iv) {
         try {
@@ -43,21 +42,8 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
         }
     }
 
-    @Override
-    public byte[] data() {
-        return BytesUtil.concat(Base256.tagToBuf(this.testKey.length),
-                                this.testKey,
-                                new byte[]{(byte) this.testSha.length},
-                                this.testSha,
-                                new byte[]{(byte) this.iv.length},
-                                this.iv
-        );
-    }
-
     public ServerHelloPacket(BytesReader reader) {
-        this.testKey = reader.read(Base256.tagFromBuf(reader.read(2)));
-        this.testSha = reader.read(reader.read());
-        this.iv = reader.read(reader.read());
+        super(reader);
     }
 
     public byte[] getTestKey() {

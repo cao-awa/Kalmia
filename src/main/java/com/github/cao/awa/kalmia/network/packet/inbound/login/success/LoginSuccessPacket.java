@@ -1,38 +1,31 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.login.success;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Generic;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 @Generic
 @AutoSolvedPacket(9)
 public class LoginSuccessPacket extends Packet<AuthedRequestHandler> {
-    private final long uid;
-    private final byte[] token;
+    @AutoData
+    private long uid;
+    @AutoData
+    private byte[] token;
 
     public LoginSuccessPacket(long uid, byte[] token) {
         this.uid = uid;
         this.token = token;
     }
 
-    @Override
-    public byte[] data() {
-        return BytesUtil.concat(SkippedBase256.longToBuf(this.uid),
-                                this.token
-        );
-    }
-
     public LoginSuccessPacket(BytesReader reader) {
-        this.uid = SkippedBase256.readLong(reader);
-        this.token = reader.all();
+        super(reader);
     }
 
     @Override

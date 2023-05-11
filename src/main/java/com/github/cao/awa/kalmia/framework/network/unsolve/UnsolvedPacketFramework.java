@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.framework.network.unsolve;
 import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
@@ -19,8 +20,11 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -123,6 +127,7 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
             return this.constructors.get(clazz)
                                     .newInstance(reader);
         } catch (Exception e) {
+            e.printStackTrace();
             return solve(clazz);
         }
     }
@@ -134,6 +139,47 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
 
     public byte[] id(Class<? extends Packet<?>> type) {
         return this.ids.get(type);
+    }
+
+    public byte[] data(Packet<?> packet) throws Exception {
+        Class<Packet<?>> clazz = EntrustEnvironment.cast(packet.getClass());
+        LinkedList<Field> fields = ApricotCollectionFactor.newLinkedList();
+        for (Field e : clazz.getDeclaredFields()) {
+            if (e.isAnnotationPresent(AutoData.class)) {
+                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),
+                                            packet
+                ));
+            }
+        }
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        for (Field field : fields) {
+            output.write(KalmiaEnv.serializeFramework.getSerializer(field.getType())
+                                                     .serialize(EntrustEnvironment.cast(field.get(packet))));
+        }
+
+        return output.toByteArray();
+    }
+
+    public void create(Packet<?> packet, BytesReader reader) throws Exception {
+        Class<Packet<?>> clazz = EntrustEnvironment.cast(packet.getClass());
+        LinkedList<Field> fields = ApricotCollectionFactor.newLinkedList();
+        for (Field e : clazz.getDeclaredFields()) {
+            if (e.isAnnotationPresent(AutoData.class)) {
+                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),
+                                            packet
+                ));
+            }
+        }
+
+        for (Field field : fields) {
+            Object deserialize = KalmiaEnv.serializeFramework.getSerializer(field.getType())
+                                                             .deserialize(reader);
+            field.set(packet,
+                      deserialize
+            );
+        }
     }
 
     private static final class AutoUnsolved extends UnsolvedPacket<Packet<?>> {

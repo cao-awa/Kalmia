@@ -17,6 +17,16 @@ public abstract class Packet<T extends PacketHandler<T>> {
         this.receipt = check(receipt);
     }
 
+    public Packet(BytesReader reader) {
+        try {
+            KalmiaEnv.unsolvedFramework.create(this,
+                                               reader
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public Packet() {
 
     }
@@ -46,7 +56,14 @@ public abstract class Packet<T extends PacketHandler<T>> {
         return reader.read(16);
     }
 
-    public abstract byte[] data();
+    public byte[] data() {
+        return EntrustEnvironment.trys(() -> KalmiaEnv.unsolvedFramework.data(this),
+                                       e -> {
+                                           e.printStackTrace();
+                                           return null;
+                                       }
+        );
+    }
 
     public byte[] id() {
         return KalmiaEnv.unsolvedFramework.id(EntrustEnvironment.cast(this.getClass()));

@@ -67,7 +67,7 @@ public class BytesReader {
         return readable() >= length;
     }
 
-    public int read() {
+    public byte read() {
         return this.bytes.length > this.cursor ? this.bytes[this.cursor++] : - 1;
     }
 

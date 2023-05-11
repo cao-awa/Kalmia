@@ -4,12 +4,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ApricotCollectionFactor {
-    public static <K, V> Map<K, V> newHashMap() {
+    public static <K, V> HashMap<K, V> newHashMap() {
         return new HashMap<>();
         //        return new Object2ObjectOpenHashMap<>();
     }
 
-    public static <K, V> Map<K, V> newHashMap(Map<K, V> map) {
+    public static <K, V> HashMap<K, V> newHashMap(Map<K, V> map) {
         return new HashMap<>(map);
         //        return new Object2ObjectOpenHashMap<>(map);
     }
@@ -18,21 +18,21 @@ public class ApricotCollectionFactor {
         return new ConcurrentHashMap<>();
     }
 
-    public static <V> List<V> newArrayList() {
+    public static <V> ArrayList<V> newArrayList() {
         return new ArrayList<>();
         //        return new ObjectArrayList<>();
     }
 
-    public static <V> List<V> newArrayList(int capacity) {
+    public static <V> ArrayList<V> newArrayList(int capacity) {
         return new ArrayList<>(capacity);
         //        return new ObjectArrayList<>(capacity);
     }
 
-    public static <V> List<V> newLinkedList() {
+    public static <V> LinkedList<V> newLinkedList() {
         return new LinkedList<>();
     }
 
-    public static <V> Set<V> newHashSet() {
+    public static <V> HashSet<V> newHashSet() {
         return new HashSet<>();
         //         return new ObjectOpenHashSet<>();
     }

@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
+import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
@@ -24,24 +25,15 @@ public class HandshakeAesCipherPacket extends Packet<HandshakeHandler> {
     public static final byte[] ID = SkippedBase256.longToBuf(2);
     // Dev definition, the value always should be true
     private static final boolean SHOULD_SESSION_IV = true;
-    private final byte[] cipher;
-
+    @AutoData
+    private byte[] cipher;
 
     public HandshakeAesCipherPacket(byte[] cipher) {
         this.cipher = cipher;
     }
 
-    @Override
-    public byte[] data() {
-        try {
-            return BytesUtil.concat(this.cipher);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public HandshakeAesCipherPacket(BytesReader reader) {
-        this.cipher = reader.read(32);
+        super(reader);
     }
 
     @Override

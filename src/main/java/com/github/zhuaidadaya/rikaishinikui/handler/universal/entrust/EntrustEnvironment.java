@@ -370,11 +370,22 @@ public class EntrustEnvironment {
     }
 
     /**
+     * Cast an object.
+     *
+     * @param target Cast target
+     * @param <T>    Cast type
+     * @return Target type or null
+     */
+    @Nullable
+    public static <T> T cast(@Nullable Object target, Class<T> clazz) {
+        return trys(() -> clazz.cast(target));
+    }
+
+    /**
      * Create a thread of target action.
      *
      * @param action Action
      * @return The thread of target action
-     *
      * @author 草二号机
      * @since 1.0.0
      */
