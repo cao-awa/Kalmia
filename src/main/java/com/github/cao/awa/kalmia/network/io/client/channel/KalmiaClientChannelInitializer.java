@@ -2,8 +2,6 @@ package com.github.cao.awa.kalmia.network.io.client.channel;
 
 import com.github.cao.awa.apricot.anntation.Stable;
 import com.github.cao.awa.kalmia.client.KalmiaClient;
-import com.github.cao.awa.kalmia.network.encode.DualPacketDecoder;
-import com.github.cao.awa.kalmia.network.encode.DualPacketEncoder;
 import com.github.cao.awa.kalmia.network.encode.RequestDecoder;
 import com.github.cao.awa.kalmia.network.encode.RequestEncoder;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
@@ -43,8 +41,6 @@ public class KalmiaClientChannelInitializer extends ChannelInitializer<SocketCha
         RequestRouter router = new RequestRouter(this.client.activeCallback());
         pipeline.addLast(new RequestDecoder(router));
         pipeline.addLast(new RequestEncoder(router));
-        pipeline.addLast(new DualPacketDecoder(router));
-        pipeline.addLast(new DualPacketEncoder(router));
         // Do handle
         pipeline.addLast(router);
     }

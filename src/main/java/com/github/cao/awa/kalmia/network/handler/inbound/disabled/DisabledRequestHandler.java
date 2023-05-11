@@ -2,8 +2,8 @@ package com.github.cao.awa.kalmia.network.handler.inbound.disabled;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
-import com.github.cao.awa.kalmia.network.packet.dual.DualPacket;
-import com.github.cao.awa.kalmia.network.packet.dual.invalid.operation.OperationInvalidPacket;
+import com.github.cao.awa.kalmia.network.packet.Packet;
+import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -29,7 +29,7 @@ public class DisabledRequestHandler extends AuthedRequestHandler {
     }
 
     @Override
-    public void inbound(DualPacket<AuthedRequestHandler> packet, RequestRouter router) {
+    public void inbound(Packet<AuthedRequestHandler> packet, RequestRouter router) {
 //        packet.inbound(router,
 //                       this
 //        );

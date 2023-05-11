@@ -1,11 +1,10 @@
 package com.github.cao.awa.kalmia.network.packet;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.network.packet.dual.DualPacket;
 
-public abstract class UnsolvedPacket<T extends DualPacket<?>> extends Packet {
+public abstract class UnsolvedPacket<T extends Packet<?>> {
     private final byte[] data;
-    private byte[] receipt = Request.RECEIPT;
+    private byte[] receipt = Packet.RECEIPT;
 
     public byte[] data() {
         return this.data;

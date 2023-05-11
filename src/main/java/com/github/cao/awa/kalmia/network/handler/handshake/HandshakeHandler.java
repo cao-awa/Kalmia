@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.network.handler.handshake;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
-import com.github.cao.awa.kalmia.network.packet.dual.DualPacket;
+import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -21,7 +21,7 @@ public class HandshakeHandler extends PacketHandler<HandshakeHandler> {
     }
 
     @Override
-    public void inbound(DualPacket<HandshakeHandler> packet, RequestRouter router) {
+    public void inbound(Packet<HandshakeHandler> packet, RequestRouter router) {
         packet.inbound(router,
                        this
         );
