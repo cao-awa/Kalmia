@@ -4,7 +4,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public class BytesReader {
     private int flag = 0;
-    private final byte[] bytes;
+    private byte[] bytes;
     private int cursor = 0;
 
     public BytesReader(byte[] bytes) {
@@ -73,7 +73,13 @@ public class BytesReader {
 
     public BytesReader reset() {
         this.cursor = 0;
+        this.flag = 0;
         return this;
+    }
+
+    public BytesReader reset(byte[] newBytes) {
+        this.bytes = newBytes;
+        return reset();
     }
 
     public BytesReader back(int range) {
