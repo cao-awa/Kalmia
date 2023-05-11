@@ -192,7 +192,7 @@ public class Crypto {
     }
 
 
-    public static Boolean ecVerify(byte[] contentSource, byte[] contentSign, PublicKey pubKey) throws Exception {
+    public static Boolean ecVerify(byte[] contentSource, byte[] contentSign, ECPublicKey pubKey) throws Exception {
         Signature sign = Signature.getInstance("SHA512WithECDSA");
         sign.initVerify(pubKey);
         sign.update(contentSource);
@@ -207,7 +207,7 @@ public class Crypto {
     }
 
 
-    public static Boolean rsaVerify(byte[] contentSource, byte[] contentSign, PublicKey pubKey) throws Exception {
+    public static Boolean rsaVerify(byte[] contentSource, byte[] contentSign, RSAPublicKey pubKey) throws Exception {
         Signature sign = Signature.getInstance("SHA512WithRSA");
         sign.initVerify(pubKey);
         sign.update(contentSource);
