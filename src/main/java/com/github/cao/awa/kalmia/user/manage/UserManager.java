@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.user.manage;
 
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.user.User;
 import com.github.cao.awa.kalmia.user.database.UserDatabase;
@@ -40,5 +41,22 @@ public class UserManager {
 
     public synchronized void deleteAll() {
         this.database.deleteAll();
+    }
+
+    public synchronized long session(long self, long target) {
+        byte[] sessionData = this.database.session(SkippedBase256.longToBuf(self),
+                                                   SkippedBase256.longToBuf(target)
+        );
+        if (sessionData == null) {
+            return - 1;
+        }
+        return SkippedBase256.readLong(new BytesReader(sessionData));
+    }
+
+    public synchronized void session(long self, long target, long sessionId) {
+        this.database.session(SkippedBase256.longToBuf(self),
+                              SkippedBase256.longToBuf(target),
+                              SkippedBase256.longToBuf(sessionId)
+        );
     }
 }

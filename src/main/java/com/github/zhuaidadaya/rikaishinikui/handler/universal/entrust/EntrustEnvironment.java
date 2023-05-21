@@ -88,6 +88,15 @@ public class EntrustEnvironment {
         }
     }
 
+    public static <T> T trys(ExceptingSupplier<T> action, Consumer<Exception> actionWhenException) {
+        try {
+            return action.get();
+        } catch (Exception e) {
+            actionWhenException.accept(e);
+            return null;
+        }
+    }
+
     public static <T> void nulls(T target, ExceptingConsumer<T> asNull) {
         if (target == null) {
             trys(() -> asNull.accept(null));

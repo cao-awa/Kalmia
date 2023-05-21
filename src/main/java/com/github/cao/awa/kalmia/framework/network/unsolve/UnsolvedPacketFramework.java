@@ -12,9 +12,6 @@ import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
-import com.github.cao.awa.modmdo.annotation.platform.Client;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
-import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.trtr.util.string.StringConcat;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
@@ -51,23 +48,6 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
     }
 
     public void build(Class<? extends Packet<?>> readonly) {
-//        LOGGER.info("Building function for: {}",
-//                    readonly.getName()
-//        );
-
-        String mode = readonly.isAnnotationPresent(Generic.class) ? "C/S" : readonly.isAnnotationPresent(Server.class) ? "S" : readonly.isAnnotationPresent(Client.class) ? "C" : "Unknown";
-
-        // Check the packet mode and cancel register.
-        if (KalmiaEnv.isServer) {
-            if (mode.equals("C")) {
-                return;
-            }
-        } else {
-            if (mode.equals("S")) {
-                return;
-            }
-        }
-
         long id = readonly.getAnnotation(AutoSolvedPacket.class)
                           .value();
 
@@ -82,13 +62,13 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
                                                                                                                                              "' are missing the standard constructor, but it using @AutoSolvedPacket annotation to invert control by id '",
                                                                                                                                              id,
                                                                                                                                              "'"
-                                                                                                                                         ),
-                                                                                                                                         true
-                                                                                                                          );
-                                                                                                                          return null;
-                                                                                                                      }
-                                                                                       );
-                                                                                   }
+                                                                                                                                     ),
+                                                                                                                                     true
+                                                                                                                      );
+                                                                                                                      return null;
+                                                                                                                  }
+                                                                                   );
+                                                                               }
         );
 
         if (constructor == null) {
@@ -112,9 +92,8 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
                                                                                   this
         );
 
-        LOGGER.info("Register unsolved {} ({} mode): {}",
+        LOGGER.info("Register unsolved {}: {}",
                     id,
-                    mode,
                     readonly.getName()
         );
         UnsolvedPacketFactor.register(id,
@@ -141,16 +120,12 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
         return this.ids.get(type);
     }
 
-    public byte[] data(Packet<?> packet) throws Exception {
-        Class<Packet<?>> clazz = EntrustEnvironment.cast(packet.getClass());
-        LinkedList<Field> fields = ApricotCollectionFactor.newLinkedList();
-        for (Field e : clazz.getDeclaredFields()) {
-            if (e.isAnnotationPresent(AutoData.class)) {
-                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),
-                                            packet
-                ));
-            }
-        }
+    public byte[] id(Packet<?> type) {
+        return this.ids.get(type.getClass());
+    }
+
+    public byte[] payload(Packet<?> packet) throws Exception {
+        LinkedList<Field> fields = autoFields(packet);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
@@ -163,15 +138,7 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
     }
 
     public void create(Packet<?> packet, BytesReader reader) throws Exception {
-        Class<Packet<?>> clazz = EntrustEnvironment.cast(packet.getClass());
-        LinkedList<Field> fields = ApricotCollectionFactor.newLinkedList();
-        for (Field e : clazz.getDeclaredFields()) {
-            if (e.isAnnotationPresent(AutoData.class)) {
-                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),
-                                            packet
-                ));
-            }
-        }
+        LinkedList<Field> fields = autoFields(packet);
 
         for (Field field : fields) {
             Object deserialize = KalmiaEnv.serializeFramework.getSerializer(field.getType())
@@ -180,6 +147,20 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
                       deserialize
             );
         }
+    }
+
+    private LinkedList<Field> autoFields(Packet<?> packet) throws NoSuchFieldException {
+        Class<Packet<?>> clazz = EntrustEnvironment.cast(packet.getClass());
+        assert clazz != null;
+        LinkedList<Field> fields = ApricotCollectionFactor.newLinkedList();
+        for (Field e : clazz.getDeclaredFields()) {
+            if (e.isAnnotationPresent(AutoData.class)) {
+                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),
+                                            packet
+                ));
+            }
+        }
+        return fields;
     }
 
     private static final class AutoUnsolved extends UnsolvedPacket<Packet<?>> {

@@ -1,8 +1,10 @@
 package com.github.cao.awa.kalmia.network.encode;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.attack.replay.ReplayAttack;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
+import com.github.cao.awa.kalmia.network.encode.exception.ReplayAttackException;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
@@ -94,9 +96,21 @@ public class RequestDecoder extends ByteToMessageDecoder {
         // Commit traffic count.
         TrafficCount.decode(data.length);
 
+        // Build the reader
         BytesReader reader = new BytesReader(data);
 
-        // Read packet id.
+        byte[] replayMark = reader.read(16);
+
+        long timestamp = SkippedBase256.readLong(reader);
+
+        // Check packet identifier, ensure packet is not replay to server, prevent the replay attack.
+        if (! ReplayAttack.valid(replayMark,
+                                 timestamp
+        )) {
+            throw new ReplayAttackException();
+        }
+
+        // Read packet id, used to determine packet deserializer.
         long id = SkippedBase256.readLong(reader);
 
         // Read receipt identity.

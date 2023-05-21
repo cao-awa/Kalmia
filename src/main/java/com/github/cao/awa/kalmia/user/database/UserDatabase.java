@@ -2,11 +2,13 @@ package com.github.cao.awa.kalmia.user.database;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
+import com.github.cao.awa.kalmia.annotation.number.encode.ShouldSkipped;
 import com.github.cao.awa.kalmia.database.DatabaseProvide;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.user.DeletedUser;
 import com.github.cao.awa.kalmia.user.User;
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
@@ -14,6 +16,7 @@ import java.util.function.Consumer;
 
 public class UserDatabase {
     private static final byte[] ROOT = new byte[]{- 2};
+    private static final byte[] SESSION_DELIMITER = new byte[]{- 3};
     private final KeyValueDatabase database;
 
     public UserDatabase(String path) throws Exception {
@@ -39,7 +42,7 @@ public class UserDatabase {
     }
 
     @Nullable
-    public User get(byte[] uid) {
+    public User get(@ShouldSkipped byte[] uid) {
         byte[] userBytes = this.database.get(uid);
         if (userBytes == null || userBytes.length == 0) {
             return null;
@@ -47,7 +50,7 @@ public class UserDatabase {
         return User.create(userBytes);
     }
 
-    public void delete(byte[] uid) {
+    public void delete(@ShouldSkipped byte[] uid) {
         User source = get(uid);
         set(uid,
             new DeletedUser(TimeUtil.nano())
@@ -94,9 +97,25 @@ public class UserDatabase {
         return nextSeq;
     }
 
-    public void set(byte[] seq, User user) {
+    public void set(@ShouldSkipped byte[] seq, User user) {
         this.database.put(seq,
                           user.toBytes()
+        );
+    }
+
+    public byte[] session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq) {
+        return this.database.get(BytesUtil.concat(currentSeq,
+                                                  SESSION_DELIMITER,
+                                                  targetSeq
+        ));
+    }
+
+    public void session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq, byte[] sessionId) {
+        this.database.put(BytesUtil.concat(currentSeq,
+                                           SESSION_DELIMITER,
+                                           targetSeq
+                          ),
+                          sessionId
         );
     }
 }

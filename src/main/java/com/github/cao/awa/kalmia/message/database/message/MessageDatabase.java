@@ -150,9 +150,6 @@ public class MessageDatabase {
     }
 
     public long send(@ShouldSkipped byte[] sid, Message msg) {
-        // TODO
-//        Kalmia.SERVER.sessionManager();
-
         byte[] seqByte = this.database.get(sid);
 
         long seq = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));

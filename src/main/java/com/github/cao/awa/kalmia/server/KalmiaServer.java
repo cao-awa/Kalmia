@@ -1,10 +1,14 @@
 package com.github.cao.awa.kalmia.server;
 
-import com.github.cao.awa.kalmia.chat.session.manager.SessionManager;
+import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.io.server.KalmiaServerNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
+import com.github.cao.awa.kalmia.session.manage.SessionManager;
+import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.manage.UserManager;
+
+import java.nio.charset.StandardCharsets;
 
 public class KalmiaServer {
     private final KalmiaServerNetworkIo networkIo;
@@ -35,6 +39,19 @@ public class KalmiaServer {
             this.messageManager = new MessageManager("data/msg");
             this.userManager = new UserManager("data/usr");
             this.sessionManager = new SessionManager("data/session");
+
+            // TODO
+            // Test only
+            userManager.set(1,
+                            new DefaultUser(TimeUtil.millions(),
+                                            "123456".getBytes(StandardCharsets.UTF_8)
+                            )
+            );
+            userManager.set(2,
+                            new DefaultUser(TimeUtil.millions(),
+                                            "123456".getBytes(StandardCharsets.UTF_8)
+                            )
+            );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

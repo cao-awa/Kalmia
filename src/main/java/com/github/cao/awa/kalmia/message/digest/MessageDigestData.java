@@ -11,36 +11,36 @@ import java.math.BigInteger;
 import java.util.Map;
 
 public class MessageDigestData extends BytesValueConvertable implements ByteArrayConvertable {
-    private static final Map<Integer, MessageDigger.DigestAlgorithm> idToType = ApricotCollectionFactor.newHashMap();
-    private static final Map<MessageDigger.DigestAlgorithm, Integer> typeToId = ApricotCollectionFactor.newHashMap();
+    private static final Map<Byte, MessageDigger.DigestAlgorithm> idToType = ApricotCollectionFactor.newHashMap();
+    private static final Map<MessageDigger.DigestAlgorithm, Byte> typeToId = ApricotCollectionFactor.newHashMap();
 
     static {
-        idToType.put(0,
+        idToType.put((byte) 0,
                      MessageDigger.Sha3.SHA_224
         );
         typeToId.put(MessageDigger.Sha3.SHA_224,
-                     0
+                     (byte) 0
         );
 
-        idToType.put(1,
+        idToType.put((byte) 1,
                      MessageDigger.Sha3.SHA_256
         );
         typeToId.put(MessageDigger.Sha3.SHA_256,
-                     1
+                     (byte) 1
         );
 
-        idToType.put(2,
+        idToType.put((byte) 2,
                      MessageDigger.Sha3.SHA_512
         );
         typeToId.put(MessageDigger.Sha3.SHA_512,
-                     2
+                     (byte) 2
         );
 
-        idToType.put(3,
+        idToType.put((byte) 3,
                      MessageDigger.MD5.MD_5
         );
         typeToId.put(MessageDigger.MD5.MD_5,
-                     3
+                     (byte) 3
         );
     }
 
@@ -66,7 +66,7 @@ public class MessageDigestData extends BytesValueConvertable implements ByteArra
 
     @Override
     public byte[] toBytes() {
-        return BytesUtil.concat(new byte[]{typeToId.get(type()).byteValue()},
+        return BytesUtil.concat(new byte[]{typeToId.get(type())},
                                 new byte[]{(byte) value().length},
                                 value()
         );

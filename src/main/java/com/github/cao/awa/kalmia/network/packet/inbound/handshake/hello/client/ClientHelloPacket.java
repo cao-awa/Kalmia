@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.client;
 
+import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
@@ -10,12 +11,12 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.ec.pubkey.HandshakePreSharedEcPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.protocol.RequestProtocolName;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.nio.charset.StandardCharsets;
 
-@Generic
 @AutoSolvedPacket(0)
 public class ClientHelloPacket extends Packet<HandshakeHandler> {
     private static final boolean SHOULD_RSA = true;
@@ -25,12 +26,14 @@ public class ClientHelloPacket extends Packet<HandshakeHandler> {
     private final String clientVersion;
     private final String expectCipherKey;
 
+    @Client
     public ClientHelloPacket(RequestProtocolName majorProtocol, String clientVersion, String expectCipherKey) {
         this.majorProtocol = majorProtocol;
         this.clientVersion = clientVersion;
         this.expectCipherKey = expectCipherKey;
     }
 
+    @Client
     public ClientHelloPacket(RequestProtocolName majorProtocol, String clientVersion) {
         this(majorProtocol,
              clientVersion,
@@ -38,6 +41,8 @@ public class ClientHelloPacket extends Packet<HandshakeHandler> {
         );
     }
 
+    @Auto
+    @Server
     public ClientHelloPacket(BytesReader reader) {
         this(RequestProtocolName.create(reader),
              new String(reader.read(reader.read()),
@@ -49,6 +54,7 @@ public class ClientHelloPacket extends Packet<HandshakeHandler> {
         );
     }
 
+    @Server
     @Override
     public void inbound(RequestRouter router, HandshakeHandler handler) {
         System.out.println("Client Hello!");
@@ -65,7 +71,7 @@ public class ClientHelloPacket extends Packet<HandshakeHandler> {
     }
 
     @Override
-    public byte[] data() {
+    public byte[] payload() {
         return BytesUtil.concat(this.majorProtocol.toBytes(),
                                 new byte[]{(byte) this.clientVersion.length()},
                                 this.clientVersion.getBytes(StandardCharsets.UTF_8),

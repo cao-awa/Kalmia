@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server;
 
+import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
@@ -13,11 +14,11 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Generic
 @AutoSolvedPacket(3)
 public class ServerHelloPacket extends Packet<HandshakeHandler> {
     private static final Logger LOGGER = LogManager.getLogger("ServerHello");
@@ -31,6 +32,7 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
     @NotDecoded
     private byte[] iv;
 
+    @Server
     public ServerHelloPacket(@CryptoEncoded byte[] testKey, byte[] testSha, @CryptoEncoded byte[] iv) {
         try {
             this.testKey = testKey;
@@ -42,6 +44,8 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
         }
     }
 
+    @Auto
+    @Client
     public ServerHelloPacket(BytesReader reader) {
         super(reader);
     }
@@ -54,6 +58,7 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
         return this.testSha;
     }
 
+    @Client
     @Override
     public void inbound(RequestRouter router, HandshakeHandler handler) {
         LOGGER.info("Server Hello!");
@@ -91,8 +96,8 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
 
         // TODO
         //     Try login(will delete in releases).
-        router.send(new LoginWithPasswordPacket(123456,
-                                                "awa".getBytes()
+        router.send(new LoginWithPasswordPacket(1,
+                                                "123456".getBytes()
         ));
     }
 }

@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.message.delete;
 
+import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
@@ -7,9 +8,9 @@ import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@Generic
 @AutoSolvedPacket(14)
 public class DeleteMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
@@ -17,15 +18,19 @@ public class DeleteMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     private long seq;
 
+    @Auto
+    @Server
     public DeleteMessagePacket(BytesReader reader) {
         super(reader);
     }
 
+    @Client
     public DeleteMessagePacket(long sessionId, long seq) {
         this.sessionId = sessionId;
         this.seq = seq;
     }
 
+    @Server
     @Override
     public void inbound(RequestRouter router, AuthedRequestHandler handler) {
         System.out.println("UID: " + handler.getUid());

@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.message.select;
 
+import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
@@ -10,11 +11,11 @@ import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
 
-@Generic
 @AutoSolvedPacket(12)
 public class SelectMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
@@ -24,16 +25,20 @@ public class SelectMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     private long to;
 
-    public SelectMessagePacket(BytesReader reader) {
-        super(reader);
-    }
-
+    @Client
     public SelectMessagePacket(long sessionId, long from, long to) {
         this.sessionId = sessionId;
         this.from = from;
         this.to = to;
     }
 
+    @Auto
+    @Server
+    public SelectMessagePacket(BytesReader reader) {
+        super(reader);
+    }
+
+    @Server
     @Override
     public void inbound(RequestRouter router, AuthedRequestHandler handler) {
         long current = this.from;

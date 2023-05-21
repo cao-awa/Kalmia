@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.login.password;
 
+import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
@@ -19,11 +20,11 @@ import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.DisabledUser;
 import com.github.cao.awa.kalmia.user.User;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.Arrays;
 
-@Generic
 @AutoSolvedPacket(6)
 public class LoginWithPasswordPacket extends Packet<LoginHandler> {
     @AutoData
@@ -31,11 +32,14 @@ public class LoginWithPasswordPacket extends Packet<LoginHandler> {
     @AutoData
     private byte[] password;
 
+    @Client
     public LoginWithPasswordPacket(long uid, byte[] password) {
         this.uid = uid;
         this.password = password;
     }
 
+    @Auto
+    @Server
     public LoginWithPasswordPacket(BytesReader reader) {
         super(reader);
     }
@@ -48,6 +52,7 @@ public class LoginWithPasswordPacket extends Packet<LoginHandler> {
         return this.password;
     }
 
+    @Server
     @Override
     public void inbound(RequestRouter router, LoginHandler handler) {
         // Start login here.

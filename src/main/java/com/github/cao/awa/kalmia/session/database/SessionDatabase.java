@@ -1,29 +1,28 @@
-package com.github.cao.awa.kalmia.chat.session.database;
+package com.github.cao.awa.kalmia.session.database;
 
-import com.github.cao.awa.apricot.anntation.Unsupported;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.database.DatabaseProvide;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.user.DeletedUser;
-import com.github.cao.awa.kalmia.user.User;
+import com.github.cao.awa.kalmia.session.Session;
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-// TODO
-@Unsupported
 public class SessionDatabase {
-    private static final byte[] ROOT = new byte[]{- 2};
+    private static final byte[] ROOT = new byte[]{- 1};
     private final KeyValueDatabase database;
 
     public SessionDatabase(String path) throws Exception {
         this.database = DatabaseProvide.kv(path);
     }
 
-    public void operation(BiConsumer<Long, User> action) {
-        byte[] seqByte = this.database.get(ROOT);
+    public void operation(BiConsumer<Long, Session> action) {
+        byte[] seqByte = this.database.get(
+                ROOT
+        );
 
         long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
 
@@ -38,15 +37,18 @@ public class SessionDatabase {
         }
     }
 
-    public User get(byte[] uid) {
-        byte[] userBytes = this.database.get(uid);
-        return User.create(userBytes);
+    @Nullable
+    public Session get(byte[] sid) {
+        byte[] bytes = this.database.get(sid);
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        return Session.create(bytes);
     }
 
-    public void delete(byte[] uid) {
-        User source = get(uid);
-        this.database.put(uid,
-                          new DeletedUser(TimeUtil.nano()).toBytes()
+    public void delete(byte[] sid) {
+        this.database.put(sid,
+                          BytesUtil.EMPTY
         );
     }
 
@@ -70,7 +72,7 @@ public class SessionDatabase {
         );
     }
 
-    public long add(User user) {
+    public long add(Session session) {
         byte[] seqByte = this.database.get(ROOT);
 
         long seq = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
@@ -80,7 +82,7 @@ public class SessionDatabase {
         byte[] nextSeqByte = SkippedBase256.longToBuf(nextSeq);
 
         this.database.put(nextSeqByte,
-                          user.toBytes()
+                          session.toBytes()
         );
 
         this.database.put(ROOT,
@@ -88,5 +90,11 @@ public class SessionDatabase {
         );
 
         return nextSeq;
+    }
+
+    public void set(byte[] seq, Session session) {
+        this.database.put(seq,
+                          session.toBytes()
+        );
     }
 }

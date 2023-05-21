@@ -1,5 +1,7 @@
 package com.github.cao.awa.apricot.util.collection;
 
+import com.github.cao.awa.kalmia.collection.timed.TimedList;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,6 +23,16 @@ public class ApricotCollectionFactor {
     public static <V> ArrayList<V> newArrayList() {
         return new ArrayList<>();
         //        return new ObjectArrayList<>();
+    }
+
+    public static <V> TimedList<V> newTimedList(long removeTime) {
+        return new TimedList<>(removeTime);
+    }
+
+    public static <V> TimedList<V> newTimedList(List<V> delegate, long removeTime) {
+        return new TimedList<>(delegate,
+                               removeTime
+        );
     }
 
     public static <V> ArrayList<V> newArrayList(int capacity) {

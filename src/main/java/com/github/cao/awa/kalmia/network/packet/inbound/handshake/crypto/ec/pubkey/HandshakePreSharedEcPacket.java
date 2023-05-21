@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.ec.pubkey;
 
+import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
@@ -11,11 +12,11 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes.HandshakeAesCipherPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Generic
 @AutoSolvedPacket(1)
 public class HandshakePreSharedEcPacket extends Packet<HandshakeHandler> {
     private static final Logger LOGGER = LogManager.getLogger("PreSharedRsaPacket");
@@ -23,10 +24,18 @@ public class HandshakePreSharedEcPacket extends Packet<HandshakeHandler> {
     @AutoData
     private String cipherKey;
 
+    @Server
+    public HandshakePreSharedEcPacket(String cipher) {
+        this.cipherKey = cipher;
+    }
+
+    @Auto
+    @Client
     public HandshakePreSharedEcPacket(BytesReader reader) {
         super(reader);
     }
 
+    @Client
     @Override
     public void inbound(RequestRouter router, HandshakeHandler handler) {
         if (! this.cipherKey.equals(KalmiaPreSharedKey.expectCipherKey)) {
@@ -41,8 +50,4 @@ public class HandshakePreSharedEcPacket extends Packet<HandshakeHandler> {
         router.setCrypto(new AesCrypto(AES_CIPHER));
     }
 
-
-    public HandshakePreSharedEcPacket(String cipher) {
-        this.cipherKey = cipher;
-    }
 }

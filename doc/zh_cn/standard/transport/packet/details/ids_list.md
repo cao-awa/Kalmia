@@ -129,6 +129,22 @@ DeleteMessage
 
 DeletedMessage
 
+## 16
+
+```
+接收方：服务端
+```
+
+RequestDuetSessionPacket
+
+## 17
+
+```
+接收方：客户端
+```
+
+ChatInSessionPacket
+
 ## 68943
 
 ```

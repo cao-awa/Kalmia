@@ -18,7 +18,7 @@ public abstract class PingPacket extends Packet<PingHandler> {
     }
 
     @Override
-    public byte[] data() {
+    public byte[] payload() {
         return SkippedBase256.longToBuf(startTime());
     }
 

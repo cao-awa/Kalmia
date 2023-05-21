@@ -1,21 +1,21 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.message.select;
 
+import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-@Generic
 @AutoSolvedPacket(13)
 public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     private final long sessionId;
@@ -23,6 +23,16 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     private final long to;
     private final List<Message> messages;
 
+    @Server
+    public SelectedMessagePacket(long sessionId, long from, long to, List<Message> messages) {
+        this.sessionId = sessionId;
+        this.from = from;
+        this.to = to;
+        this.messages = messages;
+    }
+
+    @Auto
+    @Client
     public SelectedMessagePacket(BytesReader reader) {
         this.sessionId = SkippedBase256.readLong(reader);
         this.from = SkippedBase256.readLong(reader);
@@ -33,15 +43,24 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
         }
     }
 
-    public SelectedMessagePacket(long sessionId, long from, long to, List<Message> messages) {
-        this.sessionId = sessionId;
-        this.from = from;
-        this.to = to;
-        this.messages = messages;
+    @Client
+    @Override
+    public void inbound(RequestRouter router, AuthedRequestHandler handler) {
+        System.out.println("Received msg of session " + this.sessionId);
+        System.out.println("Range is " + this.from + " to " + this.to);
+
+//        for (Message message : this.messages) {
+//            if (message instanceof PlainMessage plain) {
+//                System.out.println("PLAINS: " + plain.getMsg());
+//            } else if (message instanceof DeletedMessage deleted) {
+//                System.out.println("DELETED: " + deleted.getDigestData()
+//                                                        .value36());
+//            }
+//        }
     }
 
     @Override
-    public byte[] data() {
+    public byte[] payload() {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             for (Message msg : this.messages) {
                 if (msg == null) {
@@ -58,22 +77,5 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
             e.printStackTrace();
             return null;
         }
-    }
-
-    @Override
-    public void inbound(RequestRouter router, AuthedRequestHandler handler) {
-        System.out.println("Received msg of session " + this.sessionId);
-        System.out.println("Range is " + this.from + " to " + this.to);
-
-//        for (Message message : this.messages) {
-//            if (message instanceof PlainMessage plain) {
-//                System.out.println("PLAINS: " + plain.getMsg());
-//            } else if (message instanceof DeletedMessage deleted) {
-//                System.out.println("DELETED: " + deleted.getDigestData()
-//                                                        .value36());
-//            }
-//        }
-
-        TrafficCount.show();
     }
 }

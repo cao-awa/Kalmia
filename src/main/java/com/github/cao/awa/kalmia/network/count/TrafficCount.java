@@ -14,7 +14,7 @@ public class TrafficCount {
         decoded += length;
     }
 
-    public static void send(int length) {
+    public static void sent(int length) {
         sent += length;
     }
 

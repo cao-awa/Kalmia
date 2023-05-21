@@ -21,19 +21,19 @@ public class RequestEncoder extends MessageToByteEncoder<Packet<?>> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet<?> request, ByteBuf out) throws Exception {
         // Commit traffic count.
-        TrafficCount.encode(request.data().length + request.id().length);
+        TrafficCount.encode(request.size());
 
         // Encode it by router.
-        byte[] data = request.encode(this.router);
+        byte[] payload = request.encode(this.router);
 
         // Mark the length for frame reading.
-        byte[] length = SkippedBase256.intToBuf(data.length);
+        byte[] lengthMark = SkippedBase256.intToBuf(payload.length);
 
-        // Write packet length and data
-        out.writeBytes(length);
-        out.writeBytes(data);
+        // Write packet length and payload data
+        out.writeBytes(lengthMark);
+        out.writeBytes(payload);
 
         // Commit traffic count.
-        TrafficCount.send(data.length + length.length);
+        TrafficCount.sent(payload.length + lengthMark.length);
     }
 }

@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes;
 
+import com.github.cao.awa.apricot.anntation.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
@@ -13,12 +14,12 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
-import com.github.cao.awa.modmdo.annotation.platform.Generic;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
+import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Generic
 @AutoSolvedPacket(2)
 public class HandshakeAesCipherPacket extends Packet<HandshakeHandler> {
     private static final Logger LOGGER = LogManager.getLogger("HandshakeAesCipher");
@@ -28,10 +29,13 @@ public class HandshakeAesCipherPacket extends Packet<HandshakeHandler> {
     @AutoData
     private byte[] cipher;
 
+    @Client
     public HandshakeAesCipherPacket(byte[] cipher) {
         this.cipher = cipher;
     }
 
+    @Auto
+    @Server
     public HandshakeAesCipherPacket(BytesReader reader) {
         super(reader);
     }
