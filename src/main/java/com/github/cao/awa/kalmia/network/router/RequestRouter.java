@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.network.router;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
+import com.github.cao.awa.kalmia.function.provider.Consumers;
 import com.github.cao.awa.kalmia.network.encode.crypto.CryptoTransportLayer;
 import com.github.cao.awa.kalmia.network.encode.crypto.LayerCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
@@ -53,6 +54,10 @@ public class RequestRouter extends NetworkRouter {
     private ChannelHandlerContext context;
     private final Consumer<RequestRouter> activeCallback;
     private final Affair funeral = Affair.empty();
+
+    public RequestRouter() {
+        this(Consumers.doNothing());
+    }
 
     public RequestRouter(Consumer<RequestRouter> activeCallback) {
         this.activeCallback = activeCallback;

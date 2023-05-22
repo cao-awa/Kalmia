@@ -1,4 +1,4 @@
-package com.github.cao.awa.apricot.anntation;
+package com.github.cao.awa.apricot.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

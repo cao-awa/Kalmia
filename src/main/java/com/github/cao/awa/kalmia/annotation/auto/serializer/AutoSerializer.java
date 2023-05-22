@@ -1,7 +1,7 @@
-package com.github.cao.awa.kalmia.annotation.network.unsolve;
+package com.github.cao.awa.kalmia.annotation.auto.serializer;
 
-import com.github.cao.awa.apricot.anntation.Auto;
-import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotation.auto.Auto;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 @Stable
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface AutoSolvedPacket {
+public @interface AutoSerializer {
     long value();
+
+    Class<?>[] target();
 }

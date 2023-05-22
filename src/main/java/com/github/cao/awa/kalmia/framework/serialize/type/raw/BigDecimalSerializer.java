@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.framework.serialize.type.raw;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoSerializer;
 import com.github.cao.awa.kalmia.framework.serialize.serializer.BytesSerializer;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -8,6 +9,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
+@AutoSerializer(value = 101, target = BigDecimal.class)
 public class BigDecimalSerializer implements BytesSerializer<BigDecimal> {
     @Override
     public byte[] serialize(BigDecimal decimal) {
@@ -28,10 +30,5 @@ public class BigDecimalSerializer implements BytesSerializer<BigDecimal> {
     @Override
     public BigDecimal initializer() {
         return BigDecimal.valueOf(- 1L);
-    }
-
-    @Override
-    public long id() {
-        return 101;
     }
 }

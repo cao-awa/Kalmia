@@ -21,7 +21,7 @@ public class RequestEncoder extends MessageToByteEncoder<Packet<?>> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet<?> request, ByteBuf out) throws Exception {
         // Commit traffic count.
-        TrafficCount.encode(request.size());
+        TrafficCount.encoded(request.size());
 
         // Encode it by router.
         byte[] payload = request.encode(this.router);

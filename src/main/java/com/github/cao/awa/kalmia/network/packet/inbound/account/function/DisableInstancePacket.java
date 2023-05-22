@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.account.function;
 
-import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;

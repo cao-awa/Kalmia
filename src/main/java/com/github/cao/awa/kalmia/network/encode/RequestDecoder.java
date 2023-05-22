@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 import java.util.List;
 
 public class RequestDecoder extends ByteToMessageDecoder {
@@ -65,7 +64,7 @@ public class RequestDecoder extends ByteToMessageDecoder {
             in.readBytes(data);
 
             // Commit traffic count.
-            TrafficCount.receive(4 + data.length);
+            TrafficCount.received(4 + data.length);
 
             // Write to buffer and update current length.
             this.output.write(data);
@@ -88,13 +87,11 @@ public class RequestDecoder extends ByteToMessageDecoder {
     }
 
     private void done(byte[] data, List<Object> out) {
-        System.out.println(Arrays.toString(data));
-
         // Decode it by router.
         data = this.router.decode(data);
 
         // Commit traffic count.
-        TrafficCount.decode(data.length);
+        TrafficCount.decoded(data.length);
 
         // Build the reader
         BytesReader reader = new BytesReader(data);

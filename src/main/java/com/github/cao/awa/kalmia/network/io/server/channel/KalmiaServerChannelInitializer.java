@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.io.server.channel;
 
-import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.kalmia.constant.IntegerConstants;
 import com.github.cao.awa.kalmia.network.encode.RequestDecoder;
 import com.github.cao.awa.kalmia.network.encode.RequestEncoder;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
@@ -63,17 +64,16 @@ public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketCha
     @Override
     protected void initChannel(SocketChannel ch) {
         ch.config()
-          .setRecvByteBufAllocator(new FixedRecvByteBufAllocator(16 * 1024));
+          .setRecvByteBufAllocator(new FixedRecvByteBufAllocator(IntegerConstants.K_16));
         ChannelPipeline pipeline = ch.pipeline();
-        // Do decodes
-//        pipeline.addLast(new RequestCodec());
-        RequestRouter router = new RequestRouter(r -> {
-        }).funeral(this :: inactive);
+        // Do decode.
+        RequestRouter router = new RequestRouter().funeral(this :: inactive);
         pipeline.addLast(new RequestDecoder(router));
         pipeline.addLast(new RequestEncoder(router));
-        // Do handle
+        // Do handle.
         pipeline.addLast(router);
 
+        // Add to subscriber list.
         active(router);
     }
 }

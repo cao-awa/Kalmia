@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.information.compressor.deflate;
 
-import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.apricot.annotation.Stable;
 import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.information.compressor.InformationCompressor;
 

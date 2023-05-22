@@ -1,16 +1,14 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.login.success;
 
-import com.github.cao.awa.apricot.anntation.Auto;
-import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
+import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
+import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.message.PlainMessage;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
-import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
@@ -67,17 +65,17 @@ public class LoginSuccessPacket extends Packet<AuthedRequestHandler> {
 
 //        router.send(new RequestDuetSessionPacket(2));
 
-        router.send(new SendMessagePacket(0,
-                                          new PlainMessage("awa",
-                                                           handler.getUid()
-                                          ).toBytes(),
-                                          BytesRandomIdentifier.create(16)
-        ));
-
-//        router.send(new SelectMessageRequest(123,
-//                                             0,
-//                                             114514
+//        router.send(new SendMessagePacket(0,
+//                                          new PlainMessage("cao_awa",
+//                                                           handler.getUid()
+//                                          ).toBytes(),
+//                                          BytesRandomIdentifier.create(16)
 //        ));
+
+        router.send(new SelectMessagePacket(0,
+                                            0,
+                                            114514
+        ));
 
 //        // TODO Test only
 //        router.send(new DeleteMessageRequest(123,

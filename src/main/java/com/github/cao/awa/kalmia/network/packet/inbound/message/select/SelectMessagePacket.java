@@ -1,10 +1,10 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.message.select;
 
-import com.github.cao.awa.apricot.anntation.Auto;
+import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.annotation.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
+import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;

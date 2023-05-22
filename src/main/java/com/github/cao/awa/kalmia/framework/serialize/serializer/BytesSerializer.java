@@ -1,7 +1,9 @@
 package com.github.cao.awa.kalmia.framework.serialize.serializer;
 
-import com.github.cao.awa.apricot.anntation.Auto;
+import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 @Auto
 public interface BytesSerializer<T> {
@@ -13,5 +15,11 @@ public interface BytesSerializer<T> {
 
     T initializer();
 
-    long id();
+    default Class<T>[] target() {
+        return EntrustEnvironment.cast(KalmiaEnv.serializeFramework.target(this));
+    }
+
+    default long id() {
+        return KalmiaEnv.serializeFramework.id(this);
+    }
 }

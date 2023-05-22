@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.annotation.number.encode;
 
-import com.github.cao.awa.apricot.anntation.Auto;
-import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotation.auto.Auto;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

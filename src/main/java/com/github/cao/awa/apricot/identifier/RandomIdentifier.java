@@ -1,6 +1,7 @@
 package com.github.cao.awa.apricot.identifier;
 
-import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.kalmia.constant.IntegerConstants;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.util.Random;
@@ -11,7 +12,7 @@ public class RandomIdentifier {
     private static final Random RANDOM = new Random();
 
     public static String create() {
-        return create(1024);
+        return create(IntegerConstants.K);
     }
 
     public static String create(int size) {

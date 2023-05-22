@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus;
 
-import com.github.cao.awa.apricot.anntation.Auto;
+import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;

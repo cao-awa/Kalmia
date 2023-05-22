@@ -6,11 +6,11 @@ public class TrafficCount {
     private static long sent = 0;
     private static long received = 0;
 
-    public static void encode(int length) {
+    public static void encoded(int length) {
         encoded += length;
     }
 
-    public static void decode(int length) {
+    public static void decoded(int length) {
         decoded += length;
     }
 
@@ -18,7 +18,7 @@ public class TrafficCount {
         sent += length;
     }
 
-    public static void receive(int length) {
+    public static void received(int length) {
         received += length;
     }
 

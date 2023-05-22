@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.information.compressor;
 
-import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.apricot.annotation.Stable;
 
 /**
  * Information compress.

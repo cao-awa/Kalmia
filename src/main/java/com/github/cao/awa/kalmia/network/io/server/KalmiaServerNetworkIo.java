@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.io.server;
 
-import com.github.cao.awa.apricot.anntation.Stable;
+import com.github.cao.awa.apricot.annotation.Stable;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.io.server.channel.KalmiaServerChannelInitializer;
