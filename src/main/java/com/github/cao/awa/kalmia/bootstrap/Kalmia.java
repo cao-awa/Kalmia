@@ -14,6 +14,8 @@ public class Kalmia {
     }
 
     public static void startServer() throws Exception {
+        LOGGER.info("Starting kalmia server");
+
         KalmiaEnv.setupServer();
 
         SERVER = new KalmiaServer();

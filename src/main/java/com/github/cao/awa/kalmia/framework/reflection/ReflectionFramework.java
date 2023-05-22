@@ -1,9 +1,11 @@
 package com.github.cao.awa.kalmia.framework.reflection;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.resource.loader.ResourcesLoader;
 import com.github.cao.awa.kalmia.framework.loader.JarSearchLoader;
 import com.github.cao.awa.trtr.framework.accessor.method.MethodAccess;
 import com.github.cao.awa.trtr.framework.exception.NoAutoAnnotationException;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -18,13 +20,26 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public abstract class ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("ReflectionFramework");
-    private static final Reflections REFLECTIONS = new Reflections(new ConfigurationBuilder().addUrls(JarSearchLoader.load(new File("mods")))
-                                                                                             .addUrls(ClasspathHelper.forPackage(""))
-                                                                                             .addScanners(Scanners.TypesAnnotated));
+    private static final Reflections REFLECTIONS = EntrustEnvironment.trys(() -> {
+        File kalmiaJar = new File(URLDecoder.decode(
+                ResourcesLoader.class.getProtectionDomain()
+                                     .getCodeSource()
+                                     .getLocation()
+                                     .getPath(),
+                StandardCharsets.UTF_8
+        ));
+        return new Reflections(new ConfigurationBuilder().addUrls(JarSearchLoader.load(new File("mods")))
+                                                         .addUrls(ClasspathHelper.forPackage(""))
+                                                         .addUrls(kalmiaJar.toURI()
+                                                                           .toURL())
+                                                         .addScanners(Scanners.TypesAnnotated));
+    });
 
     public Reflections reflection() {
         return REFLECTIONS;

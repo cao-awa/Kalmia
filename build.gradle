@@ -42,7 +42,7 @@ dependencies {
 
     shadow 'org.java-websocket:Java-WebSocket:1.5.3'
 
-    shadow 'org.bouncycastle:bcprov-jdk18on:1.72'
+    shadow 'org.bouncycastle:bcprov-jdk18on:1.73'
 
     shadow 'com.github.ben-manes.caffeine:caffeine:3.1.6'
 }
@@ -76,12 +76,14 @@ jar {
         })
 
         duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+        exclude "META-INF/BC2048KE.SF"
     })
 
     manifest {
         attributes(
                 'Main-Class': project.main_class,
-                'Multi-Release': 'true'
+                'Multi-Release': 'true',
         )
     }
 }
