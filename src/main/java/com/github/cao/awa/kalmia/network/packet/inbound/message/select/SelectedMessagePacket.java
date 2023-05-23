@@ -50,7 +50,7 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
             if (message instanceof PlainMessage plain) {
                 System.out.println("PLAINS: " + plain.getMsg());
             } else if (message instanceof DeletedMessage deleted) {
-                System.out.println("DELETED: " + deleted.getDigestData()
+                System.out.println("DELETED: " + deleted.digest()
                                                         .value36());
             }
         }

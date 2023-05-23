@@ -16,6 +16,16 @@ public class ApricotCollectionFactor {
         //        return new Object2ObjectOpenHashMap<>(map);
     }
 
+    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap() {
+        return new LinkedHashMap<>();
+        //        return new Object2ObjectOpenHashMap<>();
+    }
+
+    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(Map<K, V> map) {
+        return new LinkedHashMap<>(map);
+        //        return new Object2ObjectOpenHashMap<>();
+    }
+
     public static <K, V> ConcurrentHashMap<K, V> newConcurrentHashMap() {
         return new ConcurrentHashMap<>();
     }

@@ -65,7 +65,7 @@ public class MessageDatabase {
                               seq
                           ),
                           new DeletedMessage(source.getSender(),
-                                             source.getDigestData()
+                                             source.digest()
                           ).toBytes()
         );
     }

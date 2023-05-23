@@ -5,7 +5,7 @@ import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.message.digest.MessageDigestData;
+import com.github.cao.awa.kalmia.message.digest.DigestData;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.nio.charset.StandardCharsets;
@@ -13,9 +13,9 @@ import java.nio.charset.StandardCharsets;
 public class PlainMessage extends Message {
     private final long sender;
     private final String msg;
-    private final MessageDigestData digest;
+    private final DigestData digest;
 
-    public PlainMessage(String msg, long sender, MessageDigestData digest) {
+    public PlainMessage(String msg, long sender, DigestData digest) {
         this.msg = msg;
         this.sender = sender;
         this.digest = digest;
@@ -32,12 +32,12 @@ public class PlainMessage extends Message {
     public PlainMessage(String msg, long sender) {
         this.msg = msg;
         this.sender = sender;
-        this.digest = new MessageDigestData(MessageDigger.Sha3.SHA_512,
-                                            Mathematics.toBytes(MessageDigger.digest(msg,
-                                                                                     MessageDigger.Sha3.SHA_512
-                                                                ),
-                                                                16
-                                            )
+        this.digest = new DigestData(MessageDigger.Sha3.SHA_512,
+                                     Mathematics.toBytes(MessageDigger.digest(msg,
+                                                                              MessageDigger.Sha3.SHA_512
+                                                         ),
+                                                         16
+                                     )
         );
     }
 
@@ -62,7 +62,7 @@ public class PlainMessage extends Message {
                              StandardCharsets.UTF_8
             );
 
-            MessageDigestData digestData = MessageDigestData.create(reader);
+            DigestData digestData = DigestData.create(reader);
 
             return new PlainMessage(msg,
                                     sender,
@@ -74,7 +74,7 @@ public class PlainMessage extends Message {
     }
 
     @Override
-    public MessageDigestData getDigestData() {
+    public DigestData digest() {
         return this.digest;
     }
 }

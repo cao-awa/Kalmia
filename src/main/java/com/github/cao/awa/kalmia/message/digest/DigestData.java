@@ -10,7 +10,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import java.math.BigInteger;
 import java.util.Map;
 
-public class MessageDigestData extends BytesValueConvertable implements ByteArrayConvertable {
+public class DigestData extends BytesValueConvertable implements ByteArrayConvertable {
     private static final Map<Byte, MessageDigger.DigestAlgorithm> idToType = ApricotCollectionFactor.newHashMap();
     private static final Map<MessageDigger.DigestAlgorithm, Byte> typeToId = ApricotCollectionFactor.newHashMap();
 
@@ -59,7 +59,7 @@ public class MessageDigestData extends BytesValueConvertable implements ByteArra
         return new BigInteger(this.value).toString(10);
     }
 
-    public MessageDigestData(MessageDigger.DigestAlgorithm type, byte[] value) {
+    public DigestData(MessageDigger.DigestAlgorithm type, byte[] value) {
         this.type = type;
         this.value = value;
     }
@@ -72,13 +72,13 @@ public class MessageDigestData extends BytesValueConvertable implements ByteArra
         );
     }
 
-    public static MessageDigestData create(BytesReader reader) {
+    public static DigestData create(BytesReader reader) {
         MessageDigger.DigestAlgorithm type = idToType.get(reader.read());
 
         byte[] value = reader.read(reader.read());
 
-        return new MessageDigestData(type,
-                                     value
+        return new DigestData(type,
+                              value
         );
     }
 }
