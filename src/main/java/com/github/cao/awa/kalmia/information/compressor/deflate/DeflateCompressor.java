@@ -15,7 +15,7 @@ public class DeflateCompressor implements InformationCompressor {
     public static final DeflateCompressor INSTANCE = new DeflateCompressor();
 
     /**
-     * Compress using deflater with best compression
+     * Compress using deflate with best compression
      *
      * @param bytes Data source
      * @return Compress result
@@ -39,7 +39,7 @@ public class DeflateCompressor implements InformationCompressor {
     }
 
     /**
-     * Decompress using inflater
+     * Decompress using inflate
      *
      * @param bytes Data source
      * @return Decompress result

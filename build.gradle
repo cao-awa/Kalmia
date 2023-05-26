@@ -45,6 +45,8 @@ dependencies {
     shadow 'org.bouncycastle:bcprov-jdk18on:1.73'
 
     shadow 'com.github.ben-manes.caffeine:caffeine:3.1.6'
+
+    shadow 'org.lz4:lz4-java:1.8.0'
 }
 
 //tasks.withType(JavaCompile).configureEach {
