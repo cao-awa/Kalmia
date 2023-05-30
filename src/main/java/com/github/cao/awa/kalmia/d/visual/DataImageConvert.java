@@ -105,7 +105,7 @@ public class DataImageConvert {
 
     public static byte absReByte(int b) {
         if (b > 127) {
-            return (byte) (b);
+            return (byte) b;
         } else {
             return (byte) b;
         }

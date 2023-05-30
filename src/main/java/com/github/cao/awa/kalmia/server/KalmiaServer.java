@@ -36,21 +36,22 @@ public class KalmiaServer {
     public KalmiaServer() {
         try {
             this.networkIo = new KalmiaServerNetworkIo(this);
+
             this.messageManager = new MessageManager("data/msg");
             this.userManager = new UserManager("data/usr");
             this.sessionManager = new SessionManager("data/session");
 
             // TODO
             // Test only
-            userManager.set(1,
-                            new DefaultUser(TimeUtil.millions(),
-                                            "123456".getBytes(StandardCharsets.UTF_8)
-                            )
+            this.userManager.set(1,
+                                 new DefaultUser(TimeUtil.millions(),
+                                                 "123456".getBytes(StandardCharsets.UTF_8)
+                                 )
             );
-            userManager.set(2,
-                            new DefaultUser(TimeUtil.millions(),
-                                            "123456".getBytes(StandardCharsets.UTF_8)
-                            )
+            this.userManager.set(2,
+                                 new DefaultUser(TimeUtil.millions(),
+                                                 "123456".getBytes(StandardCharsets.UTF_8)
+                                 )
             );
         } catch (Exception e) {
             throw new RuntimeException(e);

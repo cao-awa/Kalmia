@@ -13,7 +13,7 @@ import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@AutoSolvedPacket(9)
+@AutoSolvedPacket(100009)
 public class LoginSuccessPacket extends Packet<AuthedRequestHandler> {
     @AutoData
     private long uid;

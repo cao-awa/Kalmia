@@ -48,38 +48,6 @@ TryPing
 
 TryPingResponse
 
-## 6
-
-```
-接收方：服务端
-```
-
-LoginWithPassword
-
-## 7
-
-```
-接收方：服务端
-状态：TODO
-```
-
-LoginWithToken
-
-## 8
-
-```
-接收方：客户端
-```
-
-LoginFailed
-
-## 9
-
-```
-接收方：客户端
-```
-
-LoginSuccess
 
 ## 10
 
@@ -152,3 +120,36 @@ ChatInSessionPacket
 ```
 
 DisableInstance
+
+## 100001
+
+```
+接收方：服务端
+```
+
+LoginWithPassword
+
+## 7
+
+```
+接收方：服务端
+状态：TODO
+```
+
+LoginWithSignChallenge
+
+## 100008
+
+```
+接收方：客户端
+```
+
+LoginFailed
+
+## 100009
+
+```
+接收方：客户端
+```
+
+LoginSuccess

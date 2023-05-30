@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.message;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.hash.DigestedObject;
+import com.github.cao.awa.kalmia.digest.DigestedObject;
 
 public abstract class Message implements DigestedObject {
     public abstract byte[] toBytes();

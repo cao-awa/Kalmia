@@ -47,18 +47,18 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
         return EntrustEnvironment.cast(clazz);
     }
 
-    public void build(Class<? extends Packet<?>> readonly) {
-        long id = readonly.getAnnotation(AutoSolvedPacket.class)
-                          .value();
+    public void build(Class<? extends Packet<?>> packet) {
+        long id = packet.getAnnotation(AutoSolvedPacket.class)
+                        .value();
 
-        Constructor<? extends Packet<?>> constructor = EntrustEnvironment.trys(() -> EntrustEnvironment.cast(ensureAccessible(readonly.getConstructor(BytesReader.class))),
+        Constructor<? extends Packet<?>> constructor = EntrustEnvironment.trys(() -> EntrustEnvironment.cast(ensureAccessible(packet.getConstructor(BytesReader.class))),
                                                                                ex -> {
-                                                                                   return EntrustEnvironment.trys(() -> ensureAccessible(readonly.getConstructor()),
+                                                                                   return EntrustEnvironment.trys(() -> ensureAccessible(packet.getConstructor()),
                                                                                                                   ex0 -> {
                                                                                                                       BugTrace.trace(ex0,
                                                                                                                                      StringConcat.concat(
                                                                                                                                              "Readonly packet '",
-                                                                                                                                             readonly.getName(),
+                                                                                                                                             packet.getName(),
                                                                                                                                              "' are missing the standard constructor, but it using @AutoSolvedPacket annotation to invert control by id '",
                                                                                                                                              id,
                                                                                                                                              "'"
@@ -73,28 +73,28 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
 
         if (constructor == null) {
             BugTrace.trace(StringConcat.concat("Auto solved packet '",
-                                               readonly.getName(),
+                                               packet.getName(),
                                                "' missing constructor"
                            ),
                            true
             );
         } else {
-            this.constructors.put(readonly,
+            this.constructors.put(packet,
                                   constructor
             );
-            this.ids.put(readonly,
+            this.ids.put(packet,
                          SkippedBase256.longToBuf(id)
             );
         }
 
         Function<byte[], UnsolvedPacket<?>> function = (data) -> new AutoUnsolved(data,
-                                                                                  readonly,
+                                                                                  packet,
                                                                                   this
         );
 
         LOGGER.info("Register unsolved {}: {}",
                     id,
-                    readonly.getName()
+                    packet.getName()
         );
         UnsolvedPacketFactor.register(id,
                                       function

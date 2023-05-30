@@ -25,7 +25,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.Arrays;
 
-@AutoSolvedPacket(6)
+@AutoSolvedPacket(100001)
 public class LoginWithPasswordPacket extends Packet<LoginHandler> {
     @AutoData
     private long uid;
