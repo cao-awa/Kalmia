@@ -11,5 +11,6 @@ import java.lang.annotation.Target;
 @Stable
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface AutoHandlerFactor {
+public @interface AutoHandler {
+    Class<?> value();
 }

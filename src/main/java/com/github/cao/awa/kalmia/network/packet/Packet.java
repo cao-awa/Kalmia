@@ -109,6 +109,14 @@ public abstract class Packet<T extends PacketHandler<T>> {
     }
 
     public int size() {
-        return 24 + id().length + receipt().length + payload().length;
+        return
+                // 24 is a random identifier(16) add timestamp(8)
+                24 +
+                        // Id length
+                        id().length +
+                        // Receipt length, 16 or 1
+                        receipt().length +
+                        // Payload length
+                        payload().length;
     }
 }
