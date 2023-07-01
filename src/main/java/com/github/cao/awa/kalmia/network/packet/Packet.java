@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet;
 
+import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
@@ -25,8 +26,8 @@ public abstract class Packet<T extends PacketHandler<T>> {
 
     public Packet(BytesReader reader) {
         try {
-            KalmiaEnv.unsolvedFramework.create(this,
-                                               reader
+            KalmiaEnv.packetSerializeFramework.create(this,
+                                                      reader
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,10 +67,11 @@ public abstract class Packet<T extends PacketHandler<T>> {
         return reader.read(16);
     }
 
+    @Auto
     public byte[] payload() {
         return EntrustEnvironment.trys(
                 // Encode payload
-                () -> KalmiaEnv.unsolvedFramework.payload(this),
+                () -> KalmiaEnv.packetSerializeFramework.payload(this),
                 // Handle exception
                 e -> {
                     // Usually, exception should not be happened, maybe bugs cause this.
@@ -83,7 +85,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
 
     public byte[] id() {
         // Encode id.
-        return KalmiaEnv.unsolvedFramework.id(this);
+        return KalmiaEnv.packetSerializeFramework.id(this);
     }
 
     public byte[] encode(RequestRouter router) {

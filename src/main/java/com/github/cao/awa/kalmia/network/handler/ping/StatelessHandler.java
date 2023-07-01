@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.handler.handshake;
+package com.github.cao.awa.kalmia.network.handler.ping;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
@@ -9,19 +9,15 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 
 import java.util.Set;
 
-public class HandshakeHandler extends PacketHandler<HandshakeHandler> {
-    private static final Set<RequestState> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
+public class StatelessHandler extends PacketHandler<StatelessHandler> {
+    private static final Set<RequestState> ALLOW_STATES = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
                                                                                        set -> {
-                                                                                           set.add(RequestState.HELLO);
+                                                                                           set.addAll(RequestState.all());
                                                                                        }
     );
 
-    public HandshakeHandler() {
-
-    }
-
     @Override
-    public void inbound(Packet<HandshakeHandler> packet, RequestRouter router) {
+    public void inbound(Packet<StatelessHandler> packet, RequestRouter router) {
         packet.inbound(router,
                        this
         );
@@ -29,6 +25,6 @@ public class HandshakeHandler extends PacketHandler<HandshakeHandler> {
 
     @Override
     public Set<RequestState> allowStates() {
-        return ALLOW_STATUS;
+        return ALLOW_STATES;
     }
 }

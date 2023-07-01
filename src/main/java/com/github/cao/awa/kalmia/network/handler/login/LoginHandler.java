@@ -4,16 +4,16 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.util.Set;
 
 public class LoginHandler extends PacketHandler<LoginHandler> {
-    private static final Set<RequestStatus> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
-                                                                                        set -> {
-                                                                                            set.add(RequestStatus.AUTH);
-                                                                                        }
+    private static final Set<RequestState> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
+                                                                                       set -> {
+                                                                                           set.add(RequestState.AUTH);
+                                                                                       }
     );
 
     @Override
@@ -24,7 +24,7 @@ public class LoginHandler extends PacketHandler<LoginHandler> {
     }
 
     @Override
-    public Set<RequestStatus> allowStatus() {
+    public Set<RequestState> allowStates() {
         return ALLOW_STATUS;
     }
 }

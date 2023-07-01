@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.bootstrap;
 
 import com.github.cao.awa.kalmia.client.KalmiaClient;
+import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
@@ -37,7 +38,7 @@ public class ConnectTest {
 //                                               "KalmiaWww v1.0.0"
 //            ));
 
-            router.send(new ClientHelloPacket(KalmiaEnv.STANDARD_REQUEST_PROTOCOL,
+            router.send(new ClientHelloPacket(KalmiaConstant.STANDARD_REQUEST_PROTOCOL,
                                               "KalmiaWww v1.0.1"
             ));
 

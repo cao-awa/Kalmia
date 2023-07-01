@@ -5,17 +5,17 @@ import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.util.Set;
 
 public class DisabledRequestHandler extends AuthedRequestHandler {
-    private static final Set<RequestStatus> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
-                                                                                        set -> {
-                                                                                            set.add(RequestStatus.AUTHED);
-                                                                                            set.add(RequestStatus.DISABLED);
-                                                                                        }
+    private static final Set<RequestState> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
+                                                                                       set -> {
+                                                                                           set.add(RequestState.AUTHED);
+                                                                                           set.add(RequestState.DISABLED);
+                                                                                       }
     );
 
     private long uid;
@@ -37,7 +37,7 @@ public class DisabledRequestHandler extends AuthedRequestHandler {
     }
 
     @Override
-    public Set<RequestStatus> allowStatus() {
+    public Set<RequestState> allowStates() {
         return ALLOW_STATUS;
     }
 }

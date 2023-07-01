@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Function;
 
-public class UnsolvedPacketFramework extends ReflectionFramework {
+public class PacketSerializeFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("UnsolvedPacketFramework");
     private final Map<Class<? extends Packet<?>>, Constructor<? extends Packet<?>>> constructors = ApricotCollectionFactor.newHashMap();
     private final Map<Class<? extends Packet<?>>, byte[]> ids = ApricotCollectionFactor.newHashMap();
@@ -57,7 +57,7 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
                                                                                                                   ex0 -> {
                                                                                                                       BugTrace.trace(ex0,
                                                                                                                                      StringConcat.concat(
-                                                                                                                                             "Readonly packet '",
+                                                                                                                                             "The packet '",
                                                                                                                                              packet.getName(),
                                                                                                                                              "' are missing the standard constructor, but it using @AutoSolvedPacket annotation to invert control by id '",
                                                                                                                                              id,
@@ -165,9 +165,9 @@ public class UnsolvedPacketFramework extends ReflectionFramework {
 
     private static final class AutoUnsolved extends UnsolvedPacket<Packet<?>> {
         private final Class<? extends Packet<?>> clazz;
-        private final UnsolvedPacketFramework framework;
+        private final PacketSerializeFramework framework;
 
-        public AutoUnsolved(byte[] data, Class<? extends Packet<?>> clazz, UnsolvedPacketFramework framework) {
+        public AutoUnsolved(byte[] data, Class<? extends Packet<?>> clazz, PacketSerializeFramework framework) {
             super(data);
             this.clazz = clazz;
             this.framework = framework;

@@ -1,11 +1,11 @@
-package com.github.cao.awa.kalmia.framework.serialize.type.raw;
+package com.github.cao.awa.kalmia.framework.serialize.type.raw.primitive;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoSerializer;
 import com.github.cao.awa.kalmia.framework.serialize.serializer.BytesSerializer;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 
-@AutoSerializer(value = 2, target = Character.class)
+@AutoSerializer(value = 2, target = {Character.class, char.class})
 public class CharSerializer implements BytesSerializer<Character> {
     @Override
     public byte[] serialize(Character c) {

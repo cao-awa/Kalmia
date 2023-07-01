@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
+import com.github.cao.awa.kalmia.network.handler.ping.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -35,7 +35,7 @@ public class TryPingPacket extends PingPacket {
 
     @Server
     @Override
-    public void inbound(RequestRouter router, PingHandler handler) {
+    public void inbound(RequestRouter router, StatelessHandler handler) {
         router.send(new TryPingResponsePacket(startTime(),
                                               receipt()
         ));

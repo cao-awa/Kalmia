@@ -11,12 +11,11 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.disabled.DisabledRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
-import com.github.cao.awa.kalmia.network.handler.ping.PingHandler;
+import com.github.cao.awa.kalmia.network.handler.ping.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedPingPacket;
-import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,26 +30,26 @@ import java.util.function.Consumer;
 
 public class RequestRouter extends NetworkRouter {
     private static final Logger LOGGER = LogManager.getLogger("RequestRouter");
-    private final Map<RequestStatus, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
-                                                                                               handlers -> {
-                                                                                                   handlers.put(RequestStatus.HELLO,
-                                                                                                                new HandshakeHandler()
-                                                                                                   );
-                                                                                                   handlers.put(RequestStatus.AUTH,
-                                                                                                                new LoginHandler()
-                                                                                                   );
-                                                                                                   handlers.put(RequestStatus.AUTHED,
-                                                                                                                new AuthedRequestHandler()
-                                                                                                   );
-                                                                                                   handlers.put(RequestStatus.DISABLED,
-                                                                                                                new DisabledRequestHandler()
-                                                                                                   );
-                                                                                               }
+    private final Map<RequestState, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
+                                                                                              handlers -> {
+                                                                                                  handlers.put(RequestState.HELLO,
+                                                                                                               new HandshakeHandler()
+                                                                                                  );
+                                                                                                  handlers.put(RequestState.AUTH,
+                                                                                                               new LoginHandler()
+                                                                                                  );
+                                                                                                  handlers.put(RequestState.AUTHED,
+                                                                                                               new AuthedRequestHandler()
+                                                                                                  );
+                                                                                                  handlers.put(RequestState.DISABLED,
+                                                                                                               new DisabledRequestHandler()
+                                                                                                  );
+                                                                                              }
     );
     private final CryptoTransportLayer transportLayer = new CryptoTransportLayer();
-    private RequestStatus status;
+    private RequestState status;
     private PacketHandler<?> handler;
-    private final PingHandler pingHandler = new PingHandler();
+    private final StatelessHandler statelessHandler = new StatelessHandler();
     private ChannelHandlerContext context;
     private final Consumer<RequestRouter> activeCallback;
     private final Affair funeral = Affair.empty();
@@ -61,14 +60,14 @@ public class RequestRouter extends NetworkRouter {
 
     public RequestRouter(Consumer<RequestRouter> activeCallback) {
         this.activeCallback = activeCallback;
-        setStatus(RequestStatus.HELLO);
+        setStatus(RequestState.HELLO);
     }
 
-    public RequestStatus getStatus() {
+    public RequestState getStatus() {
         return this.status;
     }
 
-    public void setStatus(RequestStatus status) {
+    public void setStatus(RequestState status) {
         this.status = status;
         this.handler = this.handlers.get(status);
     }
@@ -76,11 +75,9 @@ public class RequestRouter extends NetworkRouter {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UnsolvedPacket<?> msg) throws Exception {
         try {
-            if (msg instanceof UnsolvedPingPacket<?> pingPacket) {
-                this.pingHandler.tryInbound(pingPacket,
-                                            this
-                );
-            } else {
+            if (! this.statelessHandler.tryInbound(msg,
+                                                   this
+            )) {
                 this.handler.tryInbound(msg,
                                         this
                 );

@@ -16,7 +16,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.failed.LoginFailedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.success.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.DisabledUser;
 import com.github.cao.awa.kalmia.user.User;
@@ -68,7 +68,7 @@ public class LoginWithPasswordPacket extends Packet<LoginHandler> {
                                                                                                 16
                                                                             )
         )) {
-            router.setStatus(RequestStatus.AUTHED);
+            router.setStatus(RequestState.AUTHED);
             ((AuthedRequestHandler) router.getHandler()).setUid(this.uid);
 
             byte[] token = BytesRandomIdentifier.create(16);
@@ -79,7 +79,7 @@ public class LoginWithPasswordPacket extends Packet<LoginHandler> {
         } else if (user instanceof DisabledUser disabled) {
             System.out.println("THIS ACCOUNT(" + this.uid + ") IS DISABLED");
 
-            router.setStatus(RequestStatus.DISABLED);
+            router.setStatus(RequestState.DISABLED);
             ((DisabledRequestHandler) router.getHandler()).setUid(this.uid);
 
             byte[] token = BytesRandomIdentifier.create(16);

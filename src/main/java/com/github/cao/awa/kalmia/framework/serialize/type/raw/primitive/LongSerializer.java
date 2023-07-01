@@ -1,11 +1,11 @@
-package com.github.cao.awa.kalmia.framework.serialize.type.raw;
+package com.github.cao.awa.kalmia.framework.serialize.type.raw.primitive;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoSerializer;
 import com.github.cao.awa.kalmia.framework.serialize.serializer.BytesSerializer;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 
-@AutoSerializer(value = 5, target = Long.class)
+@AutoSerializer(value = 5, target = {Long.class, long.class})
 public class LongSerializer implements BytesSerializer<Long> {
     @Override
     public byte[] serialize(Long integer) throws Exception {

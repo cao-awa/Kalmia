@@ -49,5 +49,4 @@ public class HandshakePreSharedEcPacket extends Packet<HandshakeHandler> {
         router.send(new HandshakeAesCipherPacket(AES_CIPHER));
         router.setCrypto(new AesCrypto(AES_CIPHER));
     }
-
 }

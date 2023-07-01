@@ -13,7 +13,7 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
@@ -92,7 +92,7 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
         }
 
         // Prepare authed status to enable SolvedRequestHandler.
-        router.setStatus(RequestStatus.AUTHED);
+        router.setStatus(RequestState.AUTHED);
 
         // TODO
         //     Try login(will delete in releases).

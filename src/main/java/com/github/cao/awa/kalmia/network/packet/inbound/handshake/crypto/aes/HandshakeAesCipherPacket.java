@@ -13,7 +13,7 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.status.RequestStatus;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -49,7 +49,7 @@ public class HandshakeAesCipherPacket extends Packet<HandshakeHandler> {
 
             // Setup crypto and waiting for client login.
             router.setCrypto(new AesCrypto(this.cipher));
-            router.setStatus(RequestStatus.AUTH);
+            router.setStatus(RequestState.AUTH);
 
             // Use the different initialization vector to anyone session.
             // For prevent the latent feature extraction.
