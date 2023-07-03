@@ -1,8 +1,12 @@
 package com.github.cao.awa.kalmia.network.router;
 
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
+import com.github.cao.awa.kalmia.mathematic.base.Base256;
+import com.github.cao.awa.kalmia.network.encode.compress.RequestCompressor;
+import com.github.cao.awa.kalmia.network.encode.compress.RequestCompressorType;
 import com.github.cao.awa.kalmia.network.encode.crypto.CryptoTransportLayer;
 import com.github.cao.awa.kalmia.network.encode.crypto.LayerCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
@@ -16,6 +20,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.router.status.RequestState;
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import io.netty.channel.ChannelHandlerContext;
@@ -52,7 +57,16 @@ public class RequestRouter extends NetworkRouter {
     private final StatelessHandler statelessHandler = new StatelessHandler();
     private ChannelHandlerContext context;
     private final Consumer<RequestRouter> activeCallback;
+    private final RequestCompressor compressor = new RequestCompressor();
     private final Affair funeral = Affair.empty();
+
+    public RequestCompressor getCompressor() {
+        return this.compressor;
+    }
+
+    public void setCompressor(RequestCompressorType type) {
+        this.compressor.setCompressor(type);
+    }
 
     public RequestRouter() {
         this(Consumers.doNothing());
@@ -134,11 +148,52 @@ public class RequestRouter extends NetworkRouter {
     }
 
     public byte[] decode(byte[] cipherText) {
-        return this.transportLayer.decode(cipherText);
+        byte[] decodeResult = this.transportLayer.decode(cipherText);
+
+        BytesReader reader = new BytesReader(decodeResult);
+
+        int compressId = Base256.tagFromBuf(reader.read(2));
+
+        return RequestCompressorType.TYPES.get(compressId)
+                                          .getCompressor()
+                                          .decompress(reader.all());
     }
 
     public byte[] encode(byte[] plainText) {
-        return this.transportLayer.encode(plainText);
+        // Compress the packet data.
+        int compressId = getCompressor()
+                .id();
+
+        byte[] compressResult = getCompressor()
+                .compress(plainText);
+
+        LOGGER.debug("Trying compress with {}",
+                     RequestCompressorType.TYPES.get(getCompressor()
+                                                             .id())
+        );
+
+        // If data length is not reduced, then do not use the compress result.
+        if (plainText.length > compressResult.length) {
+            LOGGER.debug("Success to compress, {} > {}",
+                         compressResult.length,
+                         plainText.length
+            );
+
+            plainText = compressResult;
+        } else {
+            compressId = RequestCompressorType.NONE.id();
+
+            LOGGER.debug("Failed to compress, {} <= {}",
+                         compressResult.length,
+                         plainText.length
+            );
+        }
+
+        // Encrypt including compress mark.
+        return this.transportLayer.encode(BytesUtil.concat(Base256.tagToBuf(compressId),
+                                                           plainText
+                                          )
+        );
     }
 
     public boolean isCipherEquals(byte[] cipher) {

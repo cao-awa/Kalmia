@@ -108,4 +108,8 @@ public class BytesReader {
     public int readable() {
         return this.bytes.length - this.cursor;
     }
+
+    public int length() {
+        return this.bytes.length;
+    }
 }

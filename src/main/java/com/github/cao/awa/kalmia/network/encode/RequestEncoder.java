@@ -34,6 +34,11 @@ public class RequestEncoder extends MessageToByteEncoder<Packet<?>> {
         out.writeBytes(payload);
 
         // Commit traffic count.
-        TrafficCount.sent(payload.length + lengthMark.length);
+        TrafficCount.sent(
+                // Payload length.
+                payload.length +
+                        // Payload length mark length
+                        lengthMark.length
+        );
     }
 }
