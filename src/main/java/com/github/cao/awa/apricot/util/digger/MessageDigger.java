@@ -1,6 +1,7 @@
 package com.github.cao.awa.apricot.util.digger;
 
 import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.io.File;
@@ -11,19 +12,6 @@ import java.security.MessageDigest;
 @Stable
 public class MessageDigger {
     private static final int BUF_SIZE = 16384;
-
-    public static String digest(String message, DigestAlgorithm sha) {
-        MessageDigest digest = EntrustEnvironment.trys(() -> MessageDigest.getInstance(sha.instanceName()));
-        if (digest == null) {
-            return null;
-        }
-        digest.update(message.getBytes(StandardCharsets.UTF_8));
-        StringBuilder result = new StringBuilder();
-        digest(digest,
-               result
-        );
-        return result.toString();
-    }
 
     public static String digest(byte[] message, DigestAlgorithm sha) {
         MessageDigest digest = EntrustEnvironment.trys(() -> MessageDigest.getInstance(sha.instanceName()));
@@ -36,6 +24,20 @@ public class MessageDigger {
                result
         );
         return result.toString();
+    }
+
+    public static String digest(String message, DigestAlgorithm sha) {
+        return digest(message.getBytes(StandardCharsets.UTF_8),
+                      sha
+        );
+    }
+
+    public static byte[] digestToBytes(byte[] message, DigestAlgorithm sha) {
+        return Mathematics.toBytes(digest(message,
+                                          sha
+                                   ),
+                                   16
+        );
     }
 
     public static String digestFile(File file, DigestAlgorithm sha) throws Exception {

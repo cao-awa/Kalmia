@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.packet.inbound.login.failed;
+package com.github.cao.awa.kalmia.network.packet.inbound.setting;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
@@ -9,27 +9,32 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@AutoSolvedPacket(100008)
-public class LoginFailedPacket extends Packet<StatelessHandler> {
+@AutoSolvedPacket(123456)
+public class NotDoneSettingsPacket extends Packet<StatelessHandler> {
+    private static final Logger LOGGER = LogManager.getLogger("NotDoneSettingsPacket");
+
     @AutoData
-    private long uid;
+    public String settingName;
 
     @Server
-    public LoginFailedPacket(long uid) {
-        this.uid = uid;
+    public NotDoneSettingsPacket(String settingName) {
+        this.settingName = settingName;
     }
 
     @Auto
     @Client
-    public LoginFailedPacket(BytesReader reader) {
+    public NotDoneSettingsPacket(BytesReader reader) {
         super(reader);
     }
 
     @Client
     @Override
     public void inbound(RequestRouter router, StatelessHandler handler) {
-        System.out.println("---Login failed---");
-        System.out.println("UID: " + this.uid);
+        LOGGER.info("Settings {} not done",
+                    this.settingName
+        );
     }
 }

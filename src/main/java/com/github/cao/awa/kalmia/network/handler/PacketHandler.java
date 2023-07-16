@@ -6,10 +6,14 @@ import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Set;
 
 public abstract class PacketHandler<H extends PacketHandler<H>> {
+    private static final Logger LOGGER = LogManager.getLogger("PacketHandler");
+
     public Packet<H> handle(UnsolvedPacket<?> packet) {
         return EntrustEnvironment.cast(packet.packet());
     }
@@ -28,9 +32,16 @@ public abstract class PacketHandler<H extends PacketHandler<H>> {
     public boolean tryInbound(UnsolvedPacket<?> packet, RequestRouter router) {
         if (allowStates().contains(router.getStatus())) {
             return EntrustEnvironment.get(() -> {
-                                              inbound(tryHandle(packet),
+                                              Packet<H> p = tryHandle(packet);
+
+                                              LOGGER.debug("Inbounding packet: {}",
+                                                           p.getClass()
+                                              );
+
+                                              inbound(p,
                                                       router
                                               );
+
                                               return true;
                                           },
                                           false

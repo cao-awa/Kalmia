@@ -2,28 +2,40 @@ package com.github.cao.awa.kalmia.user;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.user.key.ServerKeyPairStore;
 import com.github.cao.awa.kalmia.user.password.UserPassword;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
+
+import java.nio.charset.StandardCharsets;
 
 public class DefaultUser extends User {
     private final long joinTimestamp;
     private final UserPassword password;
+    private final ServerKeyPairStore keyPair;
 
-    public UserPassword getPassword() {
+    public UserPassword password() {
         return this.password;
     }
 
-    public DefaultUser(long timestamp, byte[] password) {
+    public DefaultUser(long timestamp, String password, ServerKeyPairStore keyPair) {
+        this.joinTimestamp = timestamp;
+        this.password = new UserPassword(password.getBytes(StandardCharsets.UTF_8));
+        this.keyPair = keyPair;
+    }
+
+    public DefaultUser(long timestamp, byte[] password, ServerKeyPairStore keyPair) {
         this.joinTimestamp = timestamp;
         this.password = new UserPassword(password);
+        this.keyPair = keyPair;
     }
 
-    public DefaultUser(long timestamp, UserPassword password) {
+    public DefaultUser(long timestamp, UserPassword password, ServerKeyPairStore keyPair) {
         this.joinTimestamp = timestamp;
         this.password = password;
+        this.keyPair = keyPair;
     }
 
-    public long getJoinTimestamp() {
+    public long joinTimestamp() {
         return this.joinTimestamp;
     }
 
@@ -33,11 +45,16 @@ public class DefaultUser extends User {
             UserPassword password = UserPassword.create(reader);
 
             return new DefaultUser(timestamp,
-                                   password
+                                   password,
+                                   ServerKeyPairStore.create(reader)
             );
         } else {
             return null;
         }
+    }
+
+    public ServerKeyPairStore keyPair() {
+        return this.keyPair;
     }
 
     public DisabledUser disable() {
@@ -48,7 +65,8 @@ public class DefaultUser extends User {
     public byte[] toBytes() {
         return BytesUtil.concat(new byte[]{0},
                                 SkippedBase256.longToBuf(this.joinTimestamp),
-                                this.password.toBytes()
+                                this.password.toBytes(),
+                                this.keyPair.toBytes()
         );
     }
 }

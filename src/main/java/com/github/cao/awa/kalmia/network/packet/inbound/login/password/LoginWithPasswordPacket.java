@@ -4,14 +4,13 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
-import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.disabled.DisabledRequestHandler;
-import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
+import com.github.cao.awa.kalmia.network.handler.ping.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.failed.LoginFailedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.success.LoginSuccessPacket;
@@ -26,7 +25,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 import java.util.Arrays;
 
 @AutoSolvedPacket(100001)
-public class LoginWithPasswordPacket extends Packet<LoginHandler> {
+public class LoginWithPasswordPacket extends Packet<StatelessHandler> {
     @AutoData
     private long uid;
     @AutoData
@@ -54,13 +53,13 @@ public class LoginWithPasswordPacket extends Packet<LoginHandler> {
 
     @Server
     @Override
-    public void inbound(RequestRouter router, LoginHandler handler) {
+    public void inbound(RequestRouter router, StatelessHandler handler) {
         // Start login here.
         User user = Kalmia.SERVER.userManager()
                                  .get(this.uid);
 
-        if (user instanceof DefaultUser usr && usr.getPassword()
-                                                  .isSha() && Arrays.equals(usr.getPassword()
+        if (user instanceof DefaultUser usr && usr.password()
+                                                  .isSha() && Arrays.equals(usr.password()
                                                                                .password(),
                                                                             Mathematics.toBytes(MessageDigger.digest(this.password,
                                                                                                                      MessageDigger.Sha3.SHA_512
@@ -88,13 +87,6 @@ public class LoginWithPasswordPacket extends Packet<LoginHandler> {
                                                token
             ));
         } else {
-            // TODO Test only
-            Kalmia.SERVER.userManager()
-                         .set(123456,
-                              new DefaultUser(TimeUtil.nano(),
-                                              "awa".getBytes()
-                              )
-                         );
             router.send(new LoginFailedPacket(this.uid));
         }
     }

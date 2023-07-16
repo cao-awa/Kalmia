@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.network.packet;
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
@@ -89,7 +90,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
     }
 
     public byte[] encode(RequestRouter router) {
-        return router.encode(BytesUtil.concat(
+        byte[] payload = BytesUtil.concat(
                 // Unequal random identifier and timestamp for every packet.
                 // For protect the replay attack.
                 BytesRandomIdentifier.create(16),
@@ -100,6 +101,16 @@ public abstract class Packet<T extends PacketHandler<T>> {
                 encodeReceipt(),
                 // The packet payload here.
                 payload()
+        );
+
+        byte[] digest = MessageDigger.digestToBytes(payload,
+                                                    MessageDigger.Sha3.SHA_256
+        );
+
+        return router.encode(BytesUtil.concat(
+                new byte[]{(byte) digest.length},
+                digest,
+                payload
         ));
     }
 

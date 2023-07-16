@@ -11,7 +11,7 @@ import com.github.cao.awa.kalmia.annotation.crypto.NotDecoded;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
-import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -65,39 +65,37 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
 
         byte[] provideCipher = router.decode(this.testKey);
 
-        LOGGER.info("Server Sent Hello: " + Mathematics.radix(MessageDigger.digest(provideCipher,
-                                                                                   MessageDigger.Sha3.SHA_512
-                                                              ),
-                                                              16,
-                                                              36
+        LOGGER.debug("Server Sent Hello: " + Mathematics.radix(MessageDigger.digest(provideCipher,
+                                                                                    MessageDigger.Sha3.SHA_512
+                                                               ),
+                                                               16,
+                                                               36
         ));
-        LOGGER.info("Server Provide Hello: " + Mathematics.radix(this.testSha,
-                                                                 36
+        LOGGER.debug("Server Provide Hello: " + Mathematics.radix(this.testSha,
+                                                                  36
         ));
-
-        if (router.isCipherEquals(provideCipher)) {
-            LOGGER.info("Server is no or skipped MITM!");
-        } else {
-            LOGGER.info("This transport are current under MITM attack!");
-        }
 
         if (this.iv.length == 16) {
-            LOGGER.info("Server IV: " + Mathematics.radix(router.decode(this.iv),
-                                                          36
+            LOGGER.debug("Server IV: " + Mathematics.radix(router.decode(this.iv),
+                                                           36
             ));
 
             router.setIv(router.decode(this.iv));
         } else {
+            LOGGER.debug("Server IV: DEFAULT IV");
+
             router.setIv(Crypto.defaultIv());
         }
 
-        // Prepare authed status to enable SolvedRequestHandler.
-        router.setStatus(RequestState.AUTHED);
+        // Prepare authed status to enable LoginHandler.
+        router.setStatus(RequestState.AUTH);
 
         // TODO
         //     Try login(will delete in releases).
-        router.send(new LoginWithPasswordPacket(1,
-                                                "123456".getBytes()
-        ));
+//        router.send(new LoginWithPasswordPacket(1,
+//                                                "123456".getBytes()
+//        ));
+
+        router.send(new LoginWithSignPacket(1));
     }
 }

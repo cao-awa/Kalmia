@@ -21,7 +21,7 @@ public class UnsolvedPacketFactor {
     public static UnsolvedPacket<?> create(long id, byte[] data, byte[] receipt) {
         Function<byte[], UnsolvedPacket<?>> creator = factories.get(id);
         if (creator == null) {
-            throw new InvalidPacketException();
+            throw new InvalidPacketException("Packet factor not found");
         }
         return creator.apply(data)
                       .receipt(receipt);

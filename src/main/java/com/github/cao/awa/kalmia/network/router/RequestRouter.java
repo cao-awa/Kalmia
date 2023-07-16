@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.router;
 
+import com.github.cao.awa.apricot.annotation.Unsupported;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
@@ -59,6 +60,15 @@ public class RequestRouter extends NetworkRouter {
     private final Consumer<RequestRouter> activeCallback;
     private final RequestCompressor compressor = new RequestCompressor();
     private final Affair funeral = Affair.empty();
+    private long uid;
+
+    public long getUid() {
+        return this.uid;
+    }
+
+    public void setUid(long uid) {
+        this.uid = uid;
+    }
 
     public RequestCompressor getCompressor() {
         return this.compressor;
@@ -190,8 +200,9 @@ public class RequestRouter extends NetworkRouter {
         }
 
         // Encrypt including compress mark.
-        return this.transportLayer.encode(BytesUtil.concat(Base256.tagToBuf(compressId),
-                                                           plainText
+        return this.transportLayer.encode(BytesUtil.concat(
+                                                  Base256.tagToBuf(compressId),
+                                                  plainText
                                           )
         );
     }
@@ -218,5 +229,10 @@ public class RequestRouter extends NetworkRouter {
 
     public PacketHandler<?> getHandler() {
         return this.handlers.get(this.status);
+    }
+
+    @Unsupported
+    public boolean shouldApplyBase36() {
+        return false;
     }
 }

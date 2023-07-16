@@ -8,19 +8,43 @@ import com.github.cao.awa.kalmia.database.KeyValueDatabase;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.user.DeletedUser;
 import com.github.cao.awa.kalmia.user.User;
+import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import org.jetbrains.annotations.Nullable;
 
+import java.security.PublicKey;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class UserDatabase {
     private static final byte[] ROOT = new byte[]{- 2};
     private static final byte[] SESSION_DELIMITER = new byte[]{- 3};
+    private static final byte[] PUBLIC_KEY_DELIMITER = new byte[]{- 4};
     private final KeyValueDatabase database;
 
     public UserDatabase(String path) throws Exception {
         this.database = DatabaseProvide.kv(path);
+    }
+
+    public synchronized PublicKey publicKey(@ShouldSkipped byte[] uid) {
+        BytesReader reader = new BytesReader(this.database.get(BytesUtil.concat(uid,
+                                                                                PUBLIC_KEY_DELIMITER
+        )));
+        if (reader.readable() > 1) {
+            return PublicKeyIdentity.createKey(reader.read(),
+                                               reader.all()
+            );
+        } else {
+            return null;
+        }
+    }
+
+    public synchronized void publicKey(@ShouldSkipped byte[] uid, PublicKey publicKey) {
+        this.database.put(BytesUtil.concat(uid,
+                                           PUBLIC_KEY_DELIMITER
+                          ),
+                          PublicKeyIdentity.encodeKey(publicKey)
+        );
     }
 
     public void operation(BiConsumer<Long, User> action) {

@@ -29,15 +29,17 @@ public class Mathematics {
         return new BigInteger(data).toString(radix);
     }
 
-    public static String radix(String data,  @Range(from = 2, to = 36) int sourceRadix, @Range(from = 2, to = 36) int toRadix) {
-        return new BigInteger(data, sourceRadix).toString(toRadix);
+    public static String radix(String data, @Range(from = 2, to = 36) int sourceRadix, @Range(from = 2, to = 36) int toRadix) {
+        return new BigInteger(data,
+                              sourceRadix
+        ).toString(toRadix);
     }
 
     public static byte[] toBytes(BigInteger integer) {
         return integer.toByteArray();
     }
 
-    public static byte[] toBytes(String value, int radix) {
+    public static byte[] toBytes(String value, @Range(from = 2, to = 36) int radix) {
         return new BigInteger(value,
                               radix
         ).toByteArray();

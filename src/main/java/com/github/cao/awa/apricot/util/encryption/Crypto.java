@@ -110,10 +110,6 @@ public class Crypto {
         return cipher.doFinal(content);
     }
 
-    public static byte[] encodeRsaPubkey(RSAPublicKey key) {
-        return key.getEncoded();
-    }
-
     public static RSAPublicKey decodeRsaPubkey(byte[] key) {
         try {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);

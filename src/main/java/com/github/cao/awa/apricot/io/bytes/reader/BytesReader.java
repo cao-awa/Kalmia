@@ -8,7 +8,7 @@ public class BytesReader {
     private int cursor = 0;
 
     public BytesReader(byte[] bytes) {
-        this.bytes = bytes;
+        this.bytes = bytes == null ? BytesUtil.EMPTY : bytes;
     }
 
     public int getCursor() {
