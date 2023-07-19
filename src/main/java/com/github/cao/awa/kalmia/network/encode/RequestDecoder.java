@@ -111,10 +111,6 @@ public class RequestDecoder extends ByteToMessageDecoder {
 
     private void done(byte[] payload, List<Object> out) {
         if (this.usingB36) {
-            System.out.println("READING: " + new String(payload,
-                                                        StandardCharsets.US_ASCII
-            ));
-
             payload = new BigInteger(new String(payload,
                                                 StandardCharsets.US_ASCII
             ),
