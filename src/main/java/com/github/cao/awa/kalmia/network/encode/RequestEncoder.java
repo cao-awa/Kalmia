@@ -37,7 +37,7 @@ public class RequestEncoder extends MessageToByteEncoder<Packet<?>> {
         byte[] lengthMark = SkippedBase256.intToBuf(payload.length);
 
         // Mark base36 mode.
-        out.writeChar(this.router.shouldApplyBase36() ? 'B' : 'A');
+        out.writeChar(this.router.shouldApplyBase36() ? 'b' : 'a');
 
         // Use the base36 to encode whole packet.
         if (this.router.shouldApplyBase36()) {

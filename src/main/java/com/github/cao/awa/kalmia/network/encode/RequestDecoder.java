@@ -43,7 +43,7 @@ public class RequestDecoder extends ByteToMessageDecoder {
             // Need to update the marker.
             if (this.lengthMarker == 0) {
                 // Compatible to base36 encoding.
-                this.usingB36 = in.readChar() == 'B';
+                this.usingB36 = in.readChar() == 'b';
 
                 if (this.usingB36) {
                     // Decode length by base36.
