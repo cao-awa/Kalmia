@@ -1,6 +1,5 @@
 package com.github.cao.awa.kalmia.network.router;
 
-import com.github.cao.awa.apricot.annotation.Unsupported;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
@@ -231,7 +230,6 @@ public class RequestRouter extends NetworkRouter {
         return this.handlers.get(this.status);
     }
 
-    @Unsupported
     public boolean shouldApplyBase36() {
         return false;
     }

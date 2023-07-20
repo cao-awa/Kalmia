@@ -25,8 +25,8 @@ public class HandshakePreSharedEcPacket extends Packet<HandshakeHandler> {
     private String cipherKey;
 
     @Server
-    public HandshakePreSharedEcPacket(String cipher) {
-        this.cipherKey = cipher;
+    public HandshakePreSharedEcPacket(String cipherKey) {
+        this.cipherKey = cipherKey;
     }
 
     @Auto
