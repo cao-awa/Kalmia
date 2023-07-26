@@ -17,7 +17,7 @@ public enum RequestCompressorType {
                DeflateCompressor.INSTANCE
     );
 
-    public static final Map<Integer, RequestCompressorType> TYPES = ApricotCollectionFactor.newHashMap();
+    public static final Map<Integer, RequestCompressorType> TYPES = ApricotCollectionFactor.hashMap();
     private final int id;
     private final InformationCompressor compressor;
 

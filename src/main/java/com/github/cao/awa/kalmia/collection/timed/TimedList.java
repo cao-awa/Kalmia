@@ -14,7 +14,7 @@ public class TimedList<T> implements List<T> {
     private final List<T> delegate;
 
     public TimedList(long removeTime) {
-        this(ApricotCollectionFactor.newArrayList(),
+        this(ApricotCollectionFactor.arrayList(),
              removeTime
         );
     }

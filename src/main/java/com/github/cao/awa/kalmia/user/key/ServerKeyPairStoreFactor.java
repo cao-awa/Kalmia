@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 public class ServerKeyPairStoreFactor {
-    private static final Map<Integer, BiFunction<byte[], byte[], ServerKeyPairStore>> factories = ApricotCollectionFactor.newHashMap();
+    private static final Map<Integer, BiFunction<byte[], byte[], ServerKeyPairStore>> factories = ApricotCollectionFactor.hashMap();
 
     public static void register(int id, BiFunction<byte[], byte[], ServerKeyPairStore> factor) {
         factories.put(id,

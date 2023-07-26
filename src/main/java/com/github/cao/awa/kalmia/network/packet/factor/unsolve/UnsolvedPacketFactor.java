@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class UnsolvedPacketFactor {
-    private static final Map<Long, Function<byte[], UnsolvedPacket<?>>> factories = ApricotCollectionFactor.newHashMap();
+    private static final Map<Long, Function<byte[], UnsolvedPacket<?>>> factories = ApricotCollectionFactor.hashMap();
 
     public static UnsolvedPacket<?> create(long id, byte[] data, byte[] receipt) {
         Function<byte[], UnsolvedPacket<?>> creator = factories.get(id);

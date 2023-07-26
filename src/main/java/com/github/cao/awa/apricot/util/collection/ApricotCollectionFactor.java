@@ -1,60 +1,71 @@
 package com.github.cao.awa.apricot.util.collection;
 
 import com.github.cao.awa.kalmia.collection.timed.TimedList;
+import com.google.common.collect.HashBiMap;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ApricotCollectionFactor {
-    public static <K, V> HashMap<K, V> newHashMap() {
+    public static <K, V> HashBiMap<K, V> hashBiMap() {
+        return HashBiMap.create();
+        //        return new Object2ObjectOpenHashMap<>();
+    }
+
+    public static <K, V> HashBiMap<K, V> hashBiMap(Map<K, V> map) {
+        return HashBiMap.create(map);
+        //        return new Object2ObjectOpenHashMap<>(map);
+    }
+
+    public static <K, V> HashMap<K, V> hashMap() {
         return new HashMap<>();
         //        return new Object2ObjectOpenHashMap<>();
     }
 
-    public static <K, V> HashMap<K, V> newHashMap(Map<K, V> map) {
+    public static <K, V> HashMap<K, V> hashMap(Map<K, V> map) {
         return new HashMap<>(map);
         //        return new Object2ObjectOpenHashMap<>(map);
     }
 
-    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap() {
+    public static <K, V> LinkedHashMap<K, V> linkedHashMap() {
         return new LinkedHashMap<>();
         //        return new Object2ObjectOpenHashMap<>();
     }
 
-    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(Map<K, V> map) {
+    public static <K, V> LinkedHashMap<K, V> linkedHashMap(Map<K, V> map) {
         return new LinkedHashMap<>(map);
         //        return new Object2ObjectOpenHashMap<>();
     }
 
-    public static <K, V> ConcurrentHashMap<K, V> newConcurrentHashMap() {
+    public static <K, V> ConcurrentHashMap<K, V> concurrentHashMap() {
         return new ConcurrentHashMap<>();
     }
 
-    public static <V> ArrayList<V> newArrayList() {
-        return new ArrayList<>();
-        //        return new ObjectArrayList<>();
-    }
-
-    public static <V> TimedList<V> newTimedList(long removeTime) {
+    public static <V> TimedList<V> timedList(long removeTime) {
         return new TimedList<>(removeTime);
     }
 
-    public static <V> TimedList<V> newTimedList(List<V> delegate, long removeTime) {
+    public static <V> TimedList<V> timedList(List<V> delegate, long removeTime) {
         return new TimedList<>(delegate,
                                removeTime
         );
     }
 
-    public static <V> ArrayList<V> newArrayList(int capacity) {
+    public static <V> ArrayList<V> arrayList() {
+        return new ArrayList<>();
+        //        return new ObjectArrayList<>();
+    }
+
+    public static <V> ArrayList<V> arrayList(int capacity) {
         return new ArrayList<>(capacity);
         //        return new ObjectArrayList<>(capacity);
     }
 
-    public static <V> LinkedList<V> newLinkedList() {
+    public static <V> LinkedList<V> linkedList() {
         return new LinkedList<>();
     }
 
-    public static <V> HashSet<V> newHashSet() {
+    public static <V> HashSet<V> hashSet() {
         return new HashSet<>();
         //         return new ObjectOpenHashSet<>();
     }

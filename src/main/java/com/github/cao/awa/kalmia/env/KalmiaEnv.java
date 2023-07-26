@@ -4,7 +4,10 @@ import com.github.cao.awa.apricot.resource.loader.ResourcesLoader;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.env.security.exception.PreShareKeyNotFoundException;
+import com.github.cao.awa.kalmia.framework.event.EventFramework;
+import com.github.cao.awa.kalmia.framework.network.event.NetworkEventFramework;
 import com.github.cao.awa.kalmia.framework.network.unsolve.PacketSerializeFramework;
+import com.github.cao.awa.kalmia.framework.plugin.PluginFramework;
 import com.github.cao.awa.kalmia.framework.serialize.ByteSerializeFramework;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -19,12 +22,15 @@ public class KalmiaEnv {
     public static boolean isServer = true;
     public static final PacketSerializeFramework packetSerializeFramework = new PacketSerializeFramework();
     public static final ByteSerializeFramework serializeFramework = new ByteSerializeFramework();
+    public static final PluginFramework pluginFramework = new PluginFramework();
+    public static final EventFramework eventFramework = new EventFramework();
+    public static final NetworkEventFramework networkEventFramework = new NetworkEventFramework();
 
     public static void setupClient() throws PreShareKeyNotFoundException {
         isServer = false;
 
         setupPreSharedKey();
-        setupFramework();
+        setupFrameworks();
 
         setup = true;
     }
@@ -33,7 +39,7 @@ public class KalmiaEnv {
         isServer = true;
 
         setupPreSharedKey();
-        setupFramework();
+        setupFrameworks();
 
         setup = true;
     }
@@ -68,8 +74,6 @@ public class KalmiaEnv {
         KalmiaPreSharedKey.pubkeyManager.add(KalmiaPreSharedKey.defaultCipherKey,
                                              kalmiaMainPubkey
         );
-
-        System.out.println(kalmiaMainPubkey);
     }
 
     public static <E extends Exception, T> T nullThenThrow(T obj, Supplier<E> exception) throws E {
@@ -79,8 +83,11 @@ public class KalmiaEnv {
         return obj;
     }
 
-    public static void setupFramework() {
+    public static void setupFrameworks() {
         packetSerializeFramework.work();
         serializeFramework.work();
+        pluginFramework.work();
+        eventFramework.work();
+        networkEventFramework.work();
     }
 }

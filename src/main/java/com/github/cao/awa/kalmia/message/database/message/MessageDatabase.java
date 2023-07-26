@@ -136,7 +136,7 @@ public class MessageDatabase {
     }
 
     public Set<Long> search(@ShouldSkipped byte[] sid, String target) {
-        Set<Long> result = ApricotCollectionFactor.newHashSet();
+        Set<Long> result = ApricotCollectionFactor.hashSet();
 
         operation(sid,
                   (seq, msg) -> {

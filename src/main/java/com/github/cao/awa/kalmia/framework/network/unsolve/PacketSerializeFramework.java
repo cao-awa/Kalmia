@@ -27,8 +27,8 @@ import java.util.function.Function;
 
 public class PacketSerializeFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("UnsolvedPacketFramework");
-    private final Map<Class<? extends Packet<?>>, Constructor<? extends Packet<?>>> constructors = ApricotCollectionFactor.newHashMap();
-    private final Map<Class<? extends Packet<?>>, byte[]> ids = ApricotCollectionFactor.newHashMap();
+    private final Map<Class<? extends Packet<?>>, Constructor<? extends Packet<?>>> constructors = ApricotCollectionFactor.hashMap();
+    private final Map<Class<? extends Packet<?>>, byte[]> ids = ApricotCollectionFactor.hashMap();
 
     public void work() {
         // Working stream...
@@ -106,7 +106,9 @@ public class PacketSerializeFramework extends ReflectionFramework {
             return this.constructors.get(clazz)
                                     .newInstance(reader);
         } catch (Exception e) {
-            e.printStackTrace();
+            BugTrace.trace(e,
+                           "Failed solve packet"
+            );
             return solve(clazz);
         }
     }
@@ -130,8 +132,9 @@ public class PacketSerializeFramework extends ReflectionFramework {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         for (Field field : fields) {
-            output.write(KalmiaEnv.serializeFramework.getSerializer(field.getType())
-                                                     .serialize(EntrustEnvironment.cast(field.get(packet))));
+            output.write(
+                    KalmiaEnv.serializeFramework.serialize(field.get(packet))
+            );
         }
 
         return output.toByteArray();
@@ -141,8 +144,9 @@ public class PacketSerializeFramework extends ReflectionFramework {
         LinkedList<Field> fields = autoFields(packet);
 
         for (Field field : fields) {
-            Object deserialize = KalmiaEnv.serializeFramework.getSerializer(field.getType())
-                                                             .deserialize(reader);
+            Object deserialize = KalmiaEnv.serializeFramework.deserialize(field.getType(),
+                                                                          reader
+            );
             field.set(packet,
                       deserialize
             );
@@ -152,7 +156,7 @@ public class PacketSerializeFramework extends ReflectionFramework {
     private LinkedList<Field> autoFields(Packet<?> packet) throws NoSuchFieldException {
         Class<Packet<?>> clazz = EntrustEnvironment.cast(packet.getClass());
         assert clazz != null;
-        LinkedList<Field> fields = ApricotCollectionFactor.newLinkedList();
+        LinkedList<Field> fields = ApricotCollectionFactor.linkedList();
         for (Field e : clazz.getDeclaredFields()) {
             if (e.isAnnotationPresent(AutoData.class)) {
                 fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),

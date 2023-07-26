@@ -7,7 +7,7 @@ import java.util.List;
 
 @Stable
 public class Affair {
-    private final List<Runnable> actions = ApricotCollectionFactor.newLinkedList();
+    private final List<Runnable> actions = ApricotCollectionFactor.linkedList();
 
     public static Affair of(Runnable action) {
         return new Affair().add(action);

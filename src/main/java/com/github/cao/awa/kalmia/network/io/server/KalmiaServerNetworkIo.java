@@ -45,7 +45,7 @@ public class KalmiaServerNetworkIo {
     private final KalmiaServerChannelInitializer channelInitializer;
     private final KalmiaServer server;
     private ChannelFuture channelFuture;
-    private final List<RequestRouter> connections = Collections.synchronizedList(ApricotCollectionFactor.newArrayList());
+    private final List<RequestRouter> connections = Collections.synchronizedList(ApricotCollectionFactor.arrayList());
 
     public KalmiaServerNetworkIo(KalmiaServer server) {
         this.server = server;

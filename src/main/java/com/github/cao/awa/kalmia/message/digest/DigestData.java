@@ -11,8 +11,8 @@ import java.math.BigInteger;
 import java.util.Map;
 
 public class DigestData extends BytesValueConvertable implements ByteArrayConvertable {
-    private static final Map<Byte, MessageDigger.DigestAlgorithm> idToType = ApricotCollectionFactor.newHashMap();
-    private static final Map<MessageDigger.DigestAlgorithm, Byte> typeToId = ApricotCollectionFactor.newHashMap();
+    private static final Map<Byte, MessageDigger.DigestAlgorithm> idToType = ApricotCollectionFactor.hashMap();
+    private static final Map<MessageDigger.DigestAlgorithm, Byte> typeToId = ApricotCollectionFactor.hashMap();
 
     static {
         idToType.put((byte) 0,

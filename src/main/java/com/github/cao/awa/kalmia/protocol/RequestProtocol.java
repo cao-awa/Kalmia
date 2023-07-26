@@ -1,6 +1,8 @@
 package com.github.cao.awa.kalmia.protocol;
 
+import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.framework.serialize.BytesSerializable;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 
 import java.io.ByteArrayOutputStream;
@@ -9,15 +11,34 @@ import java.nio.charset.StandardCharsets;
 /**
  * The transport protocol of kalmiagram.
  *
- * @param name       Protocol name.
- * @param version    Protocol version.
- * @param compatible Compatible lowest version.
- * @param forceUse   Always use the protocol, even if incompatible.
  * @author cao_awa
  * @author 草二号机
  * @since 1.0.0
  */
-public record RequestProtocol(String name, long version, long compatible, boolean forceUse) {
+public final class RequestProtocol implements BytesSerializable {
+    private String name;
+    private long version;
+    private long compatible;
+    private boolean forceUse;
+
+    /**
+     * @param name       Protocol name.
+     * @param version    Protocol version.
+     * @param compatible Compatible lowest version.
+     * @param forceUse   Always use the protocol, even if incompatible.
+     */
+    public RequestProtocol(String name, long version, long compatible, boolean forceUse) {
+        this.name = name;
+        this.version = version;
+        this.compatible = compatible;
+        this.forceUse = forceUse;
+    }
+
+    @Auto
+    public RequestProtocol() {
+
+    }
+
     public static RequestProtocol create(BytesReader reader) {
         return new RequestProtocol(new String(reader.read(reader.read()),
                                               StandardCharsets.US_ASCII
@@ -39,5 +60,36 @@ public record RequestProtocol(String name, long version, long compatible, boolea
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public long version() {
+        return version;
+    }
+
+    public long compatible() {
+        return compatible;
+    }
+
+    public boolean forceUse() {
+        return forceUse;
+    }
+
+    @Override
+    public byte[] serialize() {
+        return toBytes();
+    }
+
+    @Override
+    public void deserialize(BytesReader reader) {
+        this.name = new String(reader.read(reader.read()),
+                               StandardCharsets.US_ASCII
+        );
+        this.version = SkippedBase256.readLong(reader);
+        this.compatible = SkippedBase256.readLong(reader);
+        this.forceUse = reader.read() == 1;
     }
 }

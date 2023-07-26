@@ -14,7 +14,7 @@ public class BugTrace {
     }
 
     public static void trace(Exception exception, String info, boolean pleaseReport) {
-        LOGGER.error((pleaseReport ? "[Please report this] " : "") + info,
+        LOGGER.error((pleaseReport ? "[Please report] " : "") + info,
                      exception
         );
     }
@@ -26,6 +26,6 @@ public class BugTrace {
     }
 
     public static void trace(String info, boolean pleaseReport) {
-        LOGGER.error((pleaseReport ? "[Please report this] " : "") + info);
+        LOGGER.error((pleaseReport ? "[Please report] " : "") + info);
     }
 }

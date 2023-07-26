@@ -13,8 +13,8 @@ import java.util.jar.JarFile;
 
 public class JarSearchLoader {
     public static List<URL> load(@NotNull File file) {
-        final List<URL> urls = ApricotCollectionFactor.newArrayList();
-        List<File> jars = ApricotCollectionFactor.newArrayList();
+        final List<URL> urls = ApricotCollectionFactor.arrayList();
+        List<File> jars = ApricotCollectionFactor.arrayList();
         if (file.exists()) {
             if (file.isFile()) {
                 jars.add(file);

@@ -11,7 +11,7 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import java.util.Set;
 
 public class DisabledRequestHandler extends AuthedRequestHandler {
-    private static final Set<RequestState> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
+    private static final Set<RequestState> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.hashSet(),
                                                                                        set -> {
                                                                                            set.add(RequestState.AUTHED);
                                                                                            set.add(RequestState.DISABLED);

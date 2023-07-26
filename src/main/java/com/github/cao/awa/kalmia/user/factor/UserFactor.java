@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class UserFactor {
-    private static final Map<Integer, Function<BytesReader, User>> factories = ApricotCollectionFactor.newHashMap();
+    private static final Map<Integer, Function<BytesReader, User>> factories = ApricotCollectionFactor.hashMap();
 
     public static void register(int id, Function<BytesReader, User> factor) {
         factories.put(id,

@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 
 public class RequestRouter extends NetworkRouter {
     private static final Logger LOGGER = LogManager.getLogger("RequestRouter");
-    private final Map<RequestState, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.newHashMap(),
+    private final Map<RequestState, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.hashMap(),
                                                                                               handlers -> {
                                                                                                   handlers.put(RequestState.HELLO,
                                                                                                                new HandshakeHandler()

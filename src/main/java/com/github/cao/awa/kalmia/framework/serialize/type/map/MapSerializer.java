@@ -22,7 +22,7 @@ public class MapSerializer implements BytesSerializer<Map<?, ?>> {
 
     @Override
     public Map<?, ?> initializer() {
-        return ApricotCollectionFactor.newHashMap();
+        return ApricotCollectionFactor.hashMap();
     }
 
     @Override

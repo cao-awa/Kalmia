@@ -52,7 +52,7 @@ public class SelectMessagePacket extends Packet<AuthedRequestHandler> {
             return;
         }
 
-        List<Message> messages = ApricotCollectionFactor.newArrayList(150);
+        List<Message> messages = ApricotCollectionFactor.arrayList(150);
 
         long to = Math.min(this.to,
                            curSeq

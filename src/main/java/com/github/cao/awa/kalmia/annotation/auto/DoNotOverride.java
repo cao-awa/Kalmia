@@ -8,6 +8,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The annotation mark a method should not be overrides.
+ */
 @Auto
 @Stable
 @Retention(RetentionPolicy.RUNTIME)

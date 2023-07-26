@@ -1,6 +1,8 @@
-package com.github.cao.awa.apricot.annotation.auto;
+package com.github.cao.awa.kalmia.annotation.auto.event;
 
 import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.kalmia.event.Event;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,5 +14,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface AutoHandler {
-    Class<?> value();
+    Class<? extends Event> value();
 }

@@ -143,14 +143,14 @@ public class ListSerializer implements BytesSerializer<List<?>> {
         reader.flag();
 
         if (reader.read() == - 1) {
-            return ApricotCollectionFactor.newArrayList();
+            return ApricotCollectionFactor.arrayList();
         }
 
         reader.back();
 
         int size = SkippedBase256.readInt(reader);
 
-        List<Object> result = ApricotCollectionFactor.newArrayList(size);
+        List<Object> result = ApricotCollectionFactor.arrayList(size);
         switch (reader.read()) {
             case 0 -> {
                 String className = new String(reader.read(SkippedBase256.readInt(reader)),
@@ -218,7 +218,7 @@ public class ListSerializer implements BytesSerializer<List<?>> {
 
     @Override
     public List<?> initializer() {
-        return ApricotCollectionFactor.newArrayList();
+        return ApricotCollectionFactor.arrayList();
     }
 
     public static void main(String[] args) {

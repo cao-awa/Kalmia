@@ -12,4 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface AutoPlugin {
+    String name();
+
+    String uuid() default "";
 }

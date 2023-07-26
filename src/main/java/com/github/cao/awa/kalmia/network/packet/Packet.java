@@ -5,6 +5,7 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
+import com.github.cao.awa.kalmia.annotation.auto.DoNotOverride;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
@@ -20,6 +21,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
     private static final Logger LOGGER = LogManager.getLogger("Packet");
     public static final byte[] RECEIPT = new byte[]{- 1};
     private byte[] receipt = RECEIPT;
+    private T handler;
 
     public Packet(byte[] receipt) {
         this.receipt = check(receipt);
@@ -39,11 +41,13 @@ public abstract class Packet<T extends PacketHandler<T>> {
 
     }
 
-    public byte[] receipt() {
+    @DoNotOverride
+    public final byte[] receipt() {
         return this.receipt;
     }
 
-    public byte[] encodeReceipt() {
+    @DoNotOverride
+    public final byte[] encodeReceipt() {
         if (this.receipt == RECEIPT) {
             return this.receipt;
         }
@@ -69,11 +73,12 @@ public abstract class Packet<T extends PacketHandler<T>> {
     }
 
     @Auto
+    @DoNotOverride
     public byte[] payload() {
         return EntrustEnvironment.trys(
-                // Encode payload
+                // Encode payload.
                 () -> KalmiaEnv.packetSerializeFramework.payload(this),
-                // Handle exception
+                // Handle exception.
                 e -> {
                     // Usually, exception should not be happened, maybe bugs cause this.
                     // Need report to solve the bug.
@@ -84,12 +89,15 @@ public abstract class Packet<T extends PacketHandler<T>> {
         );
     }
 
+    @Auto
     public byte[] id() {
         // Encode id.
         return KalmiaEnv.packetSerializeFramework.id(this);
     }
 
-    public byte[] encode(RequestRouter router) {
+    @Auto
+    @DoNotOverride
+    public final byte[] encode(RequestRouter router) {
         byte[] payload = BytesUtil.concat(
                 // Unequal random identifier and timestamp for every packet.
                 // For protect the replay attack.
@@ -114,13 +122,29 @@ public abstract class Packet<T extends PacketHandler<T>> {
         ));
     }
 
-    public abstract void inbound(RequestRouter router, T handler);
+    @Auto
+    @DoNotOverride
+    public void inbound(RequestRouter router, T handler) {
+        this.handler = handler;
+        KalmiaEnv.networkEventFramework.fireEvent(router,
+                                                  handler,
+                                                  this
+        );
+    }
 
-    public <X extends Packet<T>> X receipt(byte[] receipt) {
+    @Auto
+    @DoNotOverride
+    public final T handler() {
+        return this.handler;
+    }
+
+    @DoNotOverride
+    public final <X extends Packet<T>> X receipt(byte[] receipt) {
         this.receipt = check(receipt);
         return EntrustEnvironment.cast(this);
     }
 
+    @DoNotOverride
     public int size() {
         return
                 // 24 is a random identifier(16) add timestamp(8)

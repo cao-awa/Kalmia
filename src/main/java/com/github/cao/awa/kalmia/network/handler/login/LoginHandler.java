@@ -10,7 +10,7 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import java.util.Set;
 
 public class LoginHandler extends PacketHandler<LoginHandler> {
-    private static final Set<RequestState> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.newHashSet(),
+    private static final Set<RequestState> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.hashSet(),
                                                                                        set -> {
                                                                                            set.add(RequestState.AUTH);
                                                                                        }

@@ -5,7 +5,7 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import java.util.Map;
 
 public abstract class KeyManager<T> {
-    private final Map<String, T> keys = ApricotCollectionFactor.newHashMap();
+    private final Map<String, T> keys = ApricotCollectionFactor.hashMap();
 
     public void add(String field, T key) {
         this.keys.put(field,

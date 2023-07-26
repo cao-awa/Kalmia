@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.framework.serialize;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoSerializer;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 
 public class ByteSerializeFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("ByteSerializerFramework");
-    private final Map<Class<?>, BytesSerializer<?>> typeToSerializers = ApricotCollectionFactor.newHashMap();
-    private final Map<Long, BytesSerializer<?>> idToSerializers = ApricotCollectionFactor.newHashMap();
-    private final Map<Class<? extends BytesSerializer<?>>, Long> typeToId = ApricotCollectionFactor.newHashMap();
-    private final Map<Class<? extends BytesSerializer<?>>, Class<?>[]> typeToTarget = ApricotCollectionFactor.newHashMap();
+    private final Map<Class<?>, BytesSerializer<?>> typeToSerializers = ApricotCollectionFactor.hashMap();
+    private final Map<Long, BytesSerializer<?>> idToSerializers = ApricotCollectionFactor.hashMap();
+    private final Map<Class<? extends BytesSerializer<?>>, Long> typeToId = ApricotCollectionFactor.hashMap();
+    private final Map<Class<? extends BytesSerializer<?>>, Class<?>[]> typeToTarget = ApricotCollectionFactor.hashMap();
 
     @Override
     public void work() {
@@ -122,6 +123,23 @@ public class ByteSerializeFramework extends ReflectionFramework {
                           .map(Class :: getName)
                           .collect(Collectors.toList())
         );
+    }
+
+    public byte[] serialize(Object object) throws Exception {
+        if (object instanceof BytesSerializable serializable) {
+            return serializable.serialize();
+        }
+        return getSerializer(object.getClass()).serialize(EntrustEnvironment.cast(object));
+    }
+
+    public Object deserialize(Class<?> type, BytesReader reader) throws Exception {
+        if (BytesSerializable.class.isAssignableFrom(type)) {
+            BytesSerializable serializable = (BytesSerializable) type.getConstructor()
+                                                                     .newInstance();
+            serializable.deserialize(reader);
+            return serializable;
+        }
+        return getSerializer(type).deserialize(reader);
     }
 
     public <T> BytesSerializer<T> getSerializer(Class<T> type) {

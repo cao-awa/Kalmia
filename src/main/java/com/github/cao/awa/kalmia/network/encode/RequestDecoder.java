@@ -143,8 +143,8 @@ public class RequestDecoder extends ByteToMessageDecoder {
         long timestamp = SkippedBase256.readLong(reader);
 
         // Check packet identity, ensure packet is not replay to server, prevent the replay attack.
-        if (! ReplayAttack.valid(replayMark,
-                                 timestamp
+        if (! ReplayAttack.validate(replayMark,
+                                    timestamp
         )) {
             throw new ReplayAttackException();
         }
