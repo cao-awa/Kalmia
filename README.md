@@ -15,3 +15,5 @@ Please use Chinese as primary language
 ```
 In Telegram group：[山月桂](https://t.me/kalmiagram) \
 In Telegram channel：[山月桂桂桂](https://t.me/kalmiagram_dev)
+
+![](https://count.getloli.com/get/@cao-awa.kalmia?theme=rule34)
