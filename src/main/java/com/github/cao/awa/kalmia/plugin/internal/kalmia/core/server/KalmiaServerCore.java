@@ -13,12 +13,12 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 )
 public class KalmiaServerCore extends Plugin {
     @Override
-    public void load() {
+    public void onEnable() {
         System.out.println("Loading kalmia server core");
     }
 
     @Override
-    public void unload() {
+    public void onDisable() {
 
     }
 }

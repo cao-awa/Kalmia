@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.network.encode;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.kalmia.attack.replay.ReplayAttack;
+import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.encode.exception.ReplayAttackException;
@@ -10,7 +11,6 @@ import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -58,17 +58,12 @@ public class RequestDecoder extends ByteToMessageDecoder {
                                                                                        36
                     ).toByteArray()));
                 } else {
-                    // Mark byte in SkippedBase256.
-                    byte skipped = in.readByte();
-
-                    // The mark is -1 means this number is not skipped, use the full Base256 decoding.
-                    byte[] lengthMarker = new byte[skipped == - 1 ? 4 : skipped];
+                    // Use the full Base256 decoding.
+                    byte[] lengthMarker = new byte[4];
                     in.readBytes(lengthMarker);
 
                     // Let it skipped(full Base256 will auto decoded in here).
-                    dataLength = SkippedBase256.readInt(new BytesReader(BytesUtil.concat(new byte[]{skipped},
-                                                                                         lengthMarker
-                    )));
+                    dataLength = Base256.intFromBuf(lengthMarker);
                 }
 
                 // Mark the packet length.

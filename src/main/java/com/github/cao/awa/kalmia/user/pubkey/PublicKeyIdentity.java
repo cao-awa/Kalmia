@@ -41,7 +41,6 @@ public class PublicKeyIdentity {
     public static boolean ensurePublicKeySettings(long uid, RequestRouter router) {
         if (Kalmia.SERVER.userManager()
                          .publicKey(uid) == null) {
-            System.out.println("???");
             router.send(new NotDoneSettingsPacket("settings.public_key"));
             return false;
         }

@@ -1,3 +1,4 @@
+import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
@@ -19,8 +20,7 @@ public class MiscellaneousManualTest {
 //            System.out.println(TimeUtil.processMillion(start) + "ms");
             start = TimeUtil.millions();
 
-            ecSign();
-            rsaSign();
+            aes();
 
             System.out.println(TimeUtil.processMillion(start) + "ms");
 
@@ -87,6 +87,24 @@ public class MiscellaneousManualTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void aes() throws Exception {
+        byte[] cipher = BytesRandomIdentifier.create(64);
+
+        byte[] plaintext = "www".getBytes();
+
+        byte[] ciphertext = Crypto.aesEncrypt(plaintext,
+                                              cipher
+        );
+
+        System.out.println(new String(ciphertext));
+
+        byte[] decrypted = Crypto.aesDecrypt(ciphertext,
+                                             cipher
+        );
+
+        System.out.println(new String(decrypted));
     }
 
     public static void rsa() throws Exception {

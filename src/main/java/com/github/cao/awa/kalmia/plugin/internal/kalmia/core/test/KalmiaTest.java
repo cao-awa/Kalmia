@@ -13,12 +13,12 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 )
 public class KalmiaTest extends Plugin {
     @Override
-    public void load() {
+    public void onEnable() {
         System.out.println("Loading kalmia test");
     }
 
     @Override
-    public void unload() {
+    public void onDisable() {
 
     }
 }

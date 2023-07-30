@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.network.encode;
 
+import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.packet.Packet;
@@ -34,7 +35,7 @@ public class RequestEncoder extends MessageToByteEncoder<Packet<?>> {
         TrafficCount.encoded(payload.length);
 
         // Mark the length for frame reading.
-        byte[] lengthMark = SkippedBase256.intToBuf(payload.length);
+        byte[] lengthMark = Base256.intToBuf(payload.length);
 
         // Mark base36 mode.
         out.writeChar(this.router.shouldApplyBase36() ? 'b' : 'a');

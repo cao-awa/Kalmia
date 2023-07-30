@@ -38,8 +38,12 @@ public abstract class PacketHandler<H extends PacketHandler<H>> {
                                                            p.getClass()
                                               );
 
-                                              inbound(p,
-                                                      router
+                                              EntrustEnvironment.trys(
+                                                      () -> inbound(
+                                                              p,
+                                                              router
+                                                      ),
+                                                      Throwable :: printStackTrace
                                               );
 
                                               return true;

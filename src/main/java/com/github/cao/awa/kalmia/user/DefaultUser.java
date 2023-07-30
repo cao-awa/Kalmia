@@ -57,10 +57,6 @@ public class DefaultUser extends User {
         return this.keyPair;
     }
 
-    public DisabledUser disable() {
-        return new DisabledUser(this);
-    }
-
     @Override
     public byte[] toBytes() {
         return BytesUtil.concat(new byte[]{0},

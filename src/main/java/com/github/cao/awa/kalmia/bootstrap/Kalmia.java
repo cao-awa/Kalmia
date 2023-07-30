@@ -4,7 +4,6 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.DeletedUser;
-import com.github.cao.awa.kalmia.user.DisabledUser;
 import com.github.cao.awa.kalmia.user.factor.UserFactor;
 import com.github.cao.awa.kalmia.user.key.ServerKeyPairStoreFactor;
 import com.github.cao.awa.kalmia.user.key.ec.EcServerKeyPair;
@@ -38,9 +37,6 @@ public class Kalmia {
         );
         UserFactor.register(0,
                             DefaultUser :: create
-        );
-        UserFactor.register(1,
-                            DisabledUser :: create
         );
 
         ServerKeyPairStoreFactor.register(0,

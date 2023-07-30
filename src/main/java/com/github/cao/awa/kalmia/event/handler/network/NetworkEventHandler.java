@@ -6,12 +6,12 @@ import com.github.cao.awa.kalmia.event.network.NetworkEvent;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 
-public abstract class NetworkEventHandler<T extends Packet<?>, E extends NetworkEvent<T>> extends EventHandler<E> {
-    public abstract void handle(RequestRouter router, T packet);
+public interface NetworkEventHandler<P extends Packet<?>, E extends NetworkEvent<P>> extends EventHandler<E> {
+    void handle(RequestRouter router, P packet);
 
     @Override
     @DoNotOverride
-    public void handle(E event) {
+    default void handle(E event) {
         handle(event.router(),
                event.packet()
         );
