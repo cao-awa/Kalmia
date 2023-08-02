@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
  * @author 草二号机
  * @since 1.0.0
  */
-public final class RequestProtocol implements BytesSerializable {
+public final class RequestProtocol implements BytesSerializable<RequestProtocol> {
     private String name;
     private long version;
     private long compatible;
@@ -84,12 +84,14 @@ public final class RequestProtocol implements BytesSerializable {
     }
 
     @Override
-    public void deserialize(BytesReader reader) {
+    public RequestProtocol deserialize(BytesReader reader) {
         this.name = new String(reader.read(reader.read()),
                                StandardCharsets.US_ASCII
         );
         this.version = SkippedBase256.readLong(reader);
         this.compatible = SkippedBase256.readLong(reader);
         this.forceUse = reader.read() == 1;
+
+        return this;
     }
 }

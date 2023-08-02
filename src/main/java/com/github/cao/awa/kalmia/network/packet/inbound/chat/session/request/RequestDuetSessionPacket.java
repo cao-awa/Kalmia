@@ -2,9 +2,11 @@ package com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.annotation.actor.Getter;
 import com.github.cao.awa.kalmia.annotation.auto.event.NetworkEventTarget;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.annotation.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.network.inbound.chat.session.request.RequestDuetSessionEvent;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
@@ -20,10 +22,11 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
  * @see ChatInSessionPacket
  * @since 1.0.0
  */
-@AutoSolvedPacket(16)
+@AutoSolvedPacket(id = 16)
 @NetworkEventTarget(RequestDuetSessionEvent.class)
 public class RequestDuetSessionPacket extends Packet<AuthedRequestHandler> {
     @AutoData
+    @DoNotSet
     private long targetUid;
 
     @Client
@@ -37,6 +40,7 @@ public class RequestDuetSessionPacket extends Packet<AuthedRequestHandler> {
         super(reader);
     }
 
+    @Getter
     public long targetUid() {
         return this.targetUid;
     }

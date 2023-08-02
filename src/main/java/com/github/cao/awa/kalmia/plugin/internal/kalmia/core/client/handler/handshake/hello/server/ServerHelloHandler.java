@@ -52,7 +52,7 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
         }
 
         // Prepare authed status to enable LoginHandler.
-        router.setStatus(RequestState.AUTH);
+        router.setStates(RequestState.AUTH);
 
         // TODO
         //     Try login(will delete in releases).

@@ -5,7 +5,7 @@ import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.message.select.SelectedMessageEventHandler;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.message.PlainMessage;
+import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectedMessagePacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -22,7 +22,7 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
         System.out.println("Range is " + packet.from() + " to " + packet.to());
 
         for (Message message : packet.messages()) {
-            if (message instanceof PlainMessage plain) {
+            if (message instanceof PlainsMessage plain) {
                 System.out.println("PLAINS: " + plain.getMsg());
             } else if (message instanceof DeletedMessage deleted) {
                 System.out.println("DELETED: " + deleted.digest()

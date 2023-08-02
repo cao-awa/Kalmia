@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus;
 
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.handler.ping.StatelessHandler;
+import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 
 /**

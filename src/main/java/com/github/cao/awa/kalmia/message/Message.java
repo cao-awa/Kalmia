@@ -1,44 +1,31 @@
 package com.github.cao.awa.kalmia.message;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.convert.ByteArrayConvertable;
 import com.github.cao.awa.kalmia.digest.DigestedObject;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.message.factor.MessageFactor;
 
-public abstract class Message implements DigestedObject {
-    public abstract byte[] toBytes();
-
+public abstract class Message implements DigestedObject, ByteArrayConvertable {
     public abstract long getSender();
 
     public static Message create(byte[] data) {
-        PlainMessage plain = createPlain(data);
-        if (plain == null) {
-            return createDeleted(data);
-        }
-        return plain;
-    }
-
-    public static DeletedMessage createDeleted(byte[] data) {
-        return createDeleted(new BytesReader(data));
-    }
-
-    public static PlainMessage createPlain(byte[] data) {
-        return createPlain(new BytesReader(data));
+        return create(BytesReader.of(data));
     }
 
     public static Message create(BytesReader reader) {
-        reader.flag();
-        PlainMessage plain = createPlain(reader);
-        if (plain == null) {
-            reader.back();
-            return createDeleted(reader);
+        return MessageFactor.create(
+                reader.read(),
+                reader.back(1)
+        );
+    }
+
+    public byte[] toBytes() {
+        try {
+            return KalmiaEnv.serializeFramework.payload(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return plain;
-    }
-
-    public static DeletedMessage createDeleted(BytesReader reader) {
-        return DeletedMessage.create(reader);
-    }
-
-    public static PlainMessage createPlain(BytesReader reader) {
-        return PlainMessage.create(reader);
     }
 }

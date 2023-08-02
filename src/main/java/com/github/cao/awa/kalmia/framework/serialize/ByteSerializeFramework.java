@@ -3,15 +3,25 @@ package com.github.cao.awa.kalmia.framework.serialize;
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoSerializer;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
-import com.github.cao.awa.kalmia.framework.serialize.serializer.BytesSerializer;
+import com.github.cao.awa.kalmia.mathematic.base.Base256;
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.network.packet.Packet;
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -125,21 +135,117 @@ public class ByteSerializeFramework extends ReflectionFramework {
         );
     }
 
-    public byte[] serialize(Object object) throws Exception {
-        if (object instanceof BytesSerializable serializable) {
-            return serializable.serialize();
+    private LinkedList<Field> autoFields(Object object) throws NoSuchFieldException {
+        Class<Packet<?>> clazz = EntrustEnvironment.cast(object.getClass());
+        assert clazz != null;
+        LinkedList<Field> fields = ApricotCollectionFactor.linkedList();
+        for (Field e : clazz.getDeclaredFields()) {
+            if (e.isAnnotationPresent(AutoData.class)) {
+                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),
+                                            object
+                ));
+            }
         }
-        return getSerializer(object.getClass()).serialize(EntrustEnvironment.cast(object));
+        return fields;
+    }
+
+    public <T> byte[] payload(T packet) throws Exception {
+        LinkedList<Field> fields = autoFields(packet);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        for (Field field : fields) {
+            output.write(
+                    KalmiaEnv.serializeFramework.serialize(field.get(packet),
+                                                           field
+                    )
+            );
+        }
+
+        return output.toByteArray();
+    }
+
+    public <T> T create(T object, BytesReader reader) throws Exception {
+        LinkedList<Field> fields = autoFields(object);
+
+        for (Field field : fields) {
+            Object deserialize = KalmiaEnv.serializeFramework.deserialize(field.getType(),
+                                                                          reader
+            );
+            field.set(object,
+                      deserialize
+            );
+        }
+
+        return object;
+    }
+
+    public byte[] serialize(Object object, Field field) throws Exception {
+        BytesSerializer<?> serializer = getSerializer(field.getType());
+
+        if (Modifier.isAbstract(field.getType()
+                                     .getModifiers()) && serializer == null) {
+            if (object instanceof BytesSerializable<?> serializable) {
+                return BytesUtil.concat(
+                        BytesUtil.of((byte) 1),
+                        Base256.tagToBuf(serializable.getClass()
+                                                     .getName()
+                                                     .length()),
+                        serializable.getClass()
+                                    .getName()
+                                    .getBytes(StandardCharsets.UTF_8),
+                        serializable.serialize()
+                );
+            }
+
+            serializer = getSerializer(object.getClass());
+
+            return BytesUtil.concat(BytesUtil.of((byte) 2),
+                                    SkippedBase256.longToBuf(serializer.id()),
+                                    serializer.serialize(EntrustEnvironment.cast(object))
+            );
+        } else {
+            if (object instanceof BytesSerializable<?> serializable) {
+                return BytesUtil.concat(
+                        BytesUtil.of((byte) - 1),
+                        serializable.serialize()
+                );
+            }
+            return BytesUtil.concat(
+                    BytesUtil.of((byte) - 1),
+                    serializer.serialize(EntrustEnvironment.cast(object))
+            );
+        }
     }
 
     public Object deserialize(Class<?> type, BytesReader reader) throws Exception {
-        if (BytesSerializable.class.isAssignableFrom(type)) {
-            BytesSerializable serializable = (BytesSerializable) type.getConstructor()
-                                                                     .newInstance();
-            serializable.deserialize(reader);
-            return serializable;
+        switch (reader.read()) {
+            case - 1 -> {
+                if (BytesSerializable.class.isAssignableFrom(type)) {
+                    BytesSerializable<?> serializable = (BytesSerializable<?>) type.getConstructor()
+                                                                                   .newInstance();
+                    serializable.deserialize(reader);
+                    return serializable;
+                }
+                System.out.println("SER: " + type);
+                return getSerializer(type).deserialize(reader);
+            }
+            case 1 -> {
+                BytesSerializable<?> serializable = (BytesSerializable<?>) Class.forName(new String(reader.read(Base256.tagFromBuf(reader.read(2))),
+                                                                                                    StandardCharsets.UTF_8
+                                                                                ))
+                                                                                .getConstructor()
+                                                                                .newInstance();
+                serializable.deserialize(reader);
+                return serializable;
+            }
+            case 2 -> {
+                return getSerializer(SkippedBase256.readLong(reader)).deserialize(reader);
+            }
+            default -> {
+                return null;
+            }
         }
-        return getSerializer(type).deserialize(reader);
     }
 
     public <T> BytesSerializer<T> getSerializer(Class<T> type) {

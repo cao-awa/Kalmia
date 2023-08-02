@@ -45,6 +45,10 @@ public class Mathematics {
         ).toByteArray();
     }
 
+    public static boolean isOdd(long number) {
+        return (number & 1) == 1;
+    }
+
 //    public static <T extends Number> T max(T t1, T t2, T t3) {
 //        T middle = t1.doubleValue() > t2.doubleValue() ? t1 : t2;
 //        T max = middle.doubleValue() > t3.doubleValue() ? middle : t3;

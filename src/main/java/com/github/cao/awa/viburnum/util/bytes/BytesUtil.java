@@ -78,4 +78,8 @@ public class BytesUtil {
         }
         return result;
     }
+
+    public static byte[] of(byte... bytes) {
+        return bytes;
+    }
 }

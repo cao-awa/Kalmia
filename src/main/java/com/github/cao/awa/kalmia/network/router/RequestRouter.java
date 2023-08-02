@@ -15,7 +15,7 @@ import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.disabled.DisabledRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
-import com.github.cao.awa.kalmia.network.handler.ping.StatelessHandler;
+import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
@@ -52,8 +52,8 @@ public class RequestRouter extends NetworkRouter {
                                                                                               }
     );
     private final CryptoTransportLayer transportLayer = new CryptoTransportLayer();
-    private RequestState status;
-    private PacketHandler<?> handler;
+    private RequestState states;
+    private PacketHandler<?> allowedHandler;
     private final StatelessHandler statelessHandler = new StatelessHandler();
     private ChannelHandlerContext context;
     private final Consumer<RequestRouter> activeCallback;
@@ -83,16 +83,16 @@ public class RequestRouter extends NetworkRouter {
 
     public RequestRouter(Consumer<RequestRouter> activeCallback) {
         this.activeCallback = activeCallback;
-        setStatus(RequestState.HELLO);
+        setStates(RequestState.HELLO);
     }
 
-    public RequestState getStatus() {
-        return this.status;
+    public RequestState getStates() {
+        return this.states;
     }
 
-    public void setStatus(RequestState status) {
-        this.status = status;
-        this.handler = this.handlers.get(status);
+    public void setStates(RequestState states) {
+        this.states = states;
+        this.allowedHandler = this.handlers.get(states);
     }
 
     @Override
@@ -101,15 +101,15 @@ public class RequestRouter extends NetworkRouter {
             if (! this.statelessHandler.tryInbound(msg,
                                                    this
             )) {
-                this.handler.tryInbound(msg,
-                                        this
+                this.allowedHandler.tryInbound(msg,
+                                               this
                 );
             }
         } catch (InvalidPacketException e) {
             // TODO
             e.printStackTrace();
 
-            send(new OperationInvalidPacket<>("Server internal error"));
+            send(new OperationInvalidPacket("Server internal error"));
         } catch (Exception e) {
             BugTrace.trace(e,
                            "Event pipeline happened exception or packet deserialize not completed, please check last bug trace and report theses trace"
@@ -159,7 +159,7 @@ public class RequestRouter extends NetworkRouter {
     public byte[] decode(byte[] cipherText) {
         byte[] decodeResult = this.transportLayer.decode(cipherText);
 
-        BytesReader reader = new BytesReader(decodeResult);
+        BytesReader reader = BytesReader.of(decodeResult);
 
         int compressId = Base256.tagFromBuf(reader.read(2));
 
@@ -227,7 +227,7 @@ public class RequestRouter extends NetworkRouter {
     }
 
     public PacketHandler<?> getHandler() {
-        return this.handlers.get(this.status);
+        return this.handlers.get(this.states);
     }
 
     public boolean shouldApplyBase36() {

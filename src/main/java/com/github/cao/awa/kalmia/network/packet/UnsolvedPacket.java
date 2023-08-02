@@ -11,7 +11,7 @@ public abstract class UnsolvedPacket<T extends Packet<?>> {
     }
 
     public BytesReader reader() {
-        return new BytesReader(this.data);
+        return BytesReader.of(this.data);
     }
 
     public UnsolvedPacket(byte[] data) {

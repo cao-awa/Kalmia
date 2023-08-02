@@ -5,7 +5,7 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
-import com.github.cao.awa.kalmia.annotation.auto.DoNotOverride;
+import com.github.cao.awa.kalmia.annotation.inaction.DoNotOverride;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
@@ -29,8 +29,8 @@ public abstract class Packet<T extends PacketHandler<T>> {
 
     public Packet(BytesReader reader) {
         try {
-            KalmiaEnv.packetSerializeFramework.create(this,
-                                                      reader
+            KalmiaEnv.packetFramework.create(this,
+                                             reader
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,7 +77,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
     public byte[] payload() {
         return EntrustEnvironment.trys(
                 // Encode payload.
-                () -> KalmiaEnv.packetSerializeFramework.payload(this),
+                () -> KalmiaEnv.packetFramework.payload(this),
                 // Handle exception.
                 e -> {
                     // Usually, exception should not be happened, maybe bugs cause this.
@@ -92,7 +92,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
     @Auto
     public byte[] id() {
         // Encode id.
-        return KalmiaEnv.packetSerializeFramework.id(this);
+        return KalmiaEnv.packetFramework.id(this);
     }
 
     @Auto

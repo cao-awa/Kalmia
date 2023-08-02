@@ -33,7 +33,7 @@ public class DisabledRequestHandler extends AuthedRequestHandler {
 //        packet.inbound(router,
 //                       this
 //        );
-        router.send(new OperationInvalidPacket<>("This account has been disabled"));
+        router.send(new OperationInvalidPacket("This account has been disabled"));
     }
 
     @Override

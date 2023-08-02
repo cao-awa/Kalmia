@@ -43,7 +43,7 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
                                                                                                 16
                                                                             )
         )) {
-            router.setStatus(RequestState.AUTHED);
+            router.setStates(RequestState.AUTHED);
             ((AuthedRequestHandler) router.getHandler()).setUid(uid);
 
             byte[] token = BytesRandomIdentifier.create(64);

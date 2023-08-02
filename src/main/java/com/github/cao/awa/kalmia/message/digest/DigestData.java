@@ -3,14 +3,14 @@ package com.github.cao.awa.kalmia.message.digest;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
-import com.github.cao.awa.kalmia.convert.ByteArrayConvertable;
 import com.github.cao.awa.kalmia.convert.BytesValueConvertable;
+import com.github.cao.awa.kalmia.framework.serialize.BytesSerializable;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.math.BigInteger;
 import java.util.Map;
 
-public class DigestData extends BytesValueConvertable implements ByteArrayConvertable {
+public class DigestData extends BytesValueConvertable implements BytesSerializable<DigestData> {
     private static final Map<Byte, MessageDigger.DigestAlgorithm> idToType = ApricotCollectionFactor.hashMap();
     private static final Map<MessageDigger.DigestAlgorithm, Byte> typeToId = ApricotCollectionFactor.hashMap();
 
@@ -44,8 +44,17 @@ public class DigestData extends BytesValueConvertable implements ByteArrayConver
         );
     }
 
-    private final MessageDigger.DigestAlgorithm type;
-    private final byte[] value;
+    private MessageDigger.DigestAlgorithm type;
+    private byte[] value;
+
+    public DigestData() {
+
+    }
+
+    public DigestData(MessageDigger.DigestAlgorithm type, byte[] value) {
+        this.type = type;
+        this.value = value;
+    }
 
     public MessageDigger.DigestAlgorithm type() {
         return this.type;
@@ -59,26 +68,27 @@ public class DigestData extends BytesValueConvertable implements ByteArrayConver
         return new BigInteger(this.value).toString(10);
     }
 
-    public DigestData(MessageDigger.DigestAlgorithm type, byte[] value) {
-        this.type = type;
-        this.value = value;
+    public static DigestData create(BytesReader reader) {
+        return new DigestData().deserialize(reader);
     }
 
     @Override
-    public byte[] toBytes() {
+    public byte[] serialize() {
         return BytesUtil.concat(new byte[]{typeToId.get(type())},
                                 new byte[]{(byte) value().length},
                                 value()
         );
     }
 
-    public static DigestData create(BytesReader reader) {
+    @Override
+    public DigestData deserialize(BytesReader reader) {
         MessageDigger.DigestAlgorithm type = idToType.get(reader.read());
 
         byte[] value = reader.read(reader.read());
 
-        return new DigestData(type,
-                              value
-        );
+        this.type = type;
+        this.value = value;
+
+        return this;
     }
 }

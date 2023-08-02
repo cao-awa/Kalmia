@@ -51,7 +51,7 @@ public class UserManager {
         if (sessionData == null) {
             return - 1;
         }
-        return SkippedBase256.readLong(new BytesReader(sessionData));
+        return SkippedBase256.readLong(BytesReader.of(sessionData));
     }
 
     public synchronized void session(long self, long target, long sessionId) {

@@ -36,7 +36,7 @@ public class HandshakeAesCipherHandler implements HandshakeAesCipherEventHandler
 
             // Setup crypto and waiting for client login.
             router.setCrypto(new AesCrypto(packet.cipher()));
-            router.setStatus(RequestState.AUTH);
+            router.setStates(RequestState.AUTH);
 
             // Use the different initialization vector to anyone session.
             // For prevent the latent feature extraction.

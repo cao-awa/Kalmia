@@ -18,7 +18,7 @@ import java.util.function.BiFunction;
 
 public class NetworkEventFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("NetworkEventFramework");
-    private final Map<Class<? extends Packet<?>>, BiFunction<RequestRouter, Packet<?>, NetworkEvent<?>>> networkEvents = ApricotCollectionFactor.hashMap();
+    private final Map<Class<? extends Packet<?>>, BiFunction<RequestRouter, Packet<?>, NetworkEvent<?>>> events = ApricotCollectionFactor.hashMap();
 
     public void work() {
         // Working stream...
@@ -51,15 +51,24 @@ public class NetworkEventFramework extends ReflectionFramework {
     }
 
     public void registerNetworkEvent(Class<? extends Packet<?>> packet, BiFunction<RequestRouter, Packet<?>, NetworkEvent<?>> creator) {
-        this.networkEvents.put(packet,
-                               creator
+        this.events.put(packet,
+                        creator
         );
     }
 
     public void fireEvent(RequestRouter router, PacketHandler<?> handler, Packet<?> packet) {
-        KalmiaEnv.eventFramework.fireEvent(this.networkEvents.get(packet.getClass())
-                                                             .apply(router,
-                                                                    packet
-                                                             ));
+        System.out.println(packet.getClass());
+        BiFunction<RequestRouter, Packet<?>, NetworkEvent<?>> h = this.events.get(packet.getClass());
+        if (h == null) {
+            LOGGER.error("The packet '{}' has failed match the event handler, did annotation @NetworkEventTarget are missing in packet?",
+                         packet.getClass()
+                               .getName()
+            );
+        } else {
+            KalmiaEnv.eventFramework.fireEvent(h
+                                                       .apply(router,
+                                                              packet
+                                                       ));
+        }
     }
 }

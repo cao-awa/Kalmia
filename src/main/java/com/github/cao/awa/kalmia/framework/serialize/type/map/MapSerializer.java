@@ -2,36 +2,21 @@ package com.github.cao.awa.kalmia.framework.serialize.type.map;
 
 import com.github.cao.awa.apricot.annotation.Unsupported;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.framework.serialize.serializer.BytesSerializer;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoSerializer;
+import com.github.cao.awa.kalmia.framework.serialize.BytesSerializer;
 
 import java.util.Map;
 
 @Unsupported
+@AutoSerializer(value = 501, target = Map.class)
 public class MapSerializer implements BytesSerializer<Map<?, ?>> {
     @Override
-    public byte[] serialize(Map<?, ?> objects) {
+    public byte[] serialize(Map<?, ?> map) {
         return null;
     }
 
     @Override
     public Map<?, ?> deserialize(BytesReader element) {
         return null;
-    }
-
-    @Override
-    public Map<?, ?> initializer() {
-        return ApricotCollectionFactor.hashMap();
-    }
-
-    @Override
-    public Class<Map<?, ?>>[] target() {
-        return EntrustEnvironment.cast(Map.class);
-    }
-
-    @Override
-    public long id() {
-        return 501;
     }
 }

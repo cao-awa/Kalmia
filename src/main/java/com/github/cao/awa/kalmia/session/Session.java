@@ -9,7 +9,7 @@ public abstract class Session {
     public abstract boolean accessible(long userId);
 
     public static Session create(byte[] data) {
-        BytesReader reader = new BytesReader(data);
+        BytesReader reader = BytesReader.of(data);
 
         int id = reader.read();
 

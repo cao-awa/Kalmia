@@ -2,9 +2,11 @@ package com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.annotation.actor.Getter;
 import com.github.cao.awa.kalmia.annotation.auto.event.NetworkEventTarget;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.annotation.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.network.inbound.chat.session.in.ChatInSessionEvent;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
@@ -20,12 +22,14 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
  * @see RequestDuetSessionPacket
  * @since 1.0.0
  */
-@AutoSolvedPacket(17)
+@AutoSolvedPacket(id = 17)
 @NetworkEventTarget(ChatInSessionEvent.class)
 public class ChatInSessionPacket extends Packet<AuthedRequestHandler> {
     @AutoData
+    @DoNotSet
     private long targetUid;
     @AutoData
+    @DoNotSet
     private long sessionId;
 
     @Server
@@ -40,10 +44,12 @@ public class ChatInSessionPacket extends Packet<AuthedRequestHandler> {
         super(reader);
     }
 
+    @Getter
     public long targetUid() {
         return this.targetUid;
     }
 
+    @Getter
     public long sessionId() {
         return this.sessionId;
     }

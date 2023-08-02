@@ -21,7 +21,7 @@ public class AesCrypto extends SymmetricCrypto {
 
     @Override
     public byte[] decode(byte[] ciphertext) throws Exception {
-        BytesReader reader = new BytesReader(ciphertext);
+        BytesReader reader = BytesReader.of(ciphertext);
         return Crypto.aesDecrypt(reader.all(),
                                  cipher(),
                                  iv()

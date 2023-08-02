@@ -1,6 +1,5 @@
 package com.github.cao.awa.kalmia.network.encode.crypto.symmetric.no;
 
-import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
@@ -16,7 +15,6 @@ public class NoCrypto extends SymmetricCrypto {
 
     @Override
     public byte[] decode(byte[] ciphertext) throws Exception {
-        BytesReader reader = new BytesReader(ciphertext);
-        return reader.all();
+        return ciphertext;
     }
 }

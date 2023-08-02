@@ -2,17 +2,20 @@ package com.github.cao.awa.kalmia.network.packet.inbound.disconnet;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.annotation.actor.Getter;
 import com.github.cao.awa.kalmia.annotation.auto.event.NetworkEventTarget;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.annotation.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.network.inbound.disconnect.TryDisconnectEvent;
-import com.github.cao.awa.kalmia.network.handler.ping.StatelessHandler;
+import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 
-@AutoSolvedPacket(114514)
+@AutoSolvedPacket(id = 114514)
 @NetworkEventTarget(TryDisconnectEvent.class)
 public class TryDisconnectPacket extends Packet<StatelessHandler> {
     @AutoData
+    @DoNotSet
     public String reason;
 
     public TryDisconnectPacket(String reason) {
@@ -24,6 +27,7 @@ public class TryDisconnectPacket extends Packet<StatelessHandler> {
         super(reader);
     }
 
+    @Getter
     public String reason() {
         return this.reason;
     }

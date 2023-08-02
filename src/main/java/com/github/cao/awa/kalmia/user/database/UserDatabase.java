@@ -5,7 +5,9 @@ import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.annotation.number.encode.ShouldSkipped;
 import com.github.cao.awa.kalmia.database.DatabaseProvide;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
+import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.DeletedUser;
 import com.github.cao.awa.kalmia.user.User;
 import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity;
@@ -27,11 +29,11 @@ public class UserDatabase {
     }
 
     public synchronized PublicKey publicKey(@ShouldSkipped byte[] uid) {
-        BytesReader reader = new BytesReader(this.database.get(BytesUtil.concat(uid,
-                                                                                PUBLIC_KEY_DELIMITER
+        BytesReader reader = BytesReader.of(this.database.get(BytesUtil.concat(uid,
+                                                                               PUBLIC_KEY_DELIMITER
         )));
         if (reader.readable() > 1) {
-            return PublicKeyIdentity.createKey(reader.read(),
+            return PublicKeyIdentity.createKey(Base256.tagFromBuf(reader.read(2)),
                                                reader.all()
             );
         } else {
@@ -52,7 +54,7 @@ public class UserDatabase {
                 ROOT
         );
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
 
         count++;
 
@@ -84,7 +86,7 @@ public class UserDatabase {
     public void seqAll(Consumer<Long> action) {
         byte[] seqByte = this.database.get(ROOT);
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
 
         count++;
 
@@ -104,7 +106,7 @@ public class UserDatabase {
     public long add(User user) {
         byte[] seqByte = this.database.get(ROOT);
 
-        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
 
         long nextSeq = seq + 1;
 
@@ -125,6 +127,12 @@ public class UserDatabase {
         this.database.put(seq,
                           user.toBytes()
         );
+
+        if (user instanceof DefaultUser defaultUser) {
+            publicKey(seq,
+                      defaultUser.publicKey()
+            );
+        }
     }
 
     public byte[] session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq) {

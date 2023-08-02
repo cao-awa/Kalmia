@@ -1,16 +1,22 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.login.sign;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.login.sign.LoginWithSignEventHandler;
+import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.login.success.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.interfaces.ECPublicKey;
 
@@ -18,6 +24,8 @@ import java.security.interfaces.ECPublicKey;
 @Server
 @PluginRegister(name = "kalmia_core")
 public class LoginWithSignHandler implements LoginWithSignEventHandler {
+    private static final Logger LOGGER = LogManager.getLogger("LoginWithSignHandler");
+
     @Auto
     @Server
     @Override
@@ -35,7 +43,22 @@ public class LoginWithSignHandler implements LoginWithSignEventHandler {
             );
 
             if (verified) {
+                router.setStates(RequestState.AUTHED);
+                ((AuthedRequestHandler) router.getHandler()).setUid(packet.uid());
 
+                byte[] token = BytesRandomIdentifier.create(64);
+
+                router.send(new LoginSuccessPacket(packet.uid(),
+                                                   token
+                ));
+
+                LOGGER.info("User {} login succeed",
+                            packet.uid()
+                );
+            } else {
+                LOGGER.info("User {} login failed",
+                            packet.uid()
+                );
             }
         } catch (Exception e) {
             BugTrace.trace(e,

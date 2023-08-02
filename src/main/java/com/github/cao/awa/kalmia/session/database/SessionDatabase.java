@@ -24,7 +24,7 @@ public class SessionDatabase {
                 ROOT
         );
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
 
         count++;
 
@@ -55,7 +55,7 @@ public class SessionDatabase {
     public void seqAll(Consumer<Long> action) {
         byte[] seqByte = this.database.get(ROOT);
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
 
         count++;
 
@@ -75,7 +75,7 @@ public class SessionDatabase {
     public long add(Session session) {
         byte[] seqByte = this.database.get(ROOT);
 
-        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
 
         long nextSeq = seq + 1;
 

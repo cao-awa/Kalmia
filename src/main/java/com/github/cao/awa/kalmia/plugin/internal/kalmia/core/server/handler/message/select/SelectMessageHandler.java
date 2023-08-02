@@ -46,15 +46,21 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
             long endSelect = current + selected;
 
-            manager.operation(packet.sessionId(),
-                              current,
-                              endSelect,
-                              (seq, msg) -> {
-                                  messages.add(msg);
-                              }
-            );
+            try {
+                manager.operation(packet.sessionId(),
+                                  current,
+                                  endSelect,
+                                  (seq, msg) -> {
+                                      messages.add(msg);
+                                  }
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             realSelected = messages.size() - 1;
+
+            System.out.println(messages);
 
             router.send(new SelectedMessagePacket(packet.sessionId(),
                                                   current,

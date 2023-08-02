@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.user.key.ec;
 
 import com.github.cao.awa.kalmia.user.key.ServerKeyPairStore;
+import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity;
 
 public class EcServerKeyPair extends ServerKeyPairStore {
     public EcServerKeyPair(byte[] publicKey, byte[] privateKey) {
@@ -11,6 +12,6 @@ public class EcServerKeyPair extends ServerKeyPairStore {
 
     @Override
     public int type() {
-        return 1;
+        return PublicKeyIdentity.EC_IDENTITY;
     }
 }

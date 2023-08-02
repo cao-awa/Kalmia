@@ -30,7 +30,7 @@ public abstract class PacketHandler<H extends PacketHandler<H>> {
     public abstract void inbound(Packet<H> packet, RequestRouter router);
 
     public boolean tryInbound(UnsolvedPacket<?> packet, RequestRouter router) {
-        if (allowStates().contains(router.getStatus())) {
+        if (allowStates().contains(router.getStates())) {
             return EntrustEnvironment.get(() -> {
                                               Packet<H> p = tryHandle(packet);
 
@@ -38,13 +38,15 @@ public abstract class PacketHandler<H extends PacketHandler<H>> {
                                                            p.getClass()
                                               );
 
-                                              EntrustEnvironment.trys(
-                                                      () -> inbound(
-                                                              p,
-                                                              router
-                                                      ),
-                                                      Throwable :: printStackTrace
+//                                              EntrustEnvironment.trys(
+//                                                      () ->
+                                              inbound(
+                                                      p,
+                                                      router
                                               );
+//                                                      ,
+//                                                      Throwable :: printStackTrace
+//                                              );
 
                                               return true;
                                           },

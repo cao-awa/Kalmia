@@ -52,10 +52,10 @@ public class RequestDecoder extends ByteToMessageDecoder {
                     byte[] lengthMarker = new byte[lengthOfLengthMarker];
                     in.readBytes(lengthMarker);
 
-                    dataLength = SkippedBase256.readInt(new BytesReader(new BigInteger(new String(lengthMarker,
-                                                                                                  StandardCharsets.US_ASCII
+                    dataLength = SkippedBase256.readInt(BytesReader.of(new BigInteger(new String(lengthMarker,
+                                                                                                 StandardCharsets.US_ASCII
                     ),
-                                                                                       36
+                                                                                      36
                     ).toByteArray()));
                 } else {
                     // Use the full Base256 decoding.
@@ -114,7 +114,7 @@ public class RequestDecoder extends ByteToMessageDecoder {
         }
 
         // Build the reader.
-        BytesReader reader = new BytesReader(payload);
+        BytesReader reader = BytesReader.of(payload);
 
         // Skip the FIRST REPLACEMENT for compatible to base 36 mode.
         reader.skip(1);

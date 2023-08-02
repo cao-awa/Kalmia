@@ -4,7 +4,6 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotation.auto.event.AutoHandler;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
-import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.Event;
 import com.github.cao.awa.kalmia.event.handler.EventHandler;
@@ -14,7 +13,6 @@ import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
-import com.github.cao.awa.trtr.util.string.StringConcat;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,16 +130,12 @@ public class EventFramework extends ReflectionFramework {
     }
 
     public Class<? extends EventHandler<?>> autoHandler(Class<? extends EventHandler<?>> handler) {
-        LOGGER.error(handler);
-
         if (Modifier.isInterface(handler.getModifiers())) {
             AutoHandler autoHandler = handler.getAnnotation(AutoHandler.class);
 
             if (autoHandler == null) {
                 return handler;
             }
-
-            LOGGER.error(handler + ":" + autoHandler);
 
             this.targetedEventHandler.put(handler,
                                           autoHandler.value()
@@ -169,28 +163,29 @@ public class EventFramework extends ReflectionFramework {
 
     public void fireEvent(@NotNull NetworkEvent<?> event) {
         System.out.println(event.getClass());
-        this.handlers.get(event.getClass())
-                     .forEach(handler -> {
-                         System.out.println((handler instanceof NetworkEventHandler<?, ?>) + ":" + plugin(handler).enabled());
+        for (EventHandler<?> handler : this.handlers.get(event.getClass())) {
+            System.out.println((handler instanceof NetworkEventHandler<?, ?>) + ":" + plugin(handler).enabled());
 
-                         if (
-                             // Network event can only handle by network event handler.
-                                 handler instanceof NetworkEventHandler<?, ?> networkHandler &&
-                                         // If plugin are disabled, then do not let it handle events.
-                                         plugin(networkHandler).enabled()
-                         ) {
-                             EntrustEnvironment.trys(
-                                     () -> networkHandler.handle(Objects.requireNonNull(EntrustEnvironment.cast(event))),
-                                     ex -> BugTrace.trace(ex,
-                                                          StringConcat.concat(
-                                                                  "Event pipeline was happened exception by plugin '",
-                                                                  this.handlerBelongs.get(networkHandler),
-                                                                  "'"
-                                                          )
-                                     )
-                             );
-                         }
-                     });
+            if (
+                // Network event can only handle by network event handler.
+                    handler instanceof NetworkEventHandler<?, ?> networkHandler &&
+                            // If plugin are disabled, then do not let it handle events.
+                            plugin(networkHandler).enabled()
+            ) {
+//                EntrustEnvironment.trys(
+//                        () ->
+                networkHandler.handle(Objects.requireNonNull(EntrustEnvironment.cast(event)));
+//                                ,
+//                        ex -> BugTrace.trace(ex,
+//                                             StringConcat.concat(
+//                                                     "Event pipeline was happened exception by plugin '",
+//                                                     this.handlerBelongs.get(networkHandler),
+//                                                     "'"
+//                                             )
+//                        )
+//                );
+            }
+        }
     }
 
     public Plugin plugin(EventHandler<?> handler) {

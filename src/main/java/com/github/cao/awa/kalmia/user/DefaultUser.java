@@ -4,9 +4,12 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.user.key.ServerKeyPairStore;
 import com.github.cao.awa.kalmia.user.password.UserPassword;
+import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.nio.charset.StandardCharsets;
+import java.security.PublicKey;
 
 public class DefaultUser extends User {
     private final long joinTimestamp;
@@ -55,6 +58,10 @@ public class DefaultUser extends User {
 
     public ServerKeyPairStore keyPair() {
         return this.keyPair;
+    }
+
+    public PublicKey publicKey() {
+        return EntrustEnvironment.trys(() -> PublicKeyIdentity.getKey(this.keyPair));
     }
 
     @Override

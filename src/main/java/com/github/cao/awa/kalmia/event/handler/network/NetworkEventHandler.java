@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.event.handler.network;
 
-import com.github.cao.awa.kalmia.annotation.auto.DoNotOverride;
+import com.github.cao.awa.kalmia.annotation.inaction.DoNotOverride;
 import com.github.cao.awa.kalmia.event.handler.EventHandler;
 import com.github.cao.awa.kalmia.event.network.NetworkEvent;
 import com.github.cao.awa.kalmia.network.packet.Packet;

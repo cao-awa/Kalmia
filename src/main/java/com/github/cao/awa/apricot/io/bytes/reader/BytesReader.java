@@ -7,8 +7,12 @@ public class BytesReader {
     private byte[] bytes;
     private int cursor = 0;
 
-    public BytesReader(byte[] bytes) {
+    private BytesReader(byte[] bytes) {
         this.bytes = bytes == null ? BytesUtil.EMPTY : bytes;
+    }
+
+    public static BytesReader of(byte[] bytes) {
+        return new BytesReader(bytes);
     }
 
     public int getCursor() {

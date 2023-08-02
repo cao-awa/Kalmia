@@ -5,10 +5,8 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus.TryPingPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus.TryPingResponsePacket;
-import com.github.cao.awa.kalmia.network.packet.unsolve.invalid.operation.UnsolvedOperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingResponsePacket;
 
@@ -34,7 +32,7 @@ public class UnsolvedPacketFactor {
     }
 
     public static void register(byte[] id, Function<byte[], UnsolvedPacket<?>> creator) {
-        factories.put(SkippedBase256.readLong(new BytesReader(id)),
+        factories.put(SkippedBase256.readLong(BytesReader.of(id)),
                       creator
         );
     }
@@ -50,12 +48,6 @@ public class UnsolvedPacketFactor {
                 // 5
                 TryPingResponsePacket.ID,
                 UnsolvedTryPingResponsePacket :: new
-        );
-
-        // Invalid operation
-        register(
-                OperationInvalidPacket.ID,
-                UnsolvedOperationInvalidPacket :: new
         );
     }
 }

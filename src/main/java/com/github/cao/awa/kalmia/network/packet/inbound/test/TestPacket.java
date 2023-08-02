@@ -13,7 +13,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@AutoSolvedPacket(Integer.MAX_VALUE - 1)
+@AutoSolvedPacket(id = Integer.MAX_VALUE - 1)
 public class TestPacket extends Packet<HandshakeHandler> {
     private static final Logger LOGGER = LogManager.getLogger("TestPacket");
     @AutoData

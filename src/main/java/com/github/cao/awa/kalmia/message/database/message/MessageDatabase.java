@@ -8,7 +8,9 @@ import com.github.cao.awa.kalmia.database.KeyValueDatabase;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;
+import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -54,7 +56,9 @@ public class MessageDatabase {
         if (msgBytes == null) {
             return null;
         }
-        return Message.create(msgBytes);
+        return EntrustEnvironment.trys(() -> Message.create(msgBytes),
+                                       () -> new UnknownMessage(msgBytes)
+        );
     }
 
     public void delete(@ShouldSkipped byte[] sid, @ShouldSkipped byte[] seq) {
@@ -73,7 +77,7 @@ public class MessageDatabase {
     public void seqAll(@ShouldSkipped byte[] sid, Consumer<Long> action) {
         byte[] seqByte = this.database.get(sid);
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
 
         count++;
 
@@ -110,13 +114,13 @@ public class MessageDatabase {
     public long seq(@ShouldSkipped byte[] sid) {
         byte[] seqByte = this.database.get(sid);
 
-        return seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        return seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
     }
 
     public long curSeq(@ShouldSkipped byte[] sid) {
         byte[] seqByte = this.database.get(sid);
 
-        return seqByte == null ? 0 : SkippedBase256.readLong(new BytesReader(seqByte)) + 1;
+        return seqByte == null ? 0 : SkippedBase256.readLong(BytesReader.of(seqByte)) + 1;
     }
 
     public void deleteAll(@ShouldSkipped byte[] sid) {
@@ -152,7 +156,7 @@ public class MessageDatabase {
     public long send(@ShouldSkipped byte[] sid, Message msg) {
         byte[] seqByte = this.database.get(sid);
 
-        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(new BytesReader(seqByte));
+        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
 
         long nextSeq = seq + 1;
 

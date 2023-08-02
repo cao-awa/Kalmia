@@ -22,7 +22,7 @@ public class DeletedMessage extends Message {
     public byte[] toBytes() {
         return BytesUtil.concat(new byte[]{- 1},
                                 SkippedBase256.longToBuf(this.sender),
-                                this.digestData.toBytes()
+                                this.digestData.serialize()
         );
     }
 
