@@ -23,16 +23,16 @@ public class RequestDuetSessionHandler implements RequestDuetSessionEventHandler
         AuthedRequestHandler handler = packet.handler();
 
         long sessionId = Kalmia.SERVER.userManager()
-                                      .session(handler.getUid(),
+                                      .session(handler.uid(),
                                                targetUid
                                       );
         if (sessionId == - 1) {
             sessionId = Kalmia.SERVER.sessionManager()
-                                     .add(new DuetSession(handler.getUid(),
+                                     .add(new DuetSession(handler.uid(),
                                                           targetUid
                                      ));
             Kalmia.SERVER.userManager()
-                         .session(handler.getUid(),
+                         .session(handler.uid(),
                                   targetUid,
                                   sessionId
                          );

@@ -35,4 +35,8 @@ public class DuetSession extends Session {
     public boolean accessible(long userId) {
         return this.target1 == userId || this.target2 == userId;
     }
+
+    public long opposite(long userId) {
+        return this.target1 == userId ? this.target2 : this.target1;
+    }
 }

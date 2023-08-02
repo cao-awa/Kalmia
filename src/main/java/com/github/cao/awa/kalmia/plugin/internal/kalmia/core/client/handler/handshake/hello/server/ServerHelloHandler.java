@@ -61,17 +61,33 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
 //        ));
 
         try {
-            router.send(new LoginWithSignPacket(
-                    1,
-                    Crypto.decodeEcPrikey(
-                            Crypto.aesDecrypt(KalmiaEnv.testUser1.keyPair()
-                                                                 .privateKey(),
-                                              KalmiaEnv.testUer1AesCipher
-                            )
-                    )
-            ));
+            user1Login(router);
         } catch (Exception e) {
 
         }
+    }
+
+    public static void user1Login(RequestRouter router) throws Exception {
+        router.send(new LoginWithSignPacket(
+                1,
+                Crypto.decodeEcPrikey(
+                        Crypto.aesDecrypt(KalmiaEnv.testUser1.keyPair()
+                                                             .privateKey(),
+                                          KalmiaEnv.testUer1AesCipher
+                        )
+                )
+        ));
+    }
+
+    public static void user2Login(RequestRouter router) throws Exception {
+        router.send(new LoginWithSignPacket(
+                2,
+                Crypto.decodeEcPrikey(
+                        Crypto.aesDecrypt(KalmiaEnv.testUser2.keyPair()
+                                                             .privateKey(),
+                                          KalmiaEnv.testUer2AesCipher
+                        )
+                )
+        ));
     }
 }

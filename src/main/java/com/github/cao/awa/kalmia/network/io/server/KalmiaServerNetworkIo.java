@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -46,10 +47,39 @@ public class KalmiaServerNetworkIo {
     private final KalmiaServer server;
     private ChannelFuture channelFuture;
     private final List<RequestRouter> connections = Collections.synchronizedList(ApricotCollectionFactor.arrayList());
+    private final Map<Long, List<RequestRouter>> routers = ApricotCollectionFactor.hashMap();
 
     public KalmiaServerNetworkIo(KalmiaServer server) {
         this.server = server;
         this.channelInitializer = new KalmiaServerChannelInitializer(server).subscribe(this.connections);
+    }
+
+    public List<RequestRouter> getRouter(long uid) {
+        return this.routers.get(uid);
+    }
+
+    public void login(long uid, RequestRouter router) {
+        this.routers.compute(
+                    uid,
+                    (k, v) -> v == null ? ApricotCollectionFactor.arrayList() : v
+            )
+                    .add(router);
+        LOGGER.info("Login '{}': {}",
+                    uid,
+                    router
+        );
+    }
+
+    public void logout(long uid, RequestRouter router) {
+        List<RequestRouter> routers = this.routers.get(uid);
+        if (routers != null) {
+            routers.remove(router);
+
+            LOGGER.info("Logout '{}': {}",
+                        uid,
+                        router
+            );
+        }
     }
 
     public void start(final int port) throws Exception {

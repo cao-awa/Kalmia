@@ -32,7 +32,7 @@ public class PlainsMessage extends Message {
         this.digest = digest;
     }
 
-    public String getMsg() {
+    public String msg() {
         return this.msg;
     }
 

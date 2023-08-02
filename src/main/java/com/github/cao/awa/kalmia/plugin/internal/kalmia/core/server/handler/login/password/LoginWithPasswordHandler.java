@@ -6,6 +6,7 @@ import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.login.password.LoginWithPasswordEventHandler;
+import com.github.cao.awa.kalmia.login.LoginCommon;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.failed.LoginFailedPacket;
@@ -47,6 +48,11 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
             ((AuthedRequestHandler) router.getHandler()).setUid(uid);
 
             byte[] token = BytesRandomIdentifier.create(64);
+
+            LoginCommon.login(
+                    packet.uid(),
+                    router
+            );
 
             router.send(new LoginSuccessPacket(uid,
                                                token

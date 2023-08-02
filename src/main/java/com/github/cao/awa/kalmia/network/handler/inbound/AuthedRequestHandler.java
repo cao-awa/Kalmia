@@ -18,7 +18,7 @@ public class AuthedRequestHandler extends PacketHandler<AuthedRequestHandler> {
 
     private long uid;
 
-    public long getUid() {
+    public long uid() {
         return this.uid;
     }
 

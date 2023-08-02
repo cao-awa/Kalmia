@@ -4,8 +4,11 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.io.server.KalmiaServerNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
+import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.session.manage.SessionManager;
 import com.github.cao.awa.kalmia.user.manage.UserManager;
+
+import java.util.List;
 
 public class KalmiaServer {
     private final KalmiaServerNetworkIo networkIo;
@@ -65,5 +68,21 @@ public class KalmiaServer {
 
     public boolean useEpoll() {
         return true;
+    }
+
+    public List<RequestRouter> getRouter(long uid) {
+        return this.networkIo.getRouter(uid);
+    }
+
+    public void login(long uid, RequestRouter router) {
+        this.networkIo.login(uid,
+                             router
+        );
+    }
+
+    public void logout(long uid, RequestRouter router) {
+        this.networkIo.logout(uid,
+                              router
+        );
     }
 }

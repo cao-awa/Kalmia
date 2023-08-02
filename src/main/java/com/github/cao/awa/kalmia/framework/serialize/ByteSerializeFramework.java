@@ -227,7 +227,6 @@ public class ByteSerializeFramework extends ReflectionFramework {
                     serializable.deserialize(reader);
                     return serializable;
                 }
-                System.out.println("SER: " + type);
                 return getSerializer(type).deserialize(reader);
             }
             case 1 -> {

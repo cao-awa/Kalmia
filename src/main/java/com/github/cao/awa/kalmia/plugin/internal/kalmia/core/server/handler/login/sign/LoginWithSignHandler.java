@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.login.sign.LoginWithSignEventHandler;
+import com.github.cao.awa.kalmia.login.LoginCommon;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.success.LoginSuccessPacket;
@@ -48,17 +49,15 @@ public class LoginWithSignHandler implements LoginWithSignEventHandler {
 
                 byte[] token = BytesRandomIdentifier.create(64);
 
+                LoginCommon.login(
+                        packet.uid(),
+                        router
+                );
+
                 router.send(new LoginSuccessPacket(packet.uid(),
                                                    token
                 ));
-
-                LOGGER.info("User {} login succeed",
-                            packet.uid()
-                );
             } else {
-                LOGGER.info("User {} login failed",
-                            packet.uid()
-                );
             }
         } catch (Exception e) {
             BugTrace.trace(e,

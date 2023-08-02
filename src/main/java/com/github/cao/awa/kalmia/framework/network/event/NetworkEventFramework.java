@@ -57,7 +57,6 @@ public class NetworkEventFramework extends ReflectionFramework {
     }
 
     public void fireEvent(RequestRouter router, PacketHandler<?> handler, Packet<?> packet) {
-        System.out.println(packet.getClass());
         BiFunction<RequestRouter, Packet<?>, NetworkEvent<?>> h = this.events.get(packet.getClass());
         if (h == null) {
             LOGGER.error("The packet '{}' has failed match the event handler, did annotation @NetworkEventTarget are missing in packet?",

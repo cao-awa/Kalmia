@@ -18,7 +18,7 @@ public class DeleteMessageHandler implements DeleteMessageEventHandler {
     @Override
     public void handle(RequestRouter router, DeleteMessagePacket packet) {
         System.out.println("UID: " + packet.handler()
-                                           .getUid());
+                                           .uid());
         System.out.println("SID: " + packet.sessionId());
         System.out.println("SEQ: " + packet.seq());
 

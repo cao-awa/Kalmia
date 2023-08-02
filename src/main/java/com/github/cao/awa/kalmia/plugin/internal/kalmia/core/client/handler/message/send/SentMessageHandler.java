@@ -16,7 +16,7 @@ public class SentMessageHandler implements SentMessageEventHandler {
     @Override
     public void handle(RequestRouter router, SentMessagePacket packet) {
         System.out.println("UID: " + packet.handler()
-                                           .getUid());
+                                           .uid());
         System.out.println("IDT: " + Mathematics.radix(packet.receipt(),
                                                        36
         ));

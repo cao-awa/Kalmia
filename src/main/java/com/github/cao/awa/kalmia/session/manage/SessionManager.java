@@ -30,7 +30,7 @@ public class SessionManager {
     }
 
     @Nullable
-    public synchronized Session get(long seq) {
+    public synchronized Session session(long seq) {
         return this.database.get(SkippedBase256.longToBuf(seq));
     }
 

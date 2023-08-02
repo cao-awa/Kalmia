@@ -113,14 +113,6 @@ RequestDuetSessionPacket
 
 ChatInSessionPacket
 
-## 68943
-
-```
-接收方：服务端
-```
-
-DisableInstance
-
 ## 100001
 
 ```
@@ -128,15 +120,6 @@ DisableInstance
 ```
 
 LoginWithPassword
-
-## 7
-
-```
-接收方：服务端
-状态：TODO
-```
-
-LoginWithSignChallenge
 
 ## 100008
 
@@ -169,3 +152,7 @@ Disconnect
 ```
 
 NotDoneSettings
+
+## 200000
+
+NewMessageNotice

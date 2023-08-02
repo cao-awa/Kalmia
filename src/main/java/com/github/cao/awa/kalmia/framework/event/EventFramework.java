@@ -162,10 +162,7 @@ public class EventFramework extends ReflectionFramework {
     }
 
     public void fireEvent(@NotNull NetworkEvent<?> event) {
-        System.out.println(event.getClass());
         for (EventHandler<?> handler : this.handlers.get(event.getClass())) {
-            System.out.println((handler instanceof NetworkEventHandler<?, ?>) + ":" + plugin(handler).enabled());
-
             if (
                 // Network event can only handle by network event handler.
                     handler instanceof NetworkEventHandler<?, ?> networkHandler &&

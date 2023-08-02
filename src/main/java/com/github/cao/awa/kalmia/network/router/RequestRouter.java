@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.network.router;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
@@ -144,6 +145,10 @@ public class RequestRouter extends NetworkRouter {
 
     public void disconnect(Future<? super Void> future) {
         this.funeral.done();
+        Kalmia.SERVER.logout(
+                this.uid,
+                this
+        );
     }
 
     public RequestRouter funeral(Runnable action) {

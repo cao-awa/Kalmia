@@ -34,6 +34,10 @@ public class UnknownMessage extends Message {
         return this.digest;
     }
 
+    public byte[] details() {
+        return this.msgBytes;
+    }
+
     @Override
     public long getSender() {
         return - 1;
