@@ -8,12 +8,12 @@ import com.github.cao.awa.kalmia.message.DeletedMessage;
 @AutoSerializer(value = 1000, target = DeletedMessage.class)
 public class DeletedMessageSerializer implements BytesSerializer<DeletedMessage> {
     @Override
-    public byte[] serialize(DeletedMessage plainMessage) throws Exception {
+    public byte[] serialize(DeletedMessage plainMessage) {
         return plainMessage.toBytes();
     }
 
     @Override
-    public DeletedMessage deserialize(BytesReader reader) throws Exception {
+    public DeletedMessage deserialize(BytesReader reader) {
         return DeletedMessage.create(reader);
     }
 }

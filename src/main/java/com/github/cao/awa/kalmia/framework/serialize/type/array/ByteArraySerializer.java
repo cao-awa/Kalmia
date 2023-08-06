@@ -20,14 +20,15 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 @AutoSerializer(value = 201, target = {byte[].class, Byte[].class})
 public class ByteArraySerializer implements BytesSerializer<byte[]> {
     @Override
-    public byte[] serialize(byte[] bytes) throws Exception {
-        return BytesUtil.concat(SkippedBase256.intToBuf(bytes.length),
-                                bytes
+    public byte[] serialize(byte[] bytes) {
+        return BytesUtil.concat(
+                SkippedBase256.intToBuf(bytes.length),
+                bytes
         );
     }
 
     @Override
-    public byte[] deserialize(BytesReader reader) throws Exception {
+    public byte[] deserialize(BytesReader reader) {
         return reader.read(SkippedBase256.readInt(reader));
     }
 }

@@ -8,12 +8,12 @@ import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 @AutoSerializer(value = 5, target = {Long.class, long.class})
 public class LongSerializer implements BytesSerializer<Long> {
     @Override
-    public byte[] serialize(Long l) throws Exception {
+    public byte[] serialize(Long l) {
         return SkippedBase256.longToBuf(l);
     }
 
     @Override
-    public Long deserialize(BytesReader reader) throws Exception {
+    public Long deserialize(BytesReader reader) {
         return SkippedBase256.readLong(reader);
     }
 }

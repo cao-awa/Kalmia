@@ -8,10 +8,10 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 @Auto
 public interface BytesSerializer<T> {
     @Auto
-    byte[] serialize(T target) throws Exception;
+    byte[] serialize(T target);
 
     @Auto
-    T deserialize(BytesReader reader) throws Exception;
+    T deserialize(BytesReader reader);
 
     default Class<T>[] target() {
         return EntrustEnvironment.cast(KalmiaEnv.serializeFramework.target(this));

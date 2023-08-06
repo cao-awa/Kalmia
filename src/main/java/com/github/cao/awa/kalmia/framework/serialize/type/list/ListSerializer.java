@@ -62,7 +62,7 @@ public class ListSerializer implements BytesSerializer<List<?>> {
     }
 
     @Override
-    public byte[] serialize(List<?> list) throws Exception {
+    public byte[] serialize(List<?> list) {
         if (list.size() < 1) {
             return EMPTY;
         }
@@ -200,86 +200,91 @@ public class ListSerializer implements BytesSerializer<List<?>> {
     }
 
     @Override
-    public List<?> deserialize(BytesReader reader) throws Exception {
-        reader.flag();
+    public List<?> deserialize(BytesReader reader) {
+        try {
 
-        if (reader.read() == - 1) {
-            return ApricotCollectionFactor.arrayList();
-        }
+            reader.flag();
 
-        reader.back();
+            if (reader.read() == - 1) {
+                return ApricotCollectionFactor.arrayList();
+            }
 
-        int size = SkippedBase256.readInt(reader);
+            reader.back();
 
-        List<Object> result = ApricotCollectionFactor.arrayList(size);
-        switch (reader.read()) {
-            // Mode 0 is type all consistent serializable mode.
-            case 0 -> {
-                String className = new String(reader.read(SkippedBase256.readInt(reader)),
-                                              StandardCharsets.UTF_8
-                );
+            int size = SkippedBase256.readInt(reader);
 
-                Constructor<?> constructor = Class.forName(className)
-                                                  .getConstructor();
+            List<Object> result = ApricotCollectionFactor.arrayList(size);
+            switch (reader.read()) {
+                // Mode 0 is type all consistent serializable mode.
+                case 0 -> {
+                    String className = new String(reader.read(SkippedBase256.readInt(reader)),
+                                                  StandardCharsets.UTF_8
+                    );
 
-                for (int i = 0; i < size; i++) {
-                    if (constructor.newInstance() instanceof BytesSerializable<?> serializable) {
-                        serializable.deserialize(reader);
-                        result.add(serializable);
+                    Constructor<?> constructor = Class.forName(className)
+                                                      .getConstructor();
+
+                    for (int i = 0; i < size; i++) {
+                        if (constructor.newInstance() instanceof BytesSerializable<?> serializable) {
+                            serializable.deserialize(reader);
+                            result.add(serializable);
+                        }
                     }
                 }
-            }
-            // Mode 1 is type all consistent serializer mode.
-            case 1 -> {
-                BytesSerializer<?> serializer = KalmiaEnv.serializeFramework.getSerializer(SkippedBase256.readLong(reader));
-                for (int i = 0; i < size; i++) {
-                    result.add(serializer.deserialize(reader));
+                // Mode 1 is type all consistent serializer mode.
+                case 1 -> {
+                    BytesSerializer<?> serializer = KalmiaEnv.serializeFramework.getSerializer(SkippedBase256.readLong(reader));
+                    for (int i = 0; i < size; i++) {
+                        result.add(serializer.deserialize(reader));
+                    }
                 }
-            }
-            // Mode 2 is type not consistent mode.
-            case 2 -> {
-                for (int i = 0; i < size; ) {
-                    int current = SkippedBase256.readInt(reader);
+                // Mode 2 is type not consistent mode.
+                case 2 -> {
+                    for (int i = 0; i < size; ) {
+                        int current = SkippedBase256.readInt(reader);
 
-                    switch (reader.read()) {
-                        // Mode 3 is serializable name mode in not consistent mode.
-                        case 3 -> {
-                            // Read as ByteSerializable deserialize.
-                            String className = new String(reader.read(SkippedBase256.readInt(reader)),
-                                                          StandardCharsets.UTF_8
-                            );
+                        switch (reader.read()) {
+                            // Mode 3 is serializable name mode in not consistent mode.
+                            case 3 -> {
+                                // Read as ByteSerializable deserialize.
+                                String className = new String(reader.read(SkippedBase256.readInt(reader)),
+                                                              StandardCharsets.UTF_8
+                                );
 
-                            Constructor<?> constructor = Class.forName(className)
-                                                              .getConstructor();
+                                Constructor<?> constructor = Class.forName(className)
+                                                                  .getConstructor();
 
-                            for (int c = 0; c < current; c++) {
-                                // Deserialize the bytes in the ByteSerializable instance and put it to result.
-                                if (constructor.newInstance() instanceof BytesSerializable<?> serializable) {
-                                    serializable.deserialize(reader);
-                                    result.add(serializable);
+                                for (int c = 0; c < current; c++) {
+                                    // Deserialize the bytes in the ByteSerializable instance and put it to result.
+                                    if (constructor.newInstance() instanceof BytesSerializable<?> serializable) {
+                                        serializable.deserialize(reader);
+                                        result.add(serializable);
+                                    }
+
+                                    // Increase the size counter.
+                                    i++;
                                 }
-
-                                // Increase the size counter.
-                                i++;
                             }
-                        }
-                        // Mode 3 is serializer id mode in not consistent mode.
-                        case 4 -> {
-                            // Read as ByteSerializer deserialize.
-                            BytesSerializer<?> serializer = KalmiaEnv.serializeFramework.getSerializer(SkippedBase256.readLong(reader));
+                            // Mode 3 is serializer id mode in not consistent mode.
+                            case 4 -> {
+                                // Read as ByteSerializer deserialize.
+                                BytesSerializer<?> serializer = KalmiaEnv.serializeFramework.getSerializer(SkippedBase256.readLong(reader));
 
-                            for (int c = 0; c < current; c++) {
-                                // Deserialize the bytes and put it to result.
-                                result.add(serializer.deserialize(reader));
+                                for (int c = 0; c < current; c++) {
+                                    // Deserialize the bytes and put it to result.
+                                    result.add(serializer.deserialize(reader));
 
-                                // Increase the size counter.
-                                i++;
+                                    // Increase the size counter.
+                                    i++;
+                                }
                             }
                         }
                     }
                 }
             }
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return result;
     }
 }

@@ -180,7 +180,7 @@ public class ByteSerializeFramework extends ReflectionFramework {
         return object;
     }
 
-    public byte[] serialize(Object object, Field field) throws Exception {
+    public byte[] serialize(Object object, Field field) {
         BytesSerializer<?> serializer = getSerializer(field.getType());
 
         if (Modifier.isAbstract(field.getType()

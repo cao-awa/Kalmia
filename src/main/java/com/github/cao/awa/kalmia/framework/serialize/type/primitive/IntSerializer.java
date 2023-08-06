@@ -8,12 +8,12 @@ import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 @AutoSerializer(value = 4, target = {Integer.class, int.class})
 public class IntSerializer implements BytesSerializer<Integer> {
     @Override
-    public byte[] serialize(Integer i) throws Exception {
+    public byte[] serialize(Integer i) {
         return SkippedBase256.intToBuf(i);
     }
 
     @Override
-    public Integer deserialize(BytesReader reader) throws Exception {
+    public Integer deserialize(BytesReader reader) {
         return SkippedBase256.readInt(reader);
     }
 }
