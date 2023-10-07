@@ -1,4 +1,5 @@
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
+import com.github.cao.awa.apricot.identifier.RandomIdentifier;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
@@ -12,6 +13,8 @@ import java.security.interfaces.RSAPublicKey;
 public class MiscellaneousManualTest {
     public static void main(String[] args) {
         try {
+            System.out.println(RandomIdentifier.create(32));
+
 //            System.out.println("---Test start---");
             long start = TimeUtil.millions();
 //

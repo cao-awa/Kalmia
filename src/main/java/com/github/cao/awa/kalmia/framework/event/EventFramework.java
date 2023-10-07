@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.event.Event;
 import com.github.cao.awa.kalmia.event.handler.EventHandler;
 import com.github.cao.awa.kalmia.event.handler.network.NetworkEventHandler;
 import com.github.cao.awa.kalmia.event.network.NetworkEvent;
+import com.github.cao.awa.kalmia.framework.AnnotationUtil;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -22,6 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class EventFramework extends ReflectionFramework {
@@ -94,7 +96,25 @@ public class EventFramework extends ReflectionFramework {
                             }
                     );
 
+                    // Do potential coding problem tests.
+                    Set<AutoHandler> annotations = AnnotationUtil.getAnnotations(handler.getClass(),
+                                                                                 AutoHandler.class
+                    );
+
                     if (autoAnnotation == null) {
+                        // Do potential coding problem tests.
+                        if (annotations.size() > 1) {
+                            // Available declared target over than 1 means one handler matched to multi event.
+                            // This behavior is not expected in current kalmia event framework.
+                            LOGGER.error(
+                                    "Class chains found the target over than 1 available declared, that wrongly, unable to register the '{}'",
+                                    handler.getClass()
+                                           .getName()
+                            );
+
+                            return;
+                        }
+
                         // Auto register in undeclared.
                         LOGGER.info(
                                 "Register auto event handler '{}' via plugin '{}'",
@@ -107,6 +127,29 @@ public class EventFramework extends ReflectionFramework {
                             adder.accept(target(EntrustEnvironment.cast(interfaceOf)));
                         }
                     } else {
+                        // Do potential coding problem tests.
+                        if (annotations.size() == 2) {
+                            annotations.remove(autoAnnotation);
+                            LOGGER.warn(
+                                    "Targeted event handler '{}' declared a target '{}', but its superclass expected another target '{}', this may be a wrong, please check it",
+                                    handler.getClass()
+                                           .getName(),
+                                    autoAnnotation.value()
+                                                  .getName(),
+                                    annotations.toArray(new AutoHandler[0])[0].value()
+                            );
+                        } else if (annotations.size() > 2) {
+                            // Available declared target over than 1 means one handler matched to multi event.
+                            // This behavior is not expected in current kalmia event framework.
+                            LOGGER.error(
+                                    "Class chains found the target over than 2 available declared, that wrongly, unable to register the '{}'",
+                                    handler.getClass()
+                                           .getName()
+                            );
+
+                            return;
+                        }
+
                         // Targeted  register in declared.
                         LOGGER.info(
                                 "Register targeted event handler '{}' via plugin '{}'",
@@ -127,6 +170,27 @@ public class EventFramework extends ReflectionFramework {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void registerHandler(EventHandler<?> handler) {
+        AutoHandler autoAnnotation = AnnotationUtil.getAnnotation(handler.getClass(),
+                                                                  AutoHandler.class
+        );
+
+        if (autoAnnotation == null) {
+            throw new IllegalStateException("");
+        }
+
+        this.handlers.compute(
+                autoAnnotation.value(),
+                (event, handlers) -> {
+                    if (handlers == null) {
+                        handlers = ApricotCollectionFactor.arrayList();
+                    }
+                    handlers.add(handler);
+                    return handlers;
+                }
+        );
     }
 
     public Class<? extends EventHandler<?>> autoHandler(Class<? extends EventHandler<?>> handler) {
@@ -150,19 +214,36 @@ public class EventFramework extends ReflectionFramework {
     }
 
     public void fireEvent(@NotNull Event event) {
-        this.handlers.get(event.getClass())
-                     .forEach(handler -> {
-                         if (
-                             // If plugin are disabled, then do not let it handle events.
-                                 plugin(handler).enabled()
-                         ) {
-                             handler.handle(EntrustEnvironment.cast(event));
-                         }
-                     });
+        List<EventHandler<?>> handlers = this.handlers.get(event.getClass());
+
+        if (missingHandler(
+                handlers,
+                event
+        )) {
+            return;
+        }
+
+        handlers.forEach(handler -> {
+            if (
+                // If plugin are disabled, then do not let it handle events.
+                    plugin(handler).enabled()
+            ) {
+                handler.handle(EntrustEnvironment.cast(event));
+            }
+        });
     }
 
     public void fireEvent(@NotNull NetworkEvent<?> event) {
-        for (EventHandler<?> handler : this.handlers.get(event.getClass())) {
+        List<EventHandler<?>> handlers = this.handlers.get(event.getClass());
+
+        if (missingHandler(
+                handlers,
+                event
+        )) {
+            return;
+        }
+
+        for (EventHandler<?> handler : handlers) {
             if (
                 // Network event can only handle by network event handler.
                     handler instanceof NetworkEventHandler<?, ?> networkHandler &&
@@ -183,6 +264,18 @@ public class EventFramework extends ReflectionFramework {
 //                );
             }
         }
+    }
+
+    public boolean missingHandler(List<EventHandler<?>> handlers, Event event) {
+        if (handlers == null) {
+            LOGGER.warn(
+                    "No handler(s) can process the happening event {}",
+                    event.getClass()
+                         .getName()
+            );
+            return true;
+        }
+        return false;
     }
 
     public Plugin plugin(EventHandler<?> handler) {

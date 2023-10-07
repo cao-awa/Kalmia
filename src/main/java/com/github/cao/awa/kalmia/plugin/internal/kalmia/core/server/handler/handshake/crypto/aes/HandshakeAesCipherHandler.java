@@ -56,7 +56,7 @@ public class HandshakeAesCipherHandler implements HandshakeAesCipherEventHandler
                     iv
             ));
 
-            // Setup IV on server, can be empty(mean use default).
+            // Setup IV on server, the IV can be empty (mean use default IV).
             router.setIv(iv);
         } catch (Exception e) {
             e.printStackTrace();

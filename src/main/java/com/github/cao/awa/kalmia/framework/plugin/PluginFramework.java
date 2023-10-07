@@ -82,6 +82,8 @@ public class PluginFramework extends ReflectionFramework {
                 this.pluginsName.put(autoAnnotation.name(),
                                      plugin
                 );
+
+                plugin.load();
             } catch (Exception e) {
                 LOGGER.warn("Failed load plugin: {} ({})",
                             autoAnnotation.name(),

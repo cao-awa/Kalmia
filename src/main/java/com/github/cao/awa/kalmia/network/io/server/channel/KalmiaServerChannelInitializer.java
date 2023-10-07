@@ -11,6 +11,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.socket.SocketChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -22,6 +24,7 @@ import java.util.List;
  */
 @Stable
 public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketChannel> {
+    private static final Logger LOGGER = LogManager.getLogger("KalmiaServerChannelInitializer");
     private final KalmiaServer server;
     private List<RequestRouter> subscriber;
 
@@ -37,7 +40,12 @@ public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketCha
     public KalmiaServerChannelInitializer active(RequestRouter router) {
         if (this.subscriber != null) {
             this.subscriber.add(router);
-            System.out.println("Active connection, current: " + this.subscriber.size());
+            LOGGER.info(
+                    "Active connection for #{}, current count: {}",
+                    router.metadata()
+                          .formatConnectionId(),
+                    this.subscriber.size()
+            );
         }
         return this;
     }
@@ -50,7 +58,12 @@ public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketCha
     public KalmiaServerChannelInitializer inactive(RequestRouter router) {
         if (this.subscriber != null) {
             this.subscriber.remove(router);
-            System.out.println("Inactive connection, current: " + this.subscriber.size());
+            LOGGER.info(
+                    "Inactive connection for #{}, current count: {}",
+                    router.metadata()
+                          .formatConnectionId(),
+                    this.subscriber.size()
+            );
         }
         return this;
     }

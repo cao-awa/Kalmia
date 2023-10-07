@@ -26,8 +26,8 @@ public abstract class SymmetricCrypto extends LayerCrypto {
         return this.cipher;
     }
 
-    public void iv(byte[] cipher) {
-        this.iv = cipher;
+    public void iv(byte[] iv) {
+        this.iv = iv;
     }
 
     public byte[] iv() {

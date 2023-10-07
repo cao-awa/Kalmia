@@ -20,6 +20,7 @@ import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
+import com.github.cao.awa.kalmia.network.router.meta.RouterMetadata;
 import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
@@ -61,6 +62,7 @@ public class RequestRouter extends NetworkRouter {
     private final RequestCompressor compressor = new RequestCompressor();
     private final Affair funeral = Affair.empty();
     private long uid;
+    private final RouterMetadata metadata = RouterMetadata.create();
 
     public long getUid() {
         return this.uid;
@@ -162,24 +164,27 @@ public class RequestRouter extends NetworkRouter {
     }
 
     public byte[] decode(byte[] cipherText) {
+        // Decode the data with transport layer.
         byte[] decodeResult = this.transportLayer.decode(cipherText);
 
         BytesReader reader = BytesReader.of(decodeResult);
 
+        // Decoded data included compress mark, used to decompress.
         int compressId = Base256.tagFromBuf(reader.read(2));
 
+        // Decompress the packet data.
         return RequestCompressorType.TYPES.get(compressId)
                                           .getCompressor()
                                           .decompress(reader.all());
     }
 
-    public byte[] encode(byte[] plainText) {
+    public byte[] encode(byte[] sourceText) {
         // Compress the packet data.
         int compressId = getCompressor()
                 .id();
 
         byte[] compressResult = getCompressor()
-                .compress(plainText);
+                .compress(sourceText);
 
         LOGGER.debug("Trying compress with {}",
                      RequestCompressorType.TYPES.get(getCompressor()
@@ -187,27 +192,31 @@ public class RequestRouter extends NetworkRouter {
         );
 
         // If data length is not reduced, then do not use the compress result.
-        if (plainText.length > compressResult.length) {
+        if (sourceText.length > compressResult.length) {
+            // Use the compressed result.
             LOGGER.debug("Success to compress, {} > {}",
                          compressResult.length,
-                         plainText.length
+                         sourceText.length
             );
-
-            plainText = compressResult;
         } else {
+            // Use the source.
+            compressResult = sourceText;
+
             compressId = RequestCompressorType.NONE.id();
 
             LOGGER.debug("Failed to compress, {} <= {}",
                          compressResult.length,
-                         plainText.length
+                         sourceText.length
             );
         }
 
-        // Encrypt including compress mark.
-        return this.transportLayer.encode(BytesUtil.concat(
-                                                  Base256.tagToBuf(compressId),
-                                                  plainText
-                                          )
+        // Encode the data with transport layer.
+        return this.transportLayer.encode(
+                BytesUtil.concat(
+                        // Include the compress mark in the encoded data.
+                        Base256.tagToBuf(compressId),
+                        compressResult
+                )
         );
     }
 
@@ -219,6 +228,7 @@ public class RequestRouter extends NetworkRouter {
         this.context.writeAndFlush(packet);
     }
 
+    @Deprecated
     public void send(byte[] bytes) {
         this.context.writeAndFlush(bytes);
     }
@@ -237,5 +247,9 @@ public class RequestRouter extends NetworkRouter {
 
     public boolean shouldApplyBase36() {
         return false;
+    }
+
+    public RouterMetadata metadata() {
+        return this.metadata;
     }
 }

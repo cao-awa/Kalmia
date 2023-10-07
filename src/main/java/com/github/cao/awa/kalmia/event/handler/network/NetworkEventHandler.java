@@ -12,8 +12,9 @@ public interface NetworkEventHandler<P extends Packet<?>, E extends NetworkEvent
     @Override
     @DoNotOverride
     default void handle(E event) {
-        handle(event.router(),
-               event.packet()
+        handle(
+                event.router(),
+                event.packet()
         );
     }
 }

@@ -4,6 +4,8 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.annotation.auto.AutoPlugin;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Auto
 @Client
@@ -12,13 +14,15 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
         uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE815"
 )
 public class KalmiaClientCore extends Plugin {
+    private static final Logger LOGGER = LogManager.getLogger("KalmiaClientCore");
+
     @Override
-    public void onEnable() {
-        System.out.println("Loading kalmia client core");
+    public void onLoad() {
+        LOGGER.info("Loading kalmia client core");
     }
 
     @Override
-    public void onDisable() {
+    public void onUnload() {
 
     }
 }

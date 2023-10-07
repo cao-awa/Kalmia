@@ -39,6 +39,10 @@ public class CryptoTransportLayer {
         this.crypto = crypto;
     }
 
+    public LayerCrypto crypto() {
+        return this.crypto;
+    }
+
     public void setCipher(byte[] cipher) {
         if (this.crypto instanceof SymmetricCrypto symmetric) {
             symmetric.cipher(cipher);

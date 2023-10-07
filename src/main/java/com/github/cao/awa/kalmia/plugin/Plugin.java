@@ -15,21 +15,21 @@ public abstract class Plugin {
     }
 
     public void registerHandler(EventHandler<?> handler) {
-
+//        KalmiaEnv.eventFramework.
     }
 
-    public abstract void onEnable();
+    public abstract void onLoad();
 
-    public abstract void onDisable();
+    public abstract void onUnload();
 
-    public final void enable() {
-        onEnable();
+    public final void load() {
+        onLoad();
 
         this.enabled = true;
     }
 
-    public final void disable() {
-        onDisable();
+    public final void unload() {
+        onUnload();
 
         this.enabled = false;
     }

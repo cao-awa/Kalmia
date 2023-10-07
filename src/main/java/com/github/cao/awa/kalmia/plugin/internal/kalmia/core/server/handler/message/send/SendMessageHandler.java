@@ -53,7 +53,6 @@ public class SendMessageHandler implements SendMessageEventHandler {
                                                        seq,
                                                        packet.msg()
                             ));
-                    ;
                 });
             }
 
