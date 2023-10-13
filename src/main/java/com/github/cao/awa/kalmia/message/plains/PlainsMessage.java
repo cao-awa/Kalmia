@@ -89,7 +89,7 @@ public class PlainsMessage extends Message {
 
     @Override
     public byte[] toBytes() {
-        return BytesUtil.concat(BytesUtil.of((byte) 0),
+        return BytesUtil.concat(BytesUtil.arrau(0),
                                 SkippedBase256.longToBuf(this.sender),
                                 Base256.tagToBuf(this.msg.length()),
                                 this.msg.getBytes(StandardCharsets.UTF_8),

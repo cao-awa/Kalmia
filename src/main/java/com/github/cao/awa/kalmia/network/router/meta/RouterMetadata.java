@@ -13,7 +13,7 @@ public record RouterMetadata(byte[] connectionId, long timestamp) {
     }
 
     public String formatConnectionId() {
-        return Mathematics.radix(
+        return "#" + Mathematics.radix(
                 this.connectionId,
                 36
         );

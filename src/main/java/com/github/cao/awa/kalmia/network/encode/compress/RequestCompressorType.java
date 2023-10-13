@@ -38,7 +38,7 @@ public enum RequestCompressorType {
         this.compressor = compressor;
     }
 
-    public InformationCompressor getCompressor() {
+    public InformationCompressor compressor() {
         return this.compressor;
     }
 

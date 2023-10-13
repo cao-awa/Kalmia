@@ -1,11 +1,11 @@
 package com.github.cao.awa.kalmia.network.encode.crypto.symmetric;
 
-import com.github.cao.awa.kalmia.network.encode.crypto.LayerCrypto;
+import com.github.cao.awa.kalmia.network.encode.crypto.TransportLayerCrypto;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.util.Arrays;
 
-public abstract class SymmetricCrypto extends LayerCrypto {
+public abstract class SymmetricCrypto extends TransportLayerCrypto {
     private byte[] cipher;
     private byte[] iv = BytesUtil.EMPTY;
 

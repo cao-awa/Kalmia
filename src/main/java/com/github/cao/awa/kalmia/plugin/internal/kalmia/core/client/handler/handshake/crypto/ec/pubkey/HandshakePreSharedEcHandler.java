@@ -5,7 +5,7 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.env.KalmiaPreSharedCipher;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.handshake.crypto.ec.pubkey.HandshakePreSharedEcEventHandler;
-import com.github.cao.awa.kalmia.network.encode.crypto.asymmetric.ac.EcCrypto;
+import com.github.cao.awa.kalmia.network.encode.crypto.asymmetric.ec.EcCrypto;
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.aes.AesCrypto;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes.HandshakeAesCipherPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.ec.pubkey.HandshakePreSharedEcPacket;

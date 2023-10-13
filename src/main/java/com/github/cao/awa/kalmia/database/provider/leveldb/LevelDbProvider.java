@@ -1,5 +1,7 @@
-package com.github.cao.awa.kalmia.database;
+package com.github.cao.awa.kalmia.database.provider.leveldb;
 
+import com.github.cao.awa.kalmia.database.KeyValueDatabase;
+import com.github.cao.awa.kalmia.database.provider.KeyValueDatabaseProvider;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
@@ -8,10 +10,10 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class LevelDbProvide extends KeyValueDatabaseProvide implements KeyValueDatabase {
+public class LevelDbProvider extends KeyValueDatabaseProvider implements KeyValueDatabase {
     private final DB db;
 
-    public LevelDbProvide(String path) throws IOException {
+    public LevelDbProvider(String path) throws IOException {
         super(path);
         this.db = new Iq80DBFactory().open(new File(path),
                                            new Options().createIfMissing(true)

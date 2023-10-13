@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.io.server.channel;
 
 import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.constant.IntegerConstants;
 import com.github.cao.awa.kalmia.network.encode.RequestDecoder;
 import com.github.cao.awa.kalmia.network.encode.RequestEncoder;
@@ -41,7 +42,7 @@ public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketCha
         if (this.subscriber != null) {
             this.subscriber.add(router);
             LOGGER.info(
-                    "Active connection for #{}, current count: {}",
+                    "Active connection for {}, current count: {}",
                     router.metadata()
                           .formatConnectionId(),
                     this.subscriber.size()
@@ -59,7 +60,7 @@ public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketCha
         if (this.subscriber != null) {
             this.subscriber.remove(router);
             LOGGER.info(
-                    "Inactive connection for #{}, current count: {}",
+                    "Inactive connection for {}, current count: {}",
                     router.metadata()
                           .formatConnectionId(),
                     this.subscriber.size()
@@ -85,6 +86,9 @@ public class KalmiaServerChannelInitializer extends ChannelInitializer<SocketCha
         pipeline.addLast(new RequestEncoder(router));
         // Do handle.
         pipeline.addLast(router);
+
+        // Do final handle.
+        router.funeral(Kalmia.SERVER :: logout);
 
         // Add to subscriber list.
         active(router);

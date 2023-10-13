@@ -3,8 +3,8 @@ package com.github.cao.awa.kalmia.user.database;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.annotation.number.encode.ShouldSkipped;
-import com.github.cao.awa.kalmia.database.DatabaseProvide;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
+import com.github.cao.awa.kalmia.database.provider.DatabaseProvider;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.user.DefaultUser;
@@ -25,7 +25,7 @@ public class UserDatabase {
     private final KeyValueDatabase database;
 
     public UserDatabase(String path) throws Exception {
-        this.database = DatabaseProvide.kv(path);
+        this.database = DatabaseProvider.kv(path);
     }
 
     public synchronized PublicKey publicKey(@ShouldSkipped byte[] uid) {

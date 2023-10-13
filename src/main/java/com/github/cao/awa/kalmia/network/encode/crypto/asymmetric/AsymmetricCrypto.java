@@ -1,11 +1,11 @@
 package com.github.cao.awa.kalmia.network.encode.crypto.asymmetric;
 
-import com.github.cao.awa.kalmia.network.encode.crypto.LayerCrypto;
+import com.github.cao.awa.kalmia.network.encode.crypto.TransportLayerCrypto;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-public abstract class AsymmetricCrypto extends LayerCrypto {
+public abstract class AsymmetricCrypto extends TransportLayerCrypto {
     private PublicKey pubkey;
     private PrivateKey prikey;
 

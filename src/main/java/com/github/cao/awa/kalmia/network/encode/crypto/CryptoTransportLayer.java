@@ -4,24 +4,24 @@ import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.SymmetricCrypto
 import com.github.cao.awa.kalmia.network.encode.crypto.symmetric.no.NoCrypto;
 
 public class CryptoTransportLayer {
-    private LayerCrypto crypto;
+    private TransportLayerCrypto crypto;
 
     public CryptoTransportLayer() {
         this.crypto = new NoCrypto();
     }
 
-    public byte[] encode(byte[] plain) {
+    public byte[] encode(byte[] source) {
         try {
-            return crypto.encode(plain);
+            return this.crypto.encode(source);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public byte[] decode(byte[] plain) {
+    public byte[] decode(byte[] source) {
         try {
-            return crypto.decode(plain);
+            return this.crypto.decode(source);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -35,11 +35,11 @@ public class CryptoTransportLayer {
         return false;
     }
 
-    public void setCrypto(LayerCrypto crypto) {
+    public void setCrypto(TransportLayerCrypto crypto) {
         this.crypto = crypto;
     }
 
-    public LayerCrypto crypto() {
+    public TransportLayerCrypto crypto() {
         return this.crypto;
     }
 

@@ -187,7 +187,7 @@ public class ByteSerializeFramework extends ReflectionFramework {
                                      .getModifiers()) && serializer == null) {
             if (object instanceof BytesSerializable<?> serializable) {
                 return BytesUtil.concat(
-                        BytesUtil.of((byte) 1),
+                        BytesUtil.arrau(1),
                         Base256.tagToBuf(serializable.getClass()
                                                      .getName()
                                                      .length()),
@@ -200,19 +200,19 @@ public class ByteSerializeFramework extends ReflectionFramework {
 
             serializer = getSerializer(object.getClass());
 
-            return BytesUtil.concat(BytesUtil.of((byte) 2),
+            return BytesUtil.concat(BytesUtil.arrau(2),
                                     SkippedBase256.longToBuf(serializer.id()),
                                     serializer.serialize(EntrustEnvironment.cast(object))
             );
         } else {
             if (object instanceof BytesSerializable<?> serializable) {
                 return BytesUtil.concat(
-                        BytesUtil.of((byte) - 1),
+                        BytesUtil.arrau(- 1),
                         serializable.serialize()
                 );
             }
             return BytesUtil.concat(
-                    BytesUtil.of((byte) - 1),
+                    BytesUtil.arrau(- 1),
                     serializer.serialize(EntrustEnvironment.cast(object))
             );
         }

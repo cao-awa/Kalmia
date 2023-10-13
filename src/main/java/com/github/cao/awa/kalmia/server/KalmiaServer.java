@@ -85,4 +85,10 @@ public class KalmiaServer {
                               router
         );
     }
+
+    public void logout(RequestRouter router) {
+        this.networkIo.logout(router.getUid(),
+                              router
+        );
+    }
 }

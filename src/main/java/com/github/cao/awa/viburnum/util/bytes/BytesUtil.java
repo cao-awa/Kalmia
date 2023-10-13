@@ -79,7 +79,16 @@ public class BytesUtil {
         return result;
     }
 
-    public static byte[] of(byte... bytes) {
+    public static byte[] arrau(byte... bytes) {
         return bytes;
+    }
+
+    public static byte[] arrau(int... bytes) {
+        byte[] result = new byte[bytes.length];
+        int index = 0;
+        for (int i : bytes) {
+            result[index++] = (byte) i;
+        }
+        return result;
     }
 }

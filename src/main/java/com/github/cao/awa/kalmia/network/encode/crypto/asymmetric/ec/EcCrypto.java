@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.encode.crypto.asymmetric.ac;
+package com.github.cao.awa.kalmia.network.encode.crypto.asymmetric.ec;
 
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.network.encode.crypto.asymmetric.AsymmetricCrypto;

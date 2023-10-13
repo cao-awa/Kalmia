@@ -42,8 +42,8 @@ public class SessionManager {
         this.database.deleteAll();
     }
 
-    public synchronized boolean accessible(long senderId, long sessionId) {
+    public synchronized boolean accessible(long targetId, long sessionId) {
         Session session = this.database.get(SkippedBase256.longToBuf(sessionId));
-        return session != null && session.accessible(senderId);
+        return session != null && session.accessible(targetId);
     }
 }

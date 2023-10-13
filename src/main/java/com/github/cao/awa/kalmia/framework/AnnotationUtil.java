@@ -1,8 +1,6 @@
 package com.github.cao.awa.kalmia.framework;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotation.auto.event.AutoHandler;
-import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.handshake.crypto.aes.HandshakeAesCipherHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -89,11 +87,5 @@ public class AnnotationUtil {
         );
 
         return result;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(getAnnotations(HandshakeAesCipherHandler.class,
-                                          AutoHandler.class
-        ));
     }
 }

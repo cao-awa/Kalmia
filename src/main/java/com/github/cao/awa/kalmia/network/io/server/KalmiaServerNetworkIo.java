@@ -64,7 +64,7 @@ public class KalmiaServerNetworkIo {
                     (k, v) -> v == null ? ApricotCollectionFactor.arrayList() : v
             )
                     .add(router);
-        LOGGER.info("Login '{}': #{}",
+        LOGGER.info("Login '{}': {}",
                     uid,
                     router.metadata()
                           .formatConnectionId()
@@ -76,7 +76,7 @@ public class KalmiaServerNetworkIo {
         if (routers != null) {
             routers.remove(router);
 
-            LOGGER.info("Logout '{}': #{}",
+            LOGGER.info("Logout '{}': {}",
                         uid,
                         router.metadata()
                               .formatConnectionId()

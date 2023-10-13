@@ -2,14 +2,13 @@ package com.github.cao.awa.kalmia.network.router;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.encode.compress.RequestCompressor;
 import com.github.cao.awa.kalmia.network.encode.compress.RequestCompressorType;
 import com.github.cao.awa.kalmia.network.encode.crypto.CryptoTransportLayer;
-import com.github.cao.awa.kalmia.network.encode.crypto.LayerCrypto;
+import com.github.cao.awa.kalmia.network.encode.crypto.TransportLayerCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
@@ -147,10 +146,6 @@ public class RequestRouter extends NetworkRouter {
 
     public void disconnect(Future<? super Void> future) {
         this.funeral.done();
-        Kalmia.SERVER.logout(
-                this.uid,
-                this
-        );
     }
 
     public RequestRouter funeral(Runnable action) {
@@ -174,7 +169,7 @@ public class RequestRouter extends NetworkRouter {
 
         // Decompress the packet data.
         return RequestCompressorType.TYPES.get(compressId)
-                                          .getCompressor()
+                                          .compressor()
                                           .decompress(reader.all());
     }
 
@@ -193,21 +188,21 @@ public class RequestRouter extends NetworkRouter {
 
         // If data length is not reduced, then do not use the compress result.
         if (sourceText.length > compressResult.length) {
-            // Use the compressed result.
-            LOGGER.debug("Success to compress, {} > {}",
-                         compressResult.length,
-                         sourceText.length
+            // Success to compress, use the compressed result.
+            LOGGER.debug("Success to compress: {}(source) > {}(compressed)",
+                         sourceText.length,
+                         compressResult.length
             );
         } else {
-            // Use the source.
+            LOGGER.debug("Failed to compress: {}(source) <= {}(compressed)",
+                         sourceText.length,
+                         compressResult.length
+            );
+
+            // Unable to compress, use the source.
             compressResult = sourceText;
 
             compressId = RequestCompressorType.NONE.id();
-
-            LOGGER.debug("Failed to compress, {} <= {}",
-                         compressResult.length,
-                         sourceText.length
-            );
         }
 
         // Encode the data with transport layer.
@@ -233,7 +228,7 @@ public class RequestRouter extends NetworkRouter {
         this.context.writeAndFlush(bytes);
     }
 
-    public void setCrypto(LayerCrypto crypto) {
+    public void setCrypto(TransportLayerCrypto crypto) {
         this.transportLayer.setCrypto(crypto);
     }
 

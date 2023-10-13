@@ -12,12 +12,12 @@ public class RequestCompressor {
     }
 
     public byte[] compress(byte[] data) {
-        return this.compressor.getCompressor()
+        return this.compressor.compressor()
                               .compress(data);
     }
 
     public byte[] decompress(byte[] data) {
-        return this.compressor.getCompressor()
+        return this.compressor.compressor()
                               .decompress(data);
     }
 }

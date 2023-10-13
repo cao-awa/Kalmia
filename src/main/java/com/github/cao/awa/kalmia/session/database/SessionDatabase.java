@@ -1,8 +1,8 @@
 package com.github.cao.awa.kalmia.session.database;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.database.DatabaseProvide;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
+import com.github.cao.awa.kalmia.database.provider.DatabaseProvider;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -16,7 +16,7 @@ public class SessionDatabase {
     private final KeyValueDatabase database;
 
     public SessionDatabase(String path) throws Exception {
-        this.database = DatabaseProvide.kv(path);
+        this.database = DatabaseProvider.kv(path);
     }
 
     public void operation(BiConsumer<Long, Session> action) {

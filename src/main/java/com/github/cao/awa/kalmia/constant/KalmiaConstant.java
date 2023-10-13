@@ -6,8 +6,8 @@ public class KalmiaConstant {
     public static final long PROTOCOL_VERSION = 1;
     public static final long PROTOCOL_COMPATIBLE_VERSION = 1;
     public static final RequestProtocol STANDARD_REQUEST_PROTOCOL = new RequestProtocol("KALMIA_STANDARD",
-                                                                                        KalmiaConstant.PROTOCOL_VERSION,
-                                                                                        KalmiaConstant.PROTOCOL_COMPATIBLE_VERSION,
+                                                                                        PROTOCOL_VERSION,
+                                                                                        PROTOCOL_COMPATIBLE_VERSION,
                                                                                         false
     );
 }
