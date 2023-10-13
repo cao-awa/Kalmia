@@ -10,7 +10,7 @@ public class NoCrypto extends SymmetricCrypto {
 
     @Override
     public byte[] encode(byte[] plains) throws Exception {
-        return BytesUtil.concat(plains);
+        return plains;
     }
 
     @Override
