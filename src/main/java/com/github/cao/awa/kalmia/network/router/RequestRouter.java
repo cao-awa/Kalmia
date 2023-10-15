@@ -100,9 +100,11 @@ public class RequestRouter extends NetworkRouter {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UnsolvedPacket<?> msg) throws Exception {
         try {
-            if (! this.statelessHandler.tryInbound(msg,
-                                                   this
-            )) {
+            if (msg.isStateless()) {
+                this.statelessHandler.tryInbound(msg,
+                                                 this
+                );
+            } else {
                 this.allowedHandler.tryInbound(msg,
                                                this
                 );

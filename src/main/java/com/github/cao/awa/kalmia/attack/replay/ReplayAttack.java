@@ -12,8 +12,7 @@ public class ReplayAttack {
         if (TimeUtil.processNano(timestamp) / 1000000 > 3000) {
             return false;
         }
-        boolean contains = invalidMarks.contains(mark);
-        if (contains) {
+        if (invalidMarks.contains(mark)) {
             return false;
         } else {
             invalidMarks.add(mark);

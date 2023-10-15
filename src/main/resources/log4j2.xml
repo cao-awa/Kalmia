@@ -13,7 +13,7 @@
         </RollingRandomAccessFile>
     </Appenders>
     <Loggers>
-        <Root level="INFO">
+        <Root level="DEBUG">
             <AppenderRef ref="SysOut"/>
             <AppenderRef ref="File"/>
         </Root>

@@ -3,7 +3,6 @@ package com.github.cao.awa.kalmia.message.plains;
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
-import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
@@ -14,11 +13,8 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import java.nio.charset.StandardCharsets;
 
 public class PlainsMessage extends Message {
-    @AutoData
     private long sender;
-    @AutoData
     private String msg;
-    @AutoData
     private DigestData digest;
 
     @Auto

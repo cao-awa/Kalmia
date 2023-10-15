@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 @Client
 @PluginRegister(name = "kalmia_core")
 public class OperationInvalidHandler implements OperationInvalidEventHandler {
-    private static final Logger LOGGER = LogManager.getLogger("OperationInvaliadHandler");
+    private static final Logger LOGGER = LogManager.getLogger("OperationInvalidHandler");
 
     @Client
     @Override

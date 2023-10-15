@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.network.count.TrafficCount;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.success.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 @Auto
@@ -25,6 +26,8 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
         ));
 
         router.setUid(packet.uid());
+
+        router.setStates(RequestState.AUTHED);
 
 //        EntrustEnvironment.thread(() -> {
 //                              for (int i = 0; i < 500; i++) {
@@ -47,14 +50,12 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 
 //        router.send(new RequestDuetSessionPacket(2));
 
-//        for (int i = 0;i < 100; i ++) {
+//        for (int i = 0; i < 100; i++) {
 //            router.send(new SendMessagePacket(0,
-//                                              new PlainsMessage("""
-//                                                                       awa
-//                                                                       """,
+//                                              new PlainsMessage(" awa: " + i,
 //                                                                packet.uid()
 //                                              ),
-//                                              BytesRandomIdentifier.create(16)
+//                                              Packet.createReceipt()
 //            ));
 //        }
 

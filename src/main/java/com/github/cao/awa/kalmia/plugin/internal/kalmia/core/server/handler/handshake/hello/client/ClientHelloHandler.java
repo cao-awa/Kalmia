@@ -42,7 +42,7 @@ public class ClientHelloHandler implements ClientHelloEventHandler {
                     packet.expectCipherField()
         );
 
-        if (KalmiaConstant.STANDARD_REQUEST_PROTOCOL.canUse(protocol)) {
+        if (! KalmiaConstant.STANDARD_REQUEST_PROTOCOL.canUse(protocol)) {
             LOGGER.warn("The client protocol is not compatible to server, unable to handshake");
 
             router.send(new TryDisconnectPacket("Not compatible protocol version"));

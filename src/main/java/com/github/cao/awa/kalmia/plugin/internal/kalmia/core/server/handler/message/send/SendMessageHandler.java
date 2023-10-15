@@ -4,29 +4,41 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.message.send.SendMessageEventHandler;
+import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.notice.NewMessageNoticePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SentMessagePacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.session.duet.DuetSession;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Auto
 @Server
 @PluginRegister(name = "kalmia_core")
 public class SendMessageHandler implements SendMessageEventHandler {
+    private static final Logger LOGGER = LogManager.getLogger("SendMessageHandler");
+
     @Server
     @Override
     public void handle(RequestRouter router, SendMessagePacket packet) {
-        System.out.println("UID: " + packet.handler()
-                                           .uid());
-        System.out.println("SID: " + packet.sessionId());
-        System.out.println("IDT: " + Arrays.toString(packet.receipt()));
-        System.out.println("MSG: " + packet.msg());
-
+        LOGGER.info("""
+                            --Send message--
+                            UID: {}
+                            IDT: {}
+                            SID: {}
+                            MSG:{}""",
+                    packet.handler()
+                          .uid(),
+                    Mathematics.radix(packet.receipt(),
+                                      36
+                    ),
+                    packet.sessionId(),
+                    packet.msg()
+        );
 
         DuetSession session = (DuetSession) Kalmia.SERVER.sessionManager()
                                                          .session(packet.sessionId());

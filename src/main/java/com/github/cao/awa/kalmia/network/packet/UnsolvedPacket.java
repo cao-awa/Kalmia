@@ -28,4 +28,8 @@ public abstract class UnsolvedPacket<T extends Packet<?>> {
     }
 
     public abstract T packet();
+
+    public boolean isStateless() {
+        return false;
+    }
 }

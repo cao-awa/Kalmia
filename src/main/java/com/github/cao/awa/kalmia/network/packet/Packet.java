@@ -24,7 +24,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
     private T handler;
 
     public Packet(byte[] receipt) {
-        this.receipt = check(receipt);
+        this.receipt = checkReceipt(receipt);
     }
 
     public Packet(BytesReader reader) {
@@ -56,7 +56,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
         );
     }
 
-    public static byte[] check(byte[] receipt) {
+    public static byte[] checkReceipt(byte[] receipt) {
         if (Arrays.equals(RECEIPT,
                           receipt
         )) {
@@ -68,8 +68,12 @@ public abstract class Packet<T extends PacketHandler<T>> {
         return receipt;
     }
 
-    public static byte[] read(BytesReader reader) {
+    public static byte[] readReceipt(BytesReader reader) {
         return reader.read(16);
+    }
+
+    public static byte[] createReceipt() {
+        return BytesRandomIdentifier.create(16);
     }
 
     @Auto
@@ -144,7 +148,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
 
     @DoNotOverride
     public final <X extends Packet<T>> X receipt(byte[] receipt) {
-        this.receipt = check(receipt);
+        this.receipt = checkReceipt(receipt);
         return EntrustEnvironment.cast(this);
     }
 

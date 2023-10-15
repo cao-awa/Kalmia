@@ -7,4 +7,8 @@ public abstract class UnsolvedPingPacket<T extends PingPacket> extends UnsolvedP
     public UnsolvedPingPacket(byte[] data) {
         super(data);
     }
+
+    public boolean isStateless() {
+        return true;
+    }
 }

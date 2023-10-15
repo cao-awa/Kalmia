@@ -96,6 +96,6 @@ public final class RequestProtocol implements BytesSerializable<RequestProtocol>
     }
 
     public boolean canUse(RequestProtocol protocol) {
-        return protocol.forceUse() || protocol.compatible() >= version();
+        return protocol.forceUse() || protocol.compatible() <= version();
     }
 }
