@@ -7,6 +7,7 @@ import com.github.cao.awa.kalmia.event.handler.network.inbound.message.send.Send
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.notice.NewMessageNoticePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessageRefusedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SentMessagePacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.session.duet.DuetSession;
@@ -43,12 +44,14 @@ public class SendMessageHandler implements SendMessageEventHandler {
         DuetSession session = (DuetSession) Kalmia.SERVER.sessionManager()
                                                          .session(packet.sessionId());
 
-        if (session == null) {
-            return;
+        boolean accessible = false;
+
+        if (session != null) {
+            accessible = session.accessible(packet.handler()
+                                                  .uid());
         }
 
-        if (session.accessible(packet.handler()
-                                     .uid())) {
+        if (accessible) {
             long seq = Kalmia.SERVER.messageManager()
                                     .send(
                                             packet.sessionId(),
@@ -74,7 +77,12 @@ public class SendMessageHandler implements SendMessageEventHandler {
             ));
         } else {
             // Unable to access the session.
-            System.out.println("www");
+            router.send(new SendMessageRefusedPacket("Session unable to access",
+                                                     packet.receipt()
+            ));
+            LOGGER.warn("The session {} is not accessible",
+                        packet.sessionId()
+            );
         }
     }
 }

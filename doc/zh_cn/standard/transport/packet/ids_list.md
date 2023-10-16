@@ -48,23 +48,6 @@ TryPing
 
 TryPingResponse
 
-
-## 10
-
-```
-接收方：服务端
-```
-
-SendMessage
-
-## 11
-
-```
-接收方：客户端
-```
-
-SendMessage
-
 ## 12
 
 ```
@@ -112,6 +95,30 @@ RequestDuetSessionPacket
 ```
 
 ChatInSessionPacket
+
+## 100
+
+```
+接收方：服务端
+```
+
+SendMessage
+
+## 101
+
+```
+接收方：客户端
+```
+
+SentMessage
+
+## 102
+
+```
+接收方：客户端
+```
+
+SendMessageRefused
 
 ## 100001
 

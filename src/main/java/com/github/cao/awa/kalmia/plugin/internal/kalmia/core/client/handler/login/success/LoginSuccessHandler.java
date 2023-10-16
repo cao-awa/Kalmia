@@ -4,9 +4,12 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.login.success.LoginSuccessEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
+import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;
+import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.success.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -49,6 +52,14 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 //        ));
 
 //        router.send(new RequestDuetSessionPacket(2));
+
+        router.send(new SendMessagePacket(
+                114514,
+                new PlainsMessage("test",
+                                  packet.uid()
+                ),
+                Packet.createReceipt()
+        ));
 
 //        for (int i = 0; i < 100; i++) {
 //            router.send(new SendMessagePacket(0,
