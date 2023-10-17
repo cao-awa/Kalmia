@@ -15,7 +15,9 @@ public abstract class Plugin {
     }
 
     public void registerHandler(EventHandler<?> handler) {
-//        KalmiaEnv.eventFramework.
+        KalmiaEnv.eventFramework.registerHandler(handler,
+                                                 this
+        );
     }
 
     public abstract void onLoad();

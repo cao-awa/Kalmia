@@ -16,7 +16,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 public class TryDisconnectPacket extends Packet<StatelessHandler> {
     @AutoData
     @DoNotSet
-    public String reason;
+    private String reason;
 
     public TryDisconnectPacket(String reason) {
         this.reason = reason;

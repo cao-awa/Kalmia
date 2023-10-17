@@ -24,13 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class EventFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("EventFramework");
     private final Map<Class<? extends Event>, List<EventHandler<?>>> handlers = ApricotCollectionFactor.hashMap();
     private final Map<EventHandler<?>, String> handlerBelongs = ApricotCollectionFactor.hashMap();
-    private final Map<Class<? extends EventHandler<?>>, Class<? extends Event>> targetedEventHandler = ApricotCollectionFactor.hashMap();
+    private final Map<Class<? extends EventHandler<?>>, Class<? extends Event>> targetedEventHandlers = ApricotCollectionFactor.hashMap();
+    private final List<Class<? extends EventHandler<?>>> registeredHandlers = ApricotCollectionFactor.arrayList();
 
     public void work() {
         // Working stream...
@@ -85,15 +87,9 @@ public class EventFramework extends ReflectionFramework {
                     // Declare way to register.
                     AutoHandler autoAnnotation = clazz.getAnnotation(AutoHandler.class);
 
-                    Consumer<Class<? extends Event>> adder = h -> this.handlers.compute(
-                            h,
-                            (event, handlers) -> {
-                                if (handlers == null) {
-                                    handlers = ApricotCollectionFactor.arrayList();
-                                }
-                                handlers.add(handler);
-                                return handlers;
-                            }
+                    Consumer<Class<? extends Event>> adder = event -> this.handlers.compute(
+                            event,
+                            computeHandler(handler)
                     );
 
                     // Do potential coding problem tests.
@@ -115,17 +111,17 @@ public class EventFramework extends ReflectionFramework {
                             return;
                         }
 
+                        for (Class<?> interfaceOf : (clazz.getInterfaces())) {
+                            adder.accept(target(EntrustEnvironment.cast(interfaceOf)));
+                        }
+
                         // Auto register in undeclared.
                         LOGGER.info(
-                                "Register auto event handler '{}' via plugin '{}'",
+                                "Registered auto event handler '{}' via plugin '{}'",
                                 handler.getClass()
                                        .getName(),
                                 pluginAnnotation.name()
                         );
-
-                        for (Class<?> interfaceOf : (clazz.getInterfaces())) {
-                            adder.accept(target(EntrustEnvironment.cast(interfaceOf)));
-                        }
                     } else {
                         // Do potential coding problem tests.
                         if (annotations.size() == 2) {
@@ -150,15 +146,15 @@ public class EventFramework extends ReflectionFramework {
                             return;
                         }
 
+                        adder.accept(autoAnnotation.value());
+
                         // Targeted  register in declared.
                         LOGGER.info(
-                                "Register targeted event handler '{}' via plugin '{}'",
+                                "Registered targeted event handler '{}' via plugin '{}'",
                                 handler.getClass()
                                        .getName(),
                                 pluginAnnotation.name()
                         );
-
-                        adder.accept(autoAnnotation.value());
                     }
 
                     this.handlerBelongs.put(
@@ -172,7 +168,7 @@ public class EventFramework extends ReflectionFramework {
         }
     }
 
-    public void registerHandler(EventHandler<?> handler) {
+    public void registerHandler(EventHandler<?> handler, Plugin plugin) {
         AutoHandler autoAnnotation = AnnotationUtil.getAnnotation(handler.getClass(),
                                                                   AutoHandler.class
         );
@@ -183,14 +179,39 @@ public class EventFramework extends ReflectionFramework {
 
         this.handlers.compute(
                 autoAnnotation.value(),
-                (event, handlers) -> {
-                    if (handlers == null) {
-                        handlers = ApricotCollectionFactor.arrayList();
-                    }
-                    handlers.add(handler);
-                    return handlers;
-                }
+                computeHandler(handler)
         );
+
+        this.handlerBelongs.put(
+                handler,
+                KalmiaEnv.pluginFramework.name(plugin)
+        );
+
+        LOGGER.info(
+                "Registered manual event handler '{}' via plugin '{}'",
+                handler.getClass()
+                       .getName(),
+                KalmiaEnv.pluginFramework.name(plugin)
+        );
+    }
+
+    public BiFunction<Class<? extends Event>, List<EventHandler<?>>, List<EventHandler<?>>> computeHandler(EventHandler<?> handler) {
+        return (event, handlers) -> {
+            if (handlers == null) {
+                handlers = ApricotCollectionFactor.arrayList();
+            }
+
+            Class<? extends EventHandler<?>> handlerType = cast(handler.getClass());
+
+            if (this.registeredHandlers.contains(handlerType)) {
+                LOGGER.warn("Handler '{}' already registered, this action is repeated, may cause event be handled twice or more times",
+                            handlerType
+                );
+            }
+            handlers.add(handler);
+            this.registeredHandlers.add(handlerType);
+            return handlers;
+        };
     }
 
     public Class<? extends EventHandler<?>> autoHandler(Class<? extends EventHandler<?>> handler) {
@@ -201,8 +222,8 @@ public class EventFramework extends ReflectionFramework {
                 return handler;
             }
 
-            this.targetedEventHandler.put(handler,
-                                          autoHandler.value()
+            this.targetedEventHandlers.put(handler,
+                                           autoHandler.value()
             );
         }
 
@@ -210,7 +231,7 @@ public class EventFramework extends ReflectionFramework {
     }
 
     public Class<? extends Event> target(Class<? extends EventHandler<?>> handlerType) {
-        return this.targetedEventHandler.get(handlerType);
+        return this.targetedEventHandlers.get(handlerType);
     }
 
     public void fireEvent(@NotNull Event event) {
@@ -279,8 +300,12 @@ public class EventFramework extends ReflectionFramework {
     }
 
     public Plugin plugin(EventHandler<?> handler) {
-        return KalmiaEnv.pluginFramework.plugin(handler.getClass()
-                                                       .getAnnotation(PluginRegister.class)
-                                                       .name());
+        String name = this.handlerBelongs.get(handler);
+        return KalmiaEnv.pluginFramework.plugin(
+                name != null ? name :
+                        handler.getClass()
+                               .getAnnotation(PluginRegister.class)
+                               .name()
+        );
     }
 }

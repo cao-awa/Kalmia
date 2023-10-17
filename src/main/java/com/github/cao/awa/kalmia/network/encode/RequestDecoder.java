@@ -10,6 +10,7 @@ import com.github.cao.awa.kalmia.network.encode.exception.ReplayAttackException;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
+import com.github.cao.awa.kalmia.network.packet.inbound.disconnet.TryDisconnectPacket;
 import com.github.cao.awa.kalmia.network.router.RequestRouter;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -141,6 +142,10 @@ public class RequestDecoder extends ByteToMessageDecoder {
         if (! ReplayAttack.validate(replayMark,
                                     timestamp
         )) {
+            this.router.send(new TryDisconnectPacket("You are doing replay attack"));
+
+            this.router.disconnect();
+
             throw new ReplayAttackException();
         }
 
