@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.cha
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
-import com.github.cao.awa.kalmia.event.handler.network.inbound.chat.session.request.RequestDuetSessionEventHandler;
+import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.request.RequestDuetSessionEventHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in.ChatInSessionPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestDuetSessionPacket;

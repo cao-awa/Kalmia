@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.log
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
-import com.github.cao.awa.kalmia.event.handler.network.inbound.login.success.LoginSuccessEventHandler;
+import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.success.LoginSuccessEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.network.count.TrafficCount;

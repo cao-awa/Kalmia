@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.mes
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
-import com.github.cao.awa.kalmia.event.handler.network.inbound.message.delete.DeleteMessageEventHandler;
+import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.delete.DeleteMessageEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.delete.DeleteMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.delete.DeletedMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;

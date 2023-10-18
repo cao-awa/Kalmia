@@ -1,9 +1,10 @@
 package com.github.cao.awa.kalmia.network.router.translation;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONWriter;
+import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
 import com.github.cao.awa.kalmia.network.router.kalmia.NetworkRouter;
+import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.ContinuationWebSocketFrame;
@@ -39,12 +40,6 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
         this.context.channel()
                     .closeFuture()
                     .addListener(this :: disconnect);
-
-        System.out.println("Sending hello");
-
-        send(new TextWebSocketFrame("""
-                                            {"test-hello": "hi"}
-                                            """));
     }
 
     public void disconnect() {
@@ -65,8 +60,8 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
         return this;
     }
 
-    public void send(TextWebSocketFrame frame) {
-        this.context.writeAndFlush(frame);
+    public void send(TranslationPacket packet) {
+        this.context.writeAndFlush(packet.toFrame());
     }
 
     @Deprecated
@@ -125,13 +120,13 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
     }
 
     private void handleFrame(String content) {
-        System.out.println("C: " + content);
-        System.out.println("---");
-        System.out.println(JSONObject.parseObject(content)
-                                     .toString(JSONWriter.Feature.PrettyFormat));
-
-        send(new TextWebSocketFrame("""
-                                            {"test-hello": "hi~"}
-                                            """));
+        try {
+            TranslationPacket packet = KalmiaTranslationEnv.translationPacketFramework.createPacket(JSONObject.parse(content));
+            KalmiaTranslationEnv.translationEventFramework.fireEvent(this,
+                                                                     packet
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

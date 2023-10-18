@@ -38,7 +38,13 @@ public class WsTest {
             }
 
             client.send("""
-                                {"test": "awa"}
+                                {
+                                    "post_type": "meta",
+                                    "post_name": "proxy_connect",
+                                    "data": {
+                                        "cipher": "awa"
+                                    }
+                                }
                                 """);
         } catch (Exception e) {
             e.printStackTrace();

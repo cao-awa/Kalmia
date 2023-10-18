@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.plugin;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
-import com.github.cao.awa.kalmia.event.handler.EventHandler;
+import com.github.cao.awa.kalmia.event.kalmiagram.handler.EventHandler;
 
 import java.util.UUID;
 

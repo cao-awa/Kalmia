@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
-import com.github.cao.awa.kalmia.event.handler.network.inbound.message.select.SelectMessageEventHandler;
+import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.select.SelectMessageEventHandler;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;

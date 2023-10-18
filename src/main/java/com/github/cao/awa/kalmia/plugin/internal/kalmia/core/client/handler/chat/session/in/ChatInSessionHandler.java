@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.cha
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
-import com.github.cao.awa.kalmia.event.handler.network.inbound.chat.session.in.ChatInSessionEventHandler;
+import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.in.ChatInSessionEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in.ChatInSessionPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;

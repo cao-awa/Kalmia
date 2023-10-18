@@ -8,7 +8,7 @@ import com.github.cao.awa.kalmia.attack.exhaustive.ExhaustiveLogin;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
-import com.github.cao.awa.kalmia.event.handler.network.inbound.login.sign.LoginWithSignEventHandler;
+import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.sign.LoginWithSignEventHandler;
 import com.github.cao.awa.kalmia.login.LoginCommon;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;

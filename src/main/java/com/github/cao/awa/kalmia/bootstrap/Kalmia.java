@@ -7,6 +7,7 @@ import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.ServerBootstrapConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
@@ -51,6 +52,11 @@ public class Kalmia {
 
         KalmiaEnv.setupServer();
 
+        if (bootstrapConfig.translation()
+                           .enable()) {
+            KalmiaTranslationEnv.setupFrameworks();
+        }
+
         SERVER.startup();
     }
 
@@ -74,9 +80,6 @@ public class Kalmia {
                      bootstrapConfig.toJSON()
                                     .toString(JSONWriter.Feature.PrettyFormat)
         );
-
-        System.out.println(bootstrapConfig.toJSON()
-                                          .toString(JSONWriter.Feature.PrettyFormat));
     }
 
     public static void prepareConfig() throws Exception {
