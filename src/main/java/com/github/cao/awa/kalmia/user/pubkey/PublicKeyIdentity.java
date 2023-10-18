@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.packet.inbound.setting.NotDoneSettingsPacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.user.key.ServerKeyPairStore;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 

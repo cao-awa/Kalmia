@@ -7,7 +7,7 @@ import com.github.cao.awa.kalmia.event.handler.network.inbound.chat.session.requ
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in.ChatInSessionPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestDuetSessionPacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.session.duet.DuetSession;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 

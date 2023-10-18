@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.framework.reflection;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.apricot.resource.loader.ResourcesLoader;
+import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.kalmia.framework.loader.JarSearchLoader;
 import com.github.cao.awa.trtr.framework.accessor.method.MethodAccess;
 import com.github.cao.awa.trtr.framework.exception.NoAutoAnnotationException;
@@ -28,10 +28,10 @@ public abstract class ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("ReflectionFramework");
     private static final Reflections REFLECTIONS = EntrustEnvironment.trys(() -> {
         File kalmiaJar = new File(URLDecoder.decode(
-                ResourcesLoader.class.getProtectionDomain()
-                                     .getCodeSource()
-                                     .getLocation()
-                                     .getPath(),
+                ResourceLoader.class.getProtectionDomain()
+                                    .getCodeSource()
+                                    .getLocation()
+                                    .getPath(),
                 StandardCharsets.UTF_8
         ));
         return new Reflections(new ConfigurationBuilder().addUrls(JarSearchLoader.load(new File("mods")))

@@ -9,7 +9,7 @@ import com.github.cao.awa.kalmia.network.packet.inbound.message.notice.NewMessag
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessageRefusedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SentMessagePacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.session.duet.DuetSession;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;

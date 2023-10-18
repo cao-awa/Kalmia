@@ -27,6 +27,8 @@ public class ConnectTest {
 //            Thread.sleep(10);
 //        }
 
+        Kalmia.setupBootstrapConfig();
+
         KalmiaEnv.setupClient();
 
         UnsolvedPacketFactor.register();

@@ -10,8 +10,8 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.success.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.status.RequestState;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 @Auto

@@ -7,7 +7,7 @@ import com.github.cao.awa.kalmia.event.handler.EventHandler;
 import java.util.UUID;
 
 public abstract class Plugin {
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     @Auto
     public UUID uuid() {
@@ -15,14 +15,32 @@ public abstract class Plugin {
     }
 
     public void registerHandler(EventHandler<?> handler) {
+        optionalRegisterHandler(handler);
+    }
+
+    public void forceRegisterHandler(EventHandler<?> handler) {
         KalmiaEnv.eventFramework.registerHandler(handler,
                                                  this
         );
     }
 
-    public abstract void onLoad();
+    public void optionalRegisterHandler(EventHandler<?> handler) {
+        KalmiaEnv.eventFramework.optionalRegisterHandler(handler,
+                                                         this
+        );
+    }
 
-    public abstract void onUnload();
+    public boolean canLoad() {
+        return true;
+    }
+
+    public void onLoad() {
+
+    }
+
+    public void onUnload() {
+
+    }
 
     public final void load() {
         onLoad();

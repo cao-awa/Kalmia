@@ -41,11 +41,9 @@ dependencies {
 
     shadow 'org.reflections:reflections:0.10.2'
 
-    shadow 'org.java-websocket:Java-WebSocket:1.5.3'
+    shadow 'org.java-websocket:Java-WebSocket:1.5.4'
 
-    shadow 'org.bouncycastle:bcprov-jdk18on:1.75'
-
-    shadow 'com.github.ben-manes.caffeine:caffeine:3.1.6'
+    shadow 'org.bouncycastle:bcprov-jdk18on:1.76'
 
     shadow 'org.lz4:lz4-java:1.8.0'
 }
@@ -95,5 +93,5 @@ test {
     useJUnitPlatform()
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17

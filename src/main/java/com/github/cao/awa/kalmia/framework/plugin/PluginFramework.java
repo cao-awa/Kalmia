@@ -49,7 +49,7 @@ public class PluginFramework extends ReflectionFramework {
             shouldLoad = true;
         } else {
             // Load by environment annotation.
-            shouldLoad = KalmiaEnv.isServer ? loadWhenServer : loadWhenClient;
+            shouldLoad = KalmiaEnv.serverSideLoading ? loadWhenServer : loadWhenClient;
         }
 
         if (shouldLoad) {
@@ -83,12 +83,23 @@ public class PluginFramework extends ReflectionFramework {
                                      plugin
                 );
 
+                // Do not trigger load when plugin refused loading.
+                if (! plugin.canLoad()) {
+                    LOGGER.info("Plugin '{}' ({}) refused loading",
+                                autoAnnotation.name(),
+                                uuid
+                    );
+
+                    return;
+                }
+
                 plugin.load();
             } catch (Exception e) {
                 LOGGER.warn("Failed load plugin: {} ({})",
                             autoAnnotation.name(),
                             uuid
                 );
+                e.printStackTrace();
             }
         }
     }

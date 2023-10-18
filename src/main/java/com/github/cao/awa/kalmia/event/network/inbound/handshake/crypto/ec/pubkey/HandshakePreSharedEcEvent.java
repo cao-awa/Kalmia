@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.event.network.inbound.handshake.crypto.ec.pubk
 
 import com.github.cao.awa.kalmia.event.network.NetworkEvent;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.ec.pubkey.HandshakePreSharedEcPacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 
 public class HandshakePreSharedEcEvent extends NetworkEvent<HandshakePreSharedEcPacket> {
     public HandshakePreSharedEcEvent(RequestRouter router, HandshakePreSharedEcPacket packet) {

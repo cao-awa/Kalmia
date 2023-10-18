@@ -28,4 +28,4 @@ logs/
 configs/
 databases/
 data/
-src/main/resources/secret/kalmiagram/main/SECRET_PRIVATE
+src/main/resources/kalmiagram/secret/main/SECRET_PRIVATE

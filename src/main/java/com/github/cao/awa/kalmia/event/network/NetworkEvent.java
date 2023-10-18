@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.event.network;
 
 import com.github.cao.awa.kalmia.event.Event;
 import com.github.cao.awa.kalmia.network.packet.Packet;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 
 public abstract class NetworkEvent<T extends Packet<?>> extends Event {
     private final RequestRouter router;

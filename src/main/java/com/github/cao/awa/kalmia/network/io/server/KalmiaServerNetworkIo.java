@@ -3,8 +3,11 @@ package com.github.cao.awa.kalmia.network.io.server;
 import com.github.cao.awa.apricot.annotation.Stable;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.meta.ServerNetworkConfig;
 import com.github.cao.awa.kalmia.network.io.server.channel.KalmiaServerChannelInitializer;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.io.server.channel.kalmiagram.KalmiagramServerChannelInitializer;
+import com.github.cao.awa.kalmia.network.io.server.channel.translation.TranslationServerChannelInitializer;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -51,7 +54,13 @@ public class KalmiaServerNetworkIo {
 
     public KalmiaServerNetworkIo(KalmiaServer server) {
         this.server = server;
-        this.channelInitializer = new KalmiaServerChannelInitializer(server).subscribe(this.connections);
+        if (server.bootstrapConfig()
+                  .translation()
+                  .enable()) {
+            this.channelInitializer = new TranslationServerChannelInitializer(server).subscribe(this.connections);
+        } else {
+            this.channelInitializer = new KalmiagramServerChannelInitializer(server).subscribe(this.connections);
+        }
     }
 
     public List<RequestRouter> getRouter(long uid) {
@@ -84,7 +93,7 @@ public class KalmiaServerNetworkIo {
         }
     }
 
-    public void start(final int port) throws Exception {
+    public void start(ServerNetworkConfig config) throws Exception {
         boolean expectEpoll = this.server.useEpoll();
         boolean epoll = Epoll.isAvailable();
 
@@ -120,7 +129,10 @@ public class KalmiaServerNetworkIo {
                                                   true
                                           )
                                           .childHandler(this.channelInitializer)
-                                          .bind(port)
+                                          .bind(
+                                                  config.bindHost(),
+                                                  config.bindPort()
+                                          )
                                           .syncUninterruptibly()
                                           .channel()
                                           .closeFuture()

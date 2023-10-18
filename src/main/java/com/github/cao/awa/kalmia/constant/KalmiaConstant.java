@@ -10,4 +10,7 @@ public class KalmiaConstant {
                                                                                         PROTOCOL_COMPATIBLE_VERSION,
                                                                                         false
     );
+
+    public static final String SERVER_CONFIG_PATH = "configs/server-config.json";
+    public static final String SERVER_DEFAULT_CONFIG_PATH = "kalmiagram/config/default-server-config.json";
 }

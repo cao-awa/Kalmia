@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.test;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.annotation.auto.AutoPlugin;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +21,8 @@ public class KalmiaTest extends Plugin {
     }
 
     @Override
-    public void onUnload() {
-
+    public boolean canLoad() {
+        return ! Kalmia.bootstrapConfig.translation()
+                                       .enable();
     }
 }

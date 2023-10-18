@@ -5,7 +5,7 @@ import com.github.cao.awa.kalmia.event.network.NetworkEvent;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.failed.LoginFailedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.success.LoginSuccessPacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 
 public interface LoginEventHandler<P extends Packet<?>, E extends NetworkEvent<P>> extends NetworkEventHandler<P, E> {
     default void loginSuccess(RequestRouter router, long uid, byte[] token) {

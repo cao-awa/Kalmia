@@ -1,0 +1,15 @@
+{
+    "config-meta": {
+        "version": 0
+    },
+    "server-network": {
+        "bind-host": "127.0.0.1",
+        "bind-port": 12345,
+        "use-epoll": true
+    },
+    "translation": {
+        "enable": false,
+        "server-host": "",
+        "server-port": -1
+    }
+}

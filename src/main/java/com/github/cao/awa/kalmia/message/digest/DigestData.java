@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.kalmia.convert.BytesValueConvertable;
-import com.github.cao.awa.kalmia.framework.serialize.BytesSerializable;
+import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializable;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.math.BigInteger;

@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.annotation.auto.AutoPlugin;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.disconnect.TryDisconnectHandler;
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +24,8 @@ public class KalmiaUniCore extends Plugin {
     }
 
     @Override
-    public void onUnload() {
-
+    public boolean canLoad() {
+        return ! Kalmia.bootstrapConfig.translation()
+                                       .enable();
     }
 }

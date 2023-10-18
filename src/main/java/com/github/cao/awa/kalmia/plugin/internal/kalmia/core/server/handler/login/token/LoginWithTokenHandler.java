@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.login.token.LoginWithTokenEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.token.LoginWithTokenPacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 @Auto

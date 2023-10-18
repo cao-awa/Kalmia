@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.attack.exhaustive;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 
 import java.util.List;
 

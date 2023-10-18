@@ -1,15 +1,19 @@
 package com.github.cao.awa.kalmia.env;
 
-import com.github.cao.awa.apricot.resource.loader.ResourcesLoader;
+import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
+import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.ServerBootstrapConfig;
+import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.meta.BootstrapConfigMeta;
+import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.meta.ServerNetworkConfig;
+import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.translation.BootstrapTranslationConfig;
 import com.github.cao.awa.kalmia.env.security.exception.PreShareKeyNotFoundException;
 import com.github.cao.awa.kalmia.framework.event.EventFramework;
 import com.github.cao.awa.kalmia.framework.network.event.NetworkEventFramework;
 import com.github.cao.awa.kalmia.framework.network.unsolve.PacketFramework;
 import com.github.cao.awa.kalmia.framework.plugin.PluginFramework;
-import com.github.cao.awa.kalmia.framework.serialize.ByteSerializeFramework;
+import com.github.cao.awa.kalmia.framework.serialize.bytes.ByteSerializeFramework;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.key.ec.EcServerKeyPair;
@@ -22,6 +26,20 @@ import java.util.function.Supplier;
 
 public class KalmiaEnv {
     public static final String VERSION = "1.0.0";
+
+    public static final ServerBootstrapConfig DEFAULT_BOOTSTRAP_CONFIG = new ServerBootstrapConfig(
+            new BootstrapConfigMeta(0),
+            new ServerNetworkConfig(
+                    "127.0.0.1",
+                    12345,
+                    true
+            ),
+            new BootstrapTranslationConfig(
+                    false,
+                    "",
+                    - 1
+            )
+    );
 
     public static final byte[] CHALLENGE_DATA = new byte[]{
             123, 123, 123, 123,
@@ -81,7 +99,7 @@ public class KalmiaEnv {
     });
 
     public static boolean setup = false;
-    public static boolean isServer = true;
+    public static boolean serverSideLoading = true;
     public static final PacketFramework packetFramework = new PacketFramework();
     public static final ByteSerializeFramework serializeFramework = new ByteSerializeFramework();
     public static final PluginFramework pluginFramework = new PluginFramework();
@@ -89,7 +107,7 @@ public class KalmiaEnv {
     public static final NetworkEventFramework networkEventFramework = new NetworkEventFramework();
 
     public static void setupClient() throws PreShareKeyNotFoundException {
-        isServer = false;
+        serverSideLoading = false;
 
         setupPreSharedKey();
         setupFrameworks();
@@ -98,7 +116,7 @@ public class KalmiaEnv {
     }
 
     public static void setupServer() throws PreShareKeyNotFoundException {
-        isServer = true;
+        serverSideLoading = true;
 
         setupPreSharedKey();
         setupFrameworks();
@@ -108,10 +126,10 @@ public class KalmiaEnv {
 
     public static void setupPreSharedKey() throws PreShareKeyNotFoundException {
         // Server prikey init.
-        if (isServer) {
+        if (serverSideLoading) {
             KalmiaPreSharedCipher.prikeyManager.add(KalmiaPreSharedCipher.defaultCipherField,
                                                     nullThenThrow(EntrustEnvironment.trys(() -> {
-                                                                      return Crypto.decodeEcPrikey(Mathematics.toBytes(IOUtil.read(new InputStreamReader(ResourcesLoader.get("secret/kalmiagram/main/SECRET_PRIVATE"),
+                                                                      return Crypto.decodeEcPrikey(Mathematics.toBytes(IOUtil.read(new InputStreamReader(ResourceLoader.get("kalmiagram/secret/main/SECRET_PRIVATE"),
                                                                                                                                                          StandardCharsets.UTF_8
                                                                                                                        )),
                                                                                                                        36
@@ -124,7 +142,7 @@ public class KalmiaEnv {
 
         // Client pubkey init.
         ECPublicKey kalmiaMainPubkey = nullThenThrow(EntrustEnvironment.trys(() -> {
-                                                         return Crypto.decodeEcPubkey(Mathematics.toBytes(IOUtil.read(new InputStreamReader(ResourcesLoader.get("secret/kalmiagram/main/SECRET_PUBLIC"),
+                                                         return Crypto.decodeEcPubkey(Mathematics.toBytes(IOUtil.read(new InputStreamReader(ResourceLoader.get("kalmiagram/secret/main/SECRET_PUBLIC"),
                                                                                                                                             StandardCharsets.UTF_8
                                                                                                           )),
                                                                                                           36

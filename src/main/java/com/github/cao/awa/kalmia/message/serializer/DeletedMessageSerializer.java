@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.message.serializer;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoSerializer;
-import com.github.cao.awa.kalmia.framework.serialize.BytesSerializer;
+import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializer;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 
 @AutoSerializer(value = 1000, target = DeletedMessage.class)

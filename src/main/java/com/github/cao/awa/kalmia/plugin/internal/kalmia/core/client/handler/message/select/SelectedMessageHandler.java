@@ -8,7 +8,7 @@ import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectedMessagePacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 import java.util.Arrays;

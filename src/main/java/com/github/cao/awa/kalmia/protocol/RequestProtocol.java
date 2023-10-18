@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.protocol;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.framework.serialize.BytesSerializable;
+import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializable;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 
 import java.io.ByteArrayOutputStream;

@@ -72,7 +72,7 @@ public class EventFramework extends ReflectionFramework {
             shouldLoad = true;
         } else {
             // Load by environment annotation.
-            shouldLoad = KalmiaEnv.isServer ? loadWhenServer : loadWhenClient;
+            shouldLoad = KalmiaEnv.serverSideLoading ? loadWhenServer : loadWhenClient;
         }
 
         if (shouldLoad) {
@@ -193,6 +193,14 @@ public class EventFramework extends ReflectionFramework {
                        .getName(),
                 KalmiaEnv.pluginFramework.name(plugin)
         );
+    }
+
+    public void optionalRegisterHandler(EventHandler<?> handler, Plugin plugin) {
+        if (! this.registeredHandlers.contains(handler.getClass())) {
+            registerHandler(handler,
+                            plugin
+            );
+        }
     }
 
     public BiFunction<Class<? extends Event>, List<EventHandler<?>>, List<EventHandler<?>>> computeHandler(EventHandler<?> handler) {

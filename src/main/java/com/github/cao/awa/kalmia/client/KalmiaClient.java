@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.client;
 
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 
 import java.util.function.Consumer;
 

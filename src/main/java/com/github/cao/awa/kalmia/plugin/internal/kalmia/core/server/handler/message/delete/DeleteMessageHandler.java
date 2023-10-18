@@ -6,7 +6,7 @@ import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.handler.network.inbound.message.delete.DeleteMessageEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.delete.DeleteMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.delete.DeletedMessagePacket;
-import com.github.cao.awa.kalmia.network.router.RequestRouter;
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 @Auto
