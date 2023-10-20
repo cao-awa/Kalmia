@@ -1,9 +1,19 @@
 package com.github.cao.awa.kalmia.session;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.session.duet.DuetSession;
+import com.github.cao.awa.kalmia.session.factor.SessionFactor;
 
 public abstract class Session {
+    private final long sessionId;
+
+    public Session(long sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public long sessionId() {
+        return this.sessionId;
+    }
+
     public abstract byte[] toBytes();
 
     public abstract boolean accessible(long userId);
@@ -15,9 +25,8 @@ public abstract class Session {
 
         reader.back(1);
 
-        return switch (id) {
-            case 1 -> DuetSession.create(reader);
-            default -> null;
-        };
+        return SessionFactor.create(id,
+                                    reader
+        );
     }
 }

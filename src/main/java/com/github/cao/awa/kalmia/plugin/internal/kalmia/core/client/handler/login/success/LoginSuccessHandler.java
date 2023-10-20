@@ -16,7 +16,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 @Auto
 @Client
-@PluginRegister(name = "kalmia_core")
+@PluginRegister(name = "kalmia_client")
 public class LoginSuccessHandler implements LoginSuccessEventHandler {
     @Auto
     @Client
@@ -54,8 +54,8 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 //        router.send(new RequestDuetSessionPacket(2));
 
         router.send(new SendMessagePacket(
-                114514,
-                new PlainsMessage("test",
+                0,
+                new PlainsMessage("test123",
                                   packet.uid()
                 ),
                 Packet.createReceipt()

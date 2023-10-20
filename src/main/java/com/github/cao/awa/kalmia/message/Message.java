@@ -22,7 +22,7 @@ public abstract class Message implements DigestedObject, ByteArrayConvertable {
 
     public byte[] toBytes() {
         try {
-            return KalmiaEnv.serializeFramework.payload(this);
+            return KalmiaEnv.byteSerializeFramework.payload(this);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);

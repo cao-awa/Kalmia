@@ -9,15 +9,18 @@ public class DuetSession extends Session {
     private final long target1;
     private final long target2;
 
-    public DuetSession(long target1, long target2) {
+    public DuetSession(long sessionId, long target1, long target2) {
+        super(sessionId);
         this.target1 = target1;
         this.target2 = target2;
     }
 
     public static DuetSession create(BytesReader reader) {
         if (reader.read() == 1) {
-            return new DuetSession(SkippedBase256.readLong(reader),
-                                   SkippedBase256.readLong(reader)
+            return new DuetSession(
+                    SkippedBase256.readLong(reader),
+                    SkippedBase256.readLong(reader),
+                    SkippedBase256.readLong(reader)
             );
         }
         return null;
@@ -26,6 +29,7 @@ public class DuetSession extends Session {
     @Override
     public byte[] toBytes() {
         return BytesUtil.concat(new byte[]{1},
+                                SkippedBase256.longToBuf(sessionId()),
                                 SkippedBase256.longToBuf(this.target1),
                                 SkippedBase256.longToBuf(this.target2)
         );

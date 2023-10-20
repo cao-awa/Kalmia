@@ -6,6 +6,12 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 public class AnnotationUtil {
+    public static <T extends Annotation> T getAnnotation(Object object, Class<T> annotation) {
+        return getAnnotation(object.getClass(),
+                             annotation
+        );
+    }
+
     public static <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T> annotation) {
         if (clazz == null) {
             return null;

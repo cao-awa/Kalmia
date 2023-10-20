@@ -24,8 +24,7 @@ public class KalmiaServerCore extends Plugin {
 
     @Override
     public boolean canLoad() {
-        return ! Kalmia.SERVER.bootstrapConfig()
-                              .translation()
-                              .enable();
+        return ! Kalmia.bootstrapConfig.translation()
+                                       .enable();
     }
 }

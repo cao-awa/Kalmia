@@ -10,16 +10,19 @@ import com.github.cao.awa.kalmia.network.encode.kalmiagram.crypto.symmetric.aes.
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes.HandshakeAesCipherPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.ec.pubkey.HandshakePreSharedEcPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Auto
+@Client
 @PluginRegister(name = "kalmia_translation")
 public class HandshakePreSharedEcHandler implements HandshakePreSharedEcEventHandler {
     private static final Logger LOGGER = LogManager.getLogger("PreSharedRsaHandler");
     private static final byte[] AES_CIPHER = BytesRandomIdentifier.create(32);
 
     @Auto
+    @Client
     @Override
     public void handle(RequestRouter router, HandshakePreSharedEcPacket packet) {
         if (! packet.cipherField()

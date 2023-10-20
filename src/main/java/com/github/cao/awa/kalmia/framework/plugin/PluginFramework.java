@@ -19,7 +19,7 @@ import java.util.UUID;
 public class PluginFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("PluginFramework");
     private final BiMap<Plugin, UUID> plugins = ApricotCollectionFactor.hashBiMap();
-    private final BiMap<String, Plugin> pluginsName = ApricotCollectionFactor.hashBiMap();
+    private final BiMap<String, Plugin> nameToPlugin = ApricotCollectionFactor.hashBiMap();
 
     public void work() {
         // Working stream...
@@ -39,50 +39,55 @@ public class PluginFramework extends ReflectionFramework {
     }
 
     public void build(Class<? extends Plugin> clazz) {
-        boolean loadWhenServer = clazz.isAnnotationPresent(Server.class);
-        boolean loadWhenClient = clazz.isAnnotationPresent(Client.class);
+        // Get plugin annotation used to get name and uuid.
+        AutoPlugin autoAnnotation = clazz.getAnnotation(AutoPlugin.class);
 
-        boolean shouldLoad;
+        UUID uuid = FieldGet.create(
+                                    // Can use 'UUID' or 'ID' field name for automatic loading.
+                                    clazz,
+                                    "UUID"
+                            )
+                            .or("ID")
+                            // If don't use field loading, will get uuid by annotation.
+                            .or(p -> UUID.fromString(autoAnnotation.uuid()))
+                            .get();
 
-        // Always load plugin when simultaneously annotated @Server and @Client and when don't annotated.
-        if ((loadWhenServer && loadWhenClient) || (! loadWhenServer && ! loadWhenClient)) {
-            shouldLoad = true;
-        } else {
-            // Load by environment annotation.
-            shouldLoad = KalmiaEnv.serverSideLoading ? loadWhenServer : loadWhenClient;
-        }
+        try {
+            // Create and register.
+            Plugin plugin = clazz.getConstructor()
+                                 .newInstance();
 
-        if (shouldLoad) {
-            // Get plugin annotation used to get name and uuid.
-            AutoPlugin autoAnnotation = clazz.getAnnotation(AutoPlugin.class);
+            boolean shouldLoad;
 
-            UUID uuid = FieldGet.create(
-                                        // Can use 'UUID' or 'ID' field name for automatic loading.
-                                        clazz,
-                                        "UUID"
-                                )
-                                .or("ID")
-                                // If don't use field loading, will get uuid by annotation.
-                                .or(p -> UUID.fromString(autoAnnotation.uuid()))
-                                .get();
+            if (plugin.forceRegister()) {
+                shouldLoad = true;
+            } else {
+                boolean loadWhenServer = clazz.isAnnotationPresent(Server.class);
+                boolean loadWhenClient = clazz.isAnnotationPresent(Client.class);
 
-            try {
-                // Create and register.
-                Plugin plugin = clazz.getConstructor()
-                                     .newInstance();
 
-                LOGGER.info("Register plugin '{}' ({})",
-                            autoAnnotation.name(),
-                            uuid
-                );
+                // Always load plugin when simultaneously annotated @Server and @Client and when don't annotated.
+                if ((loadWhenServer && loadWhenClient) || (! loadWhenServer && ! loadWhenClient)) {
+                    shouldLoad = true;
+                } else {
+                    // Load by environment annotation.
+                    shouldLoad = KalmiaEnv.serverSideLoading ? loadWhenServer : loadWhenClient;
+                }
+            }
 
-                this.plugins.put(plugin,
-                                 uuid
-                );
-                this.pluginsName.put(autoAnnotation.name(),
-                                     plugin
-                );
+            LOGGER.info("Register plugin '{}' ({})",
+                        autoAnnotation.name(),
+                        uuid
+            );
 
+            this.plugins.put(plugin,
+                             uuid
+            );
+            this.nameToPlugin.put(autoAnnotation.name(),
+                                  plugin
+            );
+
+            if (shouldLoad) {
                 // Do not trigger load when plugin refused loading.
                 if (! plugin.canLoad()) {
                     LOGGER.info("Plugin '{}' ({}) refused loading",
@@ -94,13 +99,13 @@ public class PluginFramework extends ReflectionFramework {
                 }
 
                 plugin.load();
-            } catch (Exception e) {
-                LOGGER.warn("Failed load plugin: {} ({})",
-                            autoAnnotation.name(),
-                            uuid
-                );
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            LOGGER.warn("Failed load plugin: {} ({})",
+                        autoAnnotation.name(),
+                        uuid
+            );
+            e.printStackTrace();
         }
     }
 
@@ -109,12 +114,12 @@ public class PluginFramework extends ReflectionFramework {
     }
 
     public String name(Plugin plugin) {
-        return this.pluginsName.inverse()
-                               .get(plugin);
+        return this.nameToPlugin.inverse()
+                                .get(plugin);
     }
 
     public Plugin plugin(String name) {
-        return this.pluginsName.get(name);
+        return this.nameToPlugin.get(name);
     }
 
     public Plugin plugin(UUID uuid) {

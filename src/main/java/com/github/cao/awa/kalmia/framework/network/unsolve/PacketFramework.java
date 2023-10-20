@@ -123,12 +123,12 @@ public class PacketFramework extends ReflectionFramework {
     }
 
     public byte[] payload(Packet<?> packet) throws Exception {
-        return KalmiaEnv.serializeFramework.payload(packet);
+        return KalmiaEnv.byteSerializeFramework.payload(packet);
     }
 
     public void create(Packet<?> packet, BytesReader reader) throws Exception {
-        KalmiaEnv.serializeFramework.create(packet,
-                                            reader
+        KalmiaEnv.byteSerializeFramework.create(packet,
+                                                reader
         );
     }
 

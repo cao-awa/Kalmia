@@ -46,4 +46,8 @@ public class SessionManager {
         Session session = this.database.get(SkippedBase256.longToBuf(sessionId));
         return session != null && session.accessible(targetId);
     }
+
+    public synchronized long nextSeq() {
+        return this.database.nextSeq();
+    }
 }

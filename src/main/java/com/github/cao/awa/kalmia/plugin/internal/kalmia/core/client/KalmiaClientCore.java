@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 @Auto
 @Client
 @AutoPlugin(
-        name = "kalmia_core",
+        name = "kalmia_client",
         uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE815"
 )
 public class KalmiaClientCore extends Plugin {
@@ -23,8 +23,8 @@ public class KalmiaClientCore extends Plugin {
     }
 
     @Override
-    public boolean canLoad() {
-        return ! Kalmia.bootstrapConfig.translation()
-                                       .enable();
+    public boolean forceRegister() {
+        return Kalmia.bootstrapConfig.translation()
+                                     .enable();
     }
 }

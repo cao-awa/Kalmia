@@ -4,8 +4,7 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoSerializer;
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoBytesSerializer;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
@@ -28,8 +27,8 @@ import java.util.stream.Collectors;
 
 public class ByteSerializeFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("ByteSerializerFramework");
-    private final Map<Class<?>, BytesSerializer<?>> typeToSerializers = ApricotCollectionFactor.hashMap();
-    private final Map<Long, BytesSerializer<?>> idToSerializers = ApricotCollectionFactor.hashMap();
+    private final Map<Class<?>, BytesSerializer<?>> typeToSerializer = ApricotCollectionFactor.hashMap();
+    private final Map<Long, BytesSerializer<?>> idToSerializer = ApricotCollectionFactor.hashMap();
     private final Map<Class<? extends BytesSerializer<?>>, Long> typeToId = ApricotCollectionFactor.hashMap();
     private final Map<Class<? extends BytesSerializer<?>>, Class<?>[]> typeToTarget = ApricotCollectionFactor.hashMap();
 
@@ -44,7 +43,7 @@ public class ByteSerializeFramework extends ReflectionFramework {
     }
 
     public boolean match(Class<?> clazz) {
-        return clazz.isAnnotationPresent(AutoSerializer.class) && BytesSerializer.class.isAssignableFrom(clazz);
+        return clazz.isAnnotationPresent(AutoBytesSerializer.class) && BytesSerializer.class.isAssignableFrom(clazz);
     }
 
     public Class<? extends BytesSerializer<?>> cast(Class<?> clazz) {
@@ -55,7 +54,7 @@ public class ByteSerializeFramework extends ReflectionFramework {
         try {
             BytesSerializer<?> serializer = type.getConstructor()
                                                 .newInstance();
-            AutoSerializer annotation = type.getAnnotation(AutoSerializer.class);
+            AutoBytesSerializer annotation = type.getAnnotation(AutoBytesSerializer.class);
             long id = annotation.value();
             Class<?>[] target = annotation.target();
             this.typeToId.put(type,
@@ -65,7 +64,7 @@ public class ByteSerializeFramework extends ReflectionFramework {
                                   target
             );
 
-            LOGGER.info("Register auto serializer({}): {}",
+            LOGGER.info("Register auto bytes serializer({}): {}",
                         id,
                         serializer.getClass()
                                   .getName()
@@ -103,10 +102,10 @@ public class ByteSerializeFramework extends ReflectionFramework {
 
         long id = serializer.id();
 
-        BytesSerializer<?> current = this.idToSerializers.get(id);
+        BytesSerializer<?> current = this.idToSerializer.get(id);
 
         if (current != null) {
-            LOGGER.warn("Failed register the serializer {} because id {} has been used by {}",
+            LOGGER.warn("Failed register the bytes serializer {} because id {} has been used by {}",
                         serializer.getClass()
                                   .getName(),
                         id,
@@ -116,15 +115,15 @@ public class ByteSerializeFramework extends ReflectionFramework {
             return;
         }
         for (Class<?> t : matchType) {
-            this.typeToSerializers.put(t,
-                                       serializer
+            this.typeToSerializer.put(t,
+                                      serializer
             );
         }
-        this.idToSerializers.put(id,
-                                 serializer
+        this.idToSerializer.put(id,
+                                serializer
         );
 
-        LOGGER.info("Serializer {} registered by id {}, targeted to {}",
+        LOGGER.info("Bytes serializer {} registered by id {}, targeted to {}",
                     serializer.getClass()
                               .getName(),
                     id,
@@ -149,15 +148,15 @@ public class ByteSerializeFramework extends ReflectionFramework {
         return fields;
     }
 
-    public <T> byte[] payload(T packet) throws Exception {
-        LinkedList<Field> fields = autoFields(packet);
+    public <T> byte[] payload(T object) throws Exception {
+        LinkedList<Field> fields = autoFields(object);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         for (Field field : fields) {
             output.write(
-                    KalmiaEnv.serializeFramework.serialize(field.get(packet),
-                                                           field
+                    serialize(field.get(object),
+                              field
                     )
             );
         }
@@ -169,11 +168,11 @@ public class ByteSerializeFramework extends ReflectionFramework {
         LinkedList<Field> fields = autoFields(object);
 
         for (Field field : fields) {
-            Object deserialize = KalmiaEnv.serializeFramework.deserialize(field.getType(),
-                                                                          reader
+            Object deserialized = deserialize(field.getType(),
+                                              reader
             );
             field.set(object,
-                      deserialize
+                      deserialized
             );
         }
 
@@ -251,7 +250,7 @@ public class ByteSerializeFramework extends ReflectionFramework {
         if (type == null) {
             return null;
         }
-        BytesSerializer<T> serializer = EntrustEnvironment.cast(this.typeToSerializers.get(type));
+        BytesSerializer<T> serializer = EntrustEnvironment.cast(this.typeToSerializer.get(type));
         if (serializer == null) {
             serializer = EntrustEnvironment.cast(getSerializer(type.getSuperclass()));
             if (serializer == null) {
@@ -267,6 +266,6 @@ public class ByteSerializeFramework extends ReflectionFramework {
     }
 
     public <T> BytesSerializer<T> getSerializer(long id) {
-        return EntrustEnvironment.cast(this.idToSerializers.get(id));
+        return EntrustEnvironment.cast(this.idToSerializer.get(id));
     }
 }

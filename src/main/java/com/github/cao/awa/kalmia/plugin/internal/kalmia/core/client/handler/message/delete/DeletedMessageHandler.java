@@ -10,7 +10,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 @Auto
 @Client
-@PluginRegister(name = "kalmia_core")
+@PluginRegister(name = "kalmia_client")
 public class DeletedMessageHandler implements DeletedMessageEventHandler {
     @Auto
     @Client

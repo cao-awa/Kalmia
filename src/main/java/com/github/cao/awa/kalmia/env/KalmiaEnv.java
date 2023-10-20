@@ -14,6 +14,7 @@ import com.github.cao.awa.kalmia.framework.network.event.NetworkEventFramework;
 import com.github.cao.awa.kalmia.framework.network.unsolve.PacketFramework;
 import com.github.cao.awa.kalmia.framework.plugin.PluginFramework;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.ByteSerializeFramework;
+import com.github.cao.awa.kalmia.framework.serialize.json.JsonSerializeFramework;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.key.ec.EcServerKeyPair;
@@ -101,7 +102,8 @@ public class KalmiaEnv {
     public static boolean setup = false;
     public static boolean serverSideLoading = true;
     public static final PacketFramework packetFramework = new PacketFramework();
-    public static final ByteSerializeFramework serializeFramework = new ByteSerializeFramework();
+    public static final ByteSerializeFramework byteSerializeFramework = new ByteSerializeFramework();
+    public static final JsonSerializeFramework jsonSerializeFramework = new JsonSerializeFramework();
     public static final PluginFramework pluginFramework = new PluginFramework();
     public static final EventFramework eventFramework = new EventFramework();
     public static final NetworkEventFramework networkEventFramework = new NetworkEventFramework();
@@ -165,7 +167,8 @@ public class KalmiaEnv {
 
     public static void setupFrameworks() {
         packetFramework.work();
-        serializeFramework.work();
+        byteSerializeFramework.work();
+        jsonSerializeFramework.work();
         pluginFramework.work();
         eventFramework.work();
         networkEventFramework.work();

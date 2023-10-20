@@ -5,17 +5,14 @@ import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.send.SendMessageEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.network.packet.inbound.message.notice.NewMessageNoticePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessageRefusedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SentMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.kalmia.session.duet.DuetSession;
+import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.List;
 
 @Auto
 @Server
@@ -41,10 +38,12 @@ public class SendMessageHandler implements SendMessageEventHandler {
                     packet.msg()
         );
 
-        DuetSession session = (DuetSession) Kalmia.SERVER.sessionManager()
-                                                         .session(packet.sessionId());
+        Session session = Kalmia.SERVER.sessionManager()
+                                       .session(packet.sessionId());
 
         boolean accessible = false;
+
+        System.out.println(session);
 
         if (session != null) {
             accessible = session.accessible(packet.handler()
@@ -57,19 +56,6 @@ public class SendMessageHandler implements SendMessageEventHandler {
                                             packet.sessionId(),
                                             packet.msg()
                                     );
-
-            List<RequestRouter> targetRouters = Kalmia.SERVER.getRouter(session.opposite(packet.handler()
-                                                                                               .uid()));
-
-            if (targetRouters != null) {
-                targetRouters.forEach(targetRouter -> {
-                    targetRouter.send(
-                            new NewMessageNoticePacket(packet.sessionId(),
-                                                       seq,
-                                                       packet.msg()
-                            ));
-                });
-            }
 
             // Response to client the seq.
             router.send(new SentMessagePacket(seq,
