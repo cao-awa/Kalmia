@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 @Auto
 @Client
-@PluginRegister(name = "kalmia_core")
+@PluginRegister(name = "kalmia_client")
 public class SelectedMessageHandler implements SelectedMessageEventHandler {
     @Auto
     @Client

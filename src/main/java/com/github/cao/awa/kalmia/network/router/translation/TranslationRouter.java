@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.network.router.translation;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
-import com.github.cao.awa.kalmia.network.router.kalmia.NetworkRouter;
+import com.github.cao.awa.kalmia.network.router.NetworkRouter;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
 import io.netty.channel.ChannelHandlerContext;

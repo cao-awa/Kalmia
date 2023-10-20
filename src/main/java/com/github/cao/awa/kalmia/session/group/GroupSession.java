@@ -3,6 +3,10 @@ package com.github.cao.awa.kalmia.session.group;
 import com.github.cao.awa.kalmia.session.Session;
 
 public class GroupSession extends Session {
+    public GroupSession(long sessionId) {
+        super(sessionId);
+    }
+
     @Override
     public byte[] toBytes() {
         return new byte[0];

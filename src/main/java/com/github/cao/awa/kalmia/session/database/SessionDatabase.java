@@ -37,6 +37,10 @@ public class SessionDatabase {
         }
     }
 
+    public long nextSeq() {
+        return SkippedBase256.readLong(BytesReader.of(this.database.get(ROOT))) + 1;
+    }
+
     @Nullable
     public Session get(byte[] sid) {
         byte[] bytes = this.database.get(sid);

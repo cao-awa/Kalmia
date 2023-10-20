@@ -34,6 +34,10 @@ public abstract class Plugin {
         return true;
     }
 
+    public boolean forceRegister() {
+        return false;
+    }
+
     public void onLoad() {
 
     }

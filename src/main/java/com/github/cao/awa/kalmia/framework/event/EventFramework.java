@@ -81,6 +81,11 @@ public class EventFramework extends ReflectionFramework {
                 PluginRegister pluginAnnotation = clazz.getAnnotation(PluginRegister.class);
 
                 if (pluginAnnotation != null) {
+                    if (! KalmiaEnv.pluginFramework.plugin(pluginAnnotation.name())
+                                                   .enabled()) {
+                        return;
+                    }
+
                     EventHandler<?> handler = clazz.getConstructor()
                                                    .newInstance();
 

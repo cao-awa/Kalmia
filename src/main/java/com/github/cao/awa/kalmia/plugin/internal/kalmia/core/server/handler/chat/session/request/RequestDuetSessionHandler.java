@@ -28,7 +28,9 @@ public class RequestDuetSessionHandler implements RequestDuetSessionEventHandler
                                       );
         if (sessionId == - 1) {
             sessionId = Kalmia.SERVER.sessionManager()
-                                     .add(new DuetSession(handler.uid(),
+                                     .add(new DuetSession(Kalmia.SERVER.sessionManager()
+                                                                       .nextSeq(),
+                                                          handler.uid(),
                                                           targetUid
                                      ));
             Kalmia.SERVER.userManager()

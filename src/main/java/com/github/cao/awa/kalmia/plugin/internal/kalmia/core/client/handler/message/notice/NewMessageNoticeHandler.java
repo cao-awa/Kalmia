@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 @Auto
 @Client
-@PluginRegister(name = "kalmia_core")
+@PluginRegister(name = "kalmia_client")
 public class NewMessageNoticeHandler implements NewMessageNoticeEventHandler {
     private static final Logger LOGGER = LogManager.getLogger("NewMessageNoticeHandler");
 

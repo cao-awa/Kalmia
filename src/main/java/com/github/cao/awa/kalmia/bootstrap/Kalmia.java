@@ -12,6 +12,9 @@ import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
+import com.github.cao.awa.kalmia.session.communal.CommunalSession;
+import com.github.cao.awa.kalmia.session.duet.DuetSession;
+import com.github.cao.awa.kalmia.session.factor.SessionFactor;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.DeletedUser;
 import com.github.cao.awa.kalmia.user.factor.UserFactor;
@@ -122,6 +125,13 @@ public class Kalmia {
         );
         ServerKeyPairStoreFactor.register(1,
                                           EcServerKeyPair :: new
+        );
+
+        SessionFactor.register(1,
+                               DuetSession :: create
+        );
+        SessionFactor.register(2,
+                               CommunalSession :: create
         );
     }
 }

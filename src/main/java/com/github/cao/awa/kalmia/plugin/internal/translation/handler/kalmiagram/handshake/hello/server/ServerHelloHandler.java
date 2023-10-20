@@ -11,15 +11,18 @@ import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.S
 import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
+import com.github.cao.awa.modmdo.annotation.platform.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Auto
-@PluginRegister(name = "kalmia_translation")
+@Client
+@PluginRegister(name = "kalmia_core")
 public class ServerHelloHandler implements ServerHelloEventHandler {
     private static final Logger LOGGER = LogManager.getLogger("ServerHelloHandler");
 
     @Auto
+    @Client
     @Override
     public void handle(RequestRouter router, ServerHelloPacket packet) {
         LOGGER.info("Server Hello!");

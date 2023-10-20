@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 @Auto
 @Client
-@PluginRegister(name = "kalmia_core")
+@PluginRegister(name = "kalmia_client")
 public class SentMessageHandler implements SentMessageEventHandler {
     private static final Logger LOGGER = LogManager.getLogger("SentMessageHandler");
 
