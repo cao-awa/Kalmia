@@ -21,7 +21,7 @@ public class TranslationProxyConnectHandler implements TranslationProxyConnectEv
     public void handle(TranslationRouter router, TranslationProxyConnectPacket packet) {
         System.out.println(packet.cipher());
 
-        router.send(new TranslationProxyStatusPacket("kalmia.server.connecting"));
+        router.send(new TranslationProxyStatusPacket("status.kalmia.connecting"));
 
         try {
             KalmiaClient client = new KalmiaClient();

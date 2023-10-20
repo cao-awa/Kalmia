@@ -1,14 +1,3 @@
 # 元数据
 
-## Proxy connect
-
-此数据包在客户端每次连接到代理时由客户端发送，提示服务端可以开始推送消息
-
-| Type |     Name      |     
-|:----:|:-------------:|
-| Meta | proxy_connect |
-
-|  字段名   |    值    |     
-|:------:|:-------:|
-| Cipher | 空或指定字符串 |       
-
+[元数据翻译数据包列表](/doc/zh_cn/standard/translation/list/meta/translation_meta_packet_list.md)

@@ -27,7 +27,7 @@ public class TranslationProxyStatusPacket extends TranslationPacket {
     }
 
     @Getter
-    public String cipher() {
+    public String status() {
         return this.status;
     }
 }
