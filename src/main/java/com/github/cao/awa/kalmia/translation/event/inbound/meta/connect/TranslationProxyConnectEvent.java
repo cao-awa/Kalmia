@@ -1,7 +1,7 @@
-package com.github.cao.awa.kalmia.event.translation.inbound;
+package com.github.cao.awa.kalmia.translation.event.inbound.meta.connect;
 
-import com.github.cao.awa.kalmia.event.translation.TranslationEvent;
 import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;
+import com.github.cao.awa.kalmia.translation.event.TranslationEvent;
 import com.github.cao.awa.kalmia.translation.network.packet.meta.connect.TranslationProxyConnectPacket;
 
 public class TranslationProxyConnectEvent extends TranslationEvent<TranslationProxyConnectPacket> {

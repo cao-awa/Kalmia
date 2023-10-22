@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.packet.inbound.login.success;
+package com.github.cao.awa.kalmia.network.packet.inbound.login.feedback;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
@@ -7,31 +7,31 @@ import com.github.cao.awa.kalmia.annotation.auto.event.network.NetworkEventTarge
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotation.inaction.DoNotSet;
-import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.login.success.LoginSuccessEvent;
+import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.login.feedback.LoginFailureEvent;
 import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@AutoSolvedPacket(id = 100009)
-@NetworkEventTarget(LoginSuccessEvent.class)
-public class LoginSuccessPacket extends Packet<StatelessHandler> {
+@AutoSolvedPacket(id = 100008)
+@NetworkEventTarget(LoginFailureEvent.class)
+public class LoginFailurePacket extends Packet<StatelessHandler> {
     @AutoData
     @DoNotSet
     private long uid;
     @AutoData
     @DoNotSet
-    private byte[] token;
+    private String reason;
 
     @Server
-    public LoginSuccessPacket(long uid, byte[] token) {
+    public LoginFailurePacket(long uid, String reason) {
         this.uid = uid;
-        this.token = token;
+        this.reason = reason;
     }
 
     @Auto
     @Client
-    public LoginSuccessPacket(BytesReader reader) {
+    public LoginFailurePacket(BytesReader reader) {
         super(reader);
     }
 
@@ -41,7 +41,7 @@ public class LoginSuccessPacket extends Packet<StatelessHandler> {
     }
 
     @Getter
-    public byte[] token() {
-        return this.token;
+    public String reason() {
+        return this.reason;
     }
 }

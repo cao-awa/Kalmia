@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.event.translation;
+package com.github.cao.awa.kalmia.translation.event;
 
 import com.github.cao.awa.kalmia.event.Event;
 import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;

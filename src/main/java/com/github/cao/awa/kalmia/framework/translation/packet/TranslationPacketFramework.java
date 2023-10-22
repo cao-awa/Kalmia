@@ -79,6 +79,8 @@ public class TranslationPacketFramework extends ReflectionFramework {
 
         return this.constructors.get(type)
                                 .get(name)
-                                .newInstance(json.getJSONObject("data"));
+                                .newInstance(json.getJSONObject("data"))
+                                .clientTimestamp(json.getLong("time"))
+                                .clientIdentity(json.getString("identity"));
     }
 }

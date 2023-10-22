@@ -36,9 +36,7 @@ public class KalmiaEnv {
                     true
             ),
             new BootstrapTranslationConfig(
-                    false,
-                    "",
-                    - 1
+                    false
             )
     );
 

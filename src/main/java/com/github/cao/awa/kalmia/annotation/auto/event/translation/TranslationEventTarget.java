@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.annotation.auto.event.translation;
 
 import com.github.cao.awa.apricot.annotation.Stable;
 import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.kalmia.event.translation.TranslationEvent;
+import com.github.cao.awa.kalmia.translation.event.TranslationEvent;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

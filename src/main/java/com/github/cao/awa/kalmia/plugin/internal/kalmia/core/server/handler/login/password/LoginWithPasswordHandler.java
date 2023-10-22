@@ -61,7 +61,8 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
         } else {
             loginFailure(
                     router,
-                    uid
+                    uid,
+                    "login.failure.pwd_or_uid_is_wrong"
             );
         }
     }

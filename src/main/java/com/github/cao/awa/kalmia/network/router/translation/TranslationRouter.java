@@ -23,6 +23,7 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
     private ChannelHandlerContext context;
     private final Consumer<TranslationRouter> activeCallback;
     private final Affair funeral = Affair.empty();
+    private String clientIdentity;
 
     public TranslationRouter() {
         this(Consumers.doNothing());
@@ -30,6 +31,14 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
 
     public TranslationRouter(Consumer<TranslationRouter> activeCallback) {
         this.activeCallback = activeCallback;
+    }
+
+    public String clientIdentity() {
+        return clientIdentity;
+    }
+
+    public void clientIdentity(String clientIdentity) {
+        this.clientIdentity = clientIdentity;
     }
 
     @Override
@@ -61,7 +70,7 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
     }
 
     public void send(TranslationPacket packet) {
-        this.context.writeAndFlush(packet.toFrame());
+        this.context.writeAndFlush(packet.toFrame(this));
     }
 
     @Deprecated

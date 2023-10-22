@@ -72,7 +72,8 @@ public class LoginWithSignHandler implements LoginWithSignEventHandler {
         } else {
             loginFailure(
                     router,
-                    uid
+                    uid,
+                    "login.failure.unable_to_verify_sign"
             );
         }
     }

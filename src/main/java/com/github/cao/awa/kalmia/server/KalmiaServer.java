@@ -85,7 +85,7 @@ public class KalmiaServer {
 
         this.started = true;
 
-        this.executor.execute(() -> {
+        task(() -> {
             try {
                 this.networkIo.start(
                         this.bootstrapConfig.serverNetwork()
@@ -94,6 +94,10 @@ public class KalmiaServer {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void task(Runnable runnable) {
+        this.executor.execute(runnable);
     }
 
     public boolean useEpoll() {

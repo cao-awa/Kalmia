@@ -62,111 +62,118 @@ public class EventFramework extends ReflectionFramework {
             return;
         }
 
-        boolean loadWhenServer = clazz.isAnnotationPresent(Server.class);
-        boolean loadWhenClient = clazz.isAnnotationPresent(Client.class);
+        // Get plugin register annotation used to get plugin name to auto register.
+        PluginRegister pluginAnnotation = clazz.getAnnotation(PluginRegister.class);
+
+        if (pluginAnnotation == null) {
+            return;
+        }
 
         boolean shouldLoad;
 
-        // Always load plugin when simultaneously annotated @Server and @Client and when don't annotated.
-        if ((loadWhenServer && loadWhenClient) || (! loadWhenServer && ! loadWhenClient)) {
+        if (KalmiaEnv.pluginFramework.plugin(pluginAnnotation.name())
+                                     .forceRegister()) {
             shouldLoad = true;
         } else {
-            // Load by environment annotation.
-            shouldLoad = KalmiaEnv.serverSideLoading ? loadWhenServer : loadWhenClient;
+            boolean loadWhenServer = clazz.isAnnotationPresent(Server.class);
+            boolean loadWhenClient = clazz.isAnnotationPresent(Client.class);
+
+            // Always load plugin when simultaneously annotated @Server and @Client and when don't annotated.
+            if ((loadWhenServer && loadWhenClient) || (! loadWhenServer && ! loadWhenClient)) {
+                shouldLoad = true;
+            } else {
+                // Load by environment annotation.
+                shouldLoad = KalmiaEnv.serverSideLoading ? loadWhenServer : loadWhenClient;
+            }
         }
 
         if (shouldLoad) {
             try {
-                // Get plugin register annotation used to get plugin name to auto register.
-                PluginRegister pluginAnnotation = clazz.getAnnotation(PluginRegister.class);
+                if (! KalmiaEnv.pluginFramework.plugin(pluginAnnotation.name())
+                                               .enabled()) {
+                    return;
+                }
 
-                if (pluginAnnotation != null) {
-                    if (! KalmiaEnv.pluginFramework.plugin(pluginAnnotation.name())
-                                                   .enabled()) {
+                EventHandler<?> handler = clazz.getConstructor()
+                                               .newInstance();
+
+                // Declare way to register.
+                AutoHandler autoAnnotation = clazz.getAnnotation(AutoHandler.class);
+
+                Consumer<Class<? extends Event>> adder = event -> this.handlers.compute(
+                        event,
+                        computeHandler(handler)
+                );
+
+                // Do potential coding problem tests.
+                Set<AutoHandler> annotations = AnnotationUtil.getAnnotations(handler.getClass(),
+                                                                             AutoHandler.class
+                );
+
+                if (autoAnnotation == null) {
+                    // Do potential coding problem tests.
+                    if (annotations.size() > 1) {
+                        // Available declared target over than 1 means one handler matched to multi event.
+                        // This behavior is not expected in current kalmia event framework.
+                        LOGGER.error(
+                                "Class chains found the target over than 1 available declared, that wrongly, unable to register the '{}'",
+                                handler.getClass()
+                                       .getName()
+                        );
+
                         return;
                     }
 
-                    EventHandler<?> handler = clazz.getConstructor()
-                                                   .newInstance();
-
-                    // Declare way to register.
-                    AutoHandler autoAnnotation = clazz.getAnnotation(AutoHandler.class);
-
-                    Consumer<Class<? extends Event>> adder = event -> this.handlers.compute(
-                            event,
-                            computeHandler(handler)
-                    );
-
-                    // Do potential coding problem tests.
-                    Set<AutoHandler> annotations = AnnotationUtil.getAnnotations(handler.getClass(),
-                                                                                 AutoHandler.class
-                    );
-
-                    if (autoAnnotation == null) {
-                        // Do potential coding problem tests.
-                        if (annotations.size() > 1) {
-                            // Available declared target over than 1 means one handler matched to multi event.
-                            // This behavior is not expected in current kalmia event framework.
-                            LOGGER.error(
-                                    "Class chains found the target over than 1 available declared, that wrongly, unable to register the '{}'",
-                                    handler.getClass()
-                                           .getName()
-                            );
-
-                            return;
-                        }
-
-                        for (Class<?> interfaceOf : (clazz.getInterfaces())) {
-                            adder.accept(target(EntrustEnvironment.cast(interfaceOf)));
-                        }
-
-                        // Auto register in undeclared.
-                        LOGGER.info(
-                                "Registered auto event handler '{}' via plugin '{}'",
-                                handler.getClass()
-                                       .getName(),
-                                pluginAnnotation.name()
-                        );
-                    } else {
-                        // Do potential coding problem tests.
-                        if (annotations.size() == 2) {
-                            annotations.remove(autoAnnotation);
-                            LOGGER.warn(
-                                    "Targeted event handler '{}' declared a target '{}', but its superclass expected another target '{}', this may be a wrong, please check it",
-                                    handler.getClass()
-                                           .getName(),
-                                    autoAnnotation.value()
-                                                  .getName(),
-                                    annotations.toArray(new AutoHandler[0])[0].value()
-                            );
-                        } else if (annotations.size() > 2) {
-                            // Available declared target over than 1 means one handler matched to multi event.
-                            // This behavior is not expected in current kalmia event framework.
-                            LOGGER.error(
-                                    "Class chains found the target over than 2 available declared, that wrongly, unable to register the '{}'",
-                                    handler.getClass()
-                                           .getName()
-                            );
-
-                            return;
-                        }
-
-                        adder.accept(autoAnnotation.value());
-
-                        // Targeted  register in declared.
-                        LOGGER.info(
-                                "Registered targeted event handler '{}' via plugin '{}'",
-                                handler.getClass()
-                                       .getName(),
-                                pluginAnnotation.name()
-                        );
+                    for (Class<?> interfaceOf : (clazz.getInterfaces())) {
+                        adder.accept(target(EntrustEnvironment.cast(interfaceOf)));
                     }
 
-                    this.handlerBelongs.put(
-                            handler,
+                    // Auto register in undeclared.
+                    LOGGER.info(
+                            "Registered auto event handler '{}' via plugin '{}'",
+                            handler.getClass()
+                                   .getName(),
+                            pluginAnnotation.name()
+                    );
+                } else {
+                    // Do potential coding problem tests.
+                    if (annotations.size() == 2) {
+                        annotations.remove(autoAnnotation);
+                        LOGGER.warn(
+                                "Targeted event handler '{}' declared a target '{}', but its superclass expected another target '{}', this may be a wrong, please check it",
+                                handler.getClass()
+                                       .getName(),
+                                autoAnnotation.value()
+                                              .getName(),
+                                annotations.toArray(new AutoHandler[0])[0].value()
+                        );
+                    } else if (annotations.size() > 2) {
+                        // Available declared target over than 1 means one handler matched to multi event.
+                        // This behavior is not expected in current kalmia event framework.
+                        LOGGER.error(
+                                "Class chains found the target over than 2 available declared, that wrongly, unable to register the '{}'",
+                                handler.getClass()
+                                       .getName()
+                        );
+
+                        return;
+                    }
+
+                    adder.accept(autoAnnotation.value());
+
+                    // Targeted  register in declared.
+                    LOGGER.info(
+                            "Registered targeted event handler '{}' via plugin '{}'",
+                            handler.getClass()
+                                   .getName(),
                             pluginAnnotation.name()
                     );
                 }
+
+                this.handlerBelongs.put(
+                        handler,
+                        pluginAnnotation.name()
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }

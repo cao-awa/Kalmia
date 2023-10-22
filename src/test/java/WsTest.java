@@ -7,7 +7,7 @@ import java.net.URI;
 public class WsTest {
     public static void main(String[] args) {
         try {
-            WebSocketClient client = new WebSocketClient(new URI("ws://127.0.0.1:12345")) {
+            WebSocketClient client = new WebSocketClient(new URI("ws://127.0.0.1:54321")) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
 
@@ -41,8 +41,10 @@ public class WsTest {
                                 {
                                     "post_type": "meta",
                                     "post_name": "proxy_connect",
+                                    "time": 1697986847811,
                                     "data": {
-                                        "cipher": "awa"
+                                        "cipher": "awa",
+                                        "identity": "aaaaaabbbbbbbwwwwwwddddddZ"
                                     }
                                 }
                                 """);
