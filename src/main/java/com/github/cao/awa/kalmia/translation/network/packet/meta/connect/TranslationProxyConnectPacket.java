@@ -20,6 +20,12 @@ public class TranslationProxyConnectPacket extends TranslationPacket {
     @AutoData(key = "identity")
     @DoNotSet
     private String identity;
+    @AutoData(key = "server_host")
+    @DoNotSet
+    private String host;
+    @AutoData(key = "server_port")
+    @DoNotSet
+    private int port;
 
     @Auto
     @Server
@@ -35,5 +41,15 @@ public class TranslationProxyConnectPacket extends TranslationPacket {
     @Getter
     public String clientIdentity() {
         return this.identity;
+    }
+
+    @Getter
+    public String host() {
+        return this.host;
+    }
+
+    @Getter
+    public int port() {
+        return this.port;
     }
 }

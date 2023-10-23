@@ -7,9 +7,10 @@ import com.github.cao.awa.kalmia.annotation.actor.Getter;
 import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotation.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.annotation.translation.Translation;
+import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 
 @Translation(type = "login", name = "login_success")
-public class TranslationLoginSuccessPacket {
+public class TranslationLoginSuccessPacket extends TranslationPacket {
     @AutoData(key = "uid")
     @DoNotSet
     private long uid;

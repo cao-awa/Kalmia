@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.login.failed;
+package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.login.feedback;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;

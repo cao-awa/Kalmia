@@ -27,7 +27,13 @@ public class TranslationProxyConnectHandler implements TranslationProxyConnectEv
             try {
                 KalmiaClient client = new KalmiaClient();
 
+                router.funeral(client :: disconnect);
+
                 client.activeCallback(r -> {
+                    KalmiaTranslationEnv.router(router,
+                                                r
+                    );
+
                     r.funeral(() -> {
                         KalmiaTranslationEnv.clearIdentity(r);
                     });
@@ -48,8 +54,8 @@ public class TranslationProxyConnectHandler implements TranslationProxyConnectEv
 //                            ));
                 });
 
-                new KalmiaClientNetworkIo(client).connect("127.0.0.1",
-                                                          12345
+                new KalmiaClientNetworkIo(client).connect(packet.host(),
+                                                          packet.port()
                 );
             } catch (Exception e) {
 

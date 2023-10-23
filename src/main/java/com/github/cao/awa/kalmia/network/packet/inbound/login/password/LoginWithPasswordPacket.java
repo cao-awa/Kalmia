@@ -21,10 +21,10 @@ public class LoginWithPasswordPacket extends Packet<StatelessHandler> {
     private long uid;
     @AutoData
     @DoNotSet
-    private byte[] password;
+    private String password;
 
     @Client
-    public LoginWithPasswordPacket(long uid, byte[] password) {
+    public LoginWithPasswordPacket(long uid, String password) {
         this.uid = uid;
         this.password = password;
     }
@@ -41,7 +41,7 @@ public class LoginWithPasswordPacket extends Packet<StatelessHandler> {
     }
 
     @Getter
-    public byte[] password() {
+    public String password() {
         return this.password;
     }
 }

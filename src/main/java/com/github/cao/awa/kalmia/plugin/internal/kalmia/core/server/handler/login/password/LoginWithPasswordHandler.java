@@ -28,7 +28,7 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
     @Override
     public void handle(RequestRouter router, LoginWithPasswordPacket packet) {
         long uid = packet.uid();
-        byte[] password = packet.password();
+        String password = packet.password();
 
         // Start login here.
         User user = Kalmia.SERVER.userManager()

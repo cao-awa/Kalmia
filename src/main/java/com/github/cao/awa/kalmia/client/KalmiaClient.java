@@ -6,6 +6,15 @@ import java.util.function.Consumer;
 
 public class KalmiaClient {
     private Consumer<RequestRouter> activeCallback;
+    private RequestRouter router;
+
+    public RequestRouter router() {
+        return this.router;
+    }
+
+    public void router(RequestRouter router) {
+        this.router = router;
+    }
 
     public KalmiaClient activeCallback(Consumer<RequestRouter> activeCallback) {
         this.activeCallback = activeCallback;
@@ -14,6 +23,10 @@ public class KalmiaClient {
 
     public Consumer<RequestRouter> activeCallback() {
         return this.activeCallback;
+    }
+
+    public void disconnect() {
+        this.router.disconnect();
     }
 
     public boolean useEpoll() {

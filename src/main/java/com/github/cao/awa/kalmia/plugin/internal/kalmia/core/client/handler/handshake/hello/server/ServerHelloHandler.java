@@ -59,12 +59,6 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
 //        router.send(new LoginWithPasswordPacket(1,
 //                                                "123456".getBytes()
 //        ));
-
-        try {
-            user1Login(router);
-        } catch (Exception e) {
-
-        }
     }
 
     public static void user1Login(RequestRouter router) throws Exception {

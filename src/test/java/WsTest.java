@@ -1,3 +1,4 @@
+import com.alibaba.fastjson2.JSONObject;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
 import org.java_websocket.handshake.ServerHandshake;
@@ -16,6 +17,26 @@ public class WsTest {
                 @Override
                 public void onMessage(String message) {
                     System.out.println(message);
+
+                    JSONObject json = JSONObject.parse(message);
+
+                    if (json.getString("post_name")
+                            .equals("status_notice") &&
+                            json.getJSONObject("data")
+                                .getString("status")
+                                .equals("status.kalmia.handshake.hello")) {
+                        send("""
+                                     {
+                                         "post_type": "login",
+                                         "post_name": "login_with_password",
+                                         "time": 1697986847811,
+                                         "data": {
+                                             "uid": 1,
+                                             "pwd": "123456"
+                                         }
+                                     }
+                                     """);
+                    }
                 }
 
                 @Override
@@ -44,7 +65,7 @@ public class WsTest {
                                     "time": 1697986847811,
                                     "data": {
                                         "cipher": "awa",
-                                        "identity": "aaaaaabbbbbbbwwwwwwddddddZ"
+                                        "identity": "aaaaaabbbbbbbwwwwwwdddddd"
                                     }
                                 }
                                 """);

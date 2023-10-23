@@ -15,6 +15,7 @@ public class KalmiaTranslationEnv {
     public static final Map<String, String> identityMap = ApricotCollectionFactor.hashMap();
     public static final Map<String, List<String>> identityReverseMap = ApricotCollectionFactor.hashMap();
     public static final Map<String, TranslationRouter> routers = ApricotCollectionFactor.hashMap();
+    public static final Map<TranslationRouter, RequestRouter> mainRouter = ApricotCollectionFactor.hashMap();
 
     public static void identity(RequestRouter requestRouter, TranslationRouter translationRouter) {
         identityMap.put(requestRouter.metadata()
@@ -64,6 +65,20 @@ public class KalmiaTranslationEnv {
     public static TranslationRouter translationRouter(RequestRouter requestRouter) {
         return routers.get(identityMap.get(requestRouter.metadata()
                                                         .formatConnectionId()));
+    }
+
+    public static void router(TranslationRouter translationRouter, RequestRouter requestRouter) {
+        mainRouter.put(translationRouter,
+                       requestRouter
+        );
+    }
+
+    public static RequestRouter router(TranslationRouter translationRouter) {
+        return mainRouter.get(translationRouter);
+    }
+
+    public static void clearRouter(TranslationRouter translationRouter) {
+        mainRouter.remove(translationRouter);
     }
 
     public static void setupFrameworks() {

@@ -13,7 +13,6 @@ import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
-import com.github.cao.awa.kalmia.network.handler.inbound.disabled.DisabledRequestHandler;
 import com.github.cao.awa.kalmia.network.handler.login.LoginHandler;
 import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
@@ -47,9 +46,6 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
                                                                                                   );
                                                                                                   handlers.put(RequestState.AUTHED,
                                                                                                                new AuthedRequestHandler()
-                                                                                                  );
-                                                                                                  handlers.put(RequestState.DISABLED,
-                                                                                                               new DisabledRequestHandler()
                                                                                                   );
                                                                                               }
     );

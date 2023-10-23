@@ -15,6 +15,12 @@ public class LoginWithTokenHandler implements LoginWithTokenEventHandler {
     @Server
     @Override
     public void handle(RequestRouter router, LoginWithTokenPacket packet) {
+        long uid = packet.uid();
 
+        loginFailure(
+                router,
+                uid,
+                "login.failure.invalid_token"
+        );
     }
 }
