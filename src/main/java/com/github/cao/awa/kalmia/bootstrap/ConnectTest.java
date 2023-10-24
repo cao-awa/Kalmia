@@ -4,7 +4,7 @@ import com.github.cao.awa.kalmia.client.KalmiaClient;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
-import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.ping.TryPingPacket;
 
 public class ConnectTest {
     public static void main(String[] args) throws Exception {
@@ -43,9 +43,11 @@ public class ConnectTest {
 //                                              "KalmiaWww v1.0.1"
 //            ));
 
-            router.send(new LoginWithPasswordPacket(1,
-                                                    "123456"
-            ));
+//            router.send(new LoginWithPasswordPacket(1,
+//                                                    "123456"
+//            ));
+
+            router.send(new TryPingPacket());
 
 //            router.send(new SelectMessagePacket(1,
 //                                                0,

@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus;
+package com.github.cao.awa.kalmia.network.packet.inbound.ping;
 
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;

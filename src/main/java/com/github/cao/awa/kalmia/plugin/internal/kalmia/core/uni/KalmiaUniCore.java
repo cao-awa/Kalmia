@@ -4,6 +4,8 @@ import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.annotation.auto.AutoPlugin;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.disconnect.TryDisconnectHandler;
+import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.ping.TryPingHandler;
+import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.ping.TryPingResponseHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,5 +22,7 @@ public class KalmiaUniCore extends Plugin {
         LOGGER.info("Loading kalmia uni core");
 
         registerHandler(new TryDisconnectHandler());
+        registerHandler(new TryPingHandler());
+        registerHandler(new TryPingResponseHandler());
     }
 }

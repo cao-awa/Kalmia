@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.packet.unsolve.ping;
 
-import com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus.TryPingPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.ping.TryPingPacket;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 /**

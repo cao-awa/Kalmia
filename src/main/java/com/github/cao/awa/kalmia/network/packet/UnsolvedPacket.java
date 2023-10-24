@@ -32,4 +32,8 @@ public abstract class UnsolvedPacket<T extends Packet<?>> {
     public boolean isStateless() {
         return false;
     }
+
+    public boolean requireCrypto() {
+        return true;
+    }
 }

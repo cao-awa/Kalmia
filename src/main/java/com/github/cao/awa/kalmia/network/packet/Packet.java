@@ -17,6 +17,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 
+/**
+ * @param <T>
+ * @see UnsolvedPacket
+ */
 public abstract class Packet<T extends PacketHandler<T>> {
     private static final Logger LOGGER = LogManager.getLogger("Packet");
     public static final byte[] RECEIPT = new byte[]{- 1};

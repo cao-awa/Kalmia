@@ -1,44 +1,45 @@
-package com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus;
+package com.github.cao.awa.kalmia.network.packet.inbound.ping;
 
 import com.github.cao.awa.apricot.annotation.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
+import com.github.cao.awa.kalmia.annotation.auto.event.network.NetworkEventTarget;
+import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.ping.TryPingResponseEvent;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingResponsePacket;
-import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.modmdo.annotation.platform.Client;
-import com.github.cao.awa.modmdo.annotation.platform.Server;
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 /**
  * @see TryPingPacket
  * @see UnsolvedTryPingResponsePacket
  */
+@NetworkEventTarget(TryPingResponseEvent.class)
 public class TryPingResponsePacket extends PingPacket {
-    @Server
+    public static final byte[] ID = SkippedBase256.longToBuf(5);
+    private final long responseStartTime;
+
     public TryPingResponsePacket(long startTime, byte[] receipt) {
         super(startTime);
         receipt(receipt);
+        responseStartTime = TimeUtil.millions();
     }
 
     @Auto
-    @Client
     public TryPingResponsePacket(BytesReader reader) {
         super(SkippedBase256.readLong(reader));
+        this.responseStartTime = SkippedBase256.readLong(reader);
     }
 
-    @Client
-    @Override
-    public void inbound(RequestRouter router, StatelessHandler handler) {
-        double responseMillions = TimeUtil.processNano(startTime()) / 1000000D;
-        System.out.println("Ping: " + responseMillions + "ms");
+    public long responseStartTime() {
+        return this.responseStartTime;
     }
-
-    public static final byte[] ID = SkippedBase256.longToBuf(5);
 
     @Override
     public byte[] payload() {
-        return SkippedBase256.longToBuf(startTime());
+        return BytesUtil.concat(
+                SkippedBase256.longToBuf(startTime()),
+                SkippedBase256.longToBuf(responseStartTime())
+        );
     }
 
     @Override

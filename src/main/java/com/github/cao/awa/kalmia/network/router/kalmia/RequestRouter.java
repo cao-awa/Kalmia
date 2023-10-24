@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.network.encode.kalmiagram.compress.RequestCompr
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.compress.RequestCompressorType;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.crypto.CryptoTransportLayer;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.crypto.TransportLayerCrypto;
+import com.github.cao.awa.kalmia.network.encode.kalmiagram.crypto.symmetric.no.NoCrypto;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
@@ -97,6 +98,13 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UnsolvedPacket<?> msg) throws Exception {
         try {
+            if (msg.requireCrypto()) {
+                if (this.transportLayer.crypto() instanceof NoCrypto) {
+                    send(new OperationInvalidPacket("Crypto are missing by required"));
+                    return;
+                }
+            }
+
             if (msg.isStateless()) {
                 this.statelessHandler.tryInbound(msg,
                                                  this

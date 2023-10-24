@@ -5,8 +5,8 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.exception.InvalidPacketException;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus.TryPingPacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.ping.unstatus.TryPingResponsePacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.ping.TryPingPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.ping.TryPingResponsePacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingPacket;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingResponsePacket;
 
