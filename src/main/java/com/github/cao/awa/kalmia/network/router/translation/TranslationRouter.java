@@ -24,6 +24,7 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
     private final Consumer<TranslationRouter> activeCallback;
     private final Affair funeral = Affair.empty();
     private String clientIdentity;
+    private boolean shouldSaveData;
 
     public TranslationRouter() {
         this(Consumers.doNothing());
@@ -31,6 +32,14 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
 
     public TranslationRouter(Consumer<TranslationRouter> activeCallback) {
         this.activeCallback = activeCallback;
+    }
+
+    public boolean shouldSaveData() {
+        return this.shouldSaveData;
+    }
+
+    public void shouldSaveData(boolean shouldSaveData) {
+        this.shouldSaveData = shouldSaveData;
     }
 
     public String clientIdentity() {

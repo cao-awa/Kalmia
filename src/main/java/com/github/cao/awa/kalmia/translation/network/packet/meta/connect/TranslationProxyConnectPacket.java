@@ -26,6 +26,9 @@ public class TranslationProxyConnectPacket extends TranslationPacket {
     @AutoData(key = "server_port")
     @DoNotSet
     private int port;
+    @AutoData(key = "data_save")
+    @DoNotSet
+    private boolean dataSave;
 
     @Auto
     @Server
@@ -51,5 +54,10 @@ public class TranslationProxyConnectPacket extends TranslationPacket {
     @Getter
     public int port() {
         return this.port;
+    }
+
+    @Getter
+    public boolean dataSave() {
+        return this.dataSave;
     }
 }

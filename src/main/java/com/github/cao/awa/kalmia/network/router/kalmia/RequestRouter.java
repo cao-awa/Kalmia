@@ -20,7 +20,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.router.NetworkRouter;
-import com.github.cao.awa.kalmia.network.router.kalmia.meta.RouterMetadata;
+import com.github.cao.awa.kalmia.network.router.kalmia.meta.RequestRouterMetadata;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
@@ -59,7 +59,7 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private final RequestCompressor compressor = new RequestCompressor();
     private final Affair funeral = Affair.empty();
     private long uid;
-    private final RouterMetadata metadata = RouterMetadata.create();
+    private final RequestRouterMetadata metadata = RequestRouterMetadata.create();
 
     public long getUid() {
         return this.uid;
@@ -251,7 +251,7 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
         return false;
     }
 
-    public RouterMetadata metadata() {
+    public RequestRouterMetadata metadata() {
         return this.metadata;
     }
 }

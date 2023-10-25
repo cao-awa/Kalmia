@@ -21,6 +21,7 @@ public class TranslationProxyConnectHandler implements TranslationProxyConnectEv
     @Override
     public void handle(TranslationRouter router, TranslationProxyConnectPacket packet) {
         router.clientIdentity(packet.clientIdentity());
+        router.shouldSaveData(packet.dataSave());
 
         router.send(new TranslationProxyStatusPacket("status.kalmia.connecting"));
 

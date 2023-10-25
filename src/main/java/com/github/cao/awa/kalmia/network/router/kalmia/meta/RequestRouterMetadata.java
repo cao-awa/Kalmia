@@ -4,9 +4,9 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 
-public record RouterMetadata(byte[] connectionId, long timestamp) {
-    public static RouterMetadata create() {
-        return new RouterMetadata(
+public record RequestRouterMetadata(byte[] connectionId, long timestamp) {
+    public static RequestRouterMetadata create() {
+        return new RequestRouterMetadata(
                 BytesRandomIdentifier.create(24),
                 TimeUtil.nano()
         );
