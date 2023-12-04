@@ -1,9 +1,10 @@
 package com.github.cao.awa.kalmia.session;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.convert.BytesValueConvertable;
 import com.github.cao.awa.kalmia.session.factor.SessionFactor;
 
-public abstract class Session {
+public abstract class Session implements BytesValueConvertable {
     private final long sessionId;
 
     public Session(long sessionId) {
@@ -13,8 +14,6 @@ public abstract class Session {
     public long sessionId() {
         return this.sessionId;
     }
-
-    public abstract byte[] toBytes();
 
     public abstract boolean accessible(long userId);
 

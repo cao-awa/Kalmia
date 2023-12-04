@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.mathematic.base;
 
 import com.github.cao.awa.apricot.annotations.Stable;
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 
 /**
  * An util using to convert number and bytes.
@@ -14,10 +15,8 @@ public class Base256 {
     /**
      * Convert a long to 8 bytes.
      *
-     * @param l
-     *         Long input
+     * @param l Long input
      * @return Bytes result
-     *
      * @author cao_awa
      * @since 1.0.0
      */
@@ -31,12 +30,9 @@ public class Base256 {
     /**
      * Convert a long to 8 bytes.
      *
-     * @param l
-     *         Long input
-     * @param buf
-     *         Bytes output
+     * @param l   Long input
+     * @param buf Bytes output
      * @return Bytes result
-     *
      * @author InkerBot
      * @author cao_awa
      * @since 1.0.0
@@ -56,32 +52,28 @@ public class Base256 {
     /**
      * Convert 8 bytes to a long.
      *
-     * @param buf
-     *         Bytes input
+     * @param buf Bytes input
      * @return Long result
-     *
      * @author InkerBot
      * @author cao_awa
      * @since 1.0.0
      */
     public static long longFromBuf(byte[] buf) {
         return ((buf[0] & 0xFFL) << 56) +
-               ((buf[1] & 0xFFL) << 48) +
-               ((buf[2] & 0xFFL) << 40) +
-               ((buf[3] & 0xFFL) << 32) +
-               ((buf[4] & 0xFFL) << 24) +
-               ((buf[5] & 0xFFL) << 16) +
-               ((buf[6] & 0xFFL) << 8) +
-               ((buf[7] & 0xFFL));
+                ((buf[1] & 0xFFL) << 48) +
+                ((buf[2] & 0xFFL) << 40) +
+                ((buf[3] & 0xFFL) << 32) +
+                ((buf[4] & 0xFFL) << 24) +
+                ((buf[5] & 0xFFL) << 16) +
+                ((buf[6] & 0xFFL) << 8) +
+                ((buf[7] & 0xFFL));
     }
 
     /**
      * Convert an integer to 4 bytes.
      *
-     * @param i
-     *         Integer input
+     * @param i Integer input
      * @return Bytes result
-     *
      * @author cao_awa
      * @since 1.0.0
      */
@@ -95,12 +87,9 @@ public class Base256 {
     /**
      * Convert an integer to 4 bytes.
      *
-     * @param i
-     *         Integer input
-     * @param buf
-     *         Bytes output
+     * @param i   Integer input
+     * @param buf Bytes output
      * @return Bytes result
-     *
      * @author InkerBot
      * @author cao_awa
      * @since 1.0.0
@@ -116,10 +105,8 @@ public class Base256 {
     /**
      * Convert 4 bytes to an integer.
      *
-     * @param buf
-     *         Bytes input
+     * @param buf Bytes input
      * @return Integer result
-     *
      * @author InkerBot
      * @author cao_awa
      * @since 1.0.0
@@ -134,10 +121,8 @@ public class Base256 {
     /**
      * Convert 2 bytes to an integer.
      *
-     * @param buf
-     *         Bytes input
+     * @param buf Bytes input
      * @return Integer result
-     *
      * @author cao_awa
      * @since 1.0.0
      */
@@ -149,10 +134,8 @@ public class Base256 {
     /**
      * Convert an integer to 2 bytes.
      *
-     * @param i
-     *         Integer input
+     * @param i Integer input
      * @return Bytes result
-     *
      * @author cao_awa
      * @since 1.0.0
      */
@@ -166,12 +149,9 @@ public class Base256 {
     /**
      * Convert an integer to 2 bytes.
      *
-     * @param i
-     *         Integer input
-     * @param buf
-     *         Bytes output
+     * @param i   Integer input
+     * @param buf Bytes output
      * @return Bytes result
-     *
      * @author cao_awa
      * @since 1.0.0
      */
@@ -179,6 +159,18 @@ public class Base256 {
         buf[0] = (byte) (i >>> 8);
         buf[1] = (byte) (i);
         return buf;
+    }
+
+    public static int readTag(BytesReader reader) {
+        return tagFromBuf(reader.read(2));
+    }
+
+    public static int readInt(BytesReader reader) {
+        return tagFromBuf(reader.read(2));
+    }
+
+    public static int readLong(BytesReader reader) {
+        return tagFromBuf(reader.read(2));
     }
 }
 

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ByteSerializeFramework extends ReflectionFramework {
+public class BytesSerializeFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("ByteSerializerFramework");
     private final Map<Class<?>, BytesSerializer<?>> typeToSerializer = ApricotCollectionFactor.hashMap();
     private final Map<Long, BytesSerializer<?>> idToSerializer = ApricotCollectionFactor.hashMap();

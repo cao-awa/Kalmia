@@ -1,14 +1,14 @@
-package com.github.cao.awa.kalmia.session.group;
+package com.github.cao.awa.kalmia.session.types.inaccessible;
 
 import com.github.cao.awa.kalmia.session.Session;
 
-public class GroupSession extends Session {
-    public GroupSession(long sessionId) {
-        super(sessionId);
+public class InaccessibleSession extends Session {
+    public InaccessibleSession() {
+        super(- 1);
     }
 
     @Override
-    public byte[] toBytes() {
+    public byte[] bytes() {
         return new byte[0];
     }
 

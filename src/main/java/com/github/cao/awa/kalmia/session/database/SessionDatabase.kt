@@ -1,104 +1,147 @@
-package com.github.cao.awa.kalmia.session.database;
+package com.github.cao.awa.kalmia.session.database
 
-import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.database.KeyValueDatabase;
-import com.github.cao.awa.kalmia.database.provider.DatabaseProvider;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.session.Session;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
-import org.jetbrains.annotations.Nullable;
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped
+import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
+import com.github.cao.awa.kalmia.database.KeyValueDatabase
+import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
+import com.github.cao.awa.kalmia.session.Session
+import com.github.cao.awa.kalmia.session.SessionAccessible
+import com.github.cao.awa.kalmia.session.SessionAccessibleData
+import com.github.cao.awa.kalmia.session.Sessions
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil
+import java.util.function.BiConsumer
+import java.util.function.Consumer
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-public class SessionDatabase {
-    private static final byte[] ROOT = new byte[]{- 1};
-    private final KeyValueDatabase database;
-
-    public SessionDatabase(String path) throws Exception {
-        this.database = DatabaseProvider.kv(path);
+class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(ApricotCollectionFactor::hashMap) {
+    companion object {
+        private val ROOT = byteArrayOf(1)
+        private val ACCESSIBLE_DELIMITER = byteArrayOf(123)
+        fun accessibleKey(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray): ByteArray {
+            return BytesUtil.concat(
+                    sid,
+                    ACCESSIBLE_DELIMITER,
+                    uid
+            )
+        }
     }
 
-    public void operation(BiConsumer<Long, Session> action) {
-        byte[] seqByte = this.database.get(
-                ROOT
-        );
+    private val delegate: KeyValueBytesDatabase
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
+    init {
+        this.delegate = DatabaseProviders.bytes(path)
+    }
 
-        count++;
-
-        if (count > 0) {
-            for (long seq = 0; seq < count; seq++) {
+    fun operation(action: BiConsumer<Long, Session>) {
+        val nextSeq = nextSeq()
+        if (nextSeq > 0) {
+            for (seq in 0 until nextSeq) {
                 action.accept(seq,
-                              get(SkippedBase256.longToBuf(seq))
-                );
+                        get(SkippedBase256.longToBuf(seq))
+                )
             }
         }
     }
 
-    public long nextSeq() {
-        return SkippedBase256.readLong(BytesReader.of(this.database.get(ROOT))) + 1;
+    fun nextSeq(): Long {
+        val seqByte = this.delegate[ROOT]
+        val seq = if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
+        return seq + 1
     }
 
-    @Nullable
-    public Session get(byte[] sid) {
-        byte[] bytes = this.database.get(sid);
-        if (bytes == null || bytes.length == 0) {
-            return null;
+    override operator fun get(@ShouldSkipped sid: ByteArray): Session {
+        return cache().get(
+                sid
+        ) {
+            getSession(it)
         }
-        return Session.create(bytes);
     }
 
-    public void delete(byte[] sid) {
-        this.database.put(sid,
-                          BytesUtil.EMPTY
-        );
+    fun accessible(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray): SessionAccessibleData {
+        val accessible = this.delegate[accessibleKey(
+                sid,
+                uid
+        )]
+        return SessionAccessibleData(accessible);
     }
 
-    public void seqAll(Consumer<Long> action) {
-        byte[] seqByte = this.database.get(ROOT);
+    fun accessible(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray, data: SessionAccessibleData) {
+        val accessible = this.delegate[accessibleKey(
+                sid,
+                uid
+        )]
+        this.delegate.put(accessibleKey(
+                sid,
+                uid
+        ), data.bytes())
+    }
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
+    fun banChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
+        val key = accessibleKey(sid,
+                uid
+        )
+        val accessible = SessionAccessible.banChat(this.delegate[key])
+        this.delegate.put(
+                key,
+                accessible
+        )
+    }
 
-        count++;
+    fun approveChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
+        val key = accessibleKey(sid,
+                uid
+        )
+        val accessible = SessionAccessible.approveChat(this.delegate[key])
+        this.delegate.put(
+                key,
+                accessible
+        )
+    }
 
-        if (count > 0) {
-            for (long seq = 0; seq < count; seq++) {
-                action.accept(seq);
+    private fun getSession(@ShouldSkipped sid: ByteArray): Session {
+        val bytes = this.delegate[sid]
+        return if (bytes == null || bytes.isEmpty()) Sessions.INACCESSIBLE else Session.create(bytes)
+    }
+
+    override fun remove(@ShouldSkipped sid: ByteArray) {
+        cache()
+                .delete(
+                        sid
+                ) {
+                    this.delegate.remove(it)
+                }
+    }
+
+    fun seqAll(action: Consumer<Long>) {
+        val nextSeq = nextSeq()
+        if (nextSeq > 0) {
+            for (seq in 0 until nextSeq) {
+                action.accept(seq)
             }
         }
     }
 
-    public void deleteAll() {
-        seqAll(
-                seq -> delete(SkippedBase256.longToBuf(seq))
-        );
+    fun deleteAll() {
+        seqAll { seq: Long -> remove(SkippedBase256.longToBuf(seq!!)) }
     }
 
-    public long add(Session session) {
-        byte[] seqByte = this.database.get(ROOT);
-
-        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
-
-        long nextSeq = seq + 1;
-
-        byte[] nextSeqByte = SkippedBase256.longToBuf(nextSeq);
-
-        this.database.put(nextSeqByte,
-                          session.toBytes()
-        );
-
-        this.database.put(ROOT,
-                          nextSeqByte
-        );
-
-        return nextSeq;
+    fun add(session: Session): Long {
+        val nextSeq = nextSeq()
+        val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
+        this.delegate.put(nextSeqByte,
+                session.bytes()
+        )
+        this.delegate.put(ROOT,
+                nextSeqByte
+        )
+        return nextSeq
     }
 
-    public void set(byte[] seq, Session session) {
-        this.database.put(seq,
-                          session.toBytes()
-        );
+    override fun put(@ShouldSkipped seq: ByteArray, session: Session) {
+        this.delegate.put(seq,
+                session.bytes()
+        )
     }
 }

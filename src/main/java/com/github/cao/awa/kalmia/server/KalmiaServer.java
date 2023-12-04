@@ -7,9 +7,9 @@ import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.io.server.KalmiaServerNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.kalmia.session.communal.CommunalSession;
 import com.github.cao.awa.kalmia.session.listener.SessionListeners;
 import com.github.cao.awa.kalmia.session.manage.SessionManager;
+import com.github.cao.awa.kalmia.session.types.communal.CommunalSession;
 import com.github.cao.awa.kalmia.user.manage.UserManager;
 
 import java.util.List;

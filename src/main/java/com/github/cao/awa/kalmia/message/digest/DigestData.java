@@ -10,7 +10,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import java.math.BigInteger;
 import java.util.Map;
 
-public class DigestData extends BytesValueConvertable implements BytesSerializable<DigestData> {
+public class DigestData implements BytesValueConvertable, BytesSerializable<DigestData> {
     private static final Map<Byte, MessageDigger.DigestAlgorithm> idToType = ApricotCollectionFactor.hashMap();
     private static final Map<MessageDigger.DigestAlgorithm, Byte> typeToId = ApricotCollectionFactor.hashMap();
 
@@ -60,7 +60,7 @@ public class DigestData extends BytesValueConvertable implements BytesSerializab
         return this.type;
     }
 
-    public byte[] value() {
+    public byte[] bytes() {
         return this.value;
     }
 
@@ -75,8 +75,8 @@ public class DigestData extends BytesValueConvertable implements BytesSerializab
     @Override
     public byte[] serialize() {
         return BytesUtil.concat(new byte[]{typeToId.get(type())},
-                                new byte[]{(byte) value().length},
-                                value()
+                                new byte[]{(byte) bytes().length},
+                                bytes()
         );
     }
 

@@ -6,7 +6,7 @@ import com.github.cao.awa.kalmia.convert.BytesValueConvertable;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
-public class UserPassword extends BytesValueConvertable {
+public class UserPassword implements BytesValueConvertable {
     private final boolean isSha;
     private final byte[] password;
 
@@ -49,7 +49,7 @@ public class UserPassword extends BytesValueConvertable {
     }
 
     @Override
-    public byte[] value() {
+    public byte[] bytes() {
         return password();
     }
 }

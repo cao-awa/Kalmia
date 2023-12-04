@@ -1,6 +1,7 @@
-package com.github.cao.awa.kalmia.session.duet;
+package com.github.cao.awa.kalmia.session.types.duet;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -27,7 +28,7 @@ public class DuetSession extends Session {
     }
 
     @Override
-    public byte[] toBytes() {
+    public byte[] bytes() {
         return BytesUtil.concat(new byte[]{1},
                                 SkippedBase256.longToBuf(sessionId()),
                                 SkippedBase256.longToBuf(this.target1),
@@ -37,10 +38,21 @@ public class DuetSession extends Session {
 
     @Override
     public boolean accessible(long userId) {
-        return this.target1 == userId || this.target2 == userId;
+        return Kalmia.SERVER.sessionManager()
+                            .accessibleChat(
+                                    sessionId(),
+                                    userId
+                            )
+                            .accessibleChat(true);
     }
 
     public long opposite(long userId) {
-        return this.target1 == userId ? this.target2 : this.target1;
+        if (userId == this.target1) {
+            return this.target2;
+        }
+        if (userId == this.target2) {
+            return this.target1;
+        }
+        return userId;
     }
 }

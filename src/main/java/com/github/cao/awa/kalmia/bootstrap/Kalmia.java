@@ -12,11 +12,11 @@ import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
-import com.github.cao.awa.kalmia.session.communal.CommunalSession;
-import com.github.cao.awa.kalmia.session.duet.DuetSession;
 import com.github.cao.awa.kalmia.session.factor.SessionFactor;
+import com.github.cao.awa.kalmia.session.types.communal.CommunalSession;
+import com.github.cao.awa.kalmia.session.types.duet.DuetSession;
 import com.github.cao.awa.kalmia.user.DefaultUser;
-import com.github.cao.awa.kalmia.user.DeletedUser;
+import com.github.cao.awa.kalmia.user.UselessUser;
 import com.github.cao.awa.kalmia.user.factor.UserFactor;
 import com.github.cao.awa.kalmia.user.key.ServerKeyPairStoreFactor;
 import com.github.cao.awa.kalmia.user.key.ec.EcServerKeyPair;
@@ -107,7 +107,7 @@ public class Kalmia {
 
     public static void setupEnvironment() {
         UserFactor.register(- 1,
-                            DeletedUser :: create
+                            UselessUser :: create
         );
         UserFactor.register(0,
                             DefaultUser :: create

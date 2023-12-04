@@ -2,10 +2,12 @@ package com.github.cao.awa.kalmia.session.manage;
 
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.session.Session;
+import com.github.cao.awa.kalmia.session.SessionAccessibleData;
 import com.github.cao.awa.kalmia.session.database.SessionDatabase;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class SessionManager {
     private final SessionDatabase database;
@@ -14,40 +16,57 @@ public class SessionManager {
         this.database = new SessionDatabase(path);
     }
 
-    public synchronized long add(Session session) {
+    public long add(Session session) {
         return this.database.add(session);
     }
 
-    public synchronized void set(long seq, Session session) {
-        this.database.set(SkippedBase256.longToBuf(seq),
+    public void set(long seq, Session session) {
+        this.database.put(SkippedBase256.longToBuf(seq),
                           session
         );
     }
 
-    public synchronized long delete(long seq) {
-        this.database.delete(SkippedBase256.longToBuf(seq));
+    public long delete(long seq) {
+        this.database.remove(SkippedBase256.longToBuf(seq));
         return seq;
     }
 
     @Nullable
-    public synchronized Session session(long seq) {
+    public Session session(long seq) {
         return this.database.get(SkippedBase256.longToBuf(seq));
     }
 
-    public synchronized void operation(BiConsumer<Long, Session> action) {
+    public void operation(BiConsumer<Long, Session> action) {
         this.database.operation(action);
     }
 
-    public synchronized void deleteAll() {
+    public void deleteAll() {
         this.database.deleteAll();
     }
 
-    public synchronized boolean accessible(long targetId, long sessionId) {
-        Session session = this.database.get(SkippedBase256.longToBuf(sessionId));
-        return session != null && session.accessible(targetId);
+    public void updateAccessible(long sessionId, long userId, Consumer<SessionAccessibleData> operation) {
+        SessionAccessibleData data = this.database.accessible(
+                SkippedBase256.longToBuf(sessionId),
+                SkippedBase256.longToBuf(userId)
+        );
+
+        operation.accept(data);
+
+        this.database.accessible(
+                SkippedBase256.longToBuf(sessionId),
+                SkippedBase256.longToBuf(userId),
+                data
+        );
     }
 
-    public synchronized long nextSeq() {
+    public SessionAccessibleData accessibleChat(long sessionId, long userId) {
+        return this.database.accessible(
+                SkippedBase256.longToBuf(sessionId),
+                SkippedBase256.longToBuf(userId)
+        );
+    }
+
+    public long nextSeq() {
         return this.database.nextSeq();
     }
 }

@@ -1,6 +1,7 @@
-package com.github.cao.awa.kalmia.session.communal;
+package com.github.cao.awa.kalmia.session.types.communal;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -18,7 +19,7 @@ public class CommunalSession extends Session {
     }
 
     @Override
-    public byte[] toBytes() {
+    public byte[] bytes() {
         return BytesUtil.concat(new byte[]{2},
                                 SkippedBase256.longToBuf(sessionId())
         );
@@ -26,6 +27,11 @@ public class CommunalSession extends Session {
 
     @Override
     public boolean accessible(long userId) {
-        return true;
+        return Kalmia.SERVER.sessionManager()
+                            .accessibleChat(
+                                    sessionId(),
+                                    userId
+                            )
+                            .accessibleChat(false);
     }
 }

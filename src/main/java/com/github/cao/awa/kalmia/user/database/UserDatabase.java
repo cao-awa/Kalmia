@@ -1,14 +1,16 @@
 package com.github.cao.awa.kalmia.user.database;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped;
+import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
-import com.github.cao.awa.kalmia.database.provider.DatabaseProvider;
+import com.github.cao.awa.kalmia.database.provider.DatabaseProviders;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.user.DefaultUser;
-import com.github.cao.awa.kalmia.user.DeletedUser;
+import com.github.cao.awa.kalmia.user.UselessUser;
 import com.github.cao.awa.kalmia.user.User;
 import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
@@ -18,22 +20,24 @@ import java.security.PublicKey;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class UserDatabase {
-    private static final byte[] ROOT = new byte[]{- 2};
-    private static final byte[] SESSION_DELIMITER = new byte[]{- 3};
-    private static final byte[] PUBLIC_KEY_DELIMITER = new byte[]{- 4};
-    private final KeyValueDatabase database;
+public class UserDatabase extends KeyValueDatabase<byte[], User> {
+    private static final byte[] ROOT = new byte[]{1};
+    private static final byte[] SESSION_DELIMITER = new byte[]{- 127};
+    private static final byte[] PUBLIC_KEY_DELIMITER = new byte[]{127};
+    private final KeyValueBytesDatabase delegate;
 
     public UserDatabase(String path) throws Exception {
-        this.database = DatabaseProvider.kv(path);
+        super(ApricotCollectionFactor :: hashMap);
+        this.delegate = DatabaseProviders.bytes(path);
     }
 
-    public synchronized PublicKey publicKey(@ShouldSkipped byte[] uid) {
-        BytesReader reader = BytesReader.of(this.database.get(BytesUtil.concat(uid,
+    @Nullable
+    public PublicKey publicKey(@ShouldSkipped byte[] uid) {
+        BytesReader reader = BytesReader.of(this.delegate.get(BytesUtil.concat(uid,
                                                                                PUBLIC_KEY_DELIMITER
         )));
         if (reader.readable() > 1) {
-            return PublicKeyIdentity.createKey(Base256.tagFromBuf(reader.read(2)),
+            return PublicKeyIdentity.createKey(Base256.readTag(reader),
                                                reader.all()
             );
         } else {
@@ -41,8 +45,8 @@ public class UserDatabase {
         }
     }
 
-    public synchronized void publicKey(@ShouldSkipped byte[] uid, PublicKey publicKey) {
-        this.database.put(BytesUtil.concat(uid,
+    public void publicKey(@ShouldSkipped byte[] uid, PublicKey publicKey) {
+        this.delegate.put(BytesUtil.concat(uid,
                                            PUBLIC_KEY_DELIMITER
                           ),
                           PublicKeyIdentity.encodeKey(publicKey)
@@ -50,16 +54,10 @@ public class UserDatabase {
     }
 
     public void operation(BiConsumer<Long, User> action) {
-        byte[] seqByte = this.database.get(
-                ROOT
-        );
+        long nextSeq = nextSeq();
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
-
-        count++;
-
-        if (count > 0) {
-            for (long seq = 0; seq < count; seq++) {
+        if (nextSeq > 0) {
+            for (long seq = 0; seq < nextSeq; seq++) {
                 action.accept(seq,
                               get(SkippedBase256.longToBuf(seq))
                 );
@@ -69,62 +67,77 @@ public class UserDatabase {
 
     @Nullable
     public User get(@ShouldSkipped byte[] uid) {
-        byte[] userBytes = this.database.get(uid);
-        if (userBytes == null || userBytes.length == 0) {
-            return null;
-        }
-        return User.create(userBytes);
+        return cache().get(
+                uid,
+                this :: getUser
+        );
     }
 
-    public void delete(@ShouldSkipped byte[] uid) {
+    private User getUser(byte[] uid) {
+        byte[] bytes = this.delegate.get(uid);
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        return User.create(bytes);
+    }
+
+    @Override
+    public void remove(byte[] uid) {
+        cache().delete(
+                uid,
+                this.delegate :: remove
+        );
+    }
+
+    public void markUseless(@ShouldSkipped byte[] uid) {
         User source = get(uid);
-        set(uid,
-            new DeletedUser(TimeUtil.nano())
+        put(uid,
+            new UselessUser(TimeUtil.nano())
         );
     }
 
     public void seqAll(Consumer<Long> action) {
-        byte[] seqByte = this.database.get(ROOT);
+        long nextSeq = nextSeq();
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
-
-        count++;
-
-        if (count > 0) {
-            for (long seq = 0; seq < count; seq++) {
+        if (nextSeq > 0) {
+            for (long seq = 0; seq < nextSeq; seq++) {
                 action.accept(seq);
             }
         }
     }
 
-    public void deleteAll() {
+    public void uselessAll() {
         seqAll(
-                seq -> delete(SkippedBase256.longToBuf(seq))
+                seq -> markUseless(SkippedBase256.longToBuf(seq))
         );
     }
 
     public long add(User user) {
-        byte[] seqByte = this.database.get(ROOT);
-
-        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
-
-        long nextSeq = seq + 1;
+        long nextSeq = nextSeq();
 
         byte[] nextSeqByte = SkippedBase256.longToBuf(nextSeq);
 
-        this.database.put(nextSeqByte,
+        this.delegate.put(nextSeqByte,
                           user.toBytes()
         );
 
-        this.database.put(ROOT,
+        this.delegate.put(ROOT,
                           nextSeqByte
         );
 
         return nextSeq;
     }
 
-    public void set(@ShouldSkipped byte[] seq, User user) {
-        this.database.put(seq,
+    public long nextSeq() {
+        byte[] seqByte = this.delegate.get(ROOT);
+
+        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
+
+        return seq + 1;
+    }
+
+    public void put(@ShouldSkipped byte[] seq, User user) {
+        this.delegate.put(seq,
                           user.toBytes()
         );
 
@@ -136,14 +149,14 @@ public class UserDatabase {
     }
 
     public byte[] session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq) {
-        return this.database.get(BytesUtil.concat(currentSeq,
+        return this.delegate.get(BytesUtil.concat(currentSeq,
                                                   SESSION_DELIMITER,
                                                   targetSeq
         ));
     }
 
     public void session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq, @ShouldSkipped byte[] sessionId) {
-        this.database.put(BytesUtil.concat(currentSeq,
+        this.delegate.put(BytesUtil.concat(currentSeq,
                                            SESSION_DELIMITER,
                                            targetSeq
                           ),

@@ -45,8 +45,8 @@ public class UnknownMessage extends Message {
 
     public static UnknownMessage create(BytesReader reader) {
         try {
-            return KalmiaEnv.byteSerializeFramework.create(new UnknownMessage(),
-                                                           reader
+            return KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.create(new UnknownMessage(),
+                                                              reader
             );
         } catch (Exception e) {
             e.printStackTrace();

@@ -2,6 +2,7 @@ package com.github.cao.awa.apricot.util.collection;
 
 import com.github.cao.awa.kalmia.collection.timed.TimedList;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,6 +42,18 @@ public class ApricotCollectionFactor {
         return new ConcurrentHashMap<>();
     }
 
+    public static <V> List<V> syncList() {
+        return Collections.synchronizedList(arrayList());
+    }
+
+    public static <V> List<V> syncList(int capacity) {
+        return Collections.synchronizedList(arrayList(capacity));
+    }
+
+    public static <V> List<V> syncList(List<V> delegate) {
+        return Collections.synchronizedList(arrayList(delegate));
+    }
+
     public static <V> TimedList<V> timedList(long removeTime) {
         return new TimedList<>(removeTime);
     }
@@ -61,6 +74,11 @@ public class ApricotCollectionFactor {
         //        return new ObjectArrayList<>(capacity);
     }
 
+    public static <V> ArrayList<V> arrayList(List<V> delegate) {
+        return new ArrayList<>(delegate);
+        //        return new ObjectArrayList<>(delegate);
+    }
+
     public static <V> LinkedList<V> linkedList() {
         return new LinkedList<>();
     }
@@ -68,5 +86,9 @@ public class ApricotCollectionFactor {
     public static <V> HashSet<V> hashSet() {
         return new HashSet<>();
         //         return new ObjectOpenHashSet<>();
+    }
+
+    public static <V> Set<V> concurrentHashSet() {
+        return Sets.newConcurrentHashSet();
     }
 }

@@ -2,18 +2,18 @@ package com.github.cao.awa.kalmia.framework.serialize.bytes.type.array;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoBytesSerializer;
-import com.github.cao.awa.kalmia.framework.serialize.bytes.ByteSerializeFramework;
+import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializeFramework;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializer;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 /**
- * The serializer used to array of {@link Byte} in {@link ByteSerializeFramework}.<br>
+ * The serializer used to array of {@link Byte} in {@link BytesSerializeFramework}.<br>
  *
  * @author cao_awa
  * @author 草二号机
  * @see BytesSerializer
- * @see ByteSerializeFramework
+ * @see BytesSerializeFramework
  * @see Byte
  * @since 1.0.0
  */

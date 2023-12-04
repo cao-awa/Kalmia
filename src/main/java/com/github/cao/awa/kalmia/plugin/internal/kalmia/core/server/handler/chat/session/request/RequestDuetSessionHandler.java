@@ -8,7 +8,8 @@ import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in.ChatInSessionPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestDuetSessionPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.kalmia.session.duet.DuetSession;
+import com.github.cao.awa.kalmia.session.SessionAccessibleData;
+import com.github.cao.awa.kalmia.session.types.duet.DuetSession;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 @Auto
@@ -33,15 +34,32 @@ public class RequestDuetSessionHandler implements RequestDuetSessionEventHandler
                                                           handler.uid(),
                                                           targetUid
                                      ));
+
+            // Update session data.
             Kalmia.SERVER.userManager()
                          .session(handler.uid(),
                                   targetUid,
                                   sessionId
                          );
+
+            // Update accessible.
+            Kalmia.SERVER.sessionManager()
+                         .updateAccessible(
+                                 sessionId,
+                                 handler.uid(),
+                                 SessionAccessibleData :: accessibleChat
+                         );
+            Kalmia.SERVER.sessionManager()
+                         .updateAccessible(
+                                 sessionId,
+                                 targetUid,
+                                 SessionAccessibleData :: accessibleChat
+                         );
         }
 
-        router.send(new ChatInSessionPacket(targetUid,
-                                            sessionId
+        router.send(new ChatInSessionPacket(
+                targetUid,
+                sessionId
         ));
     }
 }

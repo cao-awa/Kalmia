@@ -21,13 +21,13 @@ public class UserManager {
     }
 
     public synchronized void set(long seq, User user) {
-        this.database.set(SkippedBase256.longToBuf(seq),
+        this.database.put(SkippedBase256.longToBuf(seq),
                           user
         );
     }
 
     public synchronized long delete(long seq) {
-        this.database.delete(SkippedBase256.longToBuf(seq));
+        this.database.markUseless(SkippedBase256.longToBuf(seq));
         return seq;
     }
 
@@ -41,7 +41,7 @@ public class UserManager {
     }
 
     public synchronized void deleteAll() {
-        this.database.deleteAll();
+        this.database.uselessAll();
     }
 
     public synchronized long session(long self, long target) {
