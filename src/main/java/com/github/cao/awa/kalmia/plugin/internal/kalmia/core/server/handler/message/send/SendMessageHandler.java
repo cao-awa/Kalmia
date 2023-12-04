@@ -43,8 +43,6 @@ public class SendMessageHandler implements SendMessageEventHandler {
 
         boolean accessible = false;
 
-        System.out.println(session);
-
         if (session != null) {
             accessible = session.accessible(packet.handler()
                                                   .uid());
@@ -61,6 +59,12 @@ public class SendMessageHandler implements SendMessageEventHandler {
             router.send(new SentMessagePacket(seq,
                                               packet.receipt()
             ));
+
+            LOGGER.info("Sent message: {}",
+                        Mathematics.radix(packet.receipt(),
+                                          36
+                        )
+            );
         } else {
             // Unable to access the session.
             router.send(new SendMessageRefusedPacket("Session unable to access",

@@ -168,5 +168,11 @@ public class PacketFramework extends ReflectionFramework {
                        )
                                  .receipt(receipt());
         }
+
+        @Override
+        public boolean requireCrypto() {
+            return this.clazz.getAnnotation(AutoSolvedPacket.class)
+                             .crypto();
+        }
     }
 }

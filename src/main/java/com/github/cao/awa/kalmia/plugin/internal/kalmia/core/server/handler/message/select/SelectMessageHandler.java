@@ -33,7 +33,7 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
             return;
         }
 
-        List<Message> messages = ApricotCollectionFactor.arrayList(150);
+        List<Message> messages = ApricotCollectionFactor.arrayList(200);
 
         long to = Math.min(packet.to(),
                            curSeq

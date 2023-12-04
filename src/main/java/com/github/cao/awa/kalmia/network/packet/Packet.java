@@ -110,7 +110,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
                 // Unequal random identifier and timestamp for every packet.
                 // For protect the replay attack.
                 BytesRandomIdentifier.create(16),
-                SkippedBase256.longToBuf(TimeUtil.nano()),
+                SkippedBase256.longToBuf(TimeUtil.millions()),
                 // Packet id, used in deserialize.
                 id(),
                 // Packet receipt, used to reply request.

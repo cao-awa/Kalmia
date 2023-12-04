@@ -4,6 +4,7 @@ import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.client.KalmiaClient;
+import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
@@ -33,7 +34,9 @@ public class TranslationProxyConnectHandler implements TranslationProxyConnectEv
 
         Kalmia.SERVER.task(() -> {
             try {
-                KalmiaClient client = new KalmiaClient();
+                KalmiaClient.setupBootstrapConfig();
+
+                KalmiaClient client = new KalmiaClient(KalmiaClient.clientBootstrapConfig);
 
                 router.funeral(client :: disconnect);
 
@@ -62,8 +65,10 @@ public class TranslationProxyConnectHandler implements TranslationProxyConnectEv
 //                            ));
                 });
 
-                new KalmiaClientNetworkIo(client).connect(packet.host(),
-                                                          packet.port()
+                new KalmiaClientNetworkIo(client).connect(new ClientNetworkConfig(packet.host(),
+                                                                                  packet.port(),
+                                                                                  true
+                                                          )
                 );
             } catch (Exception e) {
 

@@ -7,6 +7,8 @@ import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public class CommunalSession extends Session {
+    private static final byte[] HEADER = new byte[]{2};
+
     public CommunalSession(long sessionId) {
         super(sessionId);
     }
@@ -20,7 +22,7 @@ public class CommunalSession extends Session {
 
     @Override
     public byte[] bytes() {
-        return BytesUtil.concat(new byte[]{2},
+        return BytesUtil.concat(header(),
                                 SkippedBase256.longToBuf(sessionId())
         );
     }
@@ -28,10 +30,15 @@ public class CommunalSession extends Session {
     @Override
     public boolean accessible(long userId) {
         return Kalmia.SERVER.sessionManager()
-                            .accessibleChat(
+                            .accessible(
                                     sessionId(),
                                     userId
                             )
                             .accessibleChat(false);
+    }
+
+    @Override
+    public byte[] header() {
+        return HEADER;
     }
 }

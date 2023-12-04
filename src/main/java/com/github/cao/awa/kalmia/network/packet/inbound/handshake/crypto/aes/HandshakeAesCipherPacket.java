@@ -13,7 +13,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@AutoSolvedPacket(id = 2)
+@AutoSolvedPacket(id = 2, crypto = false)
 @NetworkEventTarget(HandshakeAesCipherEvent.class)
 public class HandshakeAesCipherPacket extends Packet<HandshakeHandler> {
     @AutoData

@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.translation;
+package com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.config.ConfigElement;

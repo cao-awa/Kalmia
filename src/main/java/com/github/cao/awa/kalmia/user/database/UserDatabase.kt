@@ -1,166 +1,215 @@
-package com.github.cao.awa.kalmia.user.database;
+package com.github.cao.awa.kalmia.user.database
 
-import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.apricot.util.time.TimeUtil;
-import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped;
-import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase;
-import com.github.cao.awa.kalmia.database.KeyValueDatabase;
-import com.github.cao.awa.kalmia.database.provider.DatabaseProviders;
-import com.github.cao.awa.kalmia.mathematic.base.Base256;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.user.DefaultUser;
-import com.github.cao.awa.kalmia.user.UselessUser;
-import com.github.cao.awa.kalmia.user.User;
-import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
-import org.jetbrains.annotations.Nullable;
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.apricot.util.time.TimeUtil
+import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped
+import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
+import com.github.cao.awa.kalmia.database.KeyValueDatabase
+import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
+import com.github.cao.awa.kalmia.mathematic.base.Base256
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
+import com.github.cao.awa.kalmia.user.DefaultUser
+import com.github.cao.awa.kalmia.user.UselessUser
+import com.github.cao.awa.kalmia.user.User
+import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil
+import java.io.ByteArrayOutputStream
+import java.security.PublicKey
+import java.util.function.BiConsumer
+import java.util.function.Consumer
 
-import java.security.PublicKey;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-public class UserDatabase extends KeyValueDatabase<byte[], User> {
-    private static final byte[] ROOT = new byte[]{1};
-    private static final byte[] SESSION_DELIMITER = new byte[]{- 127};
-    private static final byte[] PUBLIC_KEY_DELIMITER = new byte[]{127};
-    private final KeyValueBytesDatabase delegate;
-
-    public UserDatabase(String path) throws Exception {
-        super(ApricotCollectionFactor :: hashMap);
-        this.delegate = DatabaseProviders.bytes(path);
+class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotCollectionFactor::hashMap) {
+    companion object {
+        private val ROOT = byteArrayOf(1)
+        private val SESSION_DELIMITER = byteArrayOf(-127)
+        private val SESSION_LISTENERS_DELIMITER = byteArrayOf(100)
+        private val PUBLIC_KEY_DELIMITER = byteArrayOf(127)
     }
 
-    @Nullable
-    public PublicKey publicKey(@ShouldSkipped byte[] uid) {
-        BytesReader reader = BytesReader.of(this.delegate.get(BytesUtil.concat(uid,
-                                                                               PUBLIC_KEY_DELIMITER
-        )));
-        if (reader.readable() > 1) {
-            return PublicKeyIdentity.createKey(Base256.readTag(reader),
-                                               reader.all()
-            );
+    private val delegate: KeyValueBytesDatabase
+
+    init {
+        this.delegate = DatabaseProviders.bytes(path)
+    }
+
+    fun publicKey(@ShouldSkipped uid: ByteArray): PublicKey? {
+        val reader = BytesReader.of(
+            this.delegate[BytesUtil.concat(
+                uid,
+                PUBLIC_KEY_DELIMITER
+            )]
+        )
+        return if (reader.readable() > 1) {
+            PublicKeyIdentity.createKey(
+                Base256.readTag(reader),
+                reader.all()
+            )
         } else {
-            return null;
+            null
         }
     }
 
-    public void publicKey(@ShouldSkipped byte[] uid, PublicKey publicKey) {
-        this.delegate.put(BytesUtil.concat(uid,
-                                           PUBLIC_KEY_DELIMITER
-                          ),
-                          PublicKeyIdentity.encodeKey(publicKey)
-        );
+    fun publicKey(@ShouldSkipped uid: ByteArray, publicKey: PublicKey) {
+        this.delegate.put(
+            BytesUtil.concat(
+                uid,
+                PUBLIC_KEY_DELIMITER
+            ),
+            PublicKeyIdentity.encodeKey(publicKey)
+        )
     }
 
-    public void operation(BiConsumer<Long, User> action) {
-        long nextSeq = nextSeq();
-
+    fun operation(action: BiConsumer<Long, User>) {
+        val nextSeq = nextSeq()
         if (nextSeq > 0) {
-            for (long seq = 0; seq < nextSeq; seq++) {
-                action.accept(seq,
-                              get(SkippedBase256.longToBuf(seq))
-                );
+            for (seq in 0 until nextSeq) {
+                action.accept(
+                    seq,
+                    get(SkippedBase256.longToBuf(seq))
+                )
             }
         }
     }
 
-    @Nullable
-    public User get(@ShouldSkipped byte[] uid) {
+    override operator fun get(@ShouldSkipped uid: ByteArray): User {
         return cache().get(
-                uid,
-                this :: getUser
-        );
-    }
-
-    private User getUser(byte[] uid) {
-        byte[] bytes = this.delegate.get(uid);
-        if (bytes == null || bytes.length == 0) {
-            return null;
+            uid
+        ) {
+            getUser(it)
         }
-        return User.create(bytes);
     }
 
-    @Override
-    public void remove(byte[] uid) {
+    private fun getUser(uid: ByteArray): User? {
+        val bytes = this.delegate[uid]
+        return if (bytes == null || bytes.isEmpty()) {
+            null
+        } else User.create(bytes)
+    }
+
+    override fun remove(uid: ByteArray) {
         cache().delete(
-                uid,
-                this.delegate :: remove
-        );
+            uid
+        ) {
+            this.delegate.remove(it)
+        }
     }
 
-    public void markUseless(@ShouldSkipped byte[] uid) {
-        User source = get(uid);
-        put(uid,
-            new UselessUser(TimeUtil.nano())
-        );
+    fun markUseless(@ShouldSkipped uid: ByteArray) {
+        val source = get(uid)
+        put(
+            uid,
+            UselessUser(TimeUtil.nano())
+        )
     }
 
-    public void seqAll(Consumer<Long> action) {
-        long nextSeq = nextSeq();
-
+    fun seqAll(action: Consumer<Long>) {
+        val nextSeq = nextSeq()
         if (nextSeq > 0) {
-            for (long seq = 0; seq < nextSeq; seq++) {
-                action.accept(seq);
+            for (seq in 0 until nextSeq) {
+                action.accept(seq)
             }
         }
     }
 
-    public void uselessAll() {
-        seqAll(
-                seq -> markUseless(SkippedBase256.longToBuf(seq))
-        );
+    fun uselessAll() {
+        seqAll { seq: Long -> markUseless(SkippedBase256.longToBuf(seq!!)) }
     }
 
-    public long add(User user) {
-        long nextSeq = nextSeq();
-
-        byte[] nextSeqByte = SkippedBase256.longToBuf(nextSeq);
-
-        this.delegate.put(nextSeqByte,
-                          user.toBytes()
-        );
-
-        this.delegate.put(ROOT,
-                          nextSeqByte
-        );
-
-        return nextSeq;
+    fun add(user: User): Long {
+        val nextSeq = nextSeq()
+        val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
+        this.delegate.put(
+            nextSeqByte,
+            user.toBytes()
+        )
+        this.delegate.put(
+            ROOT,
+            nextSeqByte
+        )
+        return nextSeq
     }
 
-    public long nextSeq() {
-        byte[] seqByte = this.delegate.get(ROOT);
-
-        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
-
-        return seq + 1;
+    fun nextSeq(): Long {
+        val seqByte = this.delegate[ROOT]
+        val seq = if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
+        return seq + 1
     }
 
-    public void put(@ShouldSkipped byte[] seq, User user) {
-        this.delegate.put(seq,
-                          user.toBytes()
-        );
-
-        if (user instanceof DefaultUser defaultUser) {
-            publicKey(seq,
-                      defaultUser.publicKey()
-            );
+    override fun put(@ShouldSkipped seq: ByteArray, user: User) {
+        this.delegate.put(
+            seq,
+            user.toBytes()
+        )
+        if (user is DefaultUser) {
+            publicKey(
+                seq,
+                user.publicKey()
+            )
         }
     }
 
-    public byte[] session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq) {
-        return this.delegate.get(BytesUtil.concat(currentSeq,
-                                                  SESSION_DELIMITER,
-                                                  targetSeq
-        ));
+    fun session(@ShouldSkipped firstUserSeq: ByteArray, @ShouldSkipped targetUserSeq: ByteArray): ByteArray {
+        return this.delegate[sessionKey(
+            firstUserSeq,
+            targetUserSeq
+        )]
     }
 
-    public void session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq, @ShouldSkipped byte[] sessionId) {
-        this.delegate.put(BytesUtil.concat(currentSeq,
-                                           SESSION_DELIMITER,
-                                           targetSeq
-                          ),
-                          sessionId
-        );
+    fun session(
+        @ShouldSkipped firstUserSeq: ByteArray,
+        @ShouldSkipped targetUserSeq: ByteArray,
+        @ShouldSkipped sessionId: ByteArray
+    ) {
+        this.delegate.put(
+            sessionKey(
+                firstUserSeq,
+                targetUserSeq
+            ),
+            sessionId
+        )
     }
+
+    private fun sessionKey(@ShouldSkipped firstUserSeq: ByteArray, @ShouldSkipped targetUserSeq: ByteArray): ByteArray =
+        BytesUtil.concat(
+            firstUserSeq,
+            SESSION_DELIMITER,
+            targetUserSeq
+        )
+
+    fun sessionListeners(@ShouldSkipped seq: ByteArray): List<Long> {
+        val reader = BytesReader.of(this.delegate.get(sessionListenersKey(seq)))
+
+        val result: ArrayList<Long> = ApricotCollectionFactor.arrayList();
+
+        while (reader.readable(1)) {
+            result.add(SkippedBase256.readLong(reader))
+        }
+
+        return result
+    }
+
+    fun sessionListeners(@ShouldSkipped seq: ByteArray, listeners: List<Long>) {
+        try {
+            val output = ByteArrayOutputStream();
+            listeners.forEach {
+                output.writeBytes(SkippedBase256.longToBuf(it))
+            }
+
+            this.delegate.put(
+                sessionListenersKey(seq),
+                output.toByteArray()
+            )
+
+            output.close()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
+    private fun sessionListenersKey(@ShouldSkipped seq: ByteArray): ByteArray =
+        BytesUtil.concat(
+            seq,
+            SESSION_LISTENERS_DELIMITER
+        )
 }

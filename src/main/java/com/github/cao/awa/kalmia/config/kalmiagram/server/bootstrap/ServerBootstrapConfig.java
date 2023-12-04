@@ -1,10 +1,10 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.bootstrap;
+package com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.config.ConfigElement;
-import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.meta.BootstrapConfigMeta;
-import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.meta.ServerNetworkConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.translation.BootstrapTranslationConfig;
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.BootstrapConfigMeta;
+import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
+import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation.BootstrapTranslationConfig;
 
 public class ServerBootstrapConfig extends ConfigElement {
     private final BootstrapConfigMeta meta;

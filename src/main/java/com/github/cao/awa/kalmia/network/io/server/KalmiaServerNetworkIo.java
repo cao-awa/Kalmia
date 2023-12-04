@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.network.io.server;
 import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.meta.ServerNetworkConfig;
+import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
 import com.github.cao.awa.kalmia.network.io.server.channel.KalmiaServerChannelInitializer;
 import com.github.cao.awa.kalmia.network.io.server.channel.kalmiagram.KalmiagramServerChannelInitializer;
 import com.github.cao.awa.kalmia.network.io.server.channel.translation.TranslationServerChannelInitializer;

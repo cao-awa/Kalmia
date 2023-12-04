@@ -18,7 +18,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.security.interfaces.ECPrivateKey;
 
-@AutoSolvedPacket(id = 100003)
+@AutoSolvedPacket(id = 100003, crypto = true)
 @NetworkEventTarget(LoginWithSignEvent.class)
 public class LoginWithSignPacket extends Packet<StatelessHandler> {
     @AutoData

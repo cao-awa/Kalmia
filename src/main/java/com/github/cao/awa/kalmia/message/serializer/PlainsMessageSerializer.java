@@ -8,8 +8,8 @@ import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 @AutoBytesSerializer(value = 1001, target = PlainsMessage.class)
 public class PlainsMessageSerializer implements BytesSerializer<PlainsMessage> {
     @Override
-    public byte[] serialize(PlainsMessage plainMessage) {
-        return plainMessage.toBytes();
+    public byte[] serialize(PlainsMessage target) {
+        return target.toBytes();
     }
 
     @Override

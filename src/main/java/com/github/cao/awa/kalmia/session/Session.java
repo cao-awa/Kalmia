@@ -17,6 +17,8 @@ public abstract class Session implements BytesValueConvertable {
 
     public abstract boolean accessible(long userId);
 
+    public abstract byte[] header();
+
     public static Session create(byte[] data) {
         BytesReader reader = BytesReader.of(data);
 

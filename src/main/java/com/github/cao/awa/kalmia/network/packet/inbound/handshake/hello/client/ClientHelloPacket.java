@@ -15,7 +15,7 @@ import com.github.cao.awa.kalmia.protocol.RequestProtocol;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@AutoSolvedPacket(id = 0)
+@AutoSolvedPacket(id = 0, crypto = false)
 @NetworkEventTarget(ClientHelloEvent.class)
 public class ClientHelloPacket extends Packet<HandshakeHandler> {
     @AutoData

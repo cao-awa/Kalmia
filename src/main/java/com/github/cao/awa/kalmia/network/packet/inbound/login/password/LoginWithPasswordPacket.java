@@ -13,7 +13,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@AutoSolvedPacket(id = 100001)
+@AutoSolvedPacket(id = 100001, crypto = true)
 @NetworkEventTarget(LoginWithPasswordEvent.class)
 public class LoginWithPasswordPacket extends Packet<StatelessHandler> {
     @AutoData

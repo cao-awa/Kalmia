@@ -46,7 +46,12 @@ public class NetworkEventFramework extends ReflectionFramework {
                                                                                      )
                                                                                      .newInstance(router,
                                                                                                   packet
-                                                                                     ))
+                                                                                     ),
+                                                                         ex -> {
+                                                                             ex.printStackTrace();
+                                                                             return;
+                                                                         }
+                             )
         );
     }
 

@@ -1,20 +1,19 @@
 package com.github.cao.awa.kalmia.bootstrap;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONWriter;
-import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
-import com.github.cao.awa.apricot.util.io.IOUtil;
-import com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.ServerBootstrapConfig;
+import com.github.cao.awa.kalmia.client.KalmiaClient;
+import com.github.cao.awa.kalmia.client.polling.PollingClient;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
-import com.github.cao.awa.kalmia.message.DeletedMessage;
+import com.github.cao.awa.kalmia.message.deleted.DeletedMessage;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
+import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.client.ClientHelloPacket;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
 import com.github.cao.awa.kalmia.session.factor.SessionFactor;
 import com.github.cao.awa.kalmia.session.types.communal.CommunalSession;
 import com.github.cao.awa.kalmia.session.types.duet.DuetSession;
+import com.github.cao.awa.kalmia.session.types.group.GroupSession;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.UselessUser;
 import com.github.cao.awa.kalmia.user.factor.UserFactor;
@@ -24,19 +23,12 @@ import com.github.cao.awa.kalmia.user.key.rsa.RsaServerKeyPair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-
 public class Kalmia {
     private static final Logger LOGGER = LogManager.getLogger("Kalmia");
-    public static ServerBootstrapConfig bootstrapConfig;
     public static KalmiaServer SERVER;
+    public static KalmiaClient CLIENT;
 
     public static void main(String[] args) {
-        setupEnvironment();
-
         try {
             startServer();
         } catch (Exception e) {
@@ -45,67 +37,58 @@ public class Kalmia {
     }
 
     public static void startServer() throws Exception {
+        setupEnvironment();
+
         LOGGER.info("Starting kalmia server");
 
-        setupBootstrapConfig();
-
-        SERVER = new KalmiaServer(bootstrapConfig);
+        SERVER = new KalmiaServer(KalmiaServer.serverBootstrapConfig);
 
         LOGGER.info("Setup kalmia server");
 
         KalmiaEnv.setupServer();
 
-        if (bootstrapConfig.translation()
-                           .enable()) {
+        if (KalmiaServer.serverBootstrapConfig.translation()
+                                              .enable()) {
             KalmiaTranslationEnv.setupFrameworks();
         }
 
         SERVER.startup();
     }
 
-    public static void setupBootstrapConfig() throws Exception {
-        prepareConfig();
+    public static void startClient() throws Exception {
+        setupEnvironment();
 
-        bootstrapConfig = ServerBootstrapConfig.read(
-                JSONObject.parse(
-                        IOUtil.read(new FileReader(KalmiaConstant.SERVER_CONFIG_PATH))
-                ),
-                KalmiaEnv.DEFAULT_BOOTSTRAP_CONFIG
-        );
+        LOGGER.info("Starting kalmia client");
 
-        rewriteConfig(bootstrapConfig);
-    }
+        CLIENT = new KalmiaClient(KalmiaClient.clientBootstrapConfig);
 
-    public static void rewriteConfig(ServerBootstrapConfig bootstrapConfig) throws Exception {
-        LOGGER.info("Rewriting server config");
+        LOGGER.info("Setup kalmia client");
 
-        IOUtil.write(new FileWriter(KalmiaConstant.SERVER_CONFIG_PATH),
-                     bootstrapConfig.toJSON()
-                                    .toString(JSONWriter.Feature.PrettyFormat)
-        );
-    }
+        KalmiaEnv.setupClient();
 
-    public static void prepareConfig() throws Exception {
-        LOGGER.info("Preparing server config");
+        CLIENT.activeCallback(router -> {
+            router.send(new ClientHelloPacket(KalmiaConstant.STANDARD_REQUEST_PROTOCOL,
+                                              "KalmiaWww v1.0.1"
+            ));
+        });
 
-        File configFile = new File(KalmiaConstant.SERVER_CONFIG_PATH);
+        CLIENT.connect();
 
-        configFile.getParentFile()
-                  .mkdirs();
-
-        if (! configFile.isFile()) {
-            IOUtil.write(
-                    new FileWriter(configFile),
-                    IOUtil.read(
-                            new InputStreamReader(
-                                    ResourceLoader.get(KalmiaConstant.SERVER_DEFAULT_CONFIG_PATH)
-                            )
-                    )
-            );
-        }
+        PollingClient.CLIENT = new PollingClient(CLIENT);
     }
 
     public static void setupEnvironment() {
+        try {
+            KalmiaServer.setupBootstrapConfig();
+        } catch (Exception e) {
+
+        }
+        try {
+            KalmiaClient.setupBootstrapConfig();
+        } catch (Exception e) {
+
+        }
+
         UserFactor.register(- 1,
                             UselessUser :: create
         );
@@ -113,7 +96,7 @@ public class Kalmia {
                             DefaultUser :: create
         );
 
-        MessageFactor.register(0,
+        MessageFactor.register(1,
                                PlainsMessage :: create
         );
         MessageFactor.register(- 1,
@@ -132,6 +115,9 @@ public class Kalmia {
         );
         SessionFactor.register(2,
                                CommunalSession :: create
+        );
+        SessionFactor.register(3,
+                               GroupSession :: create
         );
     }
 }

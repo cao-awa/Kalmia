@@ -13,7 +13,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@AutoSolvedPacket(id = 1)
+@AutoSolvedPacket(id = 1, crypto = false)
 @NetworkEventTarget(HandshakePreSharedEcEvent.class)
 public class HandshakePreSharedEcPacket extends Packet<HandshakeHandler> {
     @AutoData

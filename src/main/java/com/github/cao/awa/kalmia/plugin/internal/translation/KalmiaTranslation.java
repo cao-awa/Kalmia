@@ -2,8 +2,8 @@ package com.github.cao.awa.kalmia.plugin.internal.translation;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
-import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.plugin.Plugin;
+import com.github.cao.awa.kalmia.server.KalmiaServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +22,7 @@ public class KalmiaTranslation extends Plugin {
 
     @Override
     public boolean canLoad() {
-        return Kalmia.bootstrapConfig.translation()
-                                     .enable();
+        return KalmiaServer.serverBootstrapConfig.translation()
+                                                 .enable();
     }
 }

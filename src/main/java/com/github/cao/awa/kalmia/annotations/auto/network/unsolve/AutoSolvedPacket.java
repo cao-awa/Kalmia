@@ -14,4 +14,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 public @interface AutoSolvedPacket {
     long id();
+
+    boolean crypto();
 }

@@ -83,18 +83,26 @@ DeletedMessage
 ## 16
 
 ```
+接收方：客户端
+```
+
+ChatInSessionPacket
+
+## 50
+
+```
 接收方：服务端
 ```
 
 RequestDuetSessionPacket
 
-## 17
+## 51
 
 ```
-接收方：客户端
+接收方：服务端
 ```
 
-ChatInSessionPacket
+RequestGroupSessionPacket
 
 ## 100
 
@@ -119,6 +127,14 @@ SentMessage
 ```
 
 SendMessageRefused
+
+## 500
+
+```
+接收方：客户端
+```
+
+SessionListenersUpdatePacket
 
 ## 100001
 

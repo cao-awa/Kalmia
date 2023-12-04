@@ -21,9 +21,9 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
         private val ACCESSIBLE_DELIMITER = byteArrayOf(123)
         fun accessibleKey(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray): ByteArray {
             return BytesUtil.concat(
-                    sid,
-                    ACCESSIBLE_DELIMITER,
-                    uid
+                sid,
+                ACCESSIBLE_DELIMITER,
+                uid
             )
         }
     }
@@ -38,8 +38,9 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
         val nextSeq = nextSeq()
         if (nextSeq > 0) {
             for (seq in 0 until nextSeq) {
-                action.accept(seq,
-                        get(SkippedBase256.longToBuf(seq))
+                action.accept(
+                    seq,
+                    get(SkippedBase256.longToBuf(seq))
                 )
             }
         }
@@ -53,7 +54,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
 
     override operator fun get(@ShouldSkipped sid: ByteArray): Session {
         return cache().get(
-                sid
+            sid
         ) {
             getSession(it)
         }
@@ -61,42 +62,43 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
 
     fun accessible(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray): SessionAccessibleData {
         val accessible = this.delegate[accessibleKey(
-                sid,
-                uid
-        )]
-        return SessionAccessibleData(accessible);
+            sid,
+            uid
+        )] ?: return SessionAccessibleData(SessionAccessible.DEFAULT_SETTINGS.clone())
+        return SessionAccessibleData(accessible)
     }
 
     fun accessible(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray, data: SessionAccessibleData) {
-        val accessible = this.delegate[accessibleKey(
+        this.delegate.put(
+            accessibleKey(
                 sid,
                 uid
-        )]
-        this.delegate.put(accessibleKey(
-                sid,
-                uid
-        ), data.bytes())
+            ),
+            data.bytes()
+        )
     }
 
     fun banChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
-        val key = accessibleKey(sid,
-                uid
+        val key = accessibleKey(
+            sid,
+            uid
         )
         val accessible = SessionAccessible.banChat(this.delegate[key])
         this.delegate.put(
-                key,
-                accessible
+            key,
+            accessible
         )
     }
 
     fun approveChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
-        val key = accessibleKey(sid,
-                uid
+        val key = accessibleKey(
+            sid,
+            uid
         )
         val accessible = SessionAccessible.approveChat(this.delegate[key])
         this.delegate.put(
-                key,
-                accessible
+            key,
+            accessible
         )
     }
 
@@ -107,11 +109,11 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
 
     override fun remove(@ShouldSkipped sid: ByteArray) {
         cache()
-                .delete(
-                        sid
-                ) {
-                    this.delegate.remove(it)
-                }
+            .delete(
+                sid
+            ) {
+                this.delegate.remove(it)
+            }
     }
 
     fun seqAll(action: Consumer<Long>) {
@@ -130,18 +132,21 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
     fun add(session: Session): Long {
         val nextSeq = nextSeq()
         val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
-        this.delegate.put(nextSeqByte,
-                session.bytes()
+        put(
+            nextSeqByte,
+            session
         )
-        this.delegate.put(ROOT,
-                nextSeqByte
+        this.delegate.put(
+            ROOT,
+            nextSeqByte
         )
         return nextSeq
     }
 
     override fun put(@ShouldSkipped seq: ByteArray, session: Session) {
-        this.delegate.put(seq,
-                session.bytes()
+        this.delegate.put(
+            seq,
+            session.bytes()
         )
     }
 }

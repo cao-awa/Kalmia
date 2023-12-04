@@ -21,9 +21,35 @@ public abstract class KeyValueDatabase<K, V> {
 
     public abstract void put(K key, V value);
 
+    public void put(K key1, K key2, V value) {
+        // Redundancy method.
+    }
+
+    public void put(K key1, K key2, K key3, V value) {
+        // Redundancy method.
+    }
+
     public abstract V get(K key);
 
+    public V get(K key1, K key2) {
+        // Redundancy method.
+        return null;
+    }
+
+    public V get(K key, K key2, K key3) {
+        // Redundancy method.
+        return null;
+    }
+
     public abstract void remove(K key);
+
+    public void remove(K key1, K key2) {
+        // Redundancy method.
+    }
+
+    public void remove(K key1, K key2, K key3) {
+        // Redundancy method.
+    }
 
     public boolean close() {
         return true;

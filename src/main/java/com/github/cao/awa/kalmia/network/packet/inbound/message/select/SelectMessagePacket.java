@@ -13,7 +13,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@AutoSolvedPacket(id = 12)
+@AutoSolvedPacket(id = 12, crypto = true)
 @NetworkEventTarget(SelectMessageEvent.class)
 public class SelectMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData

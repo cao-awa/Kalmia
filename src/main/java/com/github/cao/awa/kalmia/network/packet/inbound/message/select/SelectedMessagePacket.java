@@ -16,7 +16,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
 
-@AutoSolvedPacket(id = 13)
+@AutoSolvedPacket(id = 13, crypto = true)
 @NetworkEventTarget(SelectedMessageEvent.class)
 public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData

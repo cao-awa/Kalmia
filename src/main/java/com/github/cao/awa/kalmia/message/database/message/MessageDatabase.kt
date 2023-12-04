@@ -1,177 +1,251 @@
-package com.github.cao.awa.kalmia.message.database.message;
+package com.github.cao.awa.kalmia.message.database.message
 
-import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped;
-import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase;
-import com.github.cao.awa.kalmia.database.provider.DatabaseProviders;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.message.DeletedMessage;
-import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped
+import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
+import com.github.cao.awa.kalmia.database.KeyValueDatabase
+import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
+import com.github.cao.awa.kalmia.message.Message
+import com.github.cao.awa.kalmia.message.deleted.DeletedMessage
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil
+import java.util.function.BiConsumer
+import java.util.function.Consumer
 
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(ApricotCollectionFactor::hashMap) {
+    private val delegate: KeyValueBytesDatabase
 
-public class MessageDatabase {
-    private final KeyValueBytesDatabase database;
-
-    public MessageDatabase(String path) throws Exception {
-        this.database = DatabaseProviders.bytes(path);
+    init {
+        this.delegate = DatabaseProviders.bytes(path)
     }
 
-    public void operation(@ShouldSkipped byte[] sid, BiConsumer<Long, Message> action) {
-        seqAll(sid,
-               seq -> {
-                   action.accept(seq,
-                                 get(sid,
-                                     SkippedBase256.longToBuf(seq)
-                                 )
-                   );
-               }
-        );
-    }
-
-    public void operation(@ShouldSkipped byte[] sid, long from, long to, BiConsumer<Long, Message> action) {
-        seqAll(sid,
-               from,
-               to,
-               seq -> {
-                   action.accept(seq,
-                                 get(sid,
-                                     SkippedBase256.longToBuf(seq)
-                                 )
-                   );
-               }
-        );
-    }
-
-    public Message get(@ShouldSkipped byte[] sid, @ShouldSkipped byte[] seq) {
-        byte[] msgBytes = this.database.get(key(sid,
-                                                seq
-        ));
-        if (msgBytes == null) {
-            return null;
+    fun operation(@ShouldSkipped sid: ByteArray, action: BiConsumer<Long, Message>) {
+        seqAll(
+            sid
+        ) {
+            action.accept(
+                it,
+                get(
+                    sid,
+                    SkippedBase256.longToBuf(it)
+                )
+            )
         }
-        return EntrustEnvironment.trys(() -> Message.create(msgBytes),
-                                       () -> new UnknownMessage(msgBytes)
-        );
     }
 
-    public void delete(@ShouldSkipped byte[] sid, @ShouldSkipped byte[] seq) {
-        Message source = get(sid,
-                             seq
-        );
-        this.database.put(key(sid,
-                              seq
-                          ),
-                          new DeletedMessage(source.getSender(),
-                                             source.digest()
-                          ).toBytes()
-        );
+    fun operation(@ShouldSkipped sid: ByteArray, from: Long, to: Long, action: BiConsumer<Long, Message>) {
+        seqAll(
+            sid,
+            from,
+            to
+        ) {
+            action.accept(
+                it,
+                get(
+                    sid,
+                    SkippedBase256.longToBuf(it)
+                )
+            )
+        }
     }
 
-    public void seqAll(@ShouldSkipped byte[] sid, Consumer<Long> action) {
-        byte[] seqByte = this.database.get(sid);
+    override operator fun get(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray): Message {
+        return get(
+            gid(
+                key(
+                    sid,
+                    seq
+                )
+            )
+        )
+    }
 
-        long count = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
+    override operator fun get(gid: ByteArray): Message {
+        return cache().get(
+            gid
+        ) {
+            getMessage(it)
+        }
+    }
 
-        count++;
+    private fun getMessage(gid: ByteArray): Message? {
+        val data = this.delegate[gid] ?: return null;
+        return Message.create(data)
+    }
 
+    override fun remove(gid: ByteArray) {
+        cache().delete(
+            gid
+        ) {
+            this.delegate.remove(it)
+        }
+    }
+
+    override fun remove(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
+        val key = key(
+            sid,
+            seq
+        )
+        remove(gid(key))
+        this.delegate.remove(key)
+    }
+
+    fun markDelete(gid: ByteArray) {
+        val source = get(gid)
+        put(
+            gid,
+            DeletedMessage(
+                source.sender(),
+                source.digest()
+            )
+        )
+    }
+
+    fun markDelete(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
+        markDelete(
+            gid(
+                key(
+                    sid,
+                    seq
+                )
+            )
+        )
+    }
+
+    fun gid(key: ByteArray): ByteArray {
+        return this.delegate[key]
+    }
+
+    fun gid(sid: ByteArray, seq: ByteArray, gid: ByteArray) {
+        this.delegate.put(
+            key(
+                sid,
+                seq
+            ),
+            gid
+        )
+    }
+
+    fun seqAll(@ShouldSkipped sid: ByteArray, action: Consumer<Long>) {
+        val seqByte = this.delegate[sid]
+        var count = if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
+        count++
         if (count > 0) {
-            for (long seq = 0; ; seq++) {
+            var seq: Long = 0
+            while (true) {
                 if (seq > count) {
-                    break;
+                    break
                 }
-                action.accept(seq);
+                action.accept(seq)
+                seq++
             }
         }
     }
 
-    public void seqAll(@ShouldSkipped byte[] sid, long from, long to, Consumer<Long> action) {
-        long count = curSeq(sid);
-
+    fun seqAll(@ShouldSkipped sid: ByteArray, from: Long, to: Long, action: Consumer<Long>) {
+        val count = curSeq(sid)
         if (count > 0) {
-            long endIndex = Math.min(to,
-                                     count
-            );
-            for (long seq = from; ; seq++) {
+            val endIndex = Math.min(
+                to,
+                count
+            )
+            var seq = from
+            while (true) {
                 if (seq > endIndex) {
-                    break;
+                    break
                 }
-                action.accept(seq);
+                action.accept(seq)
+                seq++
             }
         }
     }
 
-    public boolean present(byte[] key) {
-        return this.database.get(key) != null;
+    fun present(key: ByteArray): Boolean {
+        return this.delegate[key] != null
     }
 
-    public long seq(@ShouldSkipped byte[] sid) {
-        byte[] seqByte = this.database.get(sid);
-
-        return seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
+    fun seq(@ShouldSkipped sid: ByteArray): Long {
+        val seqByte = this.delegate[sid]
+        return if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
     }
 
-    public long curSeq(@ShouldSkipped byte[] sid) {
-        byte[] seqByte = this.database.get(sid);
-
-        return seqByte == null ? 0 : SkippedBase256.readLong(BytesReader.of(seqByte)) + 1;
+    fun curSeq(@ShouldSkipped sid: ByteArray): Long {
+        val seqByte = this.delegate[sid]
+        return if (seqByte == null) 0 else SkippedBase256.readLong(BytesReader.of(seqByte)) + 1
     }
 
-    public void deleteAll(@ShouldSkipped byte[] sid) {
-        seqAll(sid,
-               seq -> {
-                   delete(sid,
-                          SkippedBase256.longToBuf(seq)
-                   );
-               }
-        );
+    fun deleteAll(@ShouldSkipped sid: ByteArray) {
+        seqAll(
+            sid
+        ) {
+            markDelete(
+                sid,
+                SkippedBase256.longToBuf(it)
+            )
+        }
     }
 
-    public byte[] key(@ShouldSkipped byte[] sid, @ShouldSkipped byte[] seq) {
-        return BytesUtil.concat(sid,
-                                seq
-        );
+    fun key(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray): ByteArray {
+        return BytesUtil.concat(
+            sid,
+            seq
+        )
     }
 
-    public Set<Long> search(@ShouldSkipped byte[] sid, String target) {
-        Set<Long> result = ApricotCollectionFactor.hashSet();
-
-        operation(sid,
-                  (seq, msg) -> {
-//            if (msg.contains(target)) {
-//                result.add(seq);
-//            }
-                  }
-        );
-
-        return result;
+    fun search(@ShouldSkipped sid: ByteArray, target: String): Set<Long> {
+        val result: Set<Long> = ApricotCollectionFactor.hashSet()
+        operation(
+            sid
+        ) { seq: Long, msg: Message -> }
+        return result
     }
 
-    public long send(@ShouldSkipped byte[] sid, Message msg) {
-        byte[] seqByte = this.database.get(sid);
+    override fun put(gid: ByteArray, msg: Message) {
+        cache().update(
+            gid,
+            msg,
+            this::update
+        )
+    }
 
-        long seq = seqByte == null ? - 1 : SkippedBase256.readLong(BytesReader.of(seqByte));
+    private fun update(gid: ByteArray, msg: Message) {
+        this.delegate.put(
+            gid,
+            msg.toBytes()
+        )
+    }
 
-        long nextSeq = seq + 1;
+    private fun nextSeq(@ShouldSkipped sid: ByteArray): Long {
+        val seqByte = this.delegate[sid]
+        val seq = if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
+        return seq + 1
+    }
 
-        byte[] nextSeqByte = SkippedBase256.longToBuf(nextSeq);
+    fun send(@ShouldSkipped sid: ByteArray, msg: Message): Long {
+        val nextSeq = nextSeq(sid)
+        val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
 
-        this.database.put(key(sid,
-                              nextSeqByte
-                          ),
-                          msg.toBytes()
-        );
+        // Save the redirector to global id.
+        gid(
+            sid,
+            nextSeqByte,
+            msg.globalId()
+        )
 
-        this.database.put(sid,
-                          nextSeqByte
-        );
+        // Update index.
+        this.delegate.put(
+            sid,
+            nextSeqByte
+        )
 
-        return nextSeq;
+        // Update message.
+        put(
+            msg.globalId(),
+            msg
+        )
+
+        // Return two identity result.
+        return nextSeq
     }
 }

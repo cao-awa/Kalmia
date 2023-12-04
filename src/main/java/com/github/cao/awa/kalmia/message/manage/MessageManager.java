@@ -20,8 +20,8 @@ public class MessageManager {
     }
 
     public synchronized long delete(long sid, long seq) {
-        this.database.delete(SkippedBase256.longToBuf(sid),
-                             SkippedBase256.longToBuf(seq)
+        this.database.markDelete(SkippedBase256.longToBuf(sid),
+                                 SkippedBase256.longToBuf(seq)
         );
         return seq;
     }
@@ -56,5 +56,17 @@ public class MessageManager {
 
     public synchronized void deleteAll(long sid) {
         this.database.deleteAll(SkippedBase256.longToBuf(sid));
+    }
+
+    public void set(long sid, long seq, Message msg) {
+        this.database.gid(
+                SkippedBase256.longToBuf(sid),
+                SkippedBase256.longToBuf(seq),
+                msg.globalId()
+        );
+
+        this.database.put(msg.globalId(),
+                          msg
+        );
     }
 }

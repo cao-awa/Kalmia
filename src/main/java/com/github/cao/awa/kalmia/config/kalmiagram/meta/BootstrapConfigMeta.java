@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.meta;
+package com.github.cao.awa.kalmia.config.kalmiagram.meta;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.config.ConfigElement;

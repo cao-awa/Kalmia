@@ -1,25 +1,25 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.bootstrap.meta;
+package com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.config.ConfigElement;
 
-public class ServerNetworkConfig extends ConfigElement {
-    private final String bindHost;
-    private final int bindPort;
+public class ClientNetworkConfig extends ConfigElement {
+    private final String connectHost;
+    private final int connectPort;
     private final boolean useEpoll;
 
-    public ServerNetworkConfig(String bindHost, int bindPort, boolean useEpoll) {
-        this.bindHost = bindHost;
-        this.bindPort = bindPort;
+    public ClientNetworkConfig(String connectHost, int connectPort, boolean useEpoll) {
+        this.connectHost = connectHost;
+        this.connectPort = connectPort;
         this.useEpoll = useEpoll;
     }
 
-    public String bindHost() {
-        return this.bindHost;
+    public String connectHost() {
+        return this.connectHost;
     }
 
-    public int bindPort() {
-        return this.bindPort;
+    public int connectPort() {
+        return this.connectPort;
     }
 
     public boolean useEpoll() {
@@ -29,11 +29,11 @@ public class ServerNetworkConfig extends ConfigElement {
     @Override
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
-        json.put("bind-host",
-                 this.bindHost
+        json.put("connect-host",
+                 this.connectHost
         );
-        json.put("bind-port",
-                 this.bindPort
+        json.put("connect-port",
+                 this.connectPort
         );
         json.put("use-epoll",
                  this.useEpoll
@@ -41,7 +41,7 @@ public class ServerNetworkConfig extends ConfigElement {
         return json;
     }
 
-    public static ServerNetworkConfig read(JSONObject json, ServerNetworkConfig compute) {
+    public static ClientNetworkConfig read(JSONObject json, ClientNetworkConfig compute) {
         if (compute == null) {
             throw new IllegalArgumentException("Compute argument cannot be null");
         }
@@ -51,13 +51,13 @@ public class ServerNetworkConfig extends ConfigElement {
         }
 
         String bindHost = compute(json,
-                                  "bind-host",
-                                  compute :: bindHost
+                                  "connect-host",
+                                  compute :: connectHost
         );
 
         int bindPort = compute(json,
-                               "bind-port",
-                               compute :: bindPort
+                               "connect-port",
+                               compute :: connectPort
         );
 
         boolean useEpoll = compute(json,
@@ -65,7 +65,7 @@ public class ServerNetworkConfig extends ConfigElement {
                                    compute :: useEpoll
         );
 
-        return new ServerNetworkConfig(
+        return new ClientNetworkConfig(
                 bindHost,
                 bindPort,
                 useEpoll

@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.network.io.client;
 
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.kalmia.client.KalmiaClient;
+import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig;
 import com.github.cao.awa.kalmia.network.io.client.channel.KalmiaClientChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -45,8 +46,8 @@ public class KalmiaClientNetworkIo {
         this.client = client;
     }
 
-    public void connect(final String ip, final int port) throws Exception {
-        boolean expectEpoll = this.client.useEpoll();
+    public void connect(final ClientNetworkConfig config) throws Exception {
+        boolean expectEpoll = config.useEpoll();
         boolean epoll = Epoll.isAvailable();
 
         LOGGER.info(expectEpoll ?
@@ -77,8 +78,8 @@ public class KalmiaClientNetworkIo {
                                           )
                                           .handler(this.channelInitializer)
                                           .connect(
-                                                  ip,
-                                                  port
+                                                  config.connectHost(),
+                                                  config.connectPort()
                                           )
                                           .syncUninterruptibly()
                                           .channel()

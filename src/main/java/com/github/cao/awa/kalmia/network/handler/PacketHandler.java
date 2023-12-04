@@ -34,8 +34,8 @@ public abstract class PacketHandler<H extends PacketHandler<H>> {
             return EntrustEnvironment.get(() -> {
                                               Packet<H> p = tryHandle(packet);
 
-                                              LOGGER.debug("Inbounding packet: {}",
-                                                           p.getClass()
+                                              LOGGER.info("Inbounding packet: {}",
+                                                          p.getClass()
                                               );
 
 //                                              EntrustEnvironment.trys(

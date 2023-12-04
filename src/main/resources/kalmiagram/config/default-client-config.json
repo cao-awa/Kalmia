@@ -1,0 +1,10 @@
+{
+    "config-meta": {
+        "version": 0
+    },
+    "server-network": {
+        "connect-host": "127.0.0.1",
+        "connect-port": 12345,
+        "use-epoll": true
+    }
+}

@@ -8,7 +8,9 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.hello.server.ServerHelloEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -56,9 +58,14 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
 
         // TODO
         //     Try login(will delete in releases).
-//        router.send(new LoginWithPasswordPacket(1,
-//                                                "123456".getBytes()
-//        ));
+        router.send(new LoginWithPasswordPacket(1,
+                                                "123456"
+        ));
+
+        router.send(new SelectMessagePacket(0,
+                                            0,
+                                            Integer.MAX_VALUE
+        ));
     }
 
     public static void user1Login(RequestRouter router) throws Exception {

@@ -59,7 +59,7 @@ public class SessionManager {
         );
     }
 
-    public SessionAccessibleData accessibleChat(long sessionId, long userId) {
+    public SessionAccessibleData accessible(long sessionId, long userId) {
         return this.database.accessible(
                 SkippedBase256.longToBuf(sessionId),
                 SkippedBase256.longToBuf(userId)

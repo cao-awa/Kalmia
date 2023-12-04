@@ -1,11 +1,14 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.login.feedback;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.apricot.identifier.RandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.feedback.LoginSuccessEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
+import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
+import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSuccessPacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -57,19 +60,19 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 //                Packet.createReceipt()
 //        ));
 
-//        for (int i = 0; i < 100; i++) {
-//            router.send(new SendMessagePacket(0,
-//                                              new PlainsMessage(" awa: " + i,
-//                                                                packet.uid()
-//                                              ),
-//                                              Packet.createReceipt()
-//            ));
-//        }
+//        router.send(new RequestGroupSessionPacket("Test group"));
 
-        router.send(new SelectMessagePacket(0,
-                                            0,
-                                            114514
-        ));
+        if (false) {
+            for (int i = 0; i < 1000; i++) {
+                router.send(new SendMessagePacket(0,
+                                                  new PlainsMessage(" awa: " + RandomIdentifier.create(8),
+                                                                    packet.uid()
+                                                  ),
+                                                  Packet.createReceipt()
+                ));
+            }
+        }
+
 
 //        // TODO Test only
 //        router.send(new DeleteMessageRequest(123,

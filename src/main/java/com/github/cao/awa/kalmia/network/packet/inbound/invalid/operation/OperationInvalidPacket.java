@@ -15,7 +15,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.nio.charset.StandardCharsets;
 
-@AutoSolvedPacket(id = 2147483647)
+@AutoSolvedPacket(id = 2147483647, crypto = false)
 @NetworkEventTarget(OperationInvalidEvent.class)
 public class OperationInvalidPacket extends Packet<StatelessHandler> {
     @AutoData

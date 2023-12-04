@@ -3,8 +3,8 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.mes
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.notice.NewMessageNoticeEventHandler;
-import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;
+import com.github.cao.awa.kalmia.message.deleted.DeletedMessage;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.notice.NewMessageNoticePacket;
@@ -28,13 +28,13 @@ public class NewMessageNoticeHandler implements NewMessageNoticeEventHandler {
         if (message instanceof PlainsMessage plain) {
             LOGGER.info("New message from {}: {}",
                         packet.message()
-                              .getSender(),
+                              .sender(),
                         plain.msg()
             );
         } else if (message instanceof DeletedMessage deleted) {
             LOGGER.info("New message from {}: {}",
                         packet.message()
-                              .getSender(),
+                              .sender(),
                         deleted.digest()
                                .value36()
             );

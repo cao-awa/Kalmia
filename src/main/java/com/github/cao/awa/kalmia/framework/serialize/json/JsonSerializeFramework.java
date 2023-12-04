@@ -161,8 +161,6 @@ public class JsonSerializeFramework extends ReflectionFramework {
                                               field
             );
 
-            System.out.println(deserialized);
-
             field.set(object,
                       deserialized
             );

@@ -7,6 +7,7 @@ import com.github.cao.awa.kalmia.user.database.UserDatabase;
 import org.jetbrains.annotations.Nullable;
 
 import java.security.PublicKey;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 public class UserManager {
@@ -68,6 +69,16 @@ public class UserManager {
     public synchronized void publicKey(long seq, PublicKey publicKey) {
         this.database.publicKey(SkippedBase256.longToBuf(seq),
                                 publicKey
+        );
+    }
+
+    public List<Long> sessionListeners(long uid) {
+        return this.database.sessionListeners(SkippedBase256.longToBuf(uid));
+    }
+
+    public void sessionListeners(long uid, List<Long> listeners) {
+        this.database.sessionListeners(SkippedBase256.longToBuf(uid),
+                                       listeners
         );
     }
 }

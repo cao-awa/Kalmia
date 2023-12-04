@@ -22,7 +22,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
  * @see RequestDuetSessionPacket
  * @since 1.0.0
  */
-@AutoSolvedPacket(id = 17)
+@AutoSolvedPacket(id = 16, crypto = true)
 @NetworkEventTarget(ChatInSessionEvent.class)
 public class ChatInSessionPacket extends Packet<AuthedRequestHandler> {
     @AutoData

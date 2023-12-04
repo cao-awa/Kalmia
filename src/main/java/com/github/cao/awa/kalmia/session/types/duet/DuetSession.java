@@ -7,6 +7,7 @@ import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public class DuetSession extends Session {
+    private static final byte[] HEADER = new byte[]{1};
     private final long target1;
     private final long target2;
 
@@ -29,7 +30,7 @@ public class DuetSession extends Session {
 
     @Override
     public byte[] bytes() {
-        return BytesUtil.concat(new byte[]{1},
+        return BytesUtil.concat(header(),
                                 SkippedBase256.longToBuf(sessionId()),
                                 SkippedBase256.longToBuf(this.target1),
                                 SkippedBase256.longToBuf(this.target2)
@@ -39,11 +40,16 @@ public class DuetSession extends Session {
     @Override
     public boolean accessible(long userId) {
         return Kalmia.SERVER.sessionManager()
-                            .accessibleChat(
+                            .accessible(
                                     sessionId(),
                                     userId
                             )
                             .accessibleChat(true);
+    }
+
+    @Override
+    public byte[] header() {
+        return HEADER;
     }
 
     public long opposite(long userId) {

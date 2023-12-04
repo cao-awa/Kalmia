@@ -13,4 +13,7 @@ public class KalmiaConstant {
 
     public static final String SERVER_CONFIG_PATH = "configs/server-config.json";
     public static final String SERVER_DEFAULT_CONFIG_PATH = "kalmiagram/config/default-server-config.json";
+
+    public static final String CLIENT_CONFIG_PATH = "configs/client-config.json";
+    public static final String CLIENT_DEFAULT_CONFIG_PATH = "kalmiagram/config/default-client-config.json";
 }

@@ -13,7 +13,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@AutoSolvedPacket(id = 100008)
+@AutoSolvedPacket(id = 100008, crypto = true)
 @NetworkEventTarget(LoginFailureEvent.class)
 public class LoginFailurePacket extends Packet<StatelessHandler> {
     @AutoData

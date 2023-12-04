@@ -12,7 +12,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@AutoSolvedPacket(id = 123456)
+@AutoSolvedPacket(id = 123456, crypto = true)
 public class NotDoneSettingsPacket extends Packet<StatelessHandler> {
     private static final Logger LOGGER = LogManager.getLogger("NotDoneSettingsPacket");
 

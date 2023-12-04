@@ -11,7 +11,7 @@ import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.disconnect.Try
 import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 
-@AutoSolvedPacket(id = 114514)
+@AutoSolvedPacket(id = 114514, crypto = false)
 @NetworkEventTarget(TryDisconnectEvent.class)
 public class TryDisconnectPacket extends Packet<StatelessHandler> {
     @AutoData
