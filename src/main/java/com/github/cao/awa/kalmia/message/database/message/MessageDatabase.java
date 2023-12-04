@@ -3,8 +3,8 @@ package com.github.cao.awa.kalmia.message.database.message;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped;
-import com.github.cao.awa.kalmia.database.KeyValueDatabase;
-import com.github.cao.awa.kalmia.database.provider.DatabaseProvider;
+import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase;
+import com.github.cao.awa.kalmia.database.provider.DatabaseProviders;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;
@@ -17,10 +17,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MessageDatabase {
-    private final KeyValueDatabase database;
+    private final KeyValueBytesDatabase database;
 
     public MessageDatabase(String path) throws Exception {
-        this.database = DatabaseProvider.kv(path);
+        this.database = DatabaseProviders.bytes(path);
     }
 
     public void operation(@ShouldSkipped byte[] sid, BiConsumer<Long, Message> action) {
