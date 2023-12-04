@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.plugin.internal.translation.handler.meta;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.client.KalmiaClient;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;

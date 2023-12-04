@@ -1,6 +1,6 @@
 package com.github.cao.awa.apricot.resource.loader;
 
-import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotations.Stable;
 
 import java.io.File;
 import java.io.InputStream;

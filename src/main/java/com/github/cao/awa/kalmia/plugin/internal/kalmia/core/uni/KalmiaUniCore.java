@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.apricot.annotation.auto.AutoPlugin;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.disconnect.TryDisconnectHandler;
 import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.ping.TryPingHandler;

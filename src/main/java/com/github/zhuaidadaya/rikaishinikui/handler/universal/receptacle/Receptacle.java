@@ -1,6 +1,6 @@
 package com.github.zhuaidadaya.rikaishinikui.handler.universal.receptacle;
 
-import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotations.Stable;
 
 import java.util.function.Supplier;
 

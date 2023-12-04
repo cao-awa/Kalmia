@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.framework.serialize.json.test;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.framework.serialize.json.JsonSerializable;
 
 public class TestSerializable implements JsonSerializable<TestSerializable> {

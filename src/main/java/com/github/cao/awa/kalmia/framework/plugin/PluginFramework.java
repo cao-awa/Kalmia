@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.framework.plugin;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.apricot.annotation.auto.AutoPlugin;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;

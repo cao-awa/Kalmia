@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.information.compressor.lz4;
 
-import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.kalmia.information.compressor.InformationCompressor;
 import net.jpountz.lz4.LZ4Factory;
 

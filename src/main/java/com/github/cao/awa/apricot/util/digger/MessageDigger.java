@@ -1,6 +1,6 @@
 package com.github.cao.awa.apricot.util.digger;
 
-import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 

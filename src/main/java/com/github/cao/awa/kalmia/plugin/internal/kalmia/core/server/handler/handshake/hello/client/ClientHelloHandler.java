@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.handshake.hello.client;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaPreSharedCipher;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.hello.client.ClientHelloEventHandler;

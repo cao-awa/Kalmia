@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.delete;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.kalmia.annotation.auto.event.AutoHandler;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.kalmia.annotations.auto.event.AutoHandler;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.NetworkEventHandler;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.message.delete.DeletedMessageEvent;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.delete.DeletedMessagePacket;

@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.framework.serialize.json.test;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 

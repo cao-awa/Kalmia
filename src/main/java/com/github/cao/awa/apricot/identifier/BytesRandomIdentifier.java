@@ -1,6 +1,6 @@
 package com.github.cao.awa.apricot.identifier;
 
-import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.kalmia.constant.IntegerConstants;
 
 import java.util.Random;

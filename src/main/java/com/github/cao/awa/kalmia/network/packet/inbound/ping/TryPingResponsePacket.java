@@ -1,9 +1,9 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.ping;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
-import com.github.cao.awa.kalmia.annotation.auto.event.network.NetworkEventTarget;
+import com.github.cao.awa.kalmia.annotations.auto.event.network.NetworkEventTarget;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.ping.TryPingResponseEvent;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.packet.unsolve.ping.UnsolvedTryPingResponsePacket;

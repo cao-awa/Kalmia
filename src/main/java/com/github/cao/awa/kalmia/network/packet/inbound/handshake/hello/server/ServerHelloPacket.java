@@ -1,14 +1,14 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.annotation.actor.Getter;
-import com.github.cao.awa.kalmia.annotation.auto.event.network.NetworkEventTarget;
-import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
-import com.github.cao.awa.kalmia.annotation.crypto.CryptoEncoded;
-import com.github.cao.awa.kalmia.annotation.crypto.NotDecoded;
-import com.github.cao.awa.kalmia.annotation.inaction.DoNotSet;
+import com.github.cao.awa.kalmia.annotations.actor.Getter;
+import com.github.cao.awa.kalmia.annotations.auto.event.network.NetworkEventTarget;
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.annotations.crypto.CryptoEncoded;
+import com.github.cao.awa.kalmia.annotations.crypto.NotDecoded;
+import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.handshake.hello.server.ServerHelloEvent;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;

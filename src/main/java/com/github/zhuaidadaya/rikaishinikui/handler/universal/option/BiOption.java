@@ -1,6 +1,6 @@
 package com.github.zhuaidadaya.rikaishinikui.handler.universal.option;
 
-import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotations.Stable;
 
 /**
  * Choice one or two target.

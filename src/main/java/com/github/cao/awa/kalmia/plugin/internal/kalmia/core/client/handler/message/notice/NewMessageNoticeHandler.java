@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.message.notice;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.notice.NewMessageNoticeEventHandler;
 import com.github.cao.awa.kalmia.message.DeletedMessage;
 import com.github.cao.awa.kalmia.message.Message;

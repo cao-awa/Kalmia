@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.user.key;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.annotation.crypto.CryptoEncoded;
+import com.github.cao.awa.kalmia.annotations.crypto.CryptoEncoded;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 

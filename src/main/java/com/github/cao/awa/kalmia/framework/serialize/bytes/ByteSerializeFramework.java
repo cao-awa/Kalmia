@@ -1,10 +1,10 @@
 package com.github.cao.awa.kalmia.framework.serialize.bytes;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoBytesSerializer;
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
+import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoBytesSerializer;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;

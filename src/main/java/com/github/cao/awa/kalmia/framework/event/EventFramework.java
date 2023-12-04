@@ -1,9 +1,9 @@
 package com.github.cao.awa.kalmia.framework.event;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotation.auto.event.AutoHandler;
-import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
+import com.github.cao.awa.kalmia.annotations.auto.event.AutoHandler;
+import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.Event;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.EventHandler;

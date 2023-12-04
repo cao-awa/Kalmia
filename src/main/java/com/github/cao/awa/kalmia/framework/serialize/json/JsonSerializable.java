@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.framework.serialize.json;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 
 public interface JsonSerializable<T> {
     @Auto

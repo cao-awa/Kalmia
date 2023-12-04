@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.apricot.annotation.auto.AutoPlugin;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.modmdo.annotation.platform.Client;

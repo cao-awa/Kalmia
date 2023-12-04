@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.chat.session.request;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.request.RequestDuetSessionEventHandler;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;

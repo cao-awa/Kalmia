@@ -33,4 +33,9 @@ public class LevelDbProvider extends KeyValueDatabaseProvider implements KeyValu
     public byte[] get(byte[] key) {
         return this.db.get(key);
     }
+
+    @Override
+    public void remove(byte[] key) {
+        this.db.delete(key);
+    }
 }

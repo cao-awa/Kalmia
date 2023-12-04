@@ -1,6 +1,6 @@
 package com.github.cao.awa.apricot.util.encryption;
 
-import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.framework.serialize.json.type.primitive;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoJsonSerializer;
+import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoJsonSerializer;
 import com.github.cao.awa.kalmia.framework.serialize.json.JsonSerializer;
 
 @AutoJsonSerializer(target = {Integer.class, int.class})

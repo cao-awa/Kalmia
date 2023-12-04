@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.user.database;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
-import com.github.cao.awa.kalmia.annotation.number.encode.ShouldSkipped;
+import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped;
 import com.github.cao.awa.kalmia.database.KeyValueDatabase;
 import com.github.cao.awa.kalmia.database.provider.DatabaseProvider;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
@@ -142,7 +142,7 @@ public class UserDatabase {
         ));
     }
 
-    public void session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq, byte[] sessionId) {
+    public void session(@ShouldSkipped byte[] currentSeq, @ShouldSkipped byte[] targetSeq, @ShouldSkipped byte[] sessionId) {
         this.database.put(BytesUtil.concat(currentSeq,
                                            SESSION_DELIMITER,
                                            targetSeq

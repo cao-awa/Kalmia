@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.plugin.internal.translation.handler.login;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;

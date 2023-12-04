@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.invalid.operation;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
-import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.invalid.operation.OperationInvalidEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;

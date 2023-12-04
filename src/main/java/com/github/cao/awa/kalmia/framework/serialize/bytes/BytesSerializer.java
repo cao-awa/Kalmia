@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.framework.serialize.bytes;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;

@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.message.plains;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;

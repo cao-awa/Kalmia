@@ -1,9 +1,9 @@
 package com.github.cao.awa.kalmia.translation.network.packet;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
-import com.github.cao.awa.kalmia.annotation.translation.Translation;
+import com.github.cao.awa.kalmia.annotations.translation.Translation;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.AnnotationUtil;
 import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;

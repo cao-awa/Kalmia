@@ -1,10 +1,10 @@
 package com.github.cao.awa.kalmia.framework.serialize.json;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.annotation.auto.serializer.AutoJsonSerializer;
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
+import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoJsonSerializer;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;

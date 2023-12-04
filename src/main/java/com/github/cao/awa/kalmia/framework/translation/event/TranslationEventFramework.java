@@ -1,8 +1,8 @@
 package com.github.cao.awa.kalmia.framework.translation.event;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotation.auto.event.translation.TranslationEventTarget;
+import com.github.cao.awa.kalmia.annotations.auto.event.translation.TranslationEventTarget;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;

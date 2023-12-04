@@ -1,9 +1,9 @@
 package com.github.cao.awa.kalmia.network.packet.inbound.test;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.annotation.auto.network.unsolve.AutoSolvedPacket;
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.network.handler.handshake.HandshakeHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;

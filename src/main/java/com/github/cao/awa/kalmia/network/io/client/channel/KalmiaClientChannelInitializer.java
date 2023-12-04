@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.network.io.client.channel;
 
-import com.github.cao.awa.apricot.annotation.Stable;
+import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.kalmia.client.KalmiaClient;
 import com.github.cao.awa.kalmia.constant.IntegerConstants;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.RequestDecoder;

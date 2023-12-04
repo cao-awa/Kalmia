@@ -1,9 +1,9 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.login.password;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
-import com.github.cao.awa.kalmia.annotation.plugin.PluginRegister;
+import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.attack.exhaustive.ExhaustiveLogin;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.password.LoginWithPasswordEventHandler;

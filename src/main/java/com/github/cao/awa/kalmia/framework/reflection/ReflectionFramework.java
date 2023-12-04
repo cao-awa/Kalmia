@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.framework.reflection;
 
-import com.github.cao.awa.apricot.annotation.auto.Auto;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.kalmia.framework.loader.JarSearchLoader;
 import com.github.cao.awa.trtr.framework.accessor.method.MethodAccess;
