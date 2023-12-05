@@ -39,5 +39,4 @@ public class ConnectionBenchmark {
 //
 //            Thread.sleep(100);
     }
-    }
 }
