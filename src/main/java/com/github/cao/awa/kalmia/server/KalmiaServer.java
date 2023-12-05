@@ -8,14 +8,15 @@ import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.ServerBootst
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.launch.done.DoneLaunchEvent;
-import com.github.cao.awa.kalmia.message.manage.MessageManager;
+import com.github.cao.awa.kalmia.keypair.manager.KeypairManager;
+import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.network.io.server.KalmiaServerNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.session.listener.SessionListeners;
-import com.github.cao.awa.kalmia.session.manage.SessionManager;
+import com.github.cao.awa.kalmia.session.manager.SessionManager;
 import com.github.cao.awa.kalmia.session.types.communal.CommunalSession;
-import com.github.cao.awa.kalmia.user.manage.UserManager;
+import com.github.cao.awa.kalmia.user.manager.UserManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,6 +35,7 @@ public class KalmiaServer {
     private final KalmiaServerNetworkIo networkIo;
     private final MessageManager messageManager;
     private final UserManager userManager;
+    private final KeypairManager keypairManager;
     private final SessionManager sessionManager;
     private final SessionListeners sessionListeners = new SessionListeners();
     private boolean started;
@@ -49,6 +51,10 @@ public class KalmiaServer {
 
     public UserManager userManager() {
         return this.userManager;
+    }
+
+    public KeypairManager keypairManager() {
+        return this.keypairManager;
     }
 
     public MessageManager messageManager() {
@@ -67,6 +73,7 @@ public class KalmiaServer {
 
             this.messageManager = new MessageManager("data/server/msg");
             this.userManager = new UserManager("data/server/usr");
+            this.keypairManager = new KeypairManager("data/server/keypair");
             this.sessionManager = new SessionManager("data/server/session");
 
             // TODO

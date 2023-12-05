@@ -4,7 +4,6 @@ import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.delete.DeletedMessageEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.delete.DeletedMessagePacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
@@ -21,10 +20,5 @@ public class DeletedMessageHandler implements DeletedMessageEventHandler {
                                            .uid());
         System.out.println("SID: " + packet.sessionId());
         System.out.println("SEQ: " + packet.seq());
-
-        router.send(new SelectMessagePacket(123,
-                                            0,
-                                            114514
-        ));
     }
 }

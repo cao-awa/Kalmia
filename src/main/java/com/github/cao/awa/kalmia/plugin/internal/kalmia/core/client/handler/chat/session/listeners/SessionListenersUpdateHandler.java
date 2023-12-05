@@ -7,7 +7,6 @@ import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.client.polling.PollingClient;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.in.SessionListenersUpdateEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.listeners.SessionListenersUpdatePacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import org.apache.logging.log4j.LogManager;
@@ -30,11 +29,30 @@ public class SessionListenersUpdateHandler implements SessionListenersUpdateEven
 
         PollingClient.CLIENT.sessionListenersIdentity(BytesRandomIdentifier.create(24));
 
-        for (Long listener : packet.listeners()) {
-            router.send(new SelectMessagePacket(listener,
+        router.executor()
+              .execute(() -> {
+                  for (Long listener : packet.listeners()) {
+//            router.send(new SelectMessagePacket(Packet.createReceipt(),
+//                                                listener,
+//                                                0,
+//                                                Integer.MAX_VALUE
+//            ));
+                      LOGGER.info("----Test display----");
+
+                      Kalmia.CLIENT.getMessages(listener,
                                                 0,
-                                                Integer.MAX_VALUE
-            ));
-        }
+                                                100,
+                                                true
+                            )
+                                   .forEach(message -> {
+                                       LOGGER.info("---{}: {}---\n{}\n{}",
+                                                   message.sessionId(),
+                                                   message.seq(),
+                                                   message.sourceContent(),
+                                                   message.coverContent()
+                                       );
+                                   });
+                  }
+              });
     }
 }

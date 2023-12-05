@@ -8,13 +8,16 @@ import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.ClientBootstrapConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.keypair.manager.KeypairManager;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.display.ClientMessage;
-import com.github.cao.awa.kalmia.message.manage.MessageManager;
+import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
+import com.github.cao.awa.kalmia.network.packet.Packet;
+import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.kalmia.session.manage.SessionManager;
-import com.github.cao.awa.kalmia.user.manage.UserManager;
+import com.github.cao.awa.kalmia.session.manager.SessionManager;
+import com.github.cao.awa.kalmia.user.manager.UserManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,6 +34,7 @@ public class KalmiaClient {
     private final ClientBootstrapConfig bootstrapConfig;
     private final MessageManager messageManager;
     private final UserManager userManager;
+    private final KeypairManager keypairManager;
     private final SessionManager sessionManager;
     private Consumer<RequestRouter> activeCallback;
     private RequestRouter router;
@@ -41,6 +45,7 @@ public class KalmiaClient {
 
             this.messageManager = new MessageManager("data/client/msg");
             this.userManager = new UserManager("data/client/usr");
+            this.keypairManager = new KeypairManager("data/client/keypair");
             this.sessionManager = new SessionManager("data/client/session");
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -53,6 +58,10 @@ public class KalmiaClient {
 
     public UserManager userManager() {
         return this.userManager;
+    }
+
+    public KeypairManager keypairManager() {
+        return this.keypairManager;
     }
 
     public MessageManager messageManager() {
@@ -139,31 +148,106 @@ public class KalmiaClient {
         return userManager().sessionListeners(router().uid());
     }
 
-    public List<ClientMessage> getMessages(long sessionId, long startSelect, long endSelect) {
+    public List<ClientMessage> getMessages(long sessionId, long startSelect, long endSelect, boolean awaitGet) {
         List<ClientMessage> messages = ApricotCollectionFactor.arrayList();
 
-        messageManager()
-                .operation(sessionId,
-                           startSelect,
-                           endSelect,
-                           (seq, msg) -> messages.add(
-                                   new ClientMessage(
-                                           msg.identity(),
-                                           sessionId,
-                                           seq,
-                                           msg.display()
-                                   )
-                           )
+        getMessages(messages,
+                    sessionId,
+                    startSelect,
+                    endSelect
+        );
+
+        if (messages.size() == 0 && awaitGet) {
+            byte[] receipt = Packet.createReceipt();
+
+            try {
+                KalmiaEnv.awaitManager.awaitGet(receipt,
+                                                () -> {
+                                                    getMessages(messages,
+                                                                sessionId,
+                                                                startSelect,
+                                                                endSelect
+                                                    );
+
+                                                    return null;
+                                                },
+                                                () -> {
+                                                    router().send(new SelectMessagePacket(receipt,
+                                                                                          sessionId,
+                                                                                          startSelect,
+                                                                                          endSelect
+                                                    ));
+                                                }
                 );
+            } catch (Exception e) {
+                messages.clear();
+
+                getMessages(messages,
+                            sessionId,
+                            startSelect,
+                            endSelect
+                );
+            }
+        }
+
         return messages;
     }
 
-    public ClientMessage getMessages(long sessionId, long messageSeq) {
-        Message message = messageManager()
-                .get(
-                        sessionId,
-                        messageSeq
+    public void getMessages(List<ClientMessage> messages, long sessionId, long startSelect, long endSelect) {
+        try {
+            messageManager()
+                    .operation(sessionId,
+                               startSelect,
+                               endSelect,
+                               (seq, msg) -> {
+                                   messages.add(
+                                           new ClientMessage(
+                                                   msg.identity(),
+                                                   sessionId,
+                                                   seq,
+                                                   msg.display()
+                                           )
+                                   );
+                               }
+                    );
+        } catch (Exception e) {
+            messages.clear();
+        }
+    }
+
+    public ClientMessage getMessages(long sessionId, long messageSeq, boolean awaitGet) {
+        byte[] receipt = Packet.createReceipt();
+
+        Message message = null;
+        try {
+            if (awaitGet) {
+                message = KalmiaEnv.awaitManager.awaitGet(
+                        receipt,
+                        () -> messageManager().get(sessionId,
+                                                   messageSeq
+                        ),
+                        () -> {
+                            router().send(new SelectMessagePacket(receipt,
+                                                                  sessionId,
+                                                                  messageSeq,
+                                                                  messageSeq
+                            ));
+                        }
                 );
+            }
+        } catch (InterruptedException ignored) {
+
+        }
+
+        if (message == null) {
+            message = messageManager().get(sessionId,
+                                           messageSeq
+            );
+        }
+
+        if (message == null) {
+            return null;
+        }
 
         return new ClientMessage(
                 message.identity(),

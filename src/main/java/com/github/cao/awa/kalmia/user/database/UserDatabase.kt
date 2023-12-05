@@ -7,15 +7,11 @@ import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped
 import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
 import com.github.cao.awa.kalmia.database.KeyValueDatabase
 import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
-import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
-import com.github.cao.awa.kalmia.user.DefaultUser
 import com.github.cao.awa.kalmia.user.UselessUser
 import com.github.cao.awa.kalmia.user.User
-import com.github.cao.awa.kalmia.user.pubkey.PublicKeyIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.io.ByteArrayOutputStream
-import java.security.PublicKey
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
@@ -24,7 +20,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
         private val ROOT = byteArrayOf(1)
         private val SESSION_DELIMITER = byteArrayOf(-127)
         private val SESSION_LISTENERS_DELIMITER = byteArrayOf(100)
-        private val PUBLIC_KEY_DELIMITER = byteArrayOf(127)
+        private val KEY_STORE_DELIMITER = byteArrayOf(111)
     }
 
     private val delegate: KeyValueBytesDatabase
@@ -33,31 +29,44 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
         this.delegate = DatabaseProviders.bytes(path)
     }
 
-    fun publicKey(@ShouldSkipped uid: ByteArray): PublicKey? {
-        val reader = BytesReader.of(
-            this.delegate[BytesUtil.concat(
-                uid,
-                PUBLIC_KEY_DELIMITER
-            )]
+    fun keyStores(uid: ByteArray): List<Long> {
+        val key = BytesUtil.concat(
+            uid,
+            KEY_STORE_DELIMITER
         )
-        return if (reader.readable() > 1) {
-            PublicKeyIdentity.createKey(
-                Base256.readTag(reader),
-                reader.all()
-            )
-        } else {
-            null
+
+        val reader = BytesReader.of(this.delegate[key])
+
+        val result: ArrayList<Long> = ApricotCollectionFactor.arrayList();
+
+        while (reader.readable(1)) {
+            result.add(SkippedBase256.readLong(reader))
         }
+
+        return result
     }
 
-    fun publicKey(@ShouldSkipped uid: ByteArray, publicKey: PublicKey) {
-        this.delegate.put(
-            BytesUtil.concat(
+    fun keyStores(uid: ByteArray, stores: List<Long>) {
+        try {
+            val key = BytesUtil.concat(
                 uid,
-                PUBLIC_KEY_DELIMITER
-            ),
-            PublicKeyIdentity.encodeKey(publicKey)
-        )
+                KEY_STORE_DELIMITER
+            )
+
+            val output = ByteArrayOutputStream();
+            stores.forEach {
+                output.writeBytes(SkippedBase256.longToBuf(it))
+            }
+
+            this.delegate.put(
+                key,
+                output.toByteArray()
+            )
+
+            output.close()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
     }
 
     fun operation(action: BiConsumer<Long, User>) {
@@ -141,15 +150,9 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
             seq,
             user.toBytes()
         )
-        if (user is DefaultUser) {
-            publicKey(
-                seq,
-                user.publicKey()
-            )
-        }
     }
 
-    fun session(@ShouldSkipped firstUserSeq: ByteArray, @ShouldSkipped targetUserSeq: ByteArray): ByteArray {
+    fun session(@ShouldSkipped firstUserSeq: ByteArray, @ShouldSkipped targetUserSeq: ByteArray): ByteArray? {
         return this.delegate[sessionKey(
             firstUserSeq,
             targetUserSeq
@@ -178,7 +181,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
         )
 
     fun sessionListeners(@ShouldSkipped seq: ByteArray): List<Long> {
-        val reader = BytesReader.of(this.delegate.get(sessionListenersKey(seq)))
+        val reader = BytesReader.of(this.delegate[sessionListenersKey(seq)])
 
         val result: ArrayList<Long> = ApricotCollectionFactor.arrayList();
 

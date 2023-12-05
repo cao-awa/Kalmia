@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.router.kalmia;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
@@ -33,10 +34,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.SocketException;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private static final Logger LOGGER = LogManager.getLogger("RequestRouter");
+    private final ExecutorService executor = ExecutorFactor.intensiveCpu();
     private final Map<RequestState, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.hashMap(),
                                                                                               handlers -> {
                                                                                                   handlers.put(RequestState.HELLO,
@@ -93,6 +96,10 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     public void setStates(RequestState states) {
         this.states = states;
         this.allowedHandler = this.handlers.get(states);
+    }
+
+    public ExecutorService executor() {
+        return this.executor;
     }
 
     @Override

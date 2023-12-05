@@ -4,12 +4,10 @@ import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.hello.server.ServerHelloEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -59,30 +57,6 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
         //     Try login(will delete in releases).
         router.send(new LoginWithPasswordPacket(1,
                                                 "123456"
-        ));
-    }
-
-    public static void user1Login(RequestRouter router) throws Exception {
-        router.send(new LoginWithSignPacket(
-                1,
-                Crypto.decodeEcPrikey(
-                        Crypto.aesDecrypt(KalmiaEnv.testUser1.keyPair()
-                                                             .privateKey(),
-                                          KalmiaEnv.testUer1AesCipher
-                        )
-                )
-        ));
-    }
-
-    public static void user2Login(RequestRouter router) throws Exception {
-        router.send(new LoginWithSignPacket(
-                2,
-                Crypto.decodeEcPrikey(
-                        Crypto.aesDecrypt(KalmiaEnv.testUser2.keyPair()
-                                                             .privateKey(),
-                                          KalmiaEnv.testUer2AesCipher
-                        )
-                )
         ));
     }
 }

@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.session.manage;
+package com.github.cao.awa.kalmia.session.manager;
 
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.session.Session;

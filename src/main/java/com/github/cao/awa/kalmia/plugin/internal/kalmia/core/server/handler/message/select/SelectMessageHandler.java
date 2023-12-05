@@ -6,7 +6,7 @@ import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.select.SelectMessageEventHandler;
 import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.message.manage.MessageManager;
+import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectedMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
@@ -60,7 +60,8 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
             realSelected = messages.size() - 1;
 
-            router.send(new SelectedMessagePacket(packet.sessionId(),
+            router.send(new SelectedMessagePacket(packet.receipt(),
+                                                  packet.sessionId(),
                                                   current,
                                                   current + realSelected,
                                                   currentSeqEnd,

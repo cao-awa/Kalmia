@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.message.manage;
+package com.github.cao.awa.kalmia.message.manager;
 
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;

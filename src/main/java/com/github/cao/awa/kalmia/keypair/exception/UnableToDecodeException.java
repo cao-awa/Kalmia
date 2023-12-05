@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.user.key.exception;
+package com.github.cao.awa.kalmia.keypair.exception;
 
 public class UnableToDecodeException extends RuntimeException {
     public UnableToDecodeException() {

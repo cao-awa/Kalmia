@@ -3,11 +3,12 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.mes
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.select.SelectedMessageEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.deleted.DeletedMessage;
-import com.github.cao.awa.kalmia.message.manage.MessageManager;
+import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectedMessagePacket;
@@ -85,19 +86,22 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
             }
         }
 
-        LOGGER.info("----Test display----");
+        KalmiaEnv.awaitManager.notice(packet.receipt());
 
-        Kalmia.CLIENT.getMessages(packet.sessionId(),
-                                  packet.from(),
-                                  packet.to()
-              )
-                     .forEach(message -> {
-                         LOGGER.info("---{}: {}---\n{}\n{}",
-                                     message.sessionId(),
-                                     message.seq(),
-                                     message.sourceContent(),
-                                     message.coverContent()
-                         );
-                     });
+//        LOGGER.info("----Test display----");
+//
+//        Kalmia.CLIENT.getMessages(packet.sessionId(),
+//                                  packet.from(),
+//                                  packet.to(),
+//                                  false
+//              )
+//                     .forEach(message -> {
+//                         LOGGER.info("---{}: {}---\n{}\n{}",
+//                                     message.sessionId(),
+//                                     message.seq(),
+//                                     message.sourceContent(),
+//                                     message.coverContent()
+//                         );
+//                     });
     }
 }
