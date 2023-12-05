@@ -175,6 +175,13 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         return if (seqByte == null) 0 else SkippedBase256.readLong(BytesReader.of(seqByte)) + 1
     }
 
+    fun curSeq(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
+        this.delegate.put(
+            sid,
+            seq
+        )
+    }
+
     fun deleteAll(@ShouldSkipped sid: ByteArray) {
         seqAll(
             sid
@@ -216,14 +223,8 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         )
     }
 
-    private fun nextSeq(@ShouldSkipped sid: ByteArray): Long {
-        val seqByte = this.delegate[sid]
-        val seq = if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
-        return seq + 1
-    }
-
     fun send(@ShouldSkipped sid: ByteArray, msg: Message): Long {
-        val nextSeq = nextSeq(sid)
+        val nextSeq = curSeq(sid)
         val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
 
         // Save the redirector to global id.
@@ -234,7 +235,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         )
 
         // Update index.
-        this.delegate.put(
+        curSeq(
             sid,
             nextSeqByte
         )

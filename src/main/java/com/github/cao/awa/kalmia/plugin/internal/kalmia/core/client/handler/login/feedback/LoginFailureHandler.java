@@ -17,5 +17,10 @@ public class LoginFailureHandler implements LoginFailureEventHandler {
     public void handle(RequestRouter router, LoginFailurePacket packet) {
         System.out.println("---Login failed---");
         System.out.println("UID: " + packet.uid());
+
+//        PollingClient.CLIENT.stackingNotice(new StackingLoginFailureNotice(
+//                packet.uid(),
+//                packet.reason()
+//        ));
     }
 }

@@ -1,64 +1,75 @@
-package com.github.cao.awa.kalmia.message.deleted;
+package com.github.cao.awa.kalmia.message.deleted
 
-import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.message.digest.DigestData;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
+import com.github.cao.awa.kalmia.message.Message
+import com.github.cao.awa.kalmia.message.digest.DigestData
+import com.github.cao.awa.kalmia.message.display.DisplayMessageContent
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
-public class DeletedMessage extends Message {
-    private static final byte[] HEADER = new byte[]{- 1};
-    private final long sender;
-    private final DigestData digestData;
+class DeletedMessage : Message {
+    companion object {
+        private val HEADER = byteArrayOf(-1)
 
-    public DeletedMessage(long sender, DigestData digestData) {
-        this.sender = sender;
-        this.digestData = digestData;
-    }
-
-    public DeletedMessage(byte[] globalId, long sender, DigestData digestData) {
-        super(globalId);
-        this.sender = sender;
-        this.digestData = digestData;
-    }
-
-    public long sender() {
-        return this.sender;
-    }
-
-    @Override
-    public byte[] header() {
-        return HEADER;
-    }
-
-    @Override
-    public byte[] toBytes() {
-        return BytesUtil.concat(header(),
-                                globalId(),
-                                SkippedBase256.longToBuf(this.sender),
-                                this.digestData.serialize()
-        );
-    }
-
-    public static DeletedMessage create(BytesReader reader) {
-        if (reader.read() == - 1) {
-            byte[] gid = reader.read(24);
-
-            long sender = SkippedBase256.readLong(reader);
-
-            DigestData digestData = DigestData.create(reader);
-
-            return new DeletedMessage(gid,
-                                      sender,
-                                      digestData
-            );
-        } else {
-            return null;
+        @JvmStatic
+        fun create(reader: BytesReader): DeletedMessage? {
+            return if (reader.read().toInt() == -1) {
+                val gid = reader.read(24)
+                val sender = SkippedBase256.readLong(reader)
+                val digestData = DigestData.create(reader)
+                DeletedMessage(
+                    gid,
+                    sender,
+                    digestData
+                )
+            } else {
+                null
+            }
         }
     }
 
-    @Override
-    public DigestData digest() {
-        return this.digestData;
+    private val sender: Long
+    private val digestData: DigestData
+
+    constructor(sender: Long, digestData: DigestData) {
+        this.sender = sender
+        this.digestData = digestData
+    }
+
+    constructor(globalId: ByteArray, sender: Long, digestData: DigestData) : super(globalId) {
+        this.sender = sender
+        this.digestData = digestData
+    }
+
+    override fun sender(): Long {
+        return this.sender
+    }
+
+    override fun header(): ByteArray {
+        return HEADER
+    }
+
+    override fun display(): DisplayMessageContent {
+        return DisplayMessageContent(
+            "DeletedMessage{sender=${sender()}, digest=${digest().value36()}}",
+            """
+                        This message has been deleted
+                        sender is: ${sender()}
+                      digest is: ${digest().value36()}"""
+                .trimIndent()
+        )
+    }
+
+    override fun toBytes(): ByteArray {
+        return BytesUtil.concat(
+            header(),
+            globalId(),
+            SkippedBase256.longToBuf(sender()),
+            digest().serialize()
+        )
+    }
+
+    override fun digest(): DigestData {
+        return this.digestData
     }
 }

@@ -3,10 +3,12 @@ package com.github.cao.awa.kalmia.client;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.ClientBootstrapConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.message.display.DisplayMessage;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
@@ -133,6 +135,39 @@ public class KalmiaClient {
     }
 
     public List<Long> sessionIds() {
-        return userManager().sessionListeners(router().getUid());
+        return userManager().sessionListeners(router().uid());
+    }
+
+    public List<DisplayMessage> getMessages(long sessionId, long startSelect, long endSelect) {
+        List<DisplayMessage> messages = ApricotCollectionFactor.arrayList();
+
+        messageManager()
+                .operation(sessionId,
+                           startSelect,
+                           endSelect,
+                           (seq, msg) -> {
+                               messages.add(
+                                       new DisplayMessage(
+                                               sessionId,
+                                               seq,
+                                               msg.display()
+                                       )
+                               );
+                           }
+                );
+        return messages;
+    }
+
+    public DisplayMessage getMessages(long sessionId, long messageSeq) {
+        return new DisplayMessage(
+                sessionId,
+                messageSeq,
+                messageManager()
+                        .get(
+                                sessionId,
+                                messageSeq
+                        )
+                        .display()
+        );
     }
 }

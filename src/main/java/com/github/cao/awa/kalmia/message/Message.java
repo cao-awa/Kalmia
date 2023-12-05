@@ -4,6 +4,7 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.convert.ByteArrayConvertable;
 import com.github.cao.awa.kalmia.digest.DigestedObject;
+import com.github.cao.awa.kalmia.message.display.DisplayMessageContent;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
 import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 
@@ -25,6 +26,8 @@ public abstract class Message implements DigestedObject, ByteArrayConvertable {
     }
 
     public abstract byte[] header();
+
+    public abstract DisplayMessageContent display();
 
     public static Message create(byte[] data) {
         return create(BytesReader.of(data));

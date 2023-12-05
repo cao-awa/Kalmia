@@ -72,9 +72,9 @@ public class Kalmia {
             ));
         });
 
-        CLIENT.connect();
-
         PollingClient.CLIENT = new PollingClient(CLIENT);
+
+        CLIENT.connect();
     }
 
     public static void setupEnvironment() {

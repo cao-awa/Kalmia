@@ -32,14 +32,9 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
 
     @Server
     public ServerHelloPacket(@CryptoEncoded byte[] testKey, byte[] testSha, @CryptoEncoded byte[] iv) {
-        try {
-            this.testKey = testKey;
-            this.testSha = testSha;
-            this.iv = iv;
-        } catch (Exception e) {
-            //TODO
-            throw new RuntimeException(e);
-        }
+        this.testKey = testKey;
+        this.testSha = testSha;
+        this.iv = iv;
     }
 
     @Auto

@@ -9,7 +9,7 @@ public class LoginCommon {
                             router
         );
 
-        router.setUid(uid);
+        router.uid(uid);
     }
 
     public static void logout(long uid, RequestRouter router) {

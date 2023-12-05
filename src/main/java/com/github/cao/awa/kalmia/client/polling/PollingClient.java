@@ -1,14 +1,17 @@
 package com.github.cao.awa.kalmia.client.polling;
 
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.client.KalmiaClient;
-import com.github.cao.awa.kalmia.message.Message;
+import com.github.cao.awa.kalmia.event.Event;
 
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PollingClient {
     public static PollingClient CLIENT;
     private final KalmiaClient delegate;
+    private byte[] sessionListenersIdentity = BytesRandomIdentifier.create(24);
+    private final Queue<Event> stackingNotices = new ConcurrentLinkedQueue<>();
 
     public PollingClient(KalmiaClient delegate) {
         this.delegate = delegate;
@@ -19,23 +22,22 @@ public class PollingClient {
                             .curSeq(sessionId);
     }
 
-    public List<Message> getMessages(long sessionId, long startSelect, long endSelect) {
-        List<Message> messages = ApricotCollectionFactor.arrayList();
-
-        this.delegate.messageManager()
-                     .operation(sessionId,
-                                startSelect,
-                                endSelect,
-                                (seq, msg) -> messages.add(msg)
-                     );
-        return messages;
+    public byte[] curSessionListenersIdentity() {
+        return this.sessionListenersIdentity;
     }
 
-    public Message getMessages(long sessionId, long messageSeq) {
-        return this.delegate.messageManager()
-                            .get(
-                                    sessionId,
-                                    messageSeq
-                            );
+    public void sessionListenersIdentity(byte[] sessionListenersIdentity) {
+        this.sessionListenersIdentity = sessionListenersIdentity;
+    }
+
+    public Event curStackingNotice() {
+        if (this.stackingNotices.isEmpty()) {
+            return null;
+        }
+        return this.stackingNotices.poll();
+    }
+
+    public void stackingNotice(Event notice) {
+        this.stackingNotices.add(notice);
     }
 }

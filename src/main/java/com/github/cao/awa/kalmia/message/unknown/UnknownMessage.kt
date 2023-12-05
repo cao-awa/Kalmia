@@ -1,85 +1,109 @@
-package com.github.cao.awa.kalmia.message.unknown;
+package com.github.cao.awa.kalmia.message.unknown
 
-import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.apricot.util.digger.MessageDigger;
-import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.message.digest.DigestData;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
+import com.github.cao.awa.apricot.annotations.auto.Auto
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
+import com.github.cao.awa.apricot.util.digger.MessageDigger
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData
+import com.github.cao.awa.kalmia.mathematic.Mathematics
+import com.github.cao.awa.kalmia.message.Message
+import com.github.cao.awa.kalmia.message.digest.DigestData
+import com.github.cao.awa.kalmia.message.display.DisplayMessageContent
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
-public class UnknownMessage extends Message {
-    private static final byte[] HEADER = new byte[]{0};
-    @AutoData
-    private byte[] msgBytes;
-    @AutoData
-    private DigestData digestData;
+class UnknownMessage : Message {
+    companion object {
+        private val HEADER = byteArrayOf(0)
 
-    public UnknownMessage() {
-
-    }
-
-    public UnknownMessage(byte[] msgBytes) {
-        this.msgBytes = msgBytes;
-        this.digestData = new DigestData(MessageDigger.Sha3.SHA_512,
-                                         Mathematics.toBytes(MessageDigger.digest(msgBytes,
-                                                                                  MessageDigger.Sha3.SHA_512
-                                                             ),
-                                                             16
-                                         )
-        );
-    }
-
-    public UnknownMessage(byte[] gid, byte[] msgBytes) {
-        super(gid);
-        this.msgBytes = msgBytes;
-        this.digestData = new DigestData(MessageDigger.Sha3.SHA_512,
-                                         Mathematics.toBytes(MessageDigger.digest(msgBytes,
-                                                                                  MessageDigger.Sha3.SHA_512
-                                                             ),
-                                                             16
-                                         )
-        );
-    }
-
-    @Override
-    public DigestData digest() {
-        return this.digestData;
-    }
-
-    public byte[] details() {
-        return this.msgBytes;
-    }
-
-    @Override
-    public long sender() {
-        return - 1;
-    }
-
-    @Override
-    public byte[] header() {
-        return HEADER;
-    }
-
-    public static UnknownMessage create(BytesReader reader) {
-        if (reader.read() == 0) {
-            byte[] gid = reader.read(24);
-
-            byte[] data = reader.all();
-
-            return new UnknownMessage(gid,
-                                      data
-            );
-        } else {
-            return null;
+        @JvmStatic
+        fun create(reader: BytesReader): UnknownMessage? {
+            return if (reader.read().toInt() == 0) {
+                val gid = reader.read(24)
+                val data = reader.all()
+                UnknownMessage(
+                    gid,
+                    data
+                )
+            } else {
+                null
+            }
         }
     }
 
-    @Override
-    public byte[] toBytes() {
-        return BytesUtil.concat(header(),
-                                globalId(),
-                                this.msgBytes
-        );
+    @AutoData
+    private var msgBytes: ByteArray
+
+    @AutoData
+    private var digestData: DigestData
+
+    @Auto
+    constructor() {
+        this.msgBytes = BytesUtil.EMPTY
+        this.digestData = DigestData()
+    }
+
+    constructor(msgBytes: ByteArray) {
+        this.msgBytes = msgBytes
+        this.digestData = DigestData(
+            MessageDigger.Sha3.SHA_512,
+            Mathematics.toBytes(
+                MessageDigger.digest(
+                    msgBytes,
+                    MessageDigger.Sha3.SHA_512
+                ),
+                16
+            )
+        )
+    }
+
+    constructor(gid: ByteArray?, msgBytes: ByteArray) : super(gid) {
+        this.msgBytes = msgBytes
+        this.digestData = DigestData(
+            MessageDigger.Sha3.SHA_512,
+            Mathematics.toBytes(
+                MessageDigger.digest(
+                    msgBytes,
+                    MessageDigger.Sha3.SHA_512
+                ),
+                16
+            )
+        )
+    }
+
+    override fun digest(): DigestData {
+        return this.digestData
+    }
+
+    fun details(): ByteArray {
+        return this.msgBytes
+    }
+
+    override fun sender(): Long {
+        return -1
+    }
+
+    override fun header(): ByteArray {
+        return HEADER
+    }
+
+    override fun display(): DisplayMessageContent {
+        return DisplayMessageContent(
+            "PlainsMessage{sender=${sender()}, msg=${Mathematics.radix(details(), 36)}, digest=${digest().value36()}}",
+            """
+                This message unable to display, it digest is:
+                ${digest().value36()}
+                sender of this message is:
+                ${sender()}
+                it has theres data: 
+                ${Mathematics.radix(details(), 36)}
+                """
+        )
+    }
+
+    override fun toBytes(): ByteArray {
+        return BytesUtil.concat(
+            header(),
+            globalId(),
+            details()
+        )
     }
 }

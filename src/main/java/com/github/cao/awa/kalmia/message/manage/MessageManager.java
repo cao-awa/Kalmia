@@ -69,4 +69,10 @@ public class MessageManager {
                           msg
         );
     }
+
+    public void curSeq(long sid, long seq) {
+        this.database.curSeq(SkippedBase256.longToBuf(sid),
+                             SkippedBase256.longToBuf(seq)
+        );
+    }
 }

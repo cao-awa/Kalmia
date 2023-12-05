@@ -31,10 +31,14 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
         Message[] messages = packet.messages()
                                    .toArray(Message[] :: new);
 
+        manager.curSeq(packet.sessionId(),
+                       packet.to()
+        );
+
         long databaseIndex = packet.from();
         long to = packet.to();
         int arrayIndex = 0;
-        for (; databaseIndex < to; databaseIndex++, arrayIndex++) {
+        for (; databaseIndex <= to; databaseIndex++, arrayIndex++) {
             Message msg = messages[arrayIndex];
 
             if (msg == null) {
@@ -46,6 +50,11 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
                     databaseIndex,
                     msg
             );
+
+            msg = Kalmia.CLIENT.messageManager()
+                               .get(packet.sessionId(),
+                                    databaseIndex
+                               );
 
             if (msg instanceof DeletedMessage deletedMessage) {
                 LOGGER.info("Received deleted message at seq {}, id {}, sender {}, is: {}",
@@ -77,5 +86,20 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
                 );
             }
         }
+
+        LOGGER.info("----Test display----");
+
+        Kalmia.CLIENT.getMessages(packet.sessionId(),
+                                  packet.from(),
+                                  packet.to()
+              )
+                     .forEach(message -> {
+                         LOGGER.info("---{}: {}---\n{}\n{}",
+                                     message.sessionId(),
+                                     message.seq(),
+                                     message.sourceContent(),
+                                     message.coverContent()
+                         );
+                     });
     }
 }

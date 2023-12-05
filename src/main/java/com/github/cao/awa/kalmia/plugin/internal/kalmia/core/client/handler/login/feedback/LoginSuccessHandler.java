@@ -27,7 +27,7 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
                                                          36
         ));
 
-        router.setUid(packet.uid());
+        router.uid(packet.uid());
 
         router.setStates(RequestState.AUTHED);
 

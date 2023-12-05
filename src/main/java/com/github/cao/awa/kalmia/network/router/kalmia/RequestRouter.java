@@ -61,11 +61,11 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private long uid;
     private final RequestRouterMetadata metadata = RequestRouterMetadata.create();
 
-    public long getUid() {
+    public long uid() {
         return this.uid;
     }
 
-    public void setUid(long uid) {
+    public void uid(long uid) {
         this.uid = uid;
     }
 

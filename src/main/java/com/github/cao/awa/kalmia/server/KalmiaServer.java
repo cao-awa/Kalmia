@@ -178,7 +178,7 @@ public class KalmiaServer {
     }
 
     public void logout(RequestRouter router) {
-        this.networkIo.logout(router.getUid(),
+        this.networkIo.logout(router.uid(),
                               router
         );
     }

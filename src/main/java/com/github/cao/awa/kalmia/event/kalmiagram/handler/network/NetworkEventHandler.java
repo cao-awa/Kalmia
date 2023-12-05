@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.event.kalmiagram.handler.network;
 
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotOverride;
+import com.github.cao.awa.kalmia.client.polling.PollingClient;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.EventHandler;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.NetworkEvent;
 import com.github.cao.awa.kalmia.network.packet.Packet;
@@ -16,5 +17,9 @@ public interface NetworkEventHandler<P extends Packet<?>, E extends NetworkEvent
                 event.router(),
                 event.packet()
         );
+
+        if (PollingClient.CLIENT != null) {
+            PollingClient.CLIENT.stackingNotice(event);
+        }
     }
 }

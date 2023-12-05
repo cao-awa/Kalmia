@@ -25,13 +25,13 @@ public class RequestTestHandler implements RequestTestEventHandler {
         LOGGER.info("---TEST---");
 
         List<Long> sessions = Kalmia.SERVER.userManager()
-                                           .sessionListeners(router.getUid());
+                                           .sessionListeners(router.uid());
 
         LOGGER.info("SOURCE: " + sessions);
 
         sessions.add((long) sessions.size() + 1);
         Kalmia.SERVER.userManager()
-                     .sessionListeners(router.getUid(),
+                     .sessionListeners(router.uid(),
                                        sessions
                      );
 
