@@ -4,30 +4,31 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.convert.ByteArrayConvertable;
 import com.github.cao.awa.kalmia.digest.DigestedObject;
-import com.github.cao.awa.kalmia.message.display.DisplayMessageContent;
+import com.github.cao.awa.kalmia.message.display.ClientMessageContent;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
+import com.github.cao.awa.kalmia.message.identity.MessageIdentity;
 import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 
 public abstract class Message implements DigestedObject, ByteArrayConvertable {
-    private final byte[] globalId;
+    private final MessageIdentity identity;
 
-    public Message(byte[] globalId) {
-        this.globalId = globalId;
+    public Message(MessageIdentity identity) {
+        this.identity = identity;
     }
 
     public Message() {
-        this.globalId = BytesRandomIdentifier.create(24);
+        this.identity = MessageIdentity.create(BytesRandomIdentifier.create(24));
     }
 
     public abstract long sender();
 
-    public byte[] globalId() {
-        return this.globalId;
+    public MessageIdentity identity() {
+        return this.identity;
     }
 
     public abstract byte[] header();
 
-    public abstract DisplayMessageContent display();
+    public abstract ClientMessageContent display();
 
     public static Message create(byte[] data) {
         return create(BytesReader.of(data));

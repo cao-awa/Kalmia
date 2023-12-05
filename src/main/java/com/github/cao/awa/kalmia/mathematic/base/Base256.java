@@ -166,11 +166,11 @@ public class Base256 {
     }
 
     public static int readInt(BytesReader reader) {
-        return tagFromBuf(reader.read(2));
+        return intFromBuf(reader.read(4));
     }
 
-    public static int readLong(BytesReader reader) {
-        return tagFromBuf(reader.read(2));
+    public static long readLong(BytesReader reader) {
+        return longFromBuf(reader.read(8));
     }
 }
 

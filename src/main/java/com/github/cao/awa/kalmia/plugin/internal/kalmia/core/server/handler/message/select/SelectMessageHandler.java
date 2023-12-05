@@ -27,16 +27,16 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
         MessageManager manager = Kalmia.SERVER.messageManager();
 
-        long curSeq = manager.seq(packet.sessionId());
+        long currentSeqEnd = manager.seq(packet.sessionId());
 
-        if (current > curSeq) {
+        if (current > currentSeqEnd) {
             return;
         }
 
         List<Message> messages = ApricotCollectionFactor.arrayList(200);
 
         long to = Math.min(packet.to(),
-                           curSeq
+                           currentSeqEnd
         );
 
         while (current < to) {
@@ -63,6 +63,7 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
             router.send(new SelectedMessagePacket(packet.sessionId(),
                                                   current,
                                                   current + realSelected,
+                                                  currentSeqEnd,
                                                   messages
             ));
 

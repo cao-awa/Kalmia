@@ -8,7 +8,8 @@ import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.ClientBootstrapConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
-import com.github.cao.awa.kalmia.message.display.DisplayMessage;
+import com.github.cao.awa.kalmia.message.Message;
+import com.github.cao.awa.kalmia.message.display.ClientMessage;
 import com.github.cao.awa.kalmia.message.manage.MessageManager;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
@@ -138,36 +139,37 @@ public class KalmiaClient {
         return userManager().sessionListeners(router().uid());
     }
 
-    public List<DisplayMessage> getMessages(long sessionId, long startSelect, long endSelect) {
-        List<DisplayMessage> messages = ApricotCollectionFactor.arrayList();
+    public List<ClientMessage> getMessages(long sessionId, long startSelect, long endSelect) {
+        List<ClientMessage> messages = ApricotCollectionFactor.arrayList();
 
         messageManager()
                 .operation(sessionId,
                            startSelect,
                            endSelect,
-                           (seq, msg) -> {
-                               messages.add(
-                                       new DisplayMessage(
-                                               sessionId,
-                                               seq,
-                                               msg.display()
-                                       )
-                               );
-                           }
+                           (seq, msg) -> messages.add(
+                                   new ClientMessage(
+                                           msg.identity(),
+                                           sessionId,
+                                           seq,
+                                           msg.display()
+                                   )
+                           )
                 );
         return messages;
     }
 
-    public DisplayMessage getMessages(long sessionId, long messageSeq) {
-        return new DisplayMessage(
+    public ClientMessage getMessages(long sessionId, long messageSeq) {
+        Message message = messageManager()
+                .get(
+                        sessionId,
+                        messageSeq
+                );
+
+        return new ClientMessage(
+                message.identity(),
                 sessionId,
                 messageSeq,
-                messageManager()
-                        .get(
-                                sessionId,
-                                messageSeq
-                        )
-                        .display()
+                message.display()
         );
     }
 }

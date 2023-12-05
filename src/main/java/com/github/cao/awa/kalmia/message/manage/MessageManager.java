@@ -59,13 +59,13 @@ public class MessageManager {
     }
 
     public void set(long sid, long seq, Message msg) {
-        this.database.gid(
+        this.database.identity(
                 SkippedBase256.longToBuf(sid),
                 SkippedBase256.longToBuf(seq),
-                msg.globalId()
+                msg.identity()
         );
 
-        this.database.put(msg.globalId(),
+        this.database.put(msg.identity(),
                           msg
         );
     }

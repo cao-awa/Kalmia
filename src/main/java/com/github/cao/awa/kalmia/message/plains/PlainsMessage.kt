@@ -7,7 +7,8 @@ import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
-import com.github.cao.awa.kalmia.message.display.DisplayMessageContent
+import com.github.cao.awa.kalmia.message.display.ClientMessageContent
+import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.nio.charset.StandardCharsets
 
@@ -18,7 +19,7 @@ class PlainsMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): PlainsMessage? {
             return if (reader.read().toInt() == 1) {
-                val gid = reader.read(24)
+                val identity = MessageIdentity.create(reader)
                 val sender = SkippedBase256.readLong(reader)
                 val length = SkippedBase256.readInt(reader)
                 val msg = String(
@@ -26,7 +27,7 @@ class PlainsMessage : Message {
                     StandardCharsets.UTF_8
                 )
                 PlainsMessage(
-                    gid,
+                    identity,
                     msg,
                     sender
                 )
@@ -50,8 +51,9 @@ class PlainsMessage : Message {
         return HEADER
     }
 
-    override fun display(): DisplayMessageContent {
-        return DisplayMessageContent(
+    override fun display(): ClientMessageContent {
+        return ClientMessageContent(
+            sender(),
             "PlainsMessage{sender=${sender()}, msg=${msg()}, digest=${digest().value36()}}",
             msg()
         )
@@ -72,7 +74,7 @@ class PlainsMessage : Message {
         )
     }
 
-    constructor(gid: ByteArray, msg: String, sender: Long) : super(gid) {
+    constructor(identity: MessageIdentity, msg: String, sender: Long) : super(identity) {
         this.msg = msg
         this.sender = sender
         this.digest = DigestData(
@@ -102,7 +104,7 @@ class PlainsMessage : Message {
     override fun toBytes(): ByteArray {
         return BytesUtil.concat(
             header(),
-            globalId(),
+            identity().toBytes(),
             SkippedBase256.longToBuf(sender()),
             SkippedBase256.intToBuf(msg().length),
             msg().toByteArray(StandardCharsets.UTF_8)

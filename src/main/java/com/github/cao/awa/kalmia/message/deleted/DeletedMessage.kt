@@ -4,7 +4,8 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
-import com.github.cao.awa.kalmia.message.display.DisplayMessageContent
+import com.github.cao.awa.kalmia.message.display.ClientMessageContent
+import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
 class DeletedMessage : Message {
@@ -14,11 +15,11 @@ class DeletedMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): DeletedMessage? {
             return if (reader.read().toInt() == -1) {
-                val gid = reader.read(24)
+                val identity = MessageIdentity.create(reader)
                 val sender = SkippedBase256.readLong(reader)
                 val digestData = DigestData.create(reader)
                 DeletedMessage(
-                    gid,
+                    identity,
                     sender,
                     digestData
                 )
@@ -36,7 +37,7 @@ class DeletedMessage : Message {
         this.digestData = digestData
     }
 
-    constructor(globalId: ByteArray, sender: Long, digestData: DigestData) : super(globalId) {
+    constructor(identity: MessageIdentity, sender: Long, digestData: DigestData) : super(identity) {
         this.sender = sender
         this.digestData = digestData
     }
@@ -49,8 +50,9 @@ class DeletedMessage : Message {
         return HEADER
     }
 
-    override fun display(): DisplayMessageContent {
-        return DisplayMessageContent(
+    override fun display(): ClientMessageContent {
+        return ClientMessageContent(
+            sender(),
             "DeletedMessage{sender=${sender()}, digest=${digest().value36()}}",
             """
                         This message has been deleted
@@ -63,7 +65,7 @@ class DeletedMessage : Message {
     override fun toBytes(): ByteArray {
         return BytesUtil.concat(
             header(),
-            globalId(),
+            identity().toBytes(),
             SkippedBase256.longToBuf(sender()),
             digest().serialize()
         )

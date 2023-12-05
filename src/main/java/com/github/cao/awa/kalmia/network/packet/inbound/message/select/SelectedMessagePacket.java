@@ -30,13 +30,17 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     private long to;
     @AutoData
     @DoNotSet
+    private long sessionCurSeq;
+    @AutoData
+    @DoNotSet
     private List<Message> messages;
 
     @Server
-    public SelectedMessagePacket(long sessionId, long from, long to, List<Message> messages) {
+    public SelectedMessagePacket(long sessionId, long from, long to, long sessionCurSeq, List<Message> messages) {
         this.sessionId = sessionId;
         this.from = from;
         this.to = to;
+        this.sessionCurSeq = sessionCurSeq;
         this.messages = messages;
     }
 
@@ -59,6 +63,11 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     @Getter
     public long to() {
         return this.to;
+    }
+
+    @Getter
+    public long sessionCurSeq() {
+        return this.sessionCurSeq;
     }
 
     @Getter

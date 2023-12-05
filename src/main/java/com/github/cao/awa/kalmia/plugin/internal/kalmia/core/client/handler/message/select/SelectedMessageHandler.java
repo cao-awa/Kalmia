@@ -32,7 +32,7 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
                                    .toArray(Message[] :: new);
 
         manager.curSeq(packet.sessionId(),
-                       packet.to()
+                       packet.sessionCurSeq()
         );
 
         long databaseIndex = packet.from();
@@ -51,15 +51,11 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
                     msg
             );
 
-            msg = Kalmia.CLIENT.messageManager()
-                               .get(packet.sessionId(),
-                                    databaseIndex
-                               );
-
             if (msg instanceof DeletedMessage deletedMessage) {
                 LOGGER.info("Received deleted message at seq {}, id {}, sender {}, is: {}",
                             databaseIndex,
-                            Mathematics.radix(msg.globalId(),
+                            Mathematics.radix(msg.identity()
+                                                 .toBytes(),
                                               36
                             ),
                             deletedMessage.sender(),
@@ -69,7 +65,8 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
             } else if (msg instanceof PlainsMessage plainsMessage) {
                 LOGGER.info("Received plains message at seq {}, id {}, sender {}, is: {}",
                             databaseIndex,
-                            Mathematics.radix(msg.globalId(),
+                            Mathematics.radix(msg.identity()
+                                                 .toBytes(),
                                               36
                             ),
                             plainsMessage.sender(),
@@ -78,7 +75,8 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
             } else if (msg instanceof UnknownMessage unknownMessage) {
                 LOGGER.info("Received unknown message at seq {}, id {}, is: {}",
                             databaseIndex,
-                            Mathematics.radix(msg.globalId(),
+                            Mathematics.radix(msg.identity()
+                                                 .toBytes(),
                                               36
                             ),
                             unknownMessage.digest()

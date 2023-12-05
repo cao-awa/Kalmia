@@ -116,4 +116,8 @@ public class BytesReader {
     public int length() {
         return this.bytes.length;
     }
+
+    public BytesReader reader(int length) {
+        return BytesReader.of(read(length));
+    }
 }

@@ -7,7 +7,8 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData
 import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
-import com.github.cao.awa.kalmia.message.display.DisplayMessageContent
+import com.github.cao.awa.kalmia.message.display.ClientMessageContent
+import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
 class UnknownMessage : Message {
@@ -17,10 +18,10 @@ class UnknownMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): UnknownMessage? {
             return if (reader.read().toInt() == 0) {
-                val gid = reader.read(24)
+                val identity = MessageIdentity.create(reader)
                 val data = reader.all()
                 UnknownMessage(
-                    gid,
+                    identity,
                     data
                 )
             } else {
@@ -55,7 +56,7 @@ class UnknownMessage : Message {
         )
     }
 
-    constructor(gid: ByteArray?, msgBytes: ByteArray) : super(gid) {
+    constructor(identity: MessageIdentity, msgBytes: ByteArray) : super(identity) {
         this.msgBytes = msgBytes
         this.digestData = DigestData(
             MessageDigger.Sha3.SHA_512,
@@ -85,8 +86,9 @@ class UnknownMessage : Message {
         return HEADER
     }
 
-    override fun display(): DisplayMessageContent {
-        return DisplayMessageContent(
+    override fun display(): ClientMessageContent {
+        return ClientMessageContent(
+            sender(),
             "PlainsMessage{sender=${sender()}, msg=${Mathematics.radix(details(), 36)}, digest=${digest().value36()}}",
             """
                 This message unable to display, it digest is:
@@ -102,7 +104,7 @@ class UnknownMessage : Message {
     override fun toBytes(): ByteArray {
         return BytesUtil.concat(
             header(),
-            globalId(),
+            identity().toBytes(),
             details()
         )
     }

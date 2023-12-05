@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.deleted.DeletedMessage
+import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.util.function.BiConsumer
 import java.util.function.Consumer
@@ -52,7 +53,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
 
     override operator fun get(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray): Message {
         return get(
-            gid(
+            identity(
                 key(
                     sid,
                     seq
@@ -61,25 +62,37 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         )
     }
 
-    override operator fun get(gid: ByteArray): Message {
+    override operator fun get(identity: ByteArray): Message {
         return cache().get(
-            gid
+            identity
         ) {
             getMessage(it)
         }
     }
 
-    private fun getMessage(gid: ByteArray): Message? {
-        val data = this.delegate[gid] ?: return null;
+    operator fun get(identity: MessageIdentity): Message {
+        return get(identity.toBytes())
+    }
+
+    private fun getMessage(identity: ByteArray): Message? {
+        val data = this.delegate[identity] ?: return null;
         return Message.create(data)
     }
 
-    override fun remove(gid: ByteArray) {
+    fun getMessage(identity: MessageIdentity): Message? {
+        return getMessage(identity.toBytes())
+    }
+
+    override fun remove(identity: ByteArray) {
         cache().delete(
-            gid
+            identity
         ) {
             this.delegate.remove(it)
         }
+    }
+
+    fun remove(identity: MessageIdentity) {
+        remove(identity.toBytes())
     }
 
     override fun remove(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
@@ -87,14 +100,14 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
             sid,
             seq
         )
-        remove(gid(key))
+        remove(identity(key))
         this.delegate.remove(key)
     }
 
-    fun markDelete(gid: ByteArray) {
-        val source = get(gid)
+    fun markDelete(identity: MessageIdentity) {
+        val source = get(identity)
         put(
-            gid,
+            identity.toBytes(),
             DeletedMessage(
                 source.sender(),
                 source.digest()
@@ -104,7 +117,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
 
     fun markDelete(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
         markDelete(
-            gid(
+            identity(
                 key(
                     sid,
                     seq
@@ -113,17 +126,17 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         )
     }
 
-    fun gid(key: ByteArray): ByteArray {
-        return this.delegate[key]
+    fun identity(key: ByteArray): MessageIdentity {
+        return MessageIdentity.create(BytesReader.of(this.delegate[key]))
     }
 
-    fun gid(sid: ByteArray, seq: ByteArray, gid: ByteArray) {
+    fun identity(sid: ByteArray, seq: ByteArray, messageIdentity: MessageIdentity) {
         this.delegate.put(
             key(
                 sid,
                 seq
             ),
-            gid
+            messageIdentity.toBytes()
         )
     }
 
@@ -208,17 +221,24 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         return result
     }
 
-    override fun put(gid: ByteArray, msg: Message) {
+    override fun put(identity: ByteArray, msg: Message) {
         cache().update(
-            gid,
+            identity,
             msg,
             this::update
         )
     }
 
-    private fun update(gid: ByteArray, msg: Message) {
+    fun put(identity: MessageIdentity, msg: Message) {
+        put(
+            identity.toBytes(),
+            msg
+        )
+    }
+
+    private fun update(identity: ByteArray, msg: Message) {
         this.delegate.put(
-            gid,
+            identity,
             msg.toBytes()
         )
     }
@@ -228,10 +248,10 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
 
         // Save the redirector to global id.
-        gid(
+        identity(
             sid,
             nextSeqByte,
-            msg.globalId()
+            msg.identity()
         )
 
         // Update index.
@@ -242,7 +262,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
 
         // Update message.
         put(
-            msg.globalId(),
+            msg.identity(),
             msg
         )
 
