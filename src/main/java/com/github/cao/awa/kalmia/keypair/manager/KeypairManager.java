@@ -5,6 +5,7 @@ import com.github.cao.awa.kalmia.keypair.database.KeypairDatabase;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.security.KeyPair;
@@ -54,11 +55,13 @@ public class KeypairManager {
     public synchronized void publicKey(long seq, PublicKey publicKey) {
         KeyPairStore store = this.database.createStore(SkippedBase256.longToBuf(seq));
 
+        KeyStore<? extends PrivateKey> privateKey = store.privateKey();
+
         this.database.putPublic(SkippedBase256.longToBuf(seq),
                                 KeyStoreIdentity.createKeyPairStore(
                                                         publicKey,
-                                                        store.privateKey()
-                                                             .key()
+                                                        privateKey == null ? BytesUtil.EMPTY : privateKey
+                                                                .key()
                                                 )
                                                 .publicKey()
         );

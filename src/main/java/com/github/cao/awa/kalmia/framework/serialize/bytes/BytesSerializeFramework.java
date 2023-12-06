@@ -265,6 +265,10 @@ public class BytesSerializeFramework extends ReflectionFramework {
         return serializer;
     }
 
+    public <T> BytesSerializer<T> getSerializer(T o) {
+        return EntrustEnvironment.cast(getSerializer(o.getClass()));
+    }
+
     public <T> BytesSerializer<T> getSerializer(long id) {
         return EntrustEnvironment.cast(this.idToSerializer.get(id));
     }

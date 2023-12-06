@@ -5,7 +5,6 @@ import com.github.cao.awa.kalmia.client.KalmiaClient;
 import com.github.cao.awa.kalmia.client.polling.PollingClient;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
-import com.github.cao.awa.kalmia.env.KalmiaPreSharedCipher;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
@@ -25,9 +24,6 @@ import com.github.cao.awa.kalmia.user.UselessUser;
 import com.github.cao.awa.kalmia.user.factor.UserFactor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 
 public class Kalmia {
     private static final Logger LOGGER = LogManager.getLogger("Kalmia");
@@ -119,19 +115,6 @@ public class Kalmia {
                            )
                    )
               );
-
-
-        ECPrivateKey privateKey = KalmiaPreSharedCipher.prikeyManager.get(KalmiaPreSharedCipher.defaultCipherField);
-
-        ECPublicKey publicKey = KalmiaPreSharedCipher.pubkeyManager.get(KalmiaPreSharedCipher.defaultCipherField);
-
-        byte[] result = Crypto.ecEncrypt("A".getBytes(),
-                                         publicKey
-        );
-
-        System.out.println(new String(Crypto.ecDecrypt(result,
-                                                       privateKey
-        )));
     }
 
     public static void setupEnvironment() {

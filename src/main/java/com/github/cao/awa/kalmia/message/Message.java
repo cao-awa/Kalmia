@@ -17,7 +17,7 @@ public abstract class Message implements DigestedObject, ByteArrayConvertable {
     }
 
     public Message() {
-        this.identity = MessageIdentity.create(BytesRandomIdentifier.create(24));
+        this.identity = MessageIdentity.create(BytesRandomIdentifier.create(22));
     }
 
     public abstract long sender();

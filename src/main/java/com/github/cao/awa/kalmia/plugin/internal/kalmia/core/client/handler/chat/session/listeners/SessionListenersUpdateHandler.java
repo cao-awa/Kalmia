@@ -28,31 +28,5 @@ public class SessionListenersUpdateHandler implements SessionListenersUpdateEven
                      );
 
         PollingClient.CLIENT.sessionListenersIdentity(BytesRandomIdentifier.create(24));
-
-        router.executor()
-              .execute(() -> {
-                  for (Long listener : packet.listeners()) {
-//            router.send(new SelectMessagePacket(Packet.createReceipt(),
-//                                                listener,
-//                                                0,
-//                                                Integer.MAX_VALUE
-//            ));
-                      LOGGER.info("----Test display----");
-
-                      Kalmia.CLIENT.getMessages(listener,
-                                                0,
-                                                100,
-                                                true
-                            )
-                                   .forEach(message -> {
-                                       LOGGER.info("---{}: {}---\n{}\n{}",
-                                                   message.sessionId(),
-                                                   message.seq(),
-                                                   message.sourceContent(),
-                                                   message.coverContent()
-                                       );
-                                   });
-                  }
-              });
     }
 }

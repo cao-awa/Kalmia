@@ -16,7 +16,7 @@ public class KeyStoreIdentity {
     public static final int RSA_IDENTITY = 0;
     public static final int EC_IDENTITY = 1;
 
-    public static PublicKey createKey(int identity, byte[] data) {
+    public static PublicKey createPublicKey(int identity, byte[] data) {
         return switch (identity) {
             case RSA_IDENTITY -> Crypto.decodeRsaPubkey(data);
             case EC_IDENTITY -> Crypto.decodeEcPubkey(data);

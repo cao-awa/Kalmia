@@ -63,7 +63,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
 
     @Override
     public byte[] serialize(List<?> list) {
-        if (list.size() < 1) {
+        if (list.size() == 0) {
             return EMPTY;
         }
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -193,7 +193,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return EMPTY;
         }
 
         return output.toByteArray();
@@ -202,7 +202,6 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
     @Override
     public List<?> deserialize(BytesReader reader) {
         try {
-
             reader.flag();
 
             if (reader.read() == - 1) {

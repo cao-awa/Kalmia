@@ -128,6 +128,22 @@ SentMessage
 
 SendMessageRefused
 
+## 150
+
+```
+接收方：服务端
+```
+
+SelectPublicKeyPacket
+
+## 151
+
+```
+接收方：服务端
+```
+
+SelectedPublicKeyPacket
+
 ## 500
 
 ```

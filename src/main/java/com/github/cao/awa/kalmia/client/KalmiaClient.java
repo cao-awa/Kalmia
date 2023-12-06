@@ -15,6 +15,7 @@ import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.pubkey.select.SelectPublicKeyPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.session.manager.SessionManager;
 import com.github.cao.awa.kalmia.user.manager.UserManager;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.security.PublicKey;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -232,15 +234,13 @@ public class KalmiaClient {
                             ).receipt(receipt));
                         }
                 );
+            } else {
+                message = messageManager().get(sessionId,
+                                               messageSeq
+                );
             }
         } catch (InterruptedException ignored) {
 
-        }
-
-        if (message == null) {
-            message = messageManager().get(sessionId,
-                                           messageSeq
-            );
         }
 
         if (message == null) {
@@ -253,5 +253,27 @@ public class KalmiaClient {
                 messageSeq,
                 message.display()
         );
+    }
+
+    public PublicKey getPublicKey(long id, boolean awaitGet) {
+        PublicKey publicKey = null;
+
+        try {
+            if (awaitGet) {
+                byte[] receipt = Packet.createReceipt();
+
+                publicKey = KalmiaEnv.awaitManager.awaitGet(
+                        receipt,
+                        () -> keypairManager().publicKey(id),
+                        () -> router().send(new SelectPublicKeyPacket(id).receipt(receipt))
+                );
+            } else {
+                publicKey = keypairManager().publicKey(id);
+            }
+        } catch (InterruptedException ignored) {
+
+        }
+
+        return publicKey;
     }
 }

@@ -70,4 +70,14 @@ public class UserManager {
                                        listeners
         );
     }
+
+    public List<Long> keyStores(long uid) {
+        return this.database.keyStores(SkippedBase256.longToBuf(uid));
+    }
+
+    public void keyStores(long uid, List<Long> stores) {
+        this.database.keyStores(SkippedBase256.longToBuf(uid),
+                                stores
+        );
+    }
 }
