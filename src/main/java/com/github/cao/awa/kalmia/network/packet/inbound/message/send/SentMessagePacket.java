@@ -21,8 +21,7 @@ public class SentMessagePacket extends Packet<AuthedRequestHandler> {
     private long seq;
 
     @Server
-    public SentMessagePacket(long seq, byte[] receipt) {
-        super(receipt);
+    public SentMessagePacket(long seq) {
         this.seq = seq;
     }
 

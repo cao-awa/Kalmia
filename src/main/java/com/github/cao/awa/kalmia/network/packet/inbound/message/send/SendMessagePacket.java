@@ -31,8 +31,7 @@ public class SendMessagePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Client
-    public SendMessagePacket(long sessionId, Message msg, byte[] receipt) {
-        super(receipt);
+    public SendMessagePacket(long sessionId, Message msg) {
         this.sessionId = sessionId;
         this.msg = msg;
     }

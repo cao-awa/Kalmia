@@ -60,13 +60,12 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
             realSelected = messages.size() - 1;
 
-            router.send(new SelectedMessagePacket(packet.receipt(),
-                                                  packet.sessionId(),
+            router.send(new SelectedMessagePacket(packet.sessionId(),
                                                   current,
                                                   current + realSelected,
                                                   currentSeqEnd,
                                                   messages
-            ));
+            ).receipt(packet.receipt()));
 
             current += selected + 1;
 

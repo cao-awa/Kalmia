@@ -67,9 +67,8 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
                 router.send(new SendMessagePacket(0,
                                                   new PlainsMessage(" awa: " + RandomIdentifier.create(8),
                                                                     packet.uid()
-                                                  ),
-                                                  Packet.createReceipt()
-                ));
+                                                  )
+                ).receipt(Packet.createReceipt()));
             }
         }
 

@@ -172,11 +172,10 @@ public class KalmiaClient {
                                                     return null;
                                                 },
                                                 () -> {
-                                                    router().send(new SelectMessagePacket(receipt,
-                                                                                          sessionId,
+                                                    router().send(new SelectMessagePacket(sessionId,
                                                                                           startSelect,
                                                                                           endSelect
-                                                    ));
+                                                    ).receipt(receipt));
                                                 }
                 );
             } catch (Exception e) {
@@ -216,22 +215,21 @@ public class KalmiaClient {
     }
 
     public ClientMessage getMessages(long sessionId, long messageSeq, boolean awaitGet) {
-        byte[] receipt = Packet.createReceipt();
-
         Message message = null;
         try {
             if (awaitGet) {
+                byte[] receipt = Packet.createReceipt();
+
                 message = KalmiaEnv.awaitManager.awaitGet(
                         receipt,
                         () -> messageManager().get(sessionId,
                                                    messageSeq
                         ),
                         () -> {
-                            router().send(new SelectMessagePacket(receipt,
-                                                                  sessionId,
+                            router().send(new SelectMessagePacket(sessionId,
                                                                   messageSeq,
                                                                   messageSeq
-                            ));
+                            ).receipt(receipt));
                         }
                 );
             }

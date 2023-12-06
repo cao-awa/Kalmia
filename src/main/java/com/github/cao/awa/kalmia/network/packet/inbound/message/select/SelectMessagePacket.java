@@ -27,8 +27,7 @@ public class SelectMessagePacket extends Packet<AuthedRequestHandler> {
     private long to;
 
     @Client
-    public SelectMessagePacket(byte[] receipt, long sessionId, long from, long to) {
-        super(receipt);
+    public SelectMessagePacket(long sessionId, long from, long to) {
         this.sessionId = sessionId;
         this.from = from;
         this.to = to;

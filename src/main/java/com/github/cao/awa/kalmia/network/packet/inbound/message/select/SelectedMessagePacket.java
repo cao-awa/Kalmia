@@ -36,8 +36,7 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     private List<Message> messages;
 
     @Server
-    public SelectedMessagePacket(byte[] receipt, long sessionId, long from, long to, long sessionCurSeq, List<Message> messages) {
-        super(receipt);
+    public SelectedMessagePacket(long sessionId, long from, long to, long sessionCurSeq, List<Message> messages) {
         this.sessionId = sessionId;
         this.from = from;
         this.to = to;

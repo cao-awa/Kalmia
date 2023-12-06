@@ -21,8 +21,7 @@ public class SendMessageRefusedPacket extends Packet<AuthedRequestHandler> {
     private String reason;
 
     @Server
-    public SendMessageRefusedPacket(String reason, byte[] receipt) {
-        super(receipt);
+    public SendMessageRefusedPacket(String reason) {
         this.reason = reason;
     }
 

@@ -56,9 +56,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
                                     );
 
             // Response to client the seq.
-            router.send(new SentMessagePacket(seq,
-                                              packet.receipt()
-            ));
+            router.send(new SentMessagePacket(seq).receipt(packet.receipt()));
 
             LOGGER.info("Sent message: {}",
                         Mathematics.radix(packet.receipt(),
@@ -67,9 +65,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
             );
         } else {
             // Unable to access the session.
-            router.send(new SendMessageRefusedPacket("Session unable to access",
-                                                     packet.receipt()
-            ));
+            router.send(new SendMessageRefusedPacket("Session unable to access").receipt(packet.receipt()));
             LOGGER.warn("The session {} is not accessible",
                         packet.sessionId()
             );
