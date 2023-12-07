@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.network.packet.inbound.pubkey.select;
+package com.github.cao.awa.kalmia.network.packet.inbound.key.select;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
@@ -8,43 +8,40 @@ import com.github.cao.awa.kalmia.annotations.auto.event.network.NetworkEventTarg
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
-import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.pubkey.select.SelectedPublicKeyEvent;
-import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
+import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.key.select.SelectKeyStoreEvent;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-import java.util.Map;
+import java.util.List;
 
-@AutoSolvedPacket(id = 151, crypto = true)
-@NetworkEventTarget(SelectedPublicKeyEvent.class)
-public class SelectedPublicKeyPacket extends Packet<AuthedRequestHandler> {
+@AutoSolvedPacket(id = 150, crypto = true)
+@NetworkEventTarget(SelectKeyStoreEvent.class)
+public class SelectKeyStorePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private Map<Long, KeyPairStore> keys;
+    private List<Long> ids;
 
-    @Server
-    public SelectedPublicKeyPacket(Map<Long, KeyPairStore> keys) {
-        this.keys = keys;
+    @Client
+    public SelectKeyStorePacket(List<Long> ids) {
+        this.ids = ids;
     }
 
-    @Server
-    public SelectedPublicKeyPacket(long id, KeyPairStore key) {
-        this.keys = ApricotCollectionFactor.hashMap();
-        this.keys.put(id,
-                      key
-        );
+    @Client
+    public SelectKeyStorePacket(Long id) {
+        this.ids = ApricotCollectionFactor.arrayList();
+        this.ids.add(id);
     }
 
     @Auto
-    @Client
-    public SelectedPublicKeyPacket(BytesReader reader) {
+    @Server
+    public SelectKeyStorePacket(BytesReader reader) {
         super(reader);
     }
 
     @Getter
-    public Map<Long, KeyPairStore> keys() {
-        return this.keys;
+    public List<Long> ids() {
+        return this.ids;
     }
 }

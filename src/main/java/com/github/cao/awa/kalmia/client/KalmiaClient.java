@@ -4,18 +4,21 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.ClientBootstrapConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.keypair.KeyStoreIdentity;
 import com.github.cao.awa.kalmia.keypair.manager.KeypairManager;
+import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.display.ClientMessage;
 import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.network.io.client.KalmiaClientNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.Packet;
+import com.github.cao.awa.kalmia.network.packet.inbound.key.select.SelectKeyStorePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
-import com.github.cao.awa.kalmia.network.packet.inbound.pubkey.select.SelectPublicKeyPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.session.manager.SessionManager;
 import com.github.cao.awa.kalmia.user.manager.UserManager;
@@ -26,6 +29,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.List;
 import java.util.function.Consumer;
@@ -150,16 +154,33 @@ public class KalmiaClient {
         return userManager().sessionListeners(router().uid());
     }
 
+    public long curMsgSeq(long sessionId, boolean awaitGet) {
+        if (awaitGet) {
+            byte[] receipt = Packet.createReceipt();
+
+            try {
+                return KalmiaEnv.awaitManager.awaitGet(receipt,
+                                                       () -> messageManager().curSeq(sessionId),
+                                                       () -> {
+                                                           router().send(new SelectMessagePacket(sessionId,
+                                                                                                 0,
+                                                                                                 1
+                                                           ).receipt(receipt));
+                                                       },
+                                                       true
+                );
+            } catch (Exception e) {
+                return messageManager().curSeq(sessionId);
+            }
+        } else {
+            return messageManager().curSeq(sessionId);
+        }
+    }
+
     public List<ClientMessage> getMessages(long sessionId, long startSelect, long endSelect, boolean awaitGet) {
         List<ClientMessage> messages = ApricotCollectionFactor.arrayList();
 
-        getMessages(messages,
-                    sessionId,
-                    startSelect,
-                    endSelect
-        );
-
-        if (messages.size() == 0 && awaitGet) {
+        if (awaitGet) {
             byte[] receipt = Packet.createReceipt();
 
             try {
@@ -178,7 +199,8 @@ public class KalmiaClient {
                                                                                           startSelect,
                                                                                           endSelect
                                                     ).receipt(receipt));
-                                                }
+                                                },
+                                                true
                 );
             } catch (Exception e) {
                 messages.clear();
@@ -189,6 +211,12 @@ public class KalmiaClient {
                             endSelect
                 );
             }
+        } else {
+            getMessages(messages,
+                        sessionId,
+                        startSelect,
+                        endSelect
+            );
         }
 
         return messages;
@@ -212,6 +240,7 @@ public class KalmiaClient {
                                }
                     );
         } catch (Exception e) {
+            e.printStackTrace();
             messages.clear();
         }
     }
@@ -265,7 +294,7 @@ public class KalmiaClient {
                 publicKey = KalmiaEnv.awaitManager.awaitGet(
                         receipt,
                         () -> keypairManager().publicKey(id),
-                        () -> router().send(new SelectPublicKeyPacket(id).receipt(receipt))
+                        () -> router().send(new SelectKeyStorePacket(id).receipt(receipt))
                 );
             } else {
                 publicKey = keypairManager().publicKey(id);
@@ -275,5 +304,43 @@ public class KalmiaClient {
         }
 
         return publicKey;
+    }
+
+    public PrivateKey getPrivateKey(long id, boolean awaitGet) {
+        PrivateKey publicKey = null;
+
+        try {
+            if (awaitGet) {
+                byte[] receipt = Packet.createReceipt();
+
+                publicKey = KalmiaEnv.awaitManager.awaitGet(
+                        receipt,
+                        () -> decryptPrivateKey(id),
+                        () -> router().send(new SelectKeyStorePacket(id).receipt(receipt))
+                );
+            } else {
+                publicKey = decryptPrivateKey(id);
+            }
+        } catch (InterruptedException ignored) {
+
+        }
+
+        return publicKey;
+    }
+
+    public PrivateKey decryptPrivateKey(long id) {
+        try {
+            KeyPairStore store = keypairManager().getStore(id);
+            return KeyStoreIdentity.createPrivateKey(
+                    store.type(),
+                    Crypto.aesDecrypt(store.privateKey()
+                                           .key(),
+                                      // TODO
+                                      new byte[]{}
+                    )
+            );
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

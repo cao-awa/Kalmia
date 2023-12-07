@@ -10,10 +10,10 @@ import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSucc
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 
 public interface LoginEventHandler<P extends Packet<?>, E extends NetworkEvent<P>> extends NetworkEventHandler<P, E> {
-    default void loginSuccess(RequestRouter router, long uid, byte[] token) {
+    default void loginSuccess(RequestRouter router, long uid, byte[] token, byte[] receipt) {
         router.send(new LoginSuccessPacket(uid,
                                            token
-        ));
+        ).receipt(receipt));
 
 
         // Update listeners every time when login success.
@@ -21,9 +21,9 @@ public interface LoginEventHandler<P extends Packet<?>, E extends NetworkEvent<P
                                                                   .sessionListeners(router.uid())));
     }
 
-    default void loginFailure(RequestRouter router, long uid, String reason) {
+    default void loginFailure(RequestRouter router, long uid, String reason, byte[] receipt) {
         router.send(new LoginFailurePacket(uid,
                                            reason
-        ));
+        ).receipt(receipt));
     }
 }

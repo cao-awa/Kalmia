@@ -197,6 +197,8 @@ public class BytesSerializeFramework extends ReflectionFramework {
                 );
             }
 
+            System.out.println(object.getClass());
+
             serializer = getSerializer(object.getClass());
 
             return BytesUtil.concat(BytesUtil.arrau(2),

@@ -20,7 +20,8 @@ public class LoginWithTokenHandler implements LoginWithTokenEventHandler {
         loginFailure(
                 router,
                 uid,
-                "login.failure.invalid_token"
+                "login.failure.invalid_token",
+                packet.receipt()
         );
     }
 }

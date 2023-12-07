@@ -5,6 +5,7 @@ import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.send.SendMessageEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
+import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessageRefusedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SentMessagePacket;
@@ -49,10 +50,17 @@ public class SendMessageHandler implements SendMessageEventHandler {
         }
 
         if (accessible) {
+            Message msg = packet.msg();
+
+            if (msg.sender() != router.uid()) {
+                router.send(new SendMessageRefusedPacket("message.send.refused.wrong.sender").receipt(packet.receipt()));
+                return;
+            }
+
             long seq = Kalmia.SERVER.messageManager()
                                     .send(
                                             packet.sessionId(),
-                                            packet.msg()
+                                            msg
                                     );
 
             // Response to client the seq.
@@ -65,7 +73,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
             );
         } else {
             // Unable to access the session.
-            router.send(new SendMessageRefusedPacket("Session unable to access").receipt(packet.receipt()));
+            router.send(new SendMessageRefusedPacket("message.send.refused.session.unable.access").receipt(packet.receipt()));
             LOGGER.warn("The session {} is not accessible",
                         packet.sessionId()
             );

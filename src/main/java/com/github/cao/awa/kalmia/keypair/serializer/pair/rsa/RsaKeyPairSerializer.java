@@ -6,7 +6,7 @@ import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializer;
 import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 
-@AutoBytesSerializer(value = 1001, target = RsaKeyPair.class)
+@AutoBytesSerializer(value = 2001, target = RsaKeyPair.class)
 public class RsaKeyPairSerializer implements BytesSerializer<RsaKeyPair> {
     @Override
     public byte[] serialize(RsaKeyPair target) {

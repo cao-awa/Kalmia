@@ -10,6 +10,7 @@ import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStoreFactor;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
+import com.github.cao.awa.kalmia.message.crypt.AsymmetricCryptedMessage;
 import com.github.cao.awa.kalmia.message.deleted.DeletedMessage;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
@@ -136,11 +137,14 @@ public class Kalmia {
                             DefaultUser :: create
         );
 
+        MessageFactor.register(- 1,
+                               DeletedMessage :: create
+        );
         MessageFactor.register(1,
                                PlainsMessage :: create
         );
-        MessageFactor.register(- 1,
-                               DeletedMessage :: create
+        MessageFactor.register(2,
+                               AsymmetricCryptedMessage :: create
         );
 
         KeyPairStoreFactor.register(0,

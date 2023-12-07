@@ -7,6 +7,7 @@ import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
@@ -20,6 +21,14 @@ public class KeyStoreIdentity {
         return switch (identity) {
             case RSA_IDENTITY -> Crypto.decodeRsaPubkey(data);
             case EC_IDENTITY -> Crypto.decodeEcPubkey(data);
+            default -> throw new IllegalStateException("Unexpected value: " + identity);
+        };
+    }
+
+    public static PrivateKey createPrivateKey(int identity, byte[] data) {
+        return switch (identity) {
+            case RSA_IDENTITY -> Crypto.decodeRsaPrikey(data);
+            case EC_IDENTITY -> Crypto.decodeEcPrikey(data);
             default -> throw new IllegalStateException("Unexpected value: " + identity);
         };
     }

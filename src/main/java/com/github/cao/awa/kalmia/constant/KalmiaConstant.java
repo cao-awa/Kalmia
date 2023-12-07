@@ -16,4 +16,10 @@ public class KalmiaConstant {
 
     public static final String CLIENT_CONFIG_PATH = "configs/client-config.json";
     public static final String CLIENT_DEFAULT_CONFIG_PATH = "kalmiagram/config/default-client-config.json";
+
+    public static final String KEYPAIR_STORAGE_PATH = "ciphers/";
+    public static final String MAIN_KEYPAIR_META_PATH = "ciphers/main/cipher.json";
+    public static final String MAIN_PRIVATE_KEY_PATH = "ciphers/main/SECRET_PRIVATE";
+    public static final String MAIN_PUBLIC_KEY_PATH = "ciphers/main/SECRET_PUBLIC";
+
 }

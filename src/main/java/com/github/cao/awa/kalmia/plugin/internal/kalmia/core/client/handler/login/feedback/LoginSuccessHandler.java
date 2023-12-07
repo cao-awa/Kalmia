@@ -3,8 +3,10 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.log
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.identifier.RandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.feedback.LoginSuccessEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
+import com.github.cao.awa.kalmia.message.crypt.AsymmetricCryptedMessage;
 import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSuccessPacket;
@@ -72,6 +74,18 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
             }
         }
 
+        if (true) {
+            router.send(new SendMessagePacket(0,
+                                              new AsymmetricCryptedMessage(0,
+                                                                           0,
+                                                                           new byte[]{1},
+                                                                           new byte[]{1},
+                                                                           packet.uid()
+                                              )
+            ));
+        }
+
+        KalmiaEnv.awaitManager.notice(packet.receipt());
 
 //        // TODO Test only
 //        router.send(new DeleteMessageRequest(123,

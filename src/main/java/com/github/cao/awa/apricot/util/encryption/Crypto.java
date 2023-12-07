@@ -110,6 +110,60 @@ public class Crypto {
         return cipher.doFinal(content);
     }
 
+    public static byte[] asymmetricEncrypt(byte[] content, PublicKey publicKey) throws Exception {
+        if (publicKey instanceof RSAPublicKey rsa) {
+            return rsaEncrypt(content,
+                              rsa
+            );
+        } else if (publicKey instanceof ECPublicKey ec) {
+            return ecEncrypt(content,
+                             ec
+            );
+        }
+        return content;
+    }
+
+    public static byte[] asymmetricDecrypt(byte[] content, PrivateKey privateKey) throws Exception {
+        if (privateKey instanceof RSAPrivateKey rsa) {
+            return rsaDecrypt(content,
+                              rsa
+            );
+        } else if (privateKey instanceof ECPrivateKey ec) {
+            return ecDecrypt(content,
+                             ec
+            );
+        }
+        return content;
+    }
+
+    public static byte[] asymmetricSign(byte[] content, PrivateKey privateKey) throws Exception {
+        if (privateKey instanceof RSAPrivateKey rsa) {
+            return rsaSign(content,
+                           rsa
+            );
+        } else if (privateKey instanceof ECPrivateKey ec) {
+            return ecSign(content,
+                          ec
+            );
+        }
+        return content;
+    }
+
+    public static boolean asymmetricVerify(byte[] content, byte[] sign, PublicKey publicKey) {
+        if (publicKey instanceof RSAPublicKey rsa) {
+            return rsaVerify(content,
+                             sign,
+                             rsa
+            );
+        } else if (publicKey instanceof ECPublicKey ec) {
+            return ecVerify(content,
+                            sign,
+                            ec
+            );
+        }
+        return false;
+    }
+
     public static RSAPublicKey decodeRsaPubkey(byte[] key) {
         try {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);
@@ -198,11 +252,15 @@ public class Crypto {
     }
 
 
-    public static Boolean ecVerify(byte[] contentSource, byte[] contentSign, ECPublicKey pubKey) throws Exception {
-        Signature sign = Signature.getInstance("SHA512WithECDSA");
-        sign.initVerify(pubKey);
-        sign.update(contentSource);
-        return sign.verify(contentSign);
+    public static Boolean ecVerify(byte[] contentSource, byte[] contentSign, ECPublicKey pubKey) {
+        try {
+            Signature sign = Signature.getInstance("SHA512WithECDSA");
+            sign.initVerify(pubKey);
+            sign.update(contentSource);
+            return sign.verify(contentSign);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static byte[] rsaSign(byte[] content, RSAPrivateKey privateKey) throws Exception {
@@ -213,10 +271,14 @@ public class Crypto {
     }
 
 
-    public static Boolean rsaVerify(byte[] contentSource, byte[] contentSign, RSAPublicKey pubKey) throws Exception {
-        Signature sign = Signature.getInstance("SHA512WithRSA");
-        sign.initVerify(pubKey);
-        sign.update(contentSource);
-        return sign.verify(contentSign);
+    public static Boolean rsaVerify(byte[] contentSource, byte[] contentSign, RSAPublicKey pubKey) {
+        try {
+            Signature sign = Signature.getInstance("SHA512WithRSA");
+            sign.initVerify(pubKey);
+            sign.update(contentSource);
+            return sign.verify(contentSign);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

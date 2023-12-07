@@ -2,7 +2,9 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.log
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.feedback.LoginFailureEventHandler;
+import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginFailurePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -18,6 +20,11 @@ public class LoginFailureHandler implements LoginFailureEventHandler {
         System.out.println("---Login failed---");
         System.out.println("UID: " + packet.uid());
 
+        KalmiaEnv.awaitManager.notice(packet.receipt());
+
+        System.out.println(Mathematics.radix(packet.receipt(),
+                                             36
+        ));
 //        PollingClient.CLIENT.stackingNotice(new StackingLoginFailureNotice(
 //                packet.uid(),
 //                packet.reason()

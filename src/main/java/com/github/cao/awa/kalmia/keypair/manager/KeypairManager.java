@@ -40,6 +40,10 @@ public class KeypairManager {
         return this.database.get(SkippedBase256.longToBuf(seq));
     }
 
+    public KeyPairStore getStore(long seq) {
+        return this.database.createStore(SkippedBase256.longToBuf(seq));
+    }
+
     public synchronized void operation(BiConsumer<Long, KeyPair> action) {
         this.database.operation(action);
     }

@@ -74,6 +74,17 @@ public class AwaitManager {
         return getNow;
     }
 
+    public <T> T awaitGet(byte[] awaitIdentity, Supplier<T> supplier, Runnable trigger, boolean forceAwait) throws InterruptedException {
+        T getNow = forceAwait ? null : EntrustEnvironment.trys(supplier :: get);
+        if (getNow == null) {
+            await(awaitIdentity,
+                  trigger
+            );
+            return supplier.get();
+        }
+        return getNow;
+    }
+
     public void notice(byte[] awaitIdentity) {
         this.awaiting.remove(Mathematics.radix(awaitIdentity,
                                                36

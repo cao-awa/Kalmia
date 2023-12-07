@@ -26,6 +26,6 @@ bin/
 run/
 logs/
 configs/
-databases/
 data/
+ciphers/
 src/main/resources/kalmiagram/secret/main/SECRET_PRIVATE

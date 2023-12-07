@@ -67,8 +67,24 @@ byte[]与Byte[]
 
 # 1000
 
+DeletedMessage
+
+# 1001
+
+PlainsMessage
+
+# 1002
+
+UnknownMessage
+
+# 1003
+
+AsymmetricCryptedMessage
+
+# 2000
+
 EcKeyPair
 
-# 1000
+# 2001
 
 RsaKeyPair

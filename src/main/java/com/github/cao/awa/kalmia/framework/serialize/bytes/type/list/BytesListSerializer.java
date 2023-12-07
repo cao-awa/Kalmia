@@ -193,6 +193,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return EMPTY;
         }
 

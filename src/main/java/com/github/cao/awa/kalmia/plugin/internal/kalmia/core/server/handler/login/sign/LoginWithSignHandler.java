@@ -55,13 +55,15 @@ public class LoginWithSignHandler implements LoginWithSignEventHandler {
             loginSuccess(
                     router,
                     uid,
-                    token
+                    token,
+                    packet.receipt()
             );
         } else {
             loginFailure(
                     router,
                     uid,
-                    "login.failure.unable_to_verify_sign"
+                    "login.failure.unable_to_verify_sign",
+                    packet.receipt()
             );
         }
     }

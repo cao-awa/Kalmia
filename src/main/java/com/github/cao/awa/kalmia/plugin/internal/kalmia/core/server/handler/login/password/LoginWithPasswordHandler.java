@@ -56,13 +56,15 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
             loginSuccess(
                     router,
                     uid,
-                    token
+                    token,
+                    packet.receipt()
             );
         } else {
             loginFailure(
                     router,
                     uid,
-                    "login.failure.pwd_or_uid_is_wrong"
+                    "login.failure.pwd_or_uid_is_wrong",
+                    packet.receipt()
             );
         }
     }

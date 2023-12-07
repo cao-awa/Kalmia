@@ -26,10 +26,16 @@ public class Mathematics {
     }
 
     public static String radix(byte[] data, @Range(from = 2, to = 36) int radix) {
+        if (data.length == 0) {
+            return "0";
+        }
         return new BigInteger(data).toString(radix);
     }
 
     public static String radix(String data, @Range(from = 2, to = 36) int sourceRadix, @Range(from = 2, to = 36) int toRadix) {
+        if (data.length() == 0) {
+            return "0";
+        }
         return new BigInteger(data,
                               sourceRadix
         ).toString(toRadix);

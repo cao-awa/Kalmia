@@ -141,9 +141,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
     }
 
     fun seqAll(@ShouldSkipped sid: ByteArray, action: Consumer<Long>) {
-        val seqByte = this.delegate[sid]
-        var count = if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
-        count++
+        val count = nextSeq(sid) - 1
         if (count > 0) {
             var seq: Long = 0
             while (true) {
@@ -157,7 +155,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
     }
 
     fun seqAll(@ShouldSkipped sid: ByteArray, from: Long, to: Long, action: Consumer<Long>) {
-        val count = curSeq(sid)
+        val count = nextSeq(sid) - 1
         if (count > 0) {
             val endIndex = Math.min(
                 to,
@@ -183,7 +181,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         return if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
     }
 
-    fun curSeq(@ShouldSkipped sid: ByteArray): Long {
+    fun nextSeq(@ShouldSkipped sid: ByteArray): Long {
         val seqByte = this.delegate[sid]
         return if (seqByte == null) 0 else SkippedBase256.readLong(BytesReader.of(seqByte)) + 1
     }
@@ -244,7 +242,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
     }
 
     fun send(@ShouldSkipped sid: ByteArray, msg: Message): Long {
-        val nextSeq = curSeq(sid)
+        val nextSeq = nextSeq(sid)
         val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
 
         // Save the redirector to global id.
