@@ -22,7 +22,7 @@ public class SendMessagePacket extends Packet<AuthedRequestHandler> {
     private long sessionId;
     @AutoData
     @DoNotSet
-    private Message msg;
+    private Message message;
 
     @Auto
     @Server
@@ -31,9 +31,9 @@ public class SendMessagePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Client
-    public SendMessagePacket(long sessionId, Message msg) {
+    public SendMessagePacket(long sessionId, Message message) {
         this.sessionId = sessionId;
-        this.msg = msg;
+        this.message = message;
     }
 
     @Getter
@@ -41,7 +41,7 @@ public class SendMessagePacket extends Packet<AuthedRequestHandler> {
         return this.sessionId;
     }
 
-    public Message msg() {
-        return this.msg;
+    public Message message() {
+        return this.message;
     }
 }

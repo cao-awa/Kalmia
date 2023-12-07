@@ -8,7 +8,7 @@ public record RequestRouterMetadata(byte[] connectionId, long timestamp) {
     public static RequestRouterMetadata create() {
         return new RequestRouterMetadata(
                 BytesRandomIdentifier.create(24),
-                TimeUtil.nano()
+                TimeUtil.millions()
         );
     }
 

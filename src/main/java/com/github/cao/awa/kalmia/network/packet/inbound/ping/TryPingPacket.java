@@ -18,12 +18,12 @@ public class TryPingPacket extends PingPacket {
     public static final byte[] ID = SkippedBase256.longToBuf(4);
 
     public TryPingPacket(byte[] receipt) {
-        super(TimeUtil.nano());
+        super(TimeUtil.millions());
         receipt(receipt);
     }
 
     public TryPingPacket() {
-        super(TimeUtil.nano());
+        super(TimeUtil.millions());
         receipt(BytesRandomIdentifier.create(16));
     }
 

@@ -108,7 +108,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
         val source = get(uid)
         put(
             uid,
-            UselessUser(TimeUtil.nano())
+            UselessUser(TimeUtil.millions())
         )
     }
 

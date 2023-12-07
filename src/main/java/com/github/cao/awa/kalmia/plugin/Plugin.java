@@ -18,6 +18,12 @@ public abstract class Plugin {
         optionalRegisterHandler(handler);
     }
 
+    public void registerHandlers(EventHandler<?>... handlers) {
+        for (EventHandler<?> handler : handlers) {
+            registerHandler(handler);
+        }
+    }
+
     public void forceRegisterHandler(EventHandler<?> handler) {
         KalmiaEnv.eventFramework.registerHandler(handler,
                                                  this

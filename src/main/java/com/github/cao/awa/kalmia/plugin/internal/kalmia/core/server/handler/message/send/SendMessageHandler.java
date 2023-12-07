@@ -36,7 +36,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
                                       36
                     ),
                     packet.sessionId(),
-                    packet.msg()
+                    packet.message()
         );
 
         Session session = Kalmia.SERVER.sessionManager()
@@ -50,7 +50,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
         }
 
         if (accessible) {
-            Message msg = packet.msg();
+            Message msg = packet.message();
 
             if (msg.sender() != router.uid()) {
                 router.send(new SendMessageRefusedPacket("message.send.refused.wrong.sender").receipt(packet.receipt()));

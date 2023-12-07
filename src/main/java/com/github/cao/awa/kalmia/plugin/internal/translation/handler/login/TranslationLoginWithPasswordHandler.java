@@ -13,6 +13,7 @@ import com.github.cao.awa.kalmia.translation.network.packet.meta.status.Translat
 @Auto
 @PluginRegister(name = "kalmia_translation")
 public class TranslationLoginWithPasswordHandler implements TranslationLoginWithPasswordEventHandler {
+    @Auto
     @Override
     public void handle(TranslationRouter router, TranslationLoginWithPasswordPacket packet) {
         RequestRouter requestRouter = KalmiaTranslationEnv.router(router);
