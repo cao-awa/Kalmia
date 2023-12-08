@@ -21,7 +21,7 @@ public class UserManager {
     }
 
     public synchronized void set(long seq, User user) {
-        this.database.put(SkippedBase256.longToBuf(seq),
+        this.database.set(SkippedBase256.longToBuf(seq),
                           user
         );
     }

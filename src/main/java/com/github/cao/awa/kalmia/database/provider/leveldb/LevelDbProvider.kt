@@ -1,62 +1,55 @@
-package com.github.cao.awa.kalmia.database.provider.leveldb;
+package com.github.cao.awa.kalmia.database.provider.leveldb
 
-import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
-import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.Options;
-import org.iq80.leveldb.impl.Iq80DBFactory;
+import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.function.ExceptingSupplier
+import org.iq80.leveldb.CompressionType
+import org.iq80.leveldb.DB
+import org.iq80.leveldb.Options
+import org.iq80.leveldb.impl.Iq80DBFactory
+import java.io.File
+import java.util.function.Supplier
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-import java.util.function.Supplier;
+class LevelDbProvider(cacheDelegate: Supplier<Map<ByteArray, ByteArray>>, path: String) :
+    KeyValueBytesDatabase(cacheDelegate) {
+    private val db: DB
 
-public class LevelDbProvider extends KeyValueBytesDatabase {
-    private final DB db;
-
-    public LevelDbProvider(Supplier<Map<byte[], byte[]>> cacheDelegate, String path) throws IOException {
-        super(cacheDelegate);
-        this.db = new Iq80DBFactory().open(new File(path),
-                                           new Options().createIfMissing(true)
-                                                        .writeBufferSize(1048560 * 16)
-                                                        .compressionType(CompressionType.SNAPPY)
-        );
+    init {
+        db = Iq80DBFactory().open(
+            File(path),
+            Options().createIfMissing(true)
+                .writeBufferSize(1048560 * 16)
+                .compressionType(CompressionType.SNAPPY)
+        )
     }
 
-    @Override
-    public void put(byte[] key, byte[] value) {
+    override fun set(key: ByteArray, value: ByteArray) {
         cache().update(
-                key,
-                value,
-                this.db :: put
-        );
+            key,
+            value,
+            this.db::put
+        )
     }
 
-    @Override
-    public byte[] get(byte[] key) {
-        return cache().get(
-                key,
-                this.db :: get
-        );
+    override fun get(key: ByteArray): ByteArray? {
+        return cache()[key, this.db::get]
     }
 
-    @Override
-    public void remove(byte[] key) {
+    override fun remove(key: ByteArray) {
         cache().delete(
-                key,
-                this.db :: delete
-        );
+            key,
+            this.db::delete
+        )
     }
 
-    public boolean close() {
+    override fun close(): Boolean {
         return EntrustEnvironment.trys(
-                () -> {
-                    this.db.close();
-                    cache().clear();
-                    return true;
-                },
-                () -> false
-        );
+            ExceptingSupplier {
+                db.close()
+                cache().clear()
+                true
+            },
+            ExceptingSupplier { false }
+        )
     }
 }

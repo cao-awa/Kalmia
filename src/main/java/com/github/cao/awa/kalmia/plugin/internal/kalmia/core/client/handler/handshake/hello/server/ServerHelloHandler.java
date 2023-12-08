@@ -4,6 +4,7 @@ import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
+import com.github.cao.awa.kalmia.client.ui.KalmiagramUi;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.hello.server.ServerHelloEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
@@ -57,5 +58,7 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
 //        router.send(new LoginWithPasswordPacket(1,
 //                                                "123456"
 //        ));
+
+        KalmiagramUi.startUi();
     }
 }

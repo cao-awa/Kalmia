@@ -7,6 +7,7 @@ import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
+import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStoreFactor;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
@@ -152,6 +153,9 @@ public class Kalmia {
         );
         KeyPairStoreFactor.register(1,
                                     EcKeyPair :: new
+        );
+        KeyPairStoreFactor.register(123,
+                                    EmptyKeyPair :: new
         );
 
         SessionFactor.register(1,

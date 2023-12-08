@@ -1,7 +1,6 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.login.feedback;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
-import com.github.cao.awa.apricot.identifier.RandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.feedback.LoginSuccessEventHandler;
@@ -14,6 +13,8 @@ import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessage
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
+
+import java.nio.charset.StandardCharsets;
 
 @Auto
 @Client
@@ -67,18 +68,18 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
         if (false) {
             for (int i = 0; i < 1000; i++) {
                 router.send(new SendMessagePacket(0,
-                                                  new PlainsMessage(" awa: " + RandomIdentifier.create(8),
+                                                  new PlainsMessage(" awa: " + i,
                                                                     packet.uid()
                                                   )
                 ).receipt(Packet.createReceipt()));
             }
         }
 
-        if (true) {
+        if (false) {
             router.send(new SendMessagePacket(0,
                                               new AsymmetricCryptedMessage(0,
-                                                                           0,
-                                                                           new byte[]{1},
+                                                                           1,
+                                                                           "Awa".getBytes(StandardCharsets.UTF_8),
                                                                            new byte[]{1},
                                                                            packet.uid()
                                               )

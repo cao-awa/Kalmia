@@ -1,57 +1,45 @@
-package com.github.cao.awa.kalmia.database;
+package com.github.cao.awa.kalmia.database
 
-import com.github.cao.awa.kalmia.database.cache.KeyValueCache;
+import com.github.cao.awa.kalmia.database.cache.KeyValueCache
+import java.util.function.Supplier
 
-import java.util.Map;
-import java.util.function.Supplier;
+abstract class KeyValueDatabase<K, V>(cacheDelegate: Supplier<MutableMap<K, V?>>) {
+    private val cache: KeyValueCache<K, V>
 
-public abstract class KeyValueDatabase<K, V> {
-    private final KeyValueCache<K, V> cache;
-
-    public KeyValueDatabase(Supplier<Map<K, V>> cacheDelegate) {
-        this.cache = new KeyValueCache<>(
-                cacheDelegate.get(),
-                this
-        );
+    init {
+        this.cache = KeyValueCache(cacheDelegate.get())
     }
 
-    public KeyValueCache<K, V> cache() {
-        return this.cache;
-    }
+    fun cache(): KeyValueCache<K, V> = this.cache
 
-    public abstract void put(K key, V value);
-
-    public void put(K key1, K key2, V value) {
+    abstract operator fun set(key: K, value: V)
+    open operator fun set(key1: K, key2: K, value: V) {
         // Redundancy method.
     }
 
-    public void put(K key1, K key2, K key3, V value) {
+    open operator fun set(key1: K, key2: K, key3: K, value: V) {
         // Redundancy method.
     }
 
-    public abstract V get(K key);
-
-    public V get(K key1, K key2) {
+    abstract operator fun get(key: K): V
+    open operator fun get(key1: K, key2: K): V? {
         // Redundancy method.
-        return null;
+        return null
     }
 
-    public V get(K key, K key2, K key3) {
+    open operator fun get(key: K, key2: K, key3: K): V? {
         // Redundancy method.
-        return null;
+        return null
     }
 
-    public abstract void remove(K key);
-
-    public void remove(K key1, K key2) {
+    abstract fun remove(key: K)
+    open fun remove(key1: K, key2: K) {
         // Redundancy method.
     }
 
-    public void remove(K key1, K key2, K key3) {
+    open fun remove(key1: K, key2: K, key3: K) {
         // Redundancy method.
     }
 
-    public boolean close() {
-        return true;
-    }
+    open fun close(): Boolean = true
 }

@@ -21,7 +21,7 @@ public class SessionManager {
     }
 
     public void set(long seq, Session session) {
-        this.database.put(SkippedBase256.longToBuf(seq),
+        this.database.set(SkippedBase256.longToBuf(seq),
                           session
         );
     }

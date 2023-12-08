@@ -66,7 +66,8 @@ public class SendMessageHandler implements SendMessageEventHandler {
             // Response to client the seq.
             router.send(new SentMessagePacket(seq).receipt(packet.receipt()));
 
-            LOGGER.info("Sent message: {}",
+            LOGGER.info("Sent message at seq {}: {}",
+                        seq,
                         Mathematics.radix(packet.receipt(),
                                           36
                         )

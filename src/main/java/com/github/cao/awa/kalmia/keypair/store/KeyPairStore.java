@@ -35,12 +35,27 @@ public abstract class KeyPairStore {
     public abstract KeyStore<? extends PrivateKey> createPrivateStore(byte[] privateKey);
 
     public byte[] toBytes() {
+        byte[] publicKeyData = Base256.tagToBuf(0);
+        byte[] privateKeyData = Base256.tagToBuf(0);
+
+        if (publicKey() != null) {
+            publicKeyData = BytesUtil.concat(
+                    Base256.tagToBuf(publicKey().key().length),
+                    publicKey().key()
+            );
+        }
+
+        if (privateKey() != null) {
+            publicKeyData = BytesUtil.concat(
+                    Base256.tagToBuf(privateKey().key().length),
+                    privateKey().key()
+            );
+        }
+
         return BytesUtil.concat(
                 new byte[]{(byte) type()},
-                Base256.tagToBuf(publicKey().key().length),
-                publicKey().key(),
-                Base256.tagToBuf(privateKey().key().length),
-                privateKey().key()
+                publicKeyData,
+                privateKeyData
         );
     }
 

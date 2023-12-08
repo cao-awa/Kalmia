@@ -5,7 +5,13 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public class SkippedBase256 {
     public static long readLong(BytesReader reader, int length) {
-        return Base256.longFromBuf(reader.reverseRound(8, length));
+        return Base256.longFromBuf(reader.reverseRound(8,
+                                                       length
+        ));
+    }
+
+    public static long readLong(byte[] bytes) {
+        return readLong(BytesReader.of(bytes));
     }
 
     public static long readLong(BytesReader reader) {
@@ -18,6 +24,10 @@ public class SkippedBase256 {
         return Base256.longFromBuf(reader.reverseRound(8,
                                                        length
         ));
+    }
+
+    public static int readInt(byte[] bytes) {
+        return readInt(BytesReader.of(bytes));
     }
 
     public static int readInt(BytesReader reader) {

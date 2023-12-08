@@ -2,18 +2,20 @@ package com.github.cao.awa.kalmia.keypair;
 
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
+import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 
 public class KeyStoreIdentity {
-    public static final int EMPTY_IDENTITY = 0;
+    public static final int EMPTY_IDENTITY = 123;
     public static final int RSA_IDENTITY = 0;
     public static final int EC_IDENTITY = 1;
 
@@ -21,6 +23,7 @@ public class KeyStoreIdentity {
         return switch (identity) {
             case RSA_IDENTITY -> Crypto.decodeRsaPubkey(data);
             case EC_IDENTITY -> Crypto.decodeEcPubkey(data);
+            case EMPTY_IDENTITY -> null;
             default -> throw new IllegalStateException("Unexpected value: " + identity);
         };
     }
@@ -29,6 +32,7 @@ public class KeyStoreIdentity {
         return switch (identity) {
             case RSA_IDENTITY -> Crypto.decodeRsaPrikey(data);
             case EC_IDENTITY -> Crypto.decodeEcPrikey(data);
+            case EMPTY_IDENTITY -> null;
             default -> throw new IllegalStateException("Unexpected value: " + identity);
         };
     }
@@ -41,6 +45,10 @@ public class KeyStoreIdentity {
     }
 
     public static byte getIdentity(PublicKey publicKey) {
+        if (publicKey == null) {
+            return EMPTY_IDENTITY;
+        }
+
         if (publicKey instanceof RSAPublicKey) {
             return RSA_IDENTITY;
         } else if (publicKey instanceof ECPublicKey) {
@@ -58,7 +66,14 @@ public class KeyStoreIdentity {
             case EC_IDENTITY -> new EcKeyPair(publicKey.getEncoded(),
                                               privateKey
             );
+            case EMPTY_IDENTITY -> new EmptyKeyPair();
             default -> throw new IllegalStateException("Unexpected value: " + identity);
         };
+    }
+
+    public static KeyPairStore createKeyPairStore(KeyPair keypair) {
+        return createKeyPairStore(keypair.getPublic(),
+                                  BytesUtil.EMPTY
+        );
     }
 }

@@ -5,6 +5,7 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.client.polling.PollingClient;
+import com.github.cao.awa.kalmia.client.ui.KalmiagramUi;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.in.SessionListenersUpdateEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.listeners.SessionListenersUpdatePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
@@ -28,5 +29,8 @@ public class SessionListenersUpdateHandler implements SessionListenersUpdateEven
                      );
 
         PollingClient.CLIENT.sessionListenersIdentity(BytesRandomIdentifier.create(24));
+
+        KalmiagramUi.setSessionsData(packet.listeners()
+                                           .toArray(Long[] :: new));
     }
 }

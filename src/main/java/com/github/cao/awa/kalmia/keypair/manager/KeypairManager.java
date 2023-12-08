@@ -8,7 +8,6 @@ import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import org.jetbrains.annotations.Nullable;
 
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.function.BiConsumer;
@@ -36,7 +35,7 @@ public class KeypairManager {
     }
 
     @Nullable
-    public synchronized KeyPair get(long seq) {
+    public synchronized KeyPairStore get(long seq) {
         return this.database.get(SkippedBase256.longToBuf(seq));
     }
 
@@ -44,7 +43,7 @@ public class KeypairManager {
         return this.database.createStore(SkippedBase256.longToBuf(seq));
     }
 
-    public synchronized void operation(BiConsumer<Long, KeyPair> action) {
+    public synchronized void operation(BiConsumer<Long, KeyPairStore> action) {
         this.database.operation(action);
     }
 

@@ -160,7 +160,7 @@ public class KalmiaClient {
 
             try {
                 return KalmiaEnv.awaitManager.awaitGet(receipt,
-                                                       () -> messageManager().curSeq(sessionId),
+                                                       () -> messageManager().seq(sessionId),
                                                        () -> {
                                                            router().send(new SelectMessagePacket(sessionId,
                                                                                                  0,
@@ -170,10 +170,10 @@ public class KalmiaClient {
                                                        true
                 );
             } catch (Exception e) {
-                return messageManager().curSeq(sessionId);
+                return messageManager().seq(sessionId);
             }
         } else {
-            return messageManager().curSeq(sessionId);
+            return messageManager().seq(sessionId);
         }
     }
 

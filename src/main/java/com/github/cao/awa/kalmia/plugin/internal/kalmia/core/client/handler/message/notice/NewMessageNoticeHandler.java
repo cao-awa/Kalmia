@@ -35,8 +35,8 @@ public class NewMessageNoticeHandler implements NewMessageNoticeEventHandler {
                      );
 
         Kalmia.CLIENT.messageManager()
-                     .curSeq(packet.sessionId(),
-                             packet.seq()
+                     .seq(packet.sessionId(),
+                          packet.seq()
                      );
 
         if (message instanceof PlainsMessage plain) {

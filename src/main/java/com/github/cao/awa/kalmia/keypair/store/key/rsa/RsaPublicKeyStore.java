@@ -1,9 +1,10 @@
-package com.github.cao.awa.kalmia.keypair.store.key.pub.rsa;
+package com.github.cao.awa.kalmia.keypair.store.key.rsa;
 
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.keypair.exception.UnableToDecodeException;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.security.interfaces.RSAPublicKey;
 
@@ -21,7 +22,7 @@ public class RsaPublicKeyStore extends KeyStore<RSAPublicKey> {
         if (requireFailure) {
             throw new UnableToDecodeException("The public unable to require failure");
         }
-        return Crypto.decodeRsaPubkey(key());
+        return EntrustEnvironment.trys(() -> Crypto.decodeRsaPubkey(key()));
     }
 
     @Override

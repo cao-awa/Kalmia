@@ -19,7 +19,7 @@ public class PollingClient {
 
     public long curMsgSeq(long sessionId) {
         return this.delegate.messageManager()
-                            .curSeq(sessionId);
+                            .seq(sessionId);
     }
 
     public byte[] curSessionListenersIdentity() {

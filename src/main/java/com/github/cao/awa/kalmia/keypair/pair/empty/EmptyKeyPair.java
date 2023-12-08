@@ -1,8 +1,10 @@
-package com.github.cao.awa.kalmia.keypair.pair;
+package com.github.cao.awa.kalmia.keypair.pair.empty;
 
 import com.github.cao.awa.kalmia.keypair.KeyStoreIdentity;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
+import com.github.cao.awa.kalmia.keypair.store.key.empty.EmptyPrivateKeyStore;
+import com.github.cao.awa.kalmia.keypair.store.key.empty.EmptyPublicKeyStore;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 import java.security.PrivateKey;
@@ -15,6 +17,12 @@ public class EmptyKeyPair extends KeyPairStore {
         );
     }
 
+    public EmptyKeyPair(byte[] publicKey, byte[] privateKey) {
+        super(publicKey,
+              privateKey
+        );
+    }
+
     @Override
     public int type() {
         return KeyStoreIdentity.EMPTY_IDENTITY;
@@ -22,11 +30,15 @@ public class EmptyKeyPair extends KeyPairStore {
 
     @Override
     public KeyStore<? extends PublicKey> createPublicStore(byte[] publicKey) {
-        return null;
+        return new EmptyPublicKeyStore(this,
+                                       publicKey
+        );
     }
 
     @Override
     public KeyStore<? extends PrivateKey> createPrivateStore(byte[] privateKey) {
-        return null;
+        return new EmptyPrivateKeyStore(this,
+                                        privateKey
+        );
     }
 }

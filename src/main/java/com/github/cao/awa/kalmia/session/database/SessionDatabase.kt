@@ -15,7 +15,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
-class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(ApricotCollectionFactor::hashMap) {
+class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(ApricotCollectionFactor::hashMap) {
     companion object {
         private val ROOT = byteArrayOf(1)
         private val ACCESSIBLE_DELIMITER = byteArrayOf(123)
@@ -34,7 +34,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
         this.delegate = DatabaseProviders.bytes(path)
     }
 
-    fun operation(action: BiConsumer<Long, Session>) {
+    fun operation(action: BiConsumer<Long, Session?>) {
         val nextSeq = nextSeq()
         if (nextSeq > 0) {
             for (seq in 0 until nextSeq) {
@@ -46,18 +46,18 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
         }
     }
 
-    fun nextSeq(): Long {
+    fun seq(): Long {
         val seqByte = this.delegate[ROOT]
-        val seq = if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
-        return seq + 1
+        return if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
     }
 
-    override operator fun get(@ShouldSkipped sid: ByteArray): Session {
-        return cache().get(
-            sid
-        ) {
-            getSession(it)
-        }
+    fun nextSeq(): Long = seq() + 1
+
+    override operator fun get(@ShouldSkipped sid: ByteArray): Session? {
+        return cache()[
+            sid,
+            { getSession(it) }
+        ]
     }
 
     fun accessible(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray): SessionAccessibleData {
@@ -69,13 +69,10 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
     }
 
     fun accessible(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray, data: SessionAccessibleData) {
-        this.delegate.put(
-            accessibleKey(
-                sid,
-                uid
-            ),
-            data.bytes()
-        )
+        this.delegate[accessibleKey(
+            sid,
+            uid
+        )] = data.bytes()
     }
 
     fun banChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
@@ -84,10 +81,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
             uid
         )
         val accessible = SessionAccessible.banChat(this.delegate[key])
-        this.delegate.put(
-            key,
-            accessible
-        )
+        this.delegate[key] = accessible
     }
 
     fun approveChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
@@ -96,10 +90,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
             uid
         )
         val accessible = SessionAccessible.approveChat(this.delegate[key])
-        this.delegate.put(
-            key,
-            accessible
-        )
+        this.delegate[key] = accessible
     }
 
     private fun getSession(@ShouldSkipped sid: ByteArray): Session {
@@ -126,27 +117,26 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session>(Apric
     }
 
     fun deleteAll() {
-        seqAll { seq: Long -> remove(SkippedBase256.longToBuf(seq!!)) }
+        seqAll { remove(SkippedBase256.longToBuf(it)) }
     }
 
     fun add(session: Session): Long {
         val nextSeq = nextSeq()
         val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
-        put(
+        set(
             nextSeqByte,
             session
         )
-        this.delegate.put(
-            ROOT,
-            nextSeqByte
-        )
+        this.delegate[ROOT] = nextSeqByte
         return nextSeq
     }
 
-    override fun put(@ShouldSkipped seq: ByteArray, session: Session) {
-        this.delegate.put(
-            seq,
-            session.bytes()
-        )
+    override fun set(@ShouldSkipped seq: ByteArray, session: Session?) {
+        if (session == null) {
+            remove(seq)
+            return
+        }
+
+        this.delegate[seq] = session.bytes()
     }
 }

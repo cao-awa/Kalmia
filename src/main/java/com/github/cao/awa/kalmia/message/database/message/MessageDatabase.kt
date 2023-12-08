@@ -14,14 +14,14 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
-class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(ApricotCollectionFactor::hashMap) {
+class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(ApricotCollectionFactor::hashMap) {
     private val delegate: KeyValueBytesDatabase
 
     init {
         this.delegate = DatabaseProviders.bytes(path)
     }
 
-    fun operation(@ShouldSkipped sid: ByteArray, action: BiConsumer<Long, Message>) {
+    fun operation(@ShouldSkipped sid: ByteArray, action: BiConsumer<Long, Message?>) {
         seqAll(
             sid
         ) {
@@ -35,7 +35,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         }
     }
 
-    fun operation(@ShouldSkipped sid: ByteArray, from: Long, to: Long, action: BiConsumer<Long, Message>) {
+    fun operation(@ShouldSkipped sid: ByteArray, from: Long, to: Long, action: BiConsumer<Long, Message?>) {
         seqAll(
             sid,
             from,
@@ -51,31 +51,30 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         }
     }
 
-    override operator fun get(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray): Message {
-        return get(
+    override operator fun get(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray): Message? {
+        return this[
             identity(
                 key(
                     sid,
                     seq
                 )
             )
-        )
+        ]
     }
 
-    override operator fun get(identity: ByteArray): Message {
-        return cache().get(
-            identity
-        ) {
-            getMessage(it)
-        }
+    override operator fun get(identity: ByteArray): Message? {
+        return cache()[
+            identity,
+            { getMessage(it) }
+        ]
     }
 
-    operator fun get(identity: MessageIdentity): Message {
-        return get(identity.toBytes())
+    operator fun get(identity: MessageIdentity): Message? {
+        return this[identity.toBytes()]
     }
 
     private fun getMessage(identity: ByteArray): Message? {
-        val data = this.delegate[identity] ?: return null;
+        val data = this.delegate[identity] ?: return null
         return Message.create(data)
     }
 
@@ -105,13 +104,10 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
     }
 
     fun markDelete(identity: MessageIdentity) {
-        val source = get(identity)
-        put(
-            identity.toBytes(),
-            DeletedMessage(
-                source.sender(),
-                source.digest()
-            )
+        val source = get(identity) ?: return
+        this[identity.toBytes()] = DeletedMessage(
+            source.sender(),
+            source.digest()
         )
     }
 
@@ -131,13 +127,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
     }
 
     fun identity(sid: ByteArray, seq: ByteArray, messageIdentity: MessageIdentity) {
-        this.delegate.put(
-            key(
-                sid,
-                seq
-            ),
-            messageIdentity.toBytes()
-        )
+        this.delegate[key(sid, seq)] = messageIdentity.toBytes()
     }
 
     fun seqAll(@ShouldSkipped sid: ByteArray, action: Consumer<Long>) {
@@ -172,25 +162,15 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         }
     }
 
-    fun present(key: ByteArray): Boolean {
-        return this.delegate[key] != null
-    }
-
     fun seq(@ShouldSkipped sid: ByteArray): Long {
         val seqByte = this.delegate[sid]
         return if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
     }
 
-    fun nextSeq(@ShouldSkipped sid: ByteArray): Long {
-        val seqByte = this.delegate[sid]
-        return if (seqByte == null) 0 else SkippedBase256.readLong(BytesReader.of(seqByte)) + 1
-    }
+    fun nextSeq(@ShouldSkipped sid: ByteArray): Long = seq(sid) + 1
 
-    fun curSeq(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
-        this.delegate.put(
-            sid,
-            seq
-        )
+    fun seq(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
+        this.delegate[sid] = seq
     }
 
     fun deleteAll(@ShouldSkipped sid: ByteArray) {
@@ -215,11 +195,11 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         val result: Set<Long> = ApricotCollectionFactor.hashSet()
         operation(
             sid
-        ) { seq: Long, msg: Message -> }
+        ) { _, _ -> }
         return result
     }
 
-    override fun put(identity: ByteArray, msg: Message) {
+    override fun set(identity: ByteArray, msg: Message?) {
         cache().update(
             identity,
             msg,
@@ -228,17 +208,15 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
     }
 
     fun put(identity: MessageIdentity, msg: Message) {
-        put(
-            identity.toBytes(),
-            msg
-        )
+        this[identity.toBytes()] = msg
     }
 
-    private fun update(identity: ByteArray, msg: Message) {
-        this.delegate.put(
-            identity,
-            msg.toBytes()
-        )
+    private fun update(identity: ByteArray, msg: Message?) {
+        if (msg == null) {
+            this.remove(identity)
+        } else {
+            this.delegate[identity] = msg.toBytes()
+        }
     }
 
     fun send(@ShouldSkipped sid: ByteArray, msg: Message): Long {
@@ -253,7 +231,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message>(Apric
         )
 
         // Update index.
-        curSeq(
+        seq(
             sid,
             nextSeqByte
         )

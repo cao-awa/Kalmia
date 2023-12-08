@@ -32,8 +32,8 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
         Message[] messages = packet.messages()
                                    .toArray(Message[] :: new);
 
-        manager.curSeq(packet.sessionId(),
-                       packet.sessionCurSeq()
+        manager.seq(packet.sessionId(),
+                    packet.sessionCurSeq()
         );
 
         long databaseIndex = packet.from();

@@ -111,6 +111,10 @@ public class Crypto {
     }
 
     public static byte[] asymmetricEncrypt(byte[] content, PublicKey publicKey) throws Exception {
+        if (publicKey == null) {
+            throw new NullPointerException("The public key should not be null");
+        }
+
         if (publicKey instanceof RSAPublicKey rsa) {
             return rsaEncrypt(content,
                               rsa
@@ -124,6 +128,10 @@ public class Crypto {
     }
 
     public static byte[] asymmetricDecrypt(byte[] content, PrivateKey privateKey) throws Exception {
+        if (privateKey == null) {
+            throw new NullPointerException("The private key should not be null");
+        }
+
         if (privateKey instanceof RSAPrivateKey rsa) {
             return rsaDecrypt(content,
                               rsa
@@ -137,6 +145,10 @@ public class Crypto {
     }
 
     public static byte[] asymmetricSign(byte[] content, PrivateKey privateKey) throws Exception {
+        if (privateKey == null) {
+            throw new NullPointerException("The private key should not be null");
+        }
+
         if (privateKey instanceof RSAPrivateKey rsa) {
             return rsaSign(content,
                            rsa
@@ -150,6 +162,10 @@ public class Crypto {
     }
 
     public static boolean asymmetricVerify(byte[] content, byte[] sign, PublicKey publicKey) {
+        if (publicKey == null) {
+            throw new NullPointerException("The public key should not be null");
+        }
+
         if (publicKey instanceof RSAPublicKey rsa) {
             return rsaVerify(content,
                              sign,

@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.message.crypt
 import com.github.cao.awa.apricot.annotations.auto.Auto
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.apricot.util.digger.MessageDigger
+import com.github.cao.awa.apricot.util.digger.MessageDigger.Sha3
 import com.github.cao.awa.apricot.util.encryption.Crypto
 import com.github.cao.awa.kalmia.bootstrap.Kalmia
 import com.github.cao.awa.kalmia.mathematic.Mathematics
@@ -67,42 +68,42 @@ class AsymmetricCryptedMessage : Message {
     }
 
     override fun display(): ClientMessageContent {
+        val msg = try {
+            String(
+                Crypto.asymmetricDecrypt(msg(), Kalmia.CLIENT.getPrivateKey(keyId(), true)),
+                StandardCharsets.UTF_8
+            )
+        } catch (ex: Exception) {
+            "The message is unable to decrypt, because: $ex"
+        }
+
+        val verified = try {
+            Crypto.asymmetricVerify(
+                msg(),
+                sign(),
+                Kalmia.CLIENT.getPublicKey(signId(), true)
+            )
+        } catch (ex: Exception) {
+            false
+        }
+
         try {
             return ClientMessageContent(
                 sender(),
-                "AsymmetricCryptedMessage{sender=${sender()}, keyId=${keyId()}, signId=${signId()}, msg=${
-                    Mathematics.radix(
-                        msg(),
-                        36
-                    )
-                }, sign=${Mathematics.radix(sign(), 36)}, digest=${digest().value36()}, verified=${
-                    Crypto.asymmetricVerify(
-                        msg(),
-                        sign(),
-                        Kalmia.CLIENT.getPublicKey(signId(), true)
-                    )
-                }}",
-                String(
-                    Crypto.asymmetricDecrypt(msg(), Kalmia.CLIENT.getPrivateKey(keyId(), true)),
-                    StandardCharsets.UTF_8
-                )
+                "AsymmetricCryptedMessage{sender=${sender()}, keyId=${keyId()}, signId=${signId()}, msg=${msg}, sign=${
+                    MessageDigger.digest(sign(), Sha3.SHA_512)
+                }, digest36${digest().value36()}, verified=${verified}}",
+                msg
             )
         } catch (ex: Exception) {
             return ClientMessageContent(
                 sender(),
                 "AsymmetricCryptedMessage{sender=${sender()}, keyId=${keyId()}, signId=${signId()}, msg=${
-                    Mathematics.radix(
-                        msg(),
-                        36
-                    )
-                }, sign=${Mathematics.radix(sign(), 36)}, digest=${digest().value36()}, verified=${
-                    Crypto.asymmetricVerify(
-                        msg(),
-                        sign(),
-                        Kalmia.CLIENT.getPublicKey(signId(), true)
-                    )
-                }}",
-                "The message is unable to decrypt, because: $ex"
+                    MessageDigger.digest(msg(), Sha3.SHA_512)
+                }, sign=${
+                    MessageDigger.digest(sign(), Sha3.SHA_512)
+                }, digest36=${digest().value36()}, verified=${verified}}",
+                msg
             )
         }
     }

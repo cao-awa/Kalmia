@@ -43,7 +43,7 @@ public class KalmiagramUi {
         JList<String> messageList = new JList<>();
         messageList.setBounds(200,
                               0,
-                              400,
+                              4000,
                               600
         );
         messagingPanel.add(messageList);

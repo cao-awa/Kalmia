@@ -1,9 +1,10 @@
-package com.github.cao.awa.kalmia.keypair.store.key.pri.rsa;
+package com.github.cao.awa.kalmia.keypair.store.key.rsa;
 
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.keypair.exception.NotEncryptedException;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.security.interfaces.RSAPrivateKey;
 
@@ -27,7 +28,7 @@ public class RsaPrivateKeyStore extends KeyStore<RSAPrivateKey> {
                 return null;
             }
         }
-        return Crypto.decodeRsaPrikey(key());
+        return EntrustEnvironment.trys(() -> Crypto.decodeRsaPrikey(key()));
     }
 
     @Override

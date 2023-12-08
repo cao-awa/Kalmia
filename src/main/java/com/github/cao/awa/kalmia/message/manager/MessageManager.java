@@ -50,7 +50,7 @@ public class MessageManager {
         return this.database.seq(SkippedBase256.longToBuf(sid));
     }
 
-    public synchronized long curSeq(long sid) {
+    public synchronized long nextSeq(long sid) {
         return this.database.nextSeq(SkippedBase256.longToBuf(sid));
     }
 
@@ -70,9 +70,9 @@ public class MessageManager {
         );
     }
 
-    public void curSeq(long sid, long seq) {
-        this.database.curSeq(SkippedBase256.longToBuf(sid),
-                             SkippedBase256.longToBuf(seq)
+    public void seq(long sid, long seq) {
+        this.database.seq(SkippedBase256.longToBuf(sid),
+                          SkippedBase256.longToBuf(seq)
         );
     }
 }

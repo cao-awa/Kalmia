@@ -3,8 +3,8 @@ package com.github.cao.awa.kalmia.keypair.pair.rsa;
 import com.github.cao.awa.kalmia.keypair.KeyStoreIdentity;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
-import com.github.cao.awa.kalmia.keypair.store.key.pri.rsa.RsaPrivateKeyStore;
-import com.github.cao.awa.kalmia.keypair.store.key.pub.rsa.RsaPublicKeyStore;
+import com.github.cao.awa.kalmia.keypair.store.key.rsa.RsaPrivateKeyStore;
+import com.github.cao.awa.kalmia.keypair.store.key.rsa.RsaPublicKeyStore;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;

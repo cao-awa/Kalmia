@@ -15,7 +15,7 @@ import java.io.ByteArrayOutputStream
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
-class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotCollectionFactor::hashMap) {
+class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User?>(ApricotCollectionFactor::hashMap) {
     companion object {
         private val ROOT = byteArrayOf(1)
         private val SESSION_DELIMITER = byteArrayOf(-127)
@@ -58,10 +58,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
                 output.writeBytes(SkippedBase256.longToBuf(it))
             }
 
-            this.delegate.put(
-                key,
-                output.toByteArray()
-            )
+            this.delegate[key] = output.toByteArray()
 
             output.close()
         } catch (ex: Exception) {
@@ -69,7 +66,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
         }
     }
 
-    fun operation(action: BiConsumer<Long, User>) {
+    fun operation(action: BiConsumer<Long, User?>) {
         val nextSeq = nextSeq()
         if (nextSeq > 0) {
             for (seq in 0 until nextSeq) {
@@ -81,12 +78,11 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
         }
     }
 
-    override operator fun get(@ShouldSkipped uid: ByteArray): User {
-        return cache().get(
-            uid
-        ) {
-            getUser(it)
-        }
+    override operator fun get(@ShouldSkipped uid: ByteArray): User? {
+        return cache()[
+            uid,
+            { getUser(it) }
+        ]
     }
 
     private fun getUser(uid: ByteArray): User? {
@@ -105,8 +101,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
     }
 
     fun markUseless(@ShouldSkipped uid: ByteArray) {
-        val source = get(uid)
-        put(
+        set(
             uid,
             UselessUser(TimeUtil.millions())
         )
@@ -122,34 +117,31 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
     }
 
     fun uselessAll() {
-        seqAll { seq: Long -> markUseless(SkippedBase256.longToBuf(seq!!)) }
+        seqAll { markUseless(SkippedBase256.longToBuf(it)) }
     }
 
     fun add(user: User): Long {
         val nextSeq = nextSeq()
         val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
-        this.delegate.put(
-            nextSeqByte,
-            user.toBytes()
-        )
-        this.delegate.put(
-            ROOT,
-            nextSeqByte
-        )
+        this[nextSeqByte] = user
+        this.delegate[ROOT] = nextSeqByte
         return nextSeq
     }
 
-    fun nextSeq(): Long {
+    fun seq(): Long {
         val seqByte = this.delegate[ROOT]
-        val seq = if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
-        return seq + 1
+        return if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
     }
 
-    override fun put(@ShouldSkipped seq: ByteArray, user: User) {
-        this.delegate.put(
-            seq,
-            user.toBytes()
-        )
+    fun nextSeq(): Long = seq() + 1
+
+    override fun set(@ShouldSkipped seq: ByteArray, user: User?) {
+        if (user == null) {
+            markUseless(seq)
+            return
+        }
+
+        this.delegate[seq] = user.toBytes()
     }
 
     fun session(@ShouldSkipped firstUserSeq: ByteArray, @ShouldSkipped targetUserSeq: ByteArray): ByteArray? {
@@ -164,13 +156,10 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
         @ShouldSkipped targetUserSeq: ByteArray,
         @ShouldSkipped sessionId: ByteArray
     ) {
-        this.delegate.put(
-            sessionKey(
-                firstUserSeq,
-                targetUserSeq
-            ),
-            sessionId
-        )
+        this.delegate[sessionKey(
+            firstUserSeq,
+            targetUserSeq
+        )] = sessionId
     }
 
     private fun sessionKey(@ShouldSkipped firstUserSeq: ByteArray, @ShouldSkipped targetUserSeq: ByteArray): ByteArray =
@@ -199,10 +188,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User>(ApricotColl
                 output.writeBytes(SkippedBase256.longToBuf(it))
             }
 
-            this.delegate.put(
-                sessionListenersKey(seq),
-                output.toByteArray()
-            )
+            this.delegate[sessionListenersKey(seq)] = output.toByteArray()
 
             output.close()
         } catch (ex: Exception) {
