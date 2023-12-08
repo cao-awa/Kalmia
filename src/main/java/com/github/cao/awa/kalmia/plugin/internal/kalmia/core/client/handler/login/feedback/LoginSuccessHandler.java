@@ -12,8 +12,10 @@ import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSucc
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
+import com.github.cao.awa.kalmia.resource.upload.ResourceUpload;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 @Auto
@@ -87,6 +89,15 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
         }
 
         KalmiaEnv.awaitManager.notice(packet.receipt());
+
+        if (false) {
+            router.executor()
+                  .execute(() -> {
+                      ResourceUpload.upload(new File("E:\\Codes\\Java\\Kalmia\\res\\a.jpg"),
+                                            router
+                      );
+                  });
+        }
 
 //        // TODO Test only
 //        router.send(new DeleteMessageRequest(123,

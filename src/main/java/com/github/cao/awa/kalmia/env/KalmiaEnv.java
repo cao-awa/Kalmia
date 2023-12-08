@@ -15,8 +15,11 @@ import com.github.cao.awa.kalmia.framework.plugin.PluginFramework;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializeFramework;
 import com.github.cao.awa.kalmia.framework.serialize.json.JsonSerializeFramework;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
+import com.github.cao.awa.kalmia.resource.manager.ResourcesManager;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+
+import java.io.File;
 
 public class KalmiaEnv {
     public static final String VERSION = "1.0.0";
@@ -84,6 +87,12 @@ public class KalmiaEnv {
     public static final EventFramework eventFramework = new EventFramework();
     public static final NetworkEventFramework networkEventFramework = new NetworkEventFramework();
     public static final AwaitManager awaitManager = new AwaitManager();
+
+    static {
+        new File("data/resources").mkdirs();
+    }
+
+    public static final ResourcesManager resourceManager = new ResourcesManager("data/resources");
 
     public static void setupClient() {
         UnsolvedPacketFactor.register();

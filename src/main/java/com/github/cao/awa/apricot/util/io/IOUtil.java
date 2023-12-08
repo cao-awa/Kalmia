@@ -294,32 +294,6 @@ public class IOUtil {
      * @author cao_awa
      * @since 1.0.0
      */
-    public static byte[] readBytes(Reader input) throws IOException {
-        char[] chars = new char[4096];
-        int length;
-        StringBuilder builder = new StringBuilder();
-        while ((length = input.read(chars)) != - 1) {
-            builder.append(
-                    chars,
-                    0,
-                    length
-            );
-        }
-        input.close();
-        return builder.toString()
-                      .getBytes();
-    }
-
-    /**
-     * Read input.
-     *
-     * @param input
-     *         Input
-     * @throws IOException
-     *         Happened IO error
-     * @author cao_awa
-     * @since 1.0.0
-     */
     public static char[] readChars(InputStream input) throws IOException {
         return readChars(new InputStreamReader(input));
     }
@@ -360,7 +334,7 @@ public class IOUtil {
     public static void copy(File from, File to) throws IOException {
         BufferedInputStream input = new BufferedInputStream(new FileInputStream(from));
         BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(to));
-        byte[] buff = new byte[8192];
+        byte[] buff = new byte[16384];
         int length;
         while ((length = input.read(
                 buff,

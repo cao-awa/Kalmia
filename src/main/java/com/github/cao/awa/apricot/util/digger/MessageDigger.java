@@ -40,6 +40,14 @@ public class MessageDigger {
         );
     }
 
+    public static byte[] digestFileToBytes(File file, DigestAlgorithm sha) throws Exception {
+        return Mathematics.toBytes(digestFile(file,
+                                              sha
+                                   ),
+                                   16
+        );
+    }
+
     public static String digestFile(File file, DigestAlgorithm sha) throws Exception {
         if (! file.isFile()) {
             return "0";

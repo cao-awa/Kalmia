@@ -182,7 +182,7 @@ LoginSuccess
 接收方：双方
 ```
 
-Disconnect
+TryDisconnect
 
 ## 123456
 
@@ -194,4 +194,24 @@ NotDoneSettings
 
 ## 200000
 
+```
+接收方：客户端 
+```
+
 NewMessageNotice
+
+## 300000
+
+```
+接收方：双方 
+```
+
+WriteResourcePacket
+
+## 300001
+
+```
+接收方：双方 
+```
+
+RequestNextResourceShardPacket
