@@ -1,17 +1,12 @@
 package com.github.cao.awa.kalmia.plugin.internal.eventbus.handler.chat.session.request;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
-import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.request.RequestGroupSessionEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestGroupSessionPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.plugin.internal.eventbus.EventBus;
-import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
-@Auto
-@Client
-@PluginRegister(name = "kalmia_eventbus")
 public class RequestGroupSessionEventBus extends EventBus<RequestGroupSessionEventBusHandler> implements RequestGroupSessionEventHandler {
     @Auto
     @Server

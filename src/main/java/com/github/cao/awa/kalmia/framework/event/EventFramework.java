@@ -310,7 +310,7 @@ public class EventFramework extends ReflectionFramework {
     public boolean missingHandler(List<EventHandler<?>> handlers, Event event) {
         if (handlers == null) {
             LOGGER.warn(
-                    "No handler(s) can process the happening event {}",
+                    "No handler(s) can process the happening event '{}'",
                     event.getClass()
                          .getName()
             );

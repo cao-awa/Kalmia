@@ -1,16 +1,12 @@
 package com.github.cao.awa.kalmia.plugin.internal.eventbus.handler.login.feedback;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
-import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.feedback.LoginSuccessEventHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.plugin.internal.eventbus.EventBus;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
-@Auto
-@Client
-@PluginRegister(name = "kalmia_eventbus")
 public class LoginSuccessEventBus extends EventBus<LoginSuccessEventBusHandler> implements LoginSuccessEventHandler {
     @Auto
     @Client

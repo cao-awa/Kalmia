@@ -29,7 +29,6 @@ import com.github.cao.awa.kalmia.plugin.internal.eventbus.handler.message.send.S
 import com.github.cao.awa.kalmia.plugin.internal.eventbus.handler.message.send.SentMessageEventBus;
 import com.github.cao.awa.kalmia.plugin.internal.eventbus.handler.ping.TryPingEventBus;
 import com.github.cao.awa.kalmia.plugin.internal.eventbus.handler.ping.TryPingResponseEventBus;
-import com.github.cao.awa.kalmia.server.KalmiaServer;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
@@ -37,8 +36,8 @@ import org.apache.logging.log4j.Logger;
 
 @Auto
 @AutoPlugin(
-        name = "kalmia_translation",
-        uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE817"
+        name = "kalmia_eventbus",
+        uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE818"
 )
 public class KalmiaEventBus extends Plugin {
     private static final Logger LOGGER = LogManager.getLogger("KalmiaTranslation");
@@ -98,7 +97,7 @@ public class KalmiaEventBus extends Plugin {
 
     @Override
     public void onLoad() {
-        LOGGER.info("Loading kalmia translation");
+        LOGGER.info("Loading kalmia eventbus");
         registerHandlers(
                 chatInSession,
                 sessionListenersUpdate,
@@ -128,11 +127,5 @@ public class KalmiaEventBus extends Plugin {
                 tryPing,
                 tryPingResponse
         );
-    }
-
-    @Override
-    public boolean canLoad() {
-        return KalmiaServer.serverBootstrapConfig.translation()
-                                                 .enable();
     }
 }
