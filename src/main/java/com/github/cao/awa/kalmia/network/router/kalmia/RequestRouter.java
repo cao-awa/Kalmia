@@ -237,11 +237,6 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
         this.context.writeAndFlush(packet);
     }
 
-    @Deprecated
-    public void send(byte[] bytes) {
-        this.context.writeAndFlush(bytes);
-    }
-
     public void setCrypto(TransportLayerCrypto crypto) {
         this.transportLayer.setCrypto(crypto);
     }

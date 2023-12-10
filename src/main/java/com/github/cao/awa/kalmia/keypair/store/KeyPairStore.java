@@ -38,15 +38,15 @@ public abstract class KeyPairStore {
         byte[] publicKeyData = Base256.tagToBuf(0);
         byte[] privateKeyData = Base256.tagToBuf(0);
 
-        if (publicKey() != null) {
+        if (publicKey().key().length > 0) {
             publicKeyData = BytesUtil.concat(
                     Base256.tagToBuf(publicKey().key().length),
                     publicKey().key()
             );
         }
 
-        if (privateKey() != null) {
-            publicKeyData = BytesUtil.concat(
+        if (privateKey().key().length > 0) {
+            privateKeyData = BytesUtil.concat(
                     Base256.tagToBuf(privateKey().key().length),
                     privateKey().key()
             );
@@ -62,8 +62,8 @@ public abstract class KeyPairStore {
     public static KeyPairStore create(BytesReader reader) {
         int type = reader.read();
 
-        byte[] publicKey = reader.read(Base256.tagFromBuf(reader.read(2)));
-        byte[] privateKey = reader.read(Base256.tagFromBuf(reader.read(2)));
+        byte[] publicKey = reader.read(Base256.readTag(reader));
+        byte[] privateKey = reader.read(Base256.readTag(reader));
 
         return KeyPairStoreFactor.create(type,
                                          publicKey,

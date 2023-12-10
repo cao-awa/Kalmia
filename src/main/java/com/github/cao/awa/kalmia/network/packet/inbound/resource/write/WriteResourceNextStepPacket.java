@@ -7,23 +7,23 @@ import com.github.cao.awa.kalmia.annotations.auto.event.network.NetworkEventTarg
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
-import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.resource.write.RequestNextResourceShardEvent;
+import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.resource.write.WriteResourceNextStepEvent;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 
 @AutoSolvedPacket(id = 300001, crypto = true)
-@NetworkEventTarget(RequestNextResourceShardEvent.class)
-public class RequestNextResourceShardPacket extends Packet<AuthedRequestHandler> {
+@NetworkEventTarget(WriteResourceNextStepEvent.class)
+public class WriteResourceNextStepPacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
     private boolean expectStop;
 
-    public RequestNextResourceShardPacket(boolean expectStop) {
+    public WriteResourceNextStepPacket(boolean expectStop) {
         this.expectStop = expectStop;
     }
 
     @Auto
-    public RequestNextResourceShardPacket(BytesReader reader) {
+    public WriteResourceNextStepPacket(BytesReader reader) {
         super(reader);
     }
 

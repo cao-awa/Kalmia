@@ -33,6 +33,23 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
             return;
         }
 
+        if (packet.from() == packet.to()) {
+            List<Message> messages = ApricotCollectionFactor.arrayList();
+
+            messages.add(manager.get(packet.sessionId(),
+                                     packet.from()
+            ));
+
+            router.send(new SelectedMessagePacket(packet.sessionId(),
+                                                  packet.from(),
+                                                  packet.to(),
+                                                  currentSeqEnd,
+                                                  messages
+            ).receipt(packet.receipt()));
+
+            return;
+        }
+
         List<Message> messages = ApricotCollectionFactor.arrayList(200);
 
         long to = Math.min(packet.to(),

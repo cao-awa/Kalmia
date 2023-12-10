@@ -206,7 +206,7 @@ NewMessageNotice
 接收方：双方 
 ```
 
-WriteResourcePacket
+WriteResource
 
 ## 300001
 
@@ -214,4 +214,4 @@ WriteResourcePacket
 接收方：双方 
 ```
 
-RequestNextResourceShardPacket
+WriteResourceNextStep

@@ -11,7 +11,7 @@ public abstract class KeyStore<T extends Key> {
 
     public abstract T decode(boolean requireFailure);
 
-    public abstract KeyPairStore keypairStone();
+    public abstract KeyPairStore keypairStore();
 
     public abstract byte[] key();
 }

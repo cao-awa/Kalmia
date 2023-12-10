@@ -32,7 +32,7 @@ public class RsaPrivateKeyStore extends KeyStore<RSAPrivateKey> {
     }
 
     @Override
-    public KeyPairStore keypairStone() {
+    public KeyPairStore keypairStore() {
         return this.store;
     }
 

@@ -18,13 +18,12 @@ public class SelectedKeyStoreHandler implements SelectedKeyStoreEventHandler {
     @Override
     public void handle(RequestRouter router, SelectedKeyStorePacket packet) {
         packet.keys()
-              .forEach((id, key) -> {
-                  System.out.println("Selected public key: " + id + " " + key.type());
+              .forEach((id, store) -> {
+                  System.out.println("Selected public key: " + id + " " + store.type());
 
                   Kalmia.CLIENT.keypairManager()
-                               .publicKey(id,
-                                          key.publicKey()
-                                             .decode()
+                               .set(id,
+                                    store
                                );
               });
 

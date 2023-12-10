@@ -56,6 +56,10 @@ public class KalmiaPreSharedCipher {
         assert metadata != null;
         String cipherName = metadata.getString("cipher-name");
 
+        LOGGER.info("Loading cipher {}",
+                    cipherName
+        );
+
         setupPublicKey(secretPublicFile,
                        cipherName
         );

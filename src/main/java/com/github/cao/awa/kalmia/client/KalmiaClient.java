@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class KalmiaClient {
@@ -164,7 +165,7 @@ public class KalmiaClient {
                                                        () -> {
                                                            router().send(new SelectMessagePacket(sessionId,
                                                                                                  0,
-                                                                                                 1
+                                                                                                 0
                                                            ).receipt(receipt));
                                                        },
                                                        true
@@ -177,8 +178,8 @@ public class KalmiaClient {
         }
     }
 
-    public List<ClientMessage> getMessages(long sessionId, long startSelect, long endSelect, boolean awaitGet) {
-        List<ClientMessage> messages = ApricotCollectionFactor.arrayList();
+    public List<Message> getMessages(long sessionId, long startSelect, long endSelect, boolean awaitGet) {
+        List<Message> messages = ApricotCollectionFactor.arrayList();
 
         if (awaitGet) {
             byte[] receipt = Packet.createReceipt();
@@ -186,10 +187,10 @@ public class KalmiaClient {
             try {
                 KalmiaEnv.awaitManager.awaitGet(receipt,
                                                 () -> {
-                                                    getMessages(messages,
-                                                                sessionId,
-                                                                startSelect,
-                                                                endSelect
+                                                    operationMessages((seq, msg) -> messages.add(msg),
+                                                                      sessionId,
+                                                                      startSelect,
+                                                                      endSelect
                                                     );
 
                                                     return null;
@@ -205,47 +206,33 @@ public class KalmiaClient {
             } catch (Exception e) {
                 messages.clear();
 
-                getMessages(messages,
-                            sessionId,
-                            startSelect,
-                            endSelect
+                operationMessages((seq, msg) -> messages.add(msg),
+                                  sessionId,
+                                  startSelect,
+                                  endSelect
                 );
             }
         } else {
-            getMessages(messages,
-                        sessionId,
-                        startSelect,
-                        endSelect
+            operationMessages((seq, msg) -> messages.add(msg),
+                              sessionId,
+                              startSelect,
+                              endSelect
             );
         }
 
         return messages;
     }
 
-    public void getMessages(List<ClientMessage> messages, long sessionId, long startSelect, long endSelect) {
-        try {
-            messageManager()
-                    .operation(sessionId,
-                               startSelect,
-                               endSelect,
-                               (seq, msg) -> {
-                                   messages.add(
-                                           new ClientMessage(
-                                                   msg.identity(),
-                                                   sessionId,
-                                                   seq,
-                                                   msg.display()
-                                           )
-                                   );
-                               }
-                    );
-        } catch (Exception e) {
-            e.printStackTrace();
-            messages.clear();
-        }
+    public void operationMessages(BiConsumer<Long, Message> operator, long sessionId, long startSelect, long endSelect) {
+        messageManager()
+                .operation(sessionId,
+                           startSelect,
+                           endSelect,
+                           operator
+                );
     }
 
-    public ClientMessage getMessages(long sessionId, long messageSeq, boolean awaitGet) {
+    public Message getMessages(long sessionId, long messageSeq, boolean awaitGet) {
         Message message = null;
         try {
             if (awaitGet) {
@@ -272,10 +259,14 @@ public class KalmiaClient {
 
         }
 
-        if (message == null) {
-            return null;
-        }
+        return message;
+    }
 
+    public ClientMessage getClientMessage(long sessionId, long messageSeq, boolean awaitGet) {
+        Message message = getMessages(sessionId,
+                                      messageSeq,
+                                      awaitGet
+        );
         return new ClientMessage(
                 message.identity(),
                 sessionId,
@@ -336,10 +327,11 @@ public class KalmiaClient {
                     Crypto.aesDecrypt(store.privateKey()
                                            .key(),
                                       // TODO
-                                      new byte[]{}
+                                      KalmiaEnv.testUer1AesCipher
                     )
             );
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

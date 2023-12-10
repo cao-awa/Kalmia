@@ -7,6 +7,7 @@ import com.github.cao.awa.kalmia.user.database.UserDatabase;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 public class UserManager {
@@ -71,11 +72,11 @@ public class UserManager {
         );
     }
 
-    public List<Long> keyStores(long uid) {
+    public Set<Long> keyStores(long uid) {
         return this.database.keyStores(SkippedBase256.longToBuf(uid));
     }
 
-    public void keyStores(long uid, List<Long> stores) {
+    public void keyStores(long uid, Set<Long> stores) {
         this.database.keyStores(SkippedBase256.longToBuf(uid),
                                 stores
         );

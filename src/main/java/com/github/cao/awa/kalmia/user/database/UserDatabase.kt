@@ -29,7 +29,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User?>(ApricotCol
         this.delegate = DatabaseProviders.bytes(path)
     }
 
-    fun keyStores(uid: ByteArray): List<Long> {
+    fun keyStores(uid: ByteArray): Set<Long> {
         val key = BytesUtil.concat(
             uid,
             KEY_STORE_DELIMITER
@@ -37,7 +37,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User?>(ApricotCol
 
         val reader = BytesReader.of(this.delegate[key])
 
-        val result: ArrayList<Long> = ApricotCollectionFactor.arrayList();
+        val result: HashSet<Long> = ApricotCollectionFactor.hashSet()
 
         while (reader.readable(1)) {
             result.add(SkippedBase256.readLong(reader))
@@ -46,7 +46,7 @@ class UserDatabase(path: String) : KeyValueDatabase<ByteArray, User?>(ApricotCol
         return result
     }
 
-    fun keyStores(uid: ByteArray, stores: List<Long>) {
+    fun keyStores(uid: ByteArray, stores: Set<Long>) {
         try {
             val key = BytesUtil.concat(
                 uid,

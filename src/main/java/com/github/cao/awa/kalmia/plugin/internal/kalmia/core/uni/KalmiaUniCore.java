@@ -7,8 +7,8 @@ import com.github.cao.awa.kalmia.network.packet.inbound.ping.TryPingResponsePack
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.kalmia.plugin.internal.eventbus.KalmiaEventBus;
 import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.disconnect.TryDisconnectHandler;
-import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.resource.write.RequestNextResourceShardHandler;
 import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.resource.write.WriteResourceHandler;
+import com.github.cao.awa.kalmia.plugin.internal.kalmia.core.uni.handler.resource.write.WriteResourceNextStepHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +28,7 @@ public class KalmiaUniCore extends Plugin {
 
         registerHandlers(
                 new WriteResourceHandler(),
-                new RequestNextResourceShardHandler()
+                new WriteResourceNextStepHandler()
         );
 
         KalmiaEventBus.tryPing.trigger((router, receipt, startTime) -> {

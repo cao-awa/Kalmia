@@ -20,7 +20,7 @@ public class EmptyPrivateKeyStore extends KeyStore<ECPrivateKey> {
     }
 
     @Override
-    public KeyPairStore keypairStone() {
+    public KeyPairStore keypairStore() {
         return this.store;
     }
 

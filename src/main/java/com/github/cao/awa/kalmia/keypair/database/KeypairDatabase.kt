@@ -10,7 +10,6 @@ import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.util.function.BiConsumer
@@ -24,7 +23,7 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<ByteArray, KeyPairStore?
     private val delegate: KeyValueBytesDatabase
 
     init {
-        delegate = DatabaseProviders.bytes(path)
+        this.delegate = DatabaseProviders.bytes(path)
     }
 
     override fun set(seq: ByteArray, keypair: KeyPairStore?) {
@@ -52,7 +51,7 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<ByteArray, KeyPairStore?
 
         val store = createStore(seq)
         val putStore = KeyStoreIdentity.createKeyPairStore(
-            if (store.publicKey() == null) null else store.publicKey().decode(),
+            store.publicKey().decode(),
             privateKey.key()
         )
 
@@ -61,12 +60,12 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<ByteArray, KeyPairStore?
 
     fun putPublic(seq: ByteArray, publicKey: KeyStore<out PublicKey>) {
         // Ensure public key is able to decode.
-        publicKey.decode()
+        val decoded = publicKey.decode()
 
         val store = createStore(seq)
         val putStore = KeyStoreIdentity.createKeyPairStore(
-            publicKey.decode(),
-            if (store.privateKey() == null) BytesUtil.EMPTY else store.privateKey().key()
+            decoded,
+            store.privateKey().key()
         )
 
         this.delegate[seq] = putStore.toBytes()

@@ -68,7 +68,8 @@ public class KalmiagramUi {
                                           )
                                                  .stream()
                                                  .map(message -> {
-                                                     return message.sender() + ": " + message.coverContent();
+                                                     return message.sender() + ": " + message.display()
+                                                                                             .coverContent();
                                                  })
                                                  .toArray(String[] :: new));
         });

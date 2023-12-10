@@ -23,9 +23,9 @@ public class KeypairManager {
         return this.database.add(store);
     }
 
-    public synchronized void set(long seq, KeyPairStore user) {
-        this.database.putPublic(SkippedBase256.longToBuf(seq),
-                                user.publicKey()
+    public synchronized void set(long seq, KeyPairStore store) {
+        this.database.set(SkippedBase256.longToBuf(seq),
+                          store
         );
     }
 

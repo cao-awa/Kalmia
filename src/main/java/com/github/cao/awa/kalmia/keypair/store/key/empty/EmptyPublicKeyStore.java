@@ -7,11 +7,11 @@ import java.security.interfaces.ECPublicKey;
 
 public class EmptyPublicKeyStore extends KeyStore<ECPublicKey> {
     private final KeyPairStore store;
-    private final byte[] prikey;
+    private final byte[] pubkey;
 
-    public EmptyPublicKeyStore(KeyPairStore store, byte[] prikey) {
+    public EmptyPublicKeyStore(KeyPairStore store, byte[] pubkey) {
         this.store = store;
-        this.prikey = prikey;
+        this.pubkey = pubkey;
     }
 
     @Override
@@ -20,12 +20,12 @@ public class EmptyPublicKeyStore extends KeyStore<ECPublicKey> {
     }
 
     @Override
-    public KeyPairStore keypairStone() {
+    public KeyPairStore keypairStore() {
         return this.store;
     }
 
     @Override
     public byte[] key() {
-        return this.prikey;
+        return this.pubkey;
     }
 }

@@ -93,7 +93,7 @@ class AsymmetricCryptedMessage : Message {
                 "AsymmetricCryptedMessage{sender=${sender()}, keyId=${keyId()}, signId=${signId()}, msg=${msg}, sign=${
                     MessageDigger.digest(sign(), Sha3.SHA_512)
                 }, digest36${digest().value36()}, verified=${verified}}",
-                msg
+                "(verified: $verified) $msg"
             )
         } catch (ex: Exception) {
             return ClientMessageContent(
@@ -103,7 +103,7 @@ class AsymmetricCryptedMessage : Message {
                 }, sign=${
                     MessageDigger.digest(sign(), Sha3.SHA_512)
                 }, digest36=${digest().value36()}, verified=${verified}}",
-                msg
+                "(verified: $verified) $msg"
             )
         }
     }
@@ -115,11 +115,11 @@ class AsymmetricCryptedMessage : Message {
         this.sign = sign
         this.sender = sender
         this.digest = DigestData(
-            MessageDigger.Sha3.SHA_512,
+            Sha3.SHA_512,
             Mathematics.toBytes(
                 MessageDigger.digest(
                     msg,
-                    MessageDigger.Sha3.SHA_512
+                    Sha3.SHA_512
                 ),
                 16
             )
@@ -140,11 +140,11 @@ class AsymmetricCryptedMessage : Message {
         this.sign = sign
         this.sender = sender
         this.digest = DigestData(
-            MessageDigger.Sha3.SHA_512,
+            Sha3.SHA_512,
             Mathematics.toBytes(
                 MessageDigger.digest(
                     msg,
-                    MessageDigger.Sha3.SHA_512
+                    Sha3.SHA_512
                 ),
                 16
             )

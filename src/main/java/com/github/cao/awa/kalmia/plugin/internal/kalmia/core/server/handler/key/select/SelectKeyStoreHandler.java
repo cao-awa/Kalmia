@@ -13,8 +13,8 @@ import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
-import java.security.PublicKey;
 import java.util.Map;
+import java.util.Set;
 
 @Auto
 @Server
@@ -26,22 +26,25 @@ public class SelectKeyStoreHandler implements SelectKeyStoreEventHandler {
     public void handle(RequestRouter router, SelectKeyStorePacket packet) {
         Map<Long, KeyPairStore> result = ApricotCollectionFactor.hashMap();
 
+        Set<Long> userStores = Kalmia.SERVER.userManager()
+                                            .keyStores(router.uid());
+
         packet.ids()
               .forEach(id -> {
-                  PublicKey publicKey = Kalmia.SERVER.keypairManager()
-                                                     .publicKey(id);
-                  byte[] privateKey = BytesUtil.EMPTY;
-                  if (Kalmia.SERVER.userManager()
-                                   .keyStores(router.uid())
-                                   .contains(id)) {
-                      privateKey = Kalmia.SERVER.keypairManager()
-                                                .privateKey(id);
+                  KeyPairStore store = Kalmia.SERVER.keypairManager()
+                                                    .getStore(id);
+
+                  // Do not provide private key if the user are not key owner.
+                  if (! userStores.contains(id)) {
+                      // Clear private key.
+                      store = KeyStoreIdentity.createKeyPairStore(store.publicKey()
+                                                                       .decode(),
+                                                                  BytesUtil.EMPTY
+                      );
                   }
 
                   result.put(id,
-                             KeyStoreIdentity.createKeyPairStore(publicKey,
-                                                                 privateKey
-                             )
+                             store
                   );
               });
 
