@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 
 public abstract class UnsolvedPacket<T extends Packet<?>> {
     private final byte[] data;
-    private byte[] receipt = Packet.RECEIPT;
+    private byte[] receipt = Packet.createReceipt();
 
     public byte[] data() {
         return this.data;

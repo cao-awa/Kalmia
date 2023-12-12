@@ -6,7 +6,6 @@ import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.notice.NewMessageNoticeEventHandler;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.deleted.DeletedMessage;
-import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.notice.NewMessageNoticePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
@@ -39,13 +38,7 @@ public class NewMessageNoticeHandler implements NewMessageNoticeEventHandler {
                           packet.seq()
                      );
 
-        if (message instanceof PlainsMessage plain) {
-            LOGGER.info("New message from {}: {}",
-                        packet.message()
-                              .sender(),
-                        plain.msg()
-            );
-        } else if (message instanceof DeletedMessage deleted) {
+        if (message instanceof DeletedMessage deleted) {
             LOGGER.info("New message from {}: {}",
                         packet.message()
                               .sender(),

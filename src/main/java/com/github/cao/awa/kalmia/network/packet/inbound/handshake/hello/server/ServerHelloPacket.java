@@ -20,20 +20,19 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 public class ServerHelloPacket extends Packet<HandshakeHandler> {
     @AutoData
     @DoNotSet
-    @NotDecoded
-    private byte[] testKey;
+    private String serverName;
     @AutoData
     @DoNotSet
-    private byte[] testSha;
+    private String serverVersion;
     @AutoData
     @DoNotSet
     @NotDecoded
     private byte[] iv;
 
     @Server
-    public ServerHelloPacket(@CryptoEncoded byte[] testKey, byte[] testSha, @CryptoEncoded byte[] iv) {
-        this.testKey = testKey;
-        this.testSha = testSha;
+    public ServerHelloPacket(String serverName, String serverVersion, @CryptoEncoded byte[] iv) {
+        this.serverName = serverName;
+        this.serverVersion = serverVersion;
         this.iv = iv;
     }
 
@@ -44,13 +43,13 @@ public class ServerHelloPacket extends Packet<HandshakeHandler> {
     }
 
     @Getter
-    public byte[] testKey() {
-        return this.testKey;
+    public String serverName() {
+        return this.serverName;
     }
 
     @Getter
-    public byte[] testSha() {
-        return this.testSha;
+    public String serverVersion() {
+        return this.serverVersion;
     }
 
     @Getter

@@ -10,11 +10,13 @@ public class ServerBootstrapConfig extends ConfigElement {
     private final BootstrapConfigMeta meta;
     private final ServerNetworkConfig serverNetwork;
     private final BootstrapTranslationConfig translation;
+    private final String serverName;
 
-    public ServerBootstrapConfig(BootstrapConfigMeta meta, ServerNetworkConfig serverNetwork, BootstrapTranslationConfig translation) {
+    public ServerBootstrapConfig(BootstrapConfigMeta meta, ServerNetworkConfig serverNetwork, BootstrapTranslationConfig translation, String serverName) {
         this.meta = meta;
         this.serverNetwork = serverNetwork;
         this.translation = translation;
+        this.serverName = serverName;
     }
 
     public BootstrapConfigMeta meta() {
@@ -29,6 +31,10 @@ public class ServerBootstrapConfig extends ConfigElement {
         return this.translation;
     }
 
+    public String serverName() {
+        return this.serverName;
+    }
+
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put("config-meta",
@@ -39,6 +45,9 @@ public class ServerBootstrapConfig extends ConfigElement {
         );
         json.put("translation",
                  this.translation.toJSON()
+        );
+        json.put("server-name",
+                 this.serverName
         );
         return json;
     }
@@ -73,9 +82,12 @@ public class ServerBootstrapConfig extends ConfigElement {
                 compute.translation()
         );
 
+        String serverName = json.getString("server-name");
+
         return new ServerBootstrapConfig(meta,
                                          serverNetwork,
-                                         translation
+                                         translation,
+                                         serverName
         );
     }
 }

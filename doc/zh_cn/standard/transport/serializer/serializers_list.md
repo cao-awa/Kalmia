@@ -36,6 +36,10 @@ double与Double
 
 String
 
+# 11
+
+UUID
+
 # 100
 
 BigInteger
@@ -71,15 +75,15 @@ DeletedMessage
 
 # 1001
 
-PlainsMessage
+UnknownMessage
 
 # 1002
 
-UnknownMessage
+UserMessage
 
 # 1003
 
-AsymmetricCryptedMessage
+CoverMessage
 
 # 2000
 
@@ -88,3 +92,11 @@ EcKeyPair
 # 2001
 
 RsaKeyPair
+
+# 10000
+
+LanguageSetting
+
+# 10001
+
+SessionEnabledProcessorsSetting

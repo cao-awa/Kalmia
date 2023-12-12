@@ -3,14 +3,9 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.mes
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.select.SelectedMessageEventHandler;
-import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.message.deleted.DeletedMessage;
 import com.github.cao.awa.kalmia.message.manager.MessageManager;
-import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
-import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectedMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -51,42 +46,7 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
                     databaseIndex,
                     msg
             );
-
-            if (msg instanceof DeletedMessage deletedMessage) {
-                LOGGER.info("Received deleted message at seq {}, id {}, sender {}, is: {}",
-                            databaseIndex,
-                            Mathematics.radix(msg.identity()
-                                                 .toBytes(),
-                                              36
-                            ),
-                            deletedMessage.sender(),
-                            deletedMessage.digest()
-                                          .value36()
-                );
-            } else if (msg instanceof PlainsMessage plainsMessage) {
-                LOGGER.info("Received plains message at seq {}, id {}, sender {}, is: {}",
-                            databaseIndex,
-                            Mathematics.radix(msg.identity()
-                                                 .toBytes(),
-                                              36
-                            ),
-                            plainsMessage.sender(),
-                            plainsMessage.msg()
-                );
-            } else if (msg instanceof UnknownMessage unknownMessage) {
-                LOGGER.info("Received unknown message at seq {}, id {}, is: {}",
-                            databaseIndex,
-                            Mathematics.radix(msg.identity()
-                                                 .toBytes(),
-                                              36
-                            ),
-                            unknownMessage.digest()
-                                          .value36()
-                );
-            }
         }
-
-        KalmiaEnv.awaitManager.notice(packet.receipt());
 
 //        LOGGER.info("----Test display----");
 //

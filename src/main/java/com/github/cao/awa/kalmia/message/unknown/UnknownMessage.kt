@@ -44,29 +44,17 @@ class UnknownMessage : Message {
 
     constructor(msgBytes: ByteArray) {
         this.msgBytes = msgBytes
-        this.digestData = DigestData(
+        this.digestData = DigestData.digest(
             MessageDigger.Sha3.SHA_512,
-            Mathematics.toBytes(
-                MessageDigger.digest(
-                    msgBytes,
-                    MessageDigger.Sha3.SHA_512
-                ),
-                16
-            )
+            msgBytes
         )
     }
 
     constructor(identity: MessageIdentity, msgBytes: ByteArray) : super(identity) {
         this.msgBytes = msgBytes
-        this.digestData = DigestData(
+        this.digestData = DigestData.digest(
             MessageDigger.Sha3.SHA_512,
-            Mathematics.toBytes(
-                MessageDigger.digest(
-                    msgBytes,
-                    MessageDigger.Sha3.SHA_512
-                ),
-                16
-            )
+            msgBytes
         )
     }
 

@@ -16,11 +16,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @AutoBytesSerializer(value = 501, target = Map.class)
-public class BytesMapSerializer implements BytesSerializer<Map<?, ?>> {
+public class BytesMapSerializer<K, V> implements BytesSerializer<Map<K, V>> {
     private static final byte[] EMPTY = new byte[]{- 1};
 
     @Override
-    public byte[] serialize(Map<?, ?> map) {
+    public byte[] serialize(Map<K, V> map) {
         if (map.isEmpty()) {
             return EMPTY;
         }
@@ -51,7 +51,7 @@ public class BytesMapSerializer implements BytesSerializer<Map<?, ?>> {
     }
 
     public static void write(ByteArrayOutputStream output, Object o) throws IOException {
-        BytesSerializer<Object> keySerializer = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(o);
+        BytesSerializer<Object> keySerializer = KalmiaEnv.bytesSerializerFramework.getSerializer(o);
 
         if (keySerializer != null) {
             // Write key by id mode.
@@ -77,9 +77,9 @@ public class BytesMapSerializer implements BytesSerializer<Map<?, ?>> {
     }
 
     @Override
-    public Map<?, ?> deserialize(BytesReader reader) {
+    public Map<K, V> deserialize(BytesReader reader) {
         try {
-            Map<?, ?> map = ApricotCollectionFactor.hashMap();
+            Map<K, V> map = ApricotCollectionFactor.hashMap();
 
             reader.flag();
 
@@ -118,7 +118,7 @@ public class BytesMapSerializer implements BytesSerializer<Map<?, ?>> {
         switch (readingMode) {
             case 1 -> {
                 long id = SkippedBase256.readLong(reader);
-                BytesSerializer<?> serializer = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(id);
+                BytesSerializer<?> serializer = KalmiaEnv.bytesSerializerFramework.getSerializer(id);
                 reading = serializer.deserialize(reader);
             }
             case 2 -> {

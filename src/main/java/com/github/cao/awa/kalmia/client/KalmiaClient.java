@@ -327,7 +327,7 @@ public class KalmiaClient {
                     Crypto.aesDecrypt(store.privateKey()
                                            .key(),
                                       // TODO
-                                      KalmiaEnv.testUer1AesCipher
+                                      KalmiaEnv.testUer2AesCipher
                     )
             );
         } catch (Exception e) {

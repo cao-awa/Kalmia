@@ -3,11 +3,9 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.log
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.feedback.LoginSuccessEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.message.crypt.AsymmetricCryptedMessage;
-import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
@@ -18,6 +16,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
 @Auto
@@ -70,53 +69,41 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 //        router.send(new RequestGroupSessionPacket("Test group"));
 
         if (false) {
-            for (int i = 0; i < 50; i++) {
-                router.send(new SendMessagePacket(0,
-                                                  new PlainsMessage(" awa: " + i,
-                                                                    packet.uid()
-                                                  )
-                ).receipt(Packet.createReceipt()));
-            }
-        }
-
-        if (false) {
             router.send(new SendMessagePacket(0,
-                                              new AsymmetricCryptedMessage(0,
-                                                                           1,
-                                                                           "Awa".getBytes(StandardCharsets.UTF_8),
-                                                                           new byte[]{1},
-                                                                           packet.uid()
-                                              )
+                                              0,
+                                              "Awa".getBytes(StandardCharsets.UTF_8),
+                                              1,
+                                              new byte[]{1},
+                                              false
             ).receipt(Packet.createReceipt()));
         }
 
         if (false) {
             try {
-                byte[] msg = Crypto.ecEncrypt("Awa123".getBytes(StandardCharsets.UTF_8),
-                                              (ECPublicKey) KalmiaEnv.testKeypair0.publicKey()
-                                                                                  .decode()
+                byte[] source = "Awa123".getBytes(StandardCharsets.UTF_8);
+
+                byte[] msg = Crypto.ecEncrypt(source,
+                                              (ECPublicKey) Kalmia.CLIENT.getPublicKey(0,
+                                                                                       true
+                                              )
                 );
-                byte[] sign = Crypto.ecSign("Awa123".getBytes(StandardCharsets.UTF_8),
-                                            Crypto.decodeEcPrikey(Crypto.aesDecrypt(KalmiaEnv.testKeypair1.privateKey()
-                                                                                                          .key(),
-                                                                                    KalmiaEnv.testUer2AesCipher
-                                            ))
+                byte[] sign = Crypto.ecSign(source,
+                                            (ECPrivateKey) Kalmia.CLIENT.getPrivateKey(1,
+                                                                                       true
+                                            )
                 );
 
                 router.send(new SendMessagePacket(0,
-                                                  new AsymmetricCryptedMessage(0,
-                                                                               1,
-                                                                               msg,
-                                                                               sign,
-                                                                               packet.uid()
-                                                  )
+                                                  0,
+                                                  msg,
+                                                  1,
+                                                  sign,
+                                                  false
                 ).receipt(Packet.createReceipt()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
-        KalmiaEnv.awaitManager.notice(packet.receipt());
 
         if (false) {
             router.executor()
@@ -127,10 +114,43 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
                   });
         }
 
-//        // TODO Test only
-//        router.send(new DeleteMessageRequest(123,
-//                                             2
-//        ));
-//        router.send(new DisableInstanceRequest());
+        if (false) {
+            try {
+                byte[] source = "Test message #{TIME}".getBytes(StandardCharsets.UTF_8);
+
+                byte[] sign = Crypto.ecSign(source,
+                                            (ECPrivateKey) Kalmia.CLIENT.getPrivateKey(1,
+                                                                                       true
+                                            )
+                );
+
+                router.send(new SendMessagePacket(0,
+                                                  - 1,
+                                                  source,
+                                                  1,
+                                                  sign,
+                                                  false
+                ));
+            } catch (Exception e) {
+
+            }
+        }
+
+        if (false) {
+            try {
+                byte[] source = "Test message #{TIME}".getBytes(StandardCharsets.UTF_8);
+
+                router.send(new SendMessagePacket(0,
+                                                  - 1,
+                                                  source,
+                                                  - 1,
+                                                  new byte[]{},
+                                                  false
+                ).receipt(Packet.createReceipt()));
+            } catch (Exception e) {
+
+            }
+        }
     }
 }
+

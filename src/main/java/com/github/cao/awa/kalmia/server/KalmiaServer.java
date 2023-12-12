@@ -3,12 +3,14 @@ package com.github.cao.awa.kalmia.server;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.ServerBootstrapConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.launch.done.DoneLaunchEvent;
 import com.github.cao.awa.kalmia.keypair.manager.KeypairManager;
+import com.github.cao.awa.kalmia.message.cover.processor.MessageProcessor;
 import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.network.io.server.KalmiaServerNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
@@ -25,6 +27,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,6 +41,7 @@ public class KalmiaServer {
     private final UserManager userManager;
     private final KeypairManager keypairManager;
     private final SessionManager sessionManager;
+    private final Map<UUID, MessageProcessor> messageProcessors = ApricotCollectionFactor.hashMap();
     private final SessionListeners sessionListeners = new SessionListeners();
     private boolean started;
     private final ExecutorService executor = Executors.newCachedThreadPool();
@@ -63,6 +68,10 @@ public class KalmiaServer {
 
     public SessionManager sessionManager() {
         return this.sessionManager;
+    }
+
+    public MessageProcessor messageProcessor(UUID id) {
+        return this.messageProcessors.get(id);
     }
 
     public KalmiaServer(ServerBootstrapConfig config) {
@@ -140,6 +149,26 @@ public class KalmiaServer {
         setupNetwork();
 
         KalmiaEnv.eventFramework.fireEvent(new DoneLaunchEvent());
+    }
+
+    public void registerMessageProcessor(MessageProcessor processor) {
+        if (this.messageProcessors.get(processor.id()) == null) {
+            this.messageProcessors.put(processor.id(),
+                                       processor
+            );
+
+            LOGGER.info("Registered message processor '{}' by id '{}'",
+                        processor.getClass()
+                                 .getName(),
+                        processor.id()
+            );
+        } else {
+            LOGGER.warn("Unable to register message processor '{}' by id '{}', because this id has already used",
+                        processor.getClass()
+                                 .getName(),
+                        processor.id()
+            );
+        }
     }
 
     public void setupNetwork() throws Exception {

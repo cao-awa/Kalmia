@@ -161,19 +161,19 @@ public class Crypto {
         return content;
     }
 
-    public static boolean asymmetricVerify(byte[] content, byte[] sign, PublicKey publicKey) {
+    public static boolean asymmetricVerify(byte[] contentSource, byte[] contentSign, PublicKey publicKey) {
         if (publicKey == null) {
             throw new NullPointerException("The public key should not be null");
         }
 
         if (publicKey instanceof RSAPublicKey rsa) {
-            return rsaVerify(content,
-                             sign,
+            return rsaVerify(contentSource,
+                             contentSign,
                              rsa
             );
         } else if (publicKey instanceof ECPublicKey ec) {
-            return ecVerify(content,
-                            sign,
+            return ecVerify(contentSource,
+                            contentSign,
                             ec
             );
         }

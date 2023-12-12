@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.message.manager;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.database.message.MessageDatabase;
+import com.github.cao.awa.kalmia.message.identity.MessageIdentity;
 
 import java.util.function.BiConsumer;
 
@@ -13,32 +14,36 @@ public class MessageManager {
         this.database = new MessageDatabase(path);
     }
 
-    public synchronized long send(long sid, Message msg) {
+    public long send(long sid, Message msg) {
         return this.database.send(SkippedBase256.longToBuf(sid),
                                   msg
         );
     }
 
-    public synchronized long delete(long sid, long seq) {
+    public long delete(long sid, long seq) {
         this.database.markDelete(SkippedBase256.longToBuf(sid),
                                  SkippedBase256.longToBuf(seq)
         );
         return seq;
     }
 
-    public synchronized Message get(long sid, long seq) {
+    public Message get(long sid, long seq) {
         return this.database.get(SkippedBase256.longToBuf(sid),
                                  SkippedBase256.longToBuf(seq)
         );
     }
 
-    public synchronized void operation(long sid, BiConsumer<Long, Message> action) {
+    public Message get(MessageIdentity identity) {
+        return this.database.get(identity);
+    }
+
+    public void operation(long sid, BiConsumer<Long, Message> action) {
         this.database.operation(SkippedBase256.longToBuf(sid),
                                 action
         );
     }
 
-    public synchronized void operation(long sid, long from, long to, BiConsumer<Long, Message> action) {
+    public void operation(long sid, long from, long to, BiConsumer<Long, Message> action) {
         this.database.operation(SkippedBase256.longToBuf(sid),
                                 from,
                                 to,
@@ -46,15 +51,15 @@ public class MessageManager {
         );
     }
 
-    public synchronized long seq(long sid) {
+    public long seq(long sid) {
         return this.database.seq(SkippedBase256.longToBuf(sid));
     }
 
-    public synchronized long nextSeq(long sid) {
+    public long nextSeq(long sid) {
         return this.database.nextSeq(SkippedBase256.longToBuf(sid));
     }
 
-    public synchronized void deleteAll(long sid) {
+    public void deleteAll(long sid) {
         this.database.deleteAll(SkippedBase256.longToBuf(sid));
     }
 
@@ -67,6 +72,12 @@ public class MessageManager {
 
         this.database.put(msg.identity(),
                           msg
+        );
+    }
+
+    public void set(MessageIdentity identity, Message message) {
+        this.database.set(identity.toBytes(),
+                          message
         );
     }
 

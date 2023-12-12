@@ -15,16 +15,13 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
-
 /**
  * @param <T>
  * @see UnsolvedPacket
  */
 public abstract class Packet<T extends PacketHandler<T>> {
     private static final Logger LOGGER = LogManager.getLogger("Packet");
-    public static final byte[] RECEIPT = new byte[]{- 1};
-    private byte[] receipt = RECEIPT;
+    private byte[] receipt = createReceipt();
     private T handler;
 
     public Packet(byte[] receipt) {
@@ -52,20 +49,10 @@ public abstract class Packet<T extends PacketHandler<T>> {
 
     @DoNotOverride
     public final byte[] encodeReceipt() {
-        if (this.receipt == RECEIPT) {
-            return this.receipt;
-        }
-        return BytesUtil.concat(new byte[]{1},
-                                this.receipt
-        );
+        return this.receipt;
     }
 
     public static byte[] checkReceipt(byte[] receipt) {
-        if (Arrays.equals(RECEIPT,
-                          receipt
-        )) {
-            return RECEIPT;
-        }
         if (receipt.length != 16) {
             throw new IllegalArgumentException("Receipt data only allowed 16 bytes");
         }

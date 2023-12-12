@@ -10,7 +10,7 @@ class SessionAccessibleData(private val accessible: ByteArray) {
     }
 
     fun banChat() {
-        this.accessible[0] = 0;
+        this.accessible[0] = 0
     }
 
     fun bytes(): ByteArray = this.accessible

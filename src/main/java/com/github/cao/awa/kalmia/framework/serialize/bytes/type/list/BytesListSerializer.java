@@ -26,7 +26,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @AutoBytesSerializer(value = 500, target = List.class)
-public class BytesListSerializer implements BytesSerializer<List<?>> {
+public class BytesListSerializer<V> implements BytesSerializer<List<V>> {
     private static final byte[] EMPTY = new byte[]{- 1};
 
     public static boolean checkType(List<?> list) {
@@ -62,7 +62,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
     }
 
     @Override
-    public byte[] serialize(List<?> list) {
+    public byte[] serialize(List<V> list) {
         if (list.size() == 0) {
             return EMPTY;
         }
@@ -98,7 +98,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
                         output.write(((BytesSerializable<?>) object).serialize());
                     }
                 } else {
-                    BytesSerializer<Object> serializer = EntrustEnvironment.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(type));
+                    BytesSerializer<Object> serializer = EntrustEnvironment.cast(KalmiaEnv.bytesSerializerFramework.getSerializer(type));
                     assert serializer != null;
 
                     // Write marker byte used to distinguish type mode.
@@ -165,7 +165,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
                     } else {
                         // Write marker at data  head.
                         if (repeatCounter == 0) {
-                            serializer = EntrustEnvironment.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(type));
+                            serializer = EntrustEnvironment.cast(KalmiaEnv.bytesSerializerFramework.getSerializer(type));
 
                             // Write type mode marker, 4 is serializer id mode.
                             wrap.write(4);
@@ -201,7 +201,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
     }
 
     @Override
-    public List<?> deserialize(BytesReader reader) {
+    public List<V> deserialize(BytesReader reader) {
         try {
             reader.flag();
 
@@ -233,7 +233,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
                 }
                 // Mode 1 is type all consistent serializer mode.
                 case 1 -> {
-                    BytesSerializer<?> serializer = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(SkippedBase256.readLong(reader));
+                    BytesSerializer<?> serializer = KalmiaEnv.bytesSerializerFramework.getSerializer(SkippedBase256.readLong(reader));
                     for (int i = 0; i < size; i++) {
                         result.add(serializer.deserialize(reader));
                     }
@@ -268,7 +268,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
                             // Mode 3 is serializer id mode in not consistent mode.
                             case 4 -> {
                                 // Read as ByteSerializer deserialize.
-                                BytesSerializer<?> serializer = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(SkippedBase256.readLong(reader));
+                                BytesSerializer<?> serializer = KalmiaEnv.bytesSerializerFramework.getSerializer(SkippedBase256.readLong(reader));
 
                                 for (int c = 0; c < current; c++) {
                                     // Deserialize the bytes and put it to result.
@@ -282,7 +282,7 @@ public class BytesListSerializer implements BytesSerializer<List<?>> {
                     }
                 }
             }
-            return result;
+            return EntrustEnvironment.cast(result);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

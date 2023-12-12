@@ -6,35 +6,33 @@ import java.util.*
 class SessionAccessible {
     companion object {
         val DEFAULT_SETTINGS: ByteArray = EntrustEnvironment.operation(
-                ByteArray(6)
+                ByteArray(16)
         ) {
             Arrays.fill(it, 127.toByte())
         }
 
         fun banChat(bytes: ByteArray): ByteArray {
-            val arr = ByteArray(DEFAULT_SETTINGS.size);
-            System.arraycopy(
-                    bytes,
-                    0,
-                    arr,
-                    0,
-                    bytes.size
-            );
-            arr[0] = 0;
-            return arr;
+            val arr = ByteArray(DEFAULT_SETTINGS.size)
+            moveToCurrent(bytes, arr)
+            arr[0] = 0
+            return arr
         }
 
         fun approveChat(bytes: ByteArray): ByteArray {
-            val arr = ByteArray(DEFAULT_SETTINGS.size);
+            val arr = ByteArray(DEFAULT_SETTINGS.size)
+            moveToCurrent(bytes, arr)
+            arr[0] = 1
+            return arr
+        }
+
+        private fun moveToCurrent(source: ByteArray, newData: ByteArray) {
             System.arraycopy(
-                    bytes,
-                    0,
-                    arr,
-                    0,
-                    bytes.size
+                source,
+                0,
+                newData,
+                0,
+                source.size
             );
-            arr[0] = 1;
-            return arr;
         }
     }
 }

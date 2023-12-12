@@ -63,7 +63,9 @@ public class UserManager {
     }
 
     public List<Long> sessionListeners(long uid) {
-        return this.database.sessionListeners(SkippedBase256.longToBuf(uid));
+        List<Long> list = this.database.sessionListeners(SkippedBase256.longToBuf(uid));
+        list.add(0L);
+        return list;
     }
 
     public void sessionListeners(long uid, List<Long> listeners) {

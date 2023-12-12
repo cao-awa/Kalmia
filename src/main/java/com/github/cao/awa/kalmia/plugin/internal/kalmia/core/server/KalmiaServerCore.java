@@ -2,6 +2,9 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.message.cover.processor.coloregg.MeowMessageProcessor;
+import com.github.cao.awa.kalmia.message.cover.processor.time.TimeMessageProcessor;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
@@ -20,6 +23,9 @@ public class KalmiaServerCore extends Plugin {
     @Override
     public void onLoad() {
         LOGGER.info("Loading kalmia server core");
+
+        Kalmia.SERVER.registerMessageProcessor(new MeowMessageProcessor());
+        Kalmia.SERVER.registerMessageProcessor(new TimeMessageProcessor());
     }
 
     @Override

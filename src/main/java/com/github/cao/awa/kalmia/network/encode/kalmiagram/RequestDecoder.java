@@ -153,7 +153,7 @@ public class RequestDecoder extends ByteToMessageDecoder {
         long id = SkippedBase256.readLong(reader);
 
         // Read receipt identity.
-        byte[] receipt = reader.read() == - 1 ? Packet.RECEIPT : Packet.readReceipt(reader);
+        byte[] receipt = Packet.readReceipt(reader);
 
         // If digest not equals then means the packet is incomplete or modified.
         if (! Arrays.equals(MessageDigger.digestToBytes(remain,

@@ -86,6 +86,14 @@ DeletedMessage
 接收方：客户端
 ```
 
+# 17
+
+FetchMessagePacket
+
+# 18
+
+FetchedMessagePacket
+
 ChatInSessionPacket
 
 ## 50

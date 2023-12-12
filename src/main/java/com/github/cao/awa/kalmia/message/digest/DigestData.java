@@ -56,6 +56,14 @@ public class DigestData implements BytesValueConvertable, BytesSerializable<Dige
         this.value = value;
     }
 
+    public static DigestData digest(MessageDigger.DigestAlgorithm type, byte[] data) {
+        return new DigestData(type,
+                              MessageDigger.digestToBytes(data,
+                                                          type
+                              )
+        );
+    }
+
     public MessageDigger.DigestAlgorithm type() {
         return this.type;
     }

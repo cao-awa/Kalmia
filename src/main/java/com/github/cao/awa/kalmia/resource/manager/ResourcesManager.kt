@@ -19,6 +19,8 @@ class ResourcesManager(private val path: String) {
     private val writing = mutableMapOf<String, ResourceWriter>()
 
     init {
+        File(this.path).mkdirs()
+
         this.executor.scheduleWithFixedDelay(
             {
                 val needRemoves: MutableList<String> = ApricotCollectionFactor.arrayList()

@@ -11,6 +11,7 @@ import com.github.cao.awa.kalmia.session.Session
 import com.github.cao.awa.kalmia.session.SessionAccessible
 import com.github.cao.awa.kalmia.session.SessionAccessibleData
 import com.github.cao.awa.kalmia.session.Sessions
+import com.github.cao.awa.kalmia.setting.Settings
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.util.function.BiConsumer
 import java.util.function.Consumer
@@ -19,11 +20,19 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
     companion object {
         private val ROOT = byteArrayOf(1)
         private val ACCESSIBLE_DELIMITER = byteArrayOf(123)
+        private val SETTINGS_DELIMITER = byteArrayOf(111)
         fun accessibleKey(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray): ByteArray {
             return BytesUtil.concat(
                 sid,
                 ACCESSIBLE_DELIMITER,
                 uid
+            )
+        }
+
+        fun settingsKey(@ShouldSkipped sid: ByteArray): ByteArray {
+            return BytesUtil.concat(
+                sid,
+                SETTINGS_DELIMITER
             )
         }
     }
@@ -73,6 +82,15 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
             sid,
             uid
         )] = data.bytes()
+    }
+
+    fun settings(@ShouldSkipped sid: ByteArray): Settings {
+        val settings = this.delegate[settingsKey(sid)] ?: return Settings()
+        return Settings.create(BytesReader.of(settings))
+    }
+
+    fun settings(@ShouldSkipped sid: ByteArray, settings: Settings) {
+        this.delegate[settingsKey(sid)] = settings.toBytes()
     }
 
     fun banChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
@@ -135,6 +153,10 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
         if (session == null) {
             remove(seq)
             return
+        }
+
+        if (SkippedBase256.readLong(BytesReader.of(seq)) >= nextSeq()) {
+            this.delegate[ROOT] = seq
         }
 
         this.delegate[seq] = session.bytes()

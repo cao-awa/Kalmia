@@ -9,10 +9,10 @@ import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStoreFactor;
-import com.github.cao.awa.kalmia.message.crypt.AsymmetricCryptedMessage;
+import com.github.cao.awa.kalmia.message.cover.CoverMessage;
 import com.github.cao.awa.kalmia.message.deleted.DeletedMessage;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
-import com.github.cao.awa.kalmia.message.plains.PlainsMessage;
+import com.github.cao.awa.kalmia.message.user.UserMessage;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.client.ClientHelloPacket;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
 import com.github.cao.awa.kalmia.session.factor.SessionFactor;
@@ -128,11 +128,11 @@ public class Kalmia {
         MessageFactor.register(- 1,
                                DeletedMessage :: create
         );
-        MessageFactor.register(1,
-                               PlainsMessage :: create
-        );
         MessageFactor.register(2,
-                               AsymmetricCryptedMessage :: create
+                               UserMessage :: create
+        );
+        MessageFactor.register(5,
+                               CoverMessage :: create
         );
 
         KeyPairStoreFactor.register(0,

@@ -28,4 +28,5 @@ logs/
 configs/
 data/
 ciphers/
+resources/
 src/main/resources/kalmiagram/secret/main/SECRET_PRIVATE

@@ -4,6 +4,7 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.compress.RequestCompressor;
@@ -64,6 +65,15 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private long uid;
     private final RequestRouterMetadata metadata = RequestRouterMetadata.create();
 
+    public RequestRouter() {
+        this(Consumers.doNothing());
+    }
+
+    public RequestRouter(Consumer<RequestRouter> activeCallback) {
+        this.activeCallback = activeCallback;
+        setStates(RequestState.HELLO);
+    }
+
     public long uid() {
         return this.uid;
     }
@@ -78,15 +88,6 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
 
     public void setCompressor(RequestCompressorType type) {
         this.compressor.setCompressor(type);
-    }
-
-    public RequestRouter() {
-        this(Consumers.doNothing());
-    }
-
-    public RequestRouter(Consumer<RequestRouter> activeCallback) {
-        this.activeCallback = activeCallback;
-        setStates(RequestState.HELLO);
     }
 
     public RequestState getStates() {
@@ -162,6 +163,11 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
         this.funeral.done();
     }
 
+    public boolean isOpen() {
+        return this.context.channel()
+                           .isOpen();
+    }
+
     public RequestRouter funeral(Runnable action) {
         this.funeral.add(action);
         return this;
@@ -234,6 +240,15 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     }
 
     public void send(Packet<?> packet) {
+        this.context.channel()
+                    .eventLoop()
+                    .execute(() -> {
+                        this.context.writeAndFlush(packet);
+                        KalmiaEnv.awaitManager.notice(new byte[]{1, 2, 3, 4, 5, 5, 4, 3, 2, 1});
+                    });
+    }
+
+    public void sendImmediately(Packet<?> packet) {
         this.context.writeAndFlush(packet);
     }
 

@@ -1,6 +1,8 @@
 package com.github.cao.awa.kalmia.env;
 
+import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
+import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.await.AwaitManager;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.ClientBootstrapConfig;
@@ -9,6 +11,7 @@ import com.github.cao.awa.kalmia.config.kalmiagram.meta.BootstrapConfigMeta;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.ServerBootstrapConfig;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation.BootstrapTranslationConfig;
+import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.framework.event.EventFramework;
 import com.github.cao.awa.kalmia.framework.network.event.NetworkEventFramework;
 import com.github.cao.awa.kalmia.framework.network.unsolve.PacketFramework;
@@ -16,13 +19,18 @@ import com.github.cao.awa.kalmia.framework.plugin.PluginFramework;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializeFramework;
 import com.github.cao.awa.kalmia.framework.serialize.json.JsonSerializeFramework;
 import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
+import com.github.cao.awa.kalmia.language.manager.LanguageTranslationManager;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.resource.manager.ResourcesManager;
+import com.github.cao.awa.kalmia.setting.Settings;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class KalmiaEnv {
     public static final String VERSION = "1.0.0";
@@ -36,7 +44,8 @@ public class KalmiaEnv {
             ),
             new BootstrapTranslationConfig(
                     false
-            )
+            ),
+            "Kalmia server"
     );
 
     public static final ClientBootstrapConfig DEFAULT_CLIENT_BOOTSTRAP_CONFIG = new ClientBootstrapConfig(
@@ -64,7 +73,8 @@ public class KalmiaEnv {
 
     public static final DefaultUser testUser1 = EntrustEnvironment.trys(() -> {
         return new DefaultUser(TimeUtil.millions(),
-                               "123456"
+                               "123456",
+                               new Settings()
         );
     });
 
@@ -77,7 +87,8 @@ public class KalmiaEnv {
 
     public static final DefaultUser testUser2 = EntrustEnvironment.trys(() -> {
         return new DefaultUser(TimeUtil.millions(),
-                               "123456"
+                               "123456",
+                               new Settings()
         );
     });
 
@@ -112,16 +123,13 @@ public class KalmiaEnv {
     public static boolean setup = false;
     public static boolean serverSideLoading = true;
     public static final PacketFramework packetFramework = new PacketFramework();
-    public static final BytesSerializeFramework BYTES_SERIALIZE_FRAMEWORK = new BytesSerializeFramework();
+    public static final BytesSerializeFramework bytesSerializerFramework = new BytesSerializeFramework();
     public static final JsonSerializeFramework jsonSerializeFramework = new JsonSerializeFramework();
     public static final PluginFramework pluginFramework = new PluginFramework();
     public static final EventFramework eventFramework = new EventFramework();
     public static final NetworkEventFramework networkEventFramework = new NetworkEventFramework();
+    public static final LanguageTranslationManager languageManager = new LanguageTranslationManager();
     public static final AwaitManager awaitManager = new AwaitManager();
-
-    static {
-        new File("data/resources").mkdirs();
-    }
 
     public static final ResourcesManager resourceManager = new ResourcesManager("data/resources");
 
@@ -153,10 +161,34 @@ public class KalmiaEnv {
 
     public static void setupFrameworks() {
         packetFramework.work();
-        BYTES_SERIALIZE_FRAMEWORK.work();
+        bytesSerializerFramework.work();
         jsonSerializeFramework.work();
         pluginFramework.work();
         eventFramework.work();
         networkEventFramework.work();
+
+        setupLanguage();
+    }
+
+    public static void setupLanguage() {
+        File mainResDir = new File(KalmiaConstant.LANGUAGE_TRANSLATION_MAIN_RESOURCE_PATH);
+
+        mainResDir.mkdirs();
+
+        KalmiaConstant.LANGUAGE_TRANSLATION_DEFAULT_RESOURCES.forEach((name, langFile) -> {
+            try {
+                IOUtil.write(
+                        new FileWriter(
+                                KalmiaConstant.LANGUAGE_TRANSLATION_MAIN_RESOURCE_PATH + "/" + name + ".json",
+                                StandardCharsets.UTF_8
+                        ),
+                        IOUtil.read(new InputStreamReader(ResourceLoader.get(langFile)))
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        languageManager.load();
     }
 }

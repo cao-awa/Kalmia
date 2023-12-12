@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.message.identity
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.apricot.util.time.TimeUtil
+import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
@@ -44,4 +45,24 @@ class MessageIdentity(private val mills: Long, private val extras: ByteArray) {
             extras()
         )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null) return false
+        if (this === other) return true
+        if (this.javaClass != other.javaClass) return false
+
+        other as MessageIdentity
+
+        if (this.mills != other.mills) return false
+        if (!this.extras.contentEquals(other.extras)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        val millsHash = this.mills.hashCode()
+        return 31 * millsHash + this.extras.contentHashCode()
+    }
+
+    override fun toString(): String = Mathematics.radix(toBytes(), 36)
 }

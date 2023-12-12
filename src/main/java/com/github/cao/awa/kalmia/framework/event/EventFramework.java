@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.framework.event;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotations.auto.event.AutoHandler;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
@@ -12,6 +13,7 @@ import com.github.cao.awa.kalmia.event.kalmiagram.network.NetworkEvent;
 import com.github.cao.awa.kalmia.framework.AnnotationUtil;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.plugin.Plugin;
+import com.github.cao.awa.kalmia.threading.ThreadingUtil;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -22,13 +24,14 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class EventFramework extends ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("EventFramework");
+    private final ExecutorService executor = ExecutorFactor.intensiveCpu();
     private final Map<Class<? extends Event>, List<EventHandler<?>>> handlers = ApricotCollectionFactor.hashMap();
     private final Map<EventHandler<?>, String> handlerBelongs = ApricotCollectionFactor.hashMap();
     private final Map<Class<? extends EventHandler<?>>, Class<? extends Event>> targetedEventHandlers = ApricotCollectionFactor.hashMap();
@@ -269,7 +272,9 @@ public class EventFramework extends ReflectionFramework {
                 // If plugin are disabled, then do not let it handle events.
                     plugin(handler).enabled()
             ) {
-                handler.handle(EntrustEnvironment.cast(event));
+                handleEvent(handler,
+                            event
+                );
             }
         });
     }
@@ -284,6 +289,7 @@ public class EventFramework extends ReflectionFramework {
             return;
         }
 
+//        this.executor.execute(() -> {
         for (EventHandler<?> handler : handlers) {
             if (
                 // Network event can only handle by network event handler.
@@ -291,19 +297,23 @@ public class EventFramework extends ReflectionFramework {
                             // If plugin are disabled, then do not let it handle events.
                             plugin(networkHandler).enabled()
             ) {
-//                EntrustEnvironment.trys(
-//                        () ->
-                networkHandler.handle(Objects.requireNonNull(EntrustEnvironment.cast(event)));
-//                                ,
-//                        ex -> BugTrace.trace(ex,
-//                                             StringConcat.concat(
-//                                                     "Event pipeline was happened exception by plugin '",
-//                                                     this.handlerBelongs.get(networkHandler),
-//                                                     "'"
-//                                             )
-//                        )
-//                );
+                handleEvent(handler,
+                            event
+                );
             }
+        }
+//        });
+    }
+
+    public void handleEvent(EventHandler<?> handler, Event event) {
+        Runnable handleAction = () -> {
+            handler.handle(EntrustEnvironment.cast(event));
+        };
+
+        if (ThreadingUtil.forceMainThread(handler.getClass())) {
+            handleAction.run();
+        } else {
+            this.executor.execute(handleAction);
         }
     }
 

@@ -15,7 +15,10 @@ public class SendMessageEventBus extends EventBus<SendMessageEventBusHandler> im
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
                                           packet.sessionId(),
-                                          packet.message()
+                                          packet.keyId(),
+                                          packet.signId(),
+                                          packet.message(),
+                                          packet.sign()
         ));
     }
 }

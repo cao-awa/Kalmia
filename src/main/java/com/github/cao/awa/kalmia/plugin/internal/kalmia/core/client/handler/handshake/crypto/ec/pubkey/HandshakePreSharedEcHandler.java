@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.han
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
+import com.github.cao.awa.kalmia.annotations.threading.ForceMainThread;
 import com.github.cao.awa.kalmia.env.KalmiaPreSharedCipher;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.crypto.ec.pubkey.HandshakePreSharedEcEventHandler;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.crypto.asymmetric.ec.EcCrypto;
@@ -17,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 @Auto
 @Client
 @PluginRegister(name = "kalmia_client")
+@ForceMainThread
 public class HandshakePreSharedEcHandler implements HandshakePreSharedEcEventHandler {
     private static final Logger LOGGER = LogManager.getLogger("PreSharedRsaHandler");
     private static final byte[] AES_CIPHER = BytesRandomIdentifier.create(32);
@@ -34,7 +36,7 @@ public class HandshakePreSharedEcHandler implements HandshakePreSharedEcEventHan
         router.setCrypto(new EcCrypto(KalmiaPreSharedCipher.pubkeyManager.get(packet.cipherField()),
                                       null
         ));
-        router.send(new HandshakeAesCipherPacket(AES_CIPHER));
+        router.sendImmediately(new HandshakeAesCipherPacket(AES_CIPHER));
         router.setCrypto(new AesCrypto(AES_CIPHER));
     }
 }

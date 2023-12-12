@@ -2,9 +2,11 @@ package com.github.cao.awa.kalmia.user;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.setting.Settings;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public class UselessUser extends User {
+    private static final byte[] HEADER = new byte[]{- 1};
     private final long markTimestamp;
 
     public UselessUser(long markTimestamp) {
@@ -27,8 +29,19 @@ public class UselessUser extends User {
 
     @Override
     public byte[] toBytes() {
-        return BytesUtil.concat(new byte[]{-1},
-                                SkippedBase256.longToBuf(this.markTimestamp)
+        return BytesUtil.concat(
+                header(),
+                SkippedBase256.longToBuf(this.markTimestamp)
         );
+    }
+
+    @Override
+    public byte[] header() {
+        return HEADER;
+    }
+
+    @Override
+    public Settings settings() {
+        return new Settings();
     }
 }

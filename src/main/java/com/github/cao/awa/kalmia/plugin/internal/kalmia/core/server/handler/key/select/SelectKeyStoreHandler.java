@@ -48,8 +48,6 @@ public class SelectKeyStoreHandler implements SelectKeyStoreEventHandler {
                   );
               });
 
-        if (result.size() > 0) {
-            router.send(new SelectedKeyStorePacket(result).receipt(packet.receipt()));
-        }
+        router.send(new SelectedKeyStorePacket(result).receipt(packet.receipt()));
     }
 }
