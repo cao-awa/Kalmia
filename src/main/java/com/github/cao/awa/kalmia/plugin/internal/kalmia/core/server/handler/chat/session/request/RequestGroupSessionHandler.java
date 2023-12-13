@@ -8,11 +8,13 @@ import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.listeners.SessionListenersUpdatePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestGroupSessionPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.kalmia.session.SessionAccessibleData;
 import com.github.cao.awa.kalmia.session.types.group.GroupSession;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Auto
 @Server
@@ -26,7 +28,8 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
 
         long sessionId = Kalmia.SERVER.sessionManager()
                                       .add(new GroupSession(Kalmia.SERVER.sessionManager()
-                                                                         .nextSeq()
+                                                                         .nextSeq(),
+                                                            packet.name()
                                       ));
 
         // Update session data.
@@ -48,6 +51,10 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
                              SessionAccessibleData :: accessibleChat
                      );
 
-        router.send(new SessionListenersUpdatePacket(listeners));
+        List<Session> sessions = listeners.stream()
+                                          .map(Kalmia.SERVER.sessionManager() :: session)
+                                          .collect(Collectors.toList());
+
+        router.send(new SessionListenersUpdatePacket(sessions));
     }
 }

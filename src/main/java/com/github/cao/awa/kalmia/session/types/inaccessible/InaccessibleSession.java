@@ -23,4 +23,9 @@ public class InaccessibleSession extends Session {
     public byte[] header() {
         return HEADER;
     }
+
+    @Override
+    public String displayName() {
+        return "Inaccessible session";
+    }
 }

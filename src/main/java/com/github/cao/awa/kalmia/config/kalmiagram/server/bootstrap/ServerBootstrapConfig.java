@@ -82,7 +82,10 @@ public class ServerBootstrapConfig extends ConfigElement {
                 compute.translation()
         );
 
-        String serverName = json.getString("server-name");
+        String serverName = compute(json,
+                                    "server-name",
+                                    compute :: serverName
+        );
 
         return new ServerBootstrapConfig(meta,
                                          serverNetwork,

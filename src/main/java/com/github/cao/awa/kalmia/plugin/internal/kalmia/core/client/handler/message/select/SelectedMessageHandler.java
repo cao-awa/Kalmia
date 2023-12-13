@@ -22,6 +22,17 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
     @Client
     @Override
     public void handle(RequestRouter router, SelectedMessagePacket packet) {
+        if (packet.sessionCurSeq() == 0) {
+            return;
+        }
+
+        if (((packet.to() - packet.from()) + 1) != packet.messages()
+                                                         .size()) {
+            LOGGER.warn("Wrongly message packet");
+
+            return;
+        }
+
         MessageManager manager = Kalmia.CLIENT.messageManager();
 
         Message[] messages = packet.messages()

@@ -20,8 +20,6 @@ import org.apache.logging.log4j.Logger;
 @PluginRegister(name = "kalmia_core")
 public class HandshakeAesCipherHandler implements HandshakeAesCipherEventHandler {
     private static final Logger LOGGER = LogManager.getLogger("HandshakeAesCipherHandler");
-    // Dev definition, the value always should be true
-    private static final boolean SHOULD_SESSION_IV = true;
 
     @Auto
     @Server
@@ -36,7 +34,7 @@ public class HandshakeAesCipherHandler implements HandshakeAesCipherEventHandler
             // For prevent the latent feature extraction.
             byte[] iv = router.encode(BytesRandomIdentifier.create(16));
 
-            // Send request, the sha should calculate in plain text as not ciphertext.
+            // Send server hello.
             router.send(new ServerHelloPacket(
                     KalmiaServer.serverBootstrapConfig.serverName(),
                     KalmiaConstant.BUILD_NAME,

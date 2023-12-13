@@ -1,10 +1,8 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.handshake.hello.server;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
-import com.github.cao.awa.apricot.util.digger.MessageDigger;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
-import com.github.cao.awa.kalmia.client.ui.KalmiagramUi;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.hello.server.ServerHelloEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
@@ -26,18 +24,6 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
     public void handle(RequestRouter router, ServerHelloPacket packet) {
         LOGGER.info("Server Hello!");
 
-        byte[] provideCipher = router.decode(packet.testKey());
-
-        LOGGER.debug("Server Sent Hello: " + Mathematics.radix(MessageDigger.digest(provideCipher,
-                                                                                    MessageDigger.Sha3.SHA_512
-                                                               ),
-                                                               16,
-                                                               36
-        ));
-        LOGGER.debug("Server Provide Hello: " + Mathematics.radix(packet.testSha(),
-                                                                  36
-        ));
-
         if (packet.iv().length == 16) {
             LOGGER.debug("Server IV: " + Mathematics.radix(router.decode(packet.iv()),
                                                            36
@@ -58,7 +44,5 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
 //        router.send(new LoginWithPasswordPacket(1,
 //                                                "123456"
 //        ));
-
-        KalmiagramUi.startUi();
     }
 }

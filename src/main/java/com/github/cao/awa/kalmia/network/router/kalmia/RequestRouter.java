@@ -4,7 +4,6 @@ import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.compress.RequestCompressor;
@@ -244,7 +243,6 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
                     .eventLoop()
                     .execute(() -> {
                         this.context.writeAndFlush(packet);
-                        KalmiaEnv.awaitManager.notice(new byte[]{1, 2, 3, 4, 5, 5, 4, 3, 2, 1});
                     });
     }
 

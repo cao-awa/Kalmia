@@ -10,6 +10,7 @@ import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.chat.session.in.SessionListenersUpdateEvent;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
+import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
@@ -20,11 +21,11 @@ import java.util.List;
 public class SessionListenersUpdatePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private List<Long> listeners;
+    private List<Session> sessions;
 
     @Server
-    public SessionListenersUpdatePacket(List<Long> listeners) {
-        this.listeners = listeners;
+    public SessionListenersUpdatePacket(List<Session> sessions) {
+        this.sessions = sessions;
     }
 
     @Auto
@@ -34,7 +35,13 @@ public class SessionListenersUpdatePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Getter
-    public List<Long> listeners() {
-        return this.listeners;
+    public List<Session> sessions() {
+        return this.sessions;
+    }
+
+    public List<Long> mapId() {
+        return sessions().stream()
+                         .map(Session :: sessionId).
+                         toList();
     }
 }

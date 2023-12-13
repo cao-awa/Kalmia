@@ -116,8 +116,11 @@ public class SendMessageHandler implements SendMessageEventHandler {
                                             message
                                     );
 
-            // Response to client the seq.
-            router.send(new SentMessagePacket(seq).receipt(packet.receipt()));
+            // Response to client send result.
+            router.send(new SentMessagePacket(session.sessionId(),
+                                              seq,
+                                              message
+            ).receipt(packet.receipt()));
 
             LOGGER.info("Sent message at seq {}: {}",
                         seq,

@@ -29,13 +29,20 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
         long currentSeqEnd = manager.seq(packet.sessionId());
 
-        if (current > currentSeqEnd) {
+        List<Message> messages = ApricotCollectionFactor.arrayList();
+
+        if (current > currentSeqEnd || currentSeqEnd == 0) {
+            router.send(new SelectedMessagePacket(packet.sessionId(),
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  ApricotCollectionFactor.arrayList()
+            ).receipt(packet.receipt()));
+
             return;
         }
 
         if (packet.from() == packet.to()) {
-            List<Message> messages = ApricotCollectionFactor.arrayList();
-
             messages.add(manager.get(packet.sessionId(),
                                      packet.from()
             ));
@@ -49,8 +56,6 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
             return;
         }
-
-        List<Message> messages = ApricotCollectionFactor.arrayList(200);
 
         long to = Math.min(packet.to(),
                            currentSeqEnd
@@ -77,14 +82,12 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
             realSelected = messages.size() - 1;
 
-            if (messages.size() > 0) {
-                router.send(new SelectedMessagePacket(packet.sessionId(),
-                                                      current,
-                                                      current + realSelected,
-                                                      currentSeqEnd,
-                                                      messages
-                ).receipt(packet.receipt()));
-            }
+            router.send(new SelectedMessagePacket(packet.sessionId(),
+                                                  current,
+                                                  current + realSelected,
+                                                  currentSeqEnd,
+                                                  messages
+            ).receipt(packet.receipt()));
 
             current += selected + 1;
 

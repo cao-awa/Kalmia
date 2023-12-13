@@ -52,6 +52,11 @@ public class DuetSession extends Session {
         return HEADER;
     }
 
+    @Override
+    public String displayName() {
+        return "" + this.target1;
+    }
+
     public long opposite(long userId) {
         if (userId == this.target1) {
             return this.target2;

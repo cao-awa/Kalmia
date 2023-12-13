@@ -14,8 +14,8 @@ public class ServerHelloEventBus extends EventBus<ServerHelloEventBusHandler> im
     public void handle(RequestRouter router, ServerHelloPacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.testKey(),
-                                          packet.testSha(),
+                                          packet.serverName(),
+                                          packet.serverVersion(),
                                           packet.iv()
         ));
     }

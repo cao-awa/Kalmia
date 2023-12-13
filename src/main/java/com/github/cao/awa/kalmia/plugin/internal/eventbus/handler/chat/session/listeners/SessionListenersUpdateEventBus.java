@@ -14,7 +14,7 @@ public class SessionListenersUpdateEventBus extends EventBus<SessionListenersUpd
     public void handle(RequestRouter router, SessionListenersUpdatePacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.listeners()
+                                          packet.sessions()
         ));
     }
 }

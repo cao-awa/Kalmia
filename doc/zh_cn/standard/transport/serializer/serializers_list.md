@@ -93,6 +93,18 @@ EcKeyPair
 
 RsaKeyPair
 
+# 3000
+
+CommunalSession
+
+# 3001
+
+GroupSession
+
+# 3002
+
+DuetSession
+
 # 10000
 
 LanguageSetting

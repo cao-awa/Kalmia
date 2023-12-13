@@ -26,6 +26,13 @@ public abstract class Session implements BytesValueConvertable {
 
     public abstract byte[] header();
 
+    public abstract String displayName();
+
+    @Override
+    public String toString() {
+        return displayName();
+    }
+
     public static Session create(byte[] data) {
         BytesReader reader = BytesReader.of(data);
 

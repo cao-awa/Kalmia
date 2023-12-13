@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.message.digest.DigestData
 import com.github.cao.awa.kalmia.message.display.ClientMessageContent
 import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
+import java.nio.charset.StandardCharsets
 
 class CoverMessage : Message {
     companion object {
@@ -16,7 +17,7 @@ class CoverMessage : Message {
 
         @JvmStatic
         fun create(reader: BytesReader): CoverMessage? {
-            return if (reader.read().toInt() == -1) {
+            return if (reader.read().toInt() == 5) {
                 val identity = MessageIdentity.create(reader)
 
                 val sourceMessageLength = SkippedBase256.readInt(reader)
@@ -149,12 +150,11 @@ class CoverMessage : Message {
     override fun display(): ClientMessageContent {
         return ClientMessageContent(
             sender(),
-            "DeletedMessage{sender=${sender()}, digest=${digest().value36()}}",
-            """
-                        This message has been deleted
-                        sender is: ${sender()}
-                      digest is: ${digest().value36()}"""
-                .trimIndent()
+            "CoverMessage",
+            String(
+                coverMessage(),
+                StandardCharsets.UTF_8
+            )
         )
     }
 
@@ -168,7 +168,7 @@ class CoverMessage : Message {
             SkippedBase256.longToBuf(sourceSignId()),
             Base256.tagToBuf(sourceSign().size),
             sourceSign(),
-            SkippedBase256.intToBuf(sourceMessage().size),
+            SkippedBase256.intToBuf(coverMessage().size),
             coverMessage(),
             SkippedBase256.longToBuf(coverSender()),
             SkippedBase256.longToBuf(coverSignId()),

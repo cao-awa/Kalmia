@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login;
 
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.NetworkEventHandler;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.NetworkEvent;
@@ -8,6 +9,9 @@ import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.listeners.S
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginFailurePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.kalmia.session.Session;
+
+import java.util.List;
 
 public interface LoginEventHandler<P extends Packet<?>, E extends NetworkEvent<P>> extends NetworkEventHandler<P, E> {
     default void loginSuccess(RequestRouter router, long uid, byte[] token, byte[] receipt) {
@@ -16,9 +20,23 @@ public interface LoginEventHandler<P extends Packet<?>, E extends NetworkEvent<P
         ).receipt(receipt));
 
 
+        List<Session> sessions = ApricotCollectionFactor.arrayList();
+
+        Kalmia.SERVER.userManager()
+                     .sessionListeners(router.uid())
+                     .forEach(id -> {
+                         Session session = Kalmia.SERVER.sessionManager()
+                                                        .session(id);
+
+                         if (session == null) {
+                             return;
+                         }
+
+                         sessions.add(session);
+                     });
+
         // Update listeners every time when login success.
-        router.send(new SessionListenersUpdatePacket(Kalmia.SERVER.userManager()
-                                                                  .sessionListeners(router.uid())));
+        router.send(new SessionListenersUpdatePacket(sessions));
     }
 
     default void loginFailure(RequestRouter router, long uid, String reason, byte[] receipt) {

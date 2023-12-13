@@ -95,7 +95,9 @@ public class KalmiaServer {
             );
 
             this.sessionManager.set(0,
-                                    new CommunalSession(0)
+                                    new CommunalSession(0,
+                                                        "Test public session"
+                                    )
             );
 
         } catch (Exception e) {
