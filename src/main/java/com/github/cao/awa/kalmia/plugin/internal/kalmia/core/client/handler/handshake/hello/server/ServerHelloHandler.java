@@ -6,6 +6,7 @@ import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.hello.server.ServerHelloEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -41,8 +42,8 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
 
         // TODO
         //     Try login(will delete in releases).
-//        router.send(new LoginWithPasswordPacket(1,
-//                                                "123456"
-//        ));
+        router.send(new LoginWithPasswordPacket(1,
+                                                "123456"
+        ));
     }
 }

@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSuccessPacket;
+import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
@@ -67,6 +68,13 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 //        ));
 
 //        router.send(new RequestGroupSessionPacket("Test group"));
+
+        if (true) {
+            router.send(new SelectMessagePacket(0,
+                                                0,
+                                                114514
+            ));
+        }
 
         if (false) {
             router.send(new SendMessagePacket(0,
