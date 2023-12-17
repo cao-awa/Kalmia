@@ -14,5 +14,16 @@ public class Www {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        x(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+    }
+
+    public static void x(Runnable xxx) {
+
     }
 }

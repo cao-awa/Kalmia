@@ -2,12 +2,12 @@ package com.github.cao.awa.kalmia.message.cover
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.apricot.util.digger.MessageDigger
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
 import com.github.cao.awa.kalmia.message.display.ClientMessageContent
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.nio.charset.StandardCharsets
 
@@ -18,7 +18,7 @@ class CoverMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): CoverMessage? {
             return if (reader.read().toInt() == 5) {
-                val identity = MessageIdentity.create(reader)
+                val identity = MillsAndExtraIdentity.create(reader)
 
                 val sourceMessageLength = SkippedBase256.readInt(reader)
                 val sourceMessage = reader.read(sourceMessageLength)
@@ -91,7 +91,7 @@ class CoverMessage : Message {
     }
 
     constructor(
-        identity: MessageIdentity,
+        identity: MillsAndExtraIdentity,
         sourceMessage: ByteArray,
         sourceSender: Long,
         sourceSignId: Long,

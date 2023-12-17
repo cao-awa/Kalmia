@@ -6,10 +6,10 @@ import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped
 import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
 import com.github.cao.awa.kalmia.database.KeyValueDatabase
 import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.deleted.DeletedMessage
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.util.function.BiConsumer
 import java.util.function.Consumer
@@ -69,7 +69,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         ]
     }
 
-    operator fun get(identity: MessageIdentity): Message? {
+    operator fun get(identity: MillsAndExtraIdentity): Message? {
         return this[identity.toBytes()]
     }
 
@@ -78,7 +78,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         return Message.create(data)
     }
 
-    fun getMessage(identity: MessageIdentity): Message? {
+    fun getMessage(identity: MillsAndExtraIdentity): Message? {
         return getMessage(identity.toBytes())
     }
 
@@ -90,7 +90,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         }
     }
 
-    fun remove(identity: MessageIdentity) {
+    fun remove(identity: MillsAndExtraIdentity) {
         remove(identity.toBytes())
     }
 
@@ -103,7 +103,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         this.delegate.remove(key)
     }
 
-    fun markDelete(identity: MessageIdentity) {
+    fun markDelete(identity: MillsAndExtraIdentity) {
         val source = get(identity) ?: return
         this[identity.toBytes()] = DeletedMessage(
             source.sender(),
@@ -122,11 +122,11 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         )
     }
 
-    fun identity(key: ByteArray): MessageIdentity {
-        return MessageIdentity.create(BytesReader.of(this.delegate[key]))
+    fun identity(key: ByteArray): MillsAndExtraIdentity {
+        return MillsAndExtraIdentity.create(BytesReader.of(this.delegate[key]))
     }
 
-    fun identity(sid: ByteArray, seq: ByteArray, messageIdentity: MessageIdentity) {
+    fun identity(sid: ByteArray, seq: ByteArray, messageIdentity: MillsAndExtraIdentity) {
         this.delegate[key(sid, seq)] = messageIdentity.toBytes()
     }
 
@@ -207,7 +207,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         )
     }
 
-    fun put(identity: MessageIdentity, msg: Message) {
+    fun put(identity: MillsAndExtraIdentity, msg: Message) {
         this[identity.toBytes()] = msg
     }
 

@@ -80,4 +80,8 @@ public class SessionManager {
     public long nextSeq() {
         return this.database.nextSeq();
     }
+
+    public void curSeq(long curSeq) {
+        this.database.curSeq(curSeq);
+    }
 }

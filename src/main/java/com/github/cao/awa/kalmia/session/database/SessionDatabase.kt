@@ -145,8 +145,14 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
             nextSeqByte,
             session
         )
-        this.delegate[ROOT] = nextSeqByte
+        curSeq(nextSeqByte)
         return nextSeq
+    }
+
+    fun curSeq(curSeq: Long) = curSeq(SkippedBase256.longToBuf(curSeq))
+
+    private fun curSeq(curSeq: ByteArray) {
+        this.delegate[ROOT] = curSeq
     }
 
     override fun set(@ShouldSkipped seq: ByteArray, session: Session?) {

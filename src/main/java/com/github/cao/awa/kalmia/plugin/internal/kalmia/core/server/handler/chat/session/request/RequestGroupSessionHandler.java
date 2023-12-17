@@ -10,7 +10,8 @@ import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.Req
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.kalmia.session.SessionAccessibleData;
-import com.github.cao.awa.kalmia.session.types.group.GroupSession;
+import com.github.cao.awa.kalmia.session.Sessions;
+import com.github.cao.awa.kalmia.session.group.GroupSession;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
@@ -29,19 +30,14 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
         long sessionId = Kalmia.SERVER.sessionManager()
                                       .add(new GroupSession(Kalmia.SERVER.sessionManager()
                                                                          .nextSeq(),
-                                                            packet.name()
+                                                            packet.name(),
+                                                            0
                                       ));
 
         // Update session data.
-        List<Long> listeners = Kalmia.SERVER.userManager()
-                                            .sessionListeners(handler.uid());
-
-        listeners.add(sessionId);
-
-        Kalmia.SERVER.userManager()
-                     .sessionListeners(handler.uid(),
-                                       listeners
-                     );
+        List<Long> listeners = Sessions.subscribe(sessionId,
+                                                  router.uid()
+        );
 
         // Update accessible.
         Kalmia.SERVER.sessionManager()

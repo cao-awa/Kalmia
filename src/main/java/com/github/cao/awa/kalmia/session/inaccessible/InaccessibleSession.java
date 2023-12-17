@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.session.types.inaccessible;
+package com.github.cao.awa.kalmia.session.inaccessible;
 
 import com.github.cao.awa.kalmia.session.Session;
 

@@ -1,9 +1,9 @@
 package com.github.cao.awa.kalmia.message.display
 
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
 
 class ClientMessage(
-    private val identity: MessageIdentity,
+    private val identity: MillsAndExtraIdentity,
     private val sessionId: Long,
     private val seq: Long,
     private val content: ClientMessageContent
@@ -20,7 +20,7 @@ class ClientMessage(
 
     fun content(): ClientMessageContent = this.content
 
-    fun identity(): MessageIdentity = this.identity
+    fun identity(): MillsAndExtraIdentity = this.identity
 
     fun timestamp(): Long = this.identity.mills()
 }

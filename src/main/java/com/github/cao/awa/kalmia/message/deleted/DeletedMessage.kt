@@ -1,11 +1,11 @@
 package com.github.cao.awa.kalmia.message.deleted
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
 import com.github.cao.awa.kalmia.message.display.ClientMessageContent
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
 class DeletedMessage : Message {
@@ -15,7 +15,7 @@ class DeletedMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): DeletedMessage? {
             return if (reader.read().toInt() == -1) {
-                val identity = MessageIdentity.create(reader)
+                val identity = MillsAndExtraIdentity.create(reader)
                 val sender = SkippedBase256.readLong(reader)
                 val digestData = DigestData.create(reader)
                 DeletedMessage(
@@ -37,7 +37,7 @@ class DeletedMessage : Message {
         this.digestData = digestData
     }
 
-    constructor(identity: MessageIdentity, sender: Long, digestData: DigestData) : super(identity) {
+    constructor(identity: MillsAndExtraIdentity, sender: Long, digestData: DigestData) : super(identity) {
         this.sender = sender
         this.digestData = digestData
     }

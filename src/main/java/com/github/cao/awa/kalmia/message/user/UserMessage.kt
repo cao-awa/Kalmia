@@ -5,12 +5,12 @@ import com.github.cao.awa.apricot.util.digger.MessageDigger
 import com.github.cao.awa.apricot.util.digger.MessageDigger.Sha3
 import com.github.cao.awa.apricot.util.encryption.Crypto
 import com.github.cao.awa.kalmia.bootstrap.Kalmia
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
 import com.github.cao.awa.kalmia.message.display.ClientMessageContent
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.nio.charset.StandardCharsets
 
@@ -21,7 +21,7 @@ class UserMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): UserMessage? {
             return if (reader.read().toInt() == 2) {
-                val identity = MessageIdentity.create(reader)
+                val identity = MillsAndExtraIdentity.create(reader)
                 val keyId = SkippedBase256.readLong(reader)
                 val signId = SkippedBase256.readLong(reader)
                 val sender = SkippedBase256.readLong(reader)
@@ -122,7 +122,7 @@ class UserMessage : Message {
     }
 
     constructor(
-        identity: MessageIdentity,
+        identity: MillsAndExtraIdentity,
         keyId: Long,
         msg: ByteArray,
         signId: Long,

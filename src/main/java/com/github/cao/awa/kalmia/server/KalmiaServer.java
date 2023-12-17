@@ -15,9 +15,9 @@ import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.network.io.server.KalmiaServerNetworkIo;
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.kalmia.session.communal.CommunalSession;
 import com.github.cao.awa.kalmia.session.listener.SessionListeners;
 import com.github.cao.awa.kalmia.session.manager.SessionManager;
-import com.github.cao.awa.kalmia.session.types.communal.CommunalSession;
 import com.github.cao.awa.kalmia.user.manager.UserManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -96,9 +96,11 @@ public class KalmiaServer {
 
             this.sessionManager.set(0,
                                     new CommunalSession(0,
-                                                        "Test public session"
+                                                        "Test public session",
+                                                        0
                                     )
             );
+            this.sessionManager.curSeq(0);
 
         } catch (Exception e) {
             throw new RuntimeException(e);

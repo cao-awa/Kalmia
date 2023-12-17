@@ -8,7 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.message.select.FetchMessageEvent;
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity;
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -21,10 +21,10 @@ import java.util.List;
 public class FetchMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private List<MessageIdentity> identities;
+    private List<MillsAndExtraIdentity> identities;
 
     @Client
-    public FetchMessagePacket(List<MessageIdentity> identities) {
+    public FetchMessagePacket(List<MillsAndExtraIdentity> identities) {
         this.identities = identities;
     }
 
@@ -35,7 +35,7 @@ public class FetchMessagePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Getter
-    public List<MessageIdentity> identities() {
+    public List<MillsAndExtraIdentity> identities() {
         return this.identities;
     }
 }

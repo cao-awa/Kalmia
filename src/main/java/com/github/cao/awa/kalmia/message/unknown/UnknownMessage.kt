@@ -4,11 +4,11 @@ import com.github.cao.awa.apricot.annotations.auto.Auto
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.apricot.util.digger.MessageDigger
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
 import com.github.cao.awa.kalmia.message.display.ClientMessageContent
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
 class UnknownMessage : Message {
@@ -18,7 +18,7 @@ class UnknownMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): UnknownMessage? {
             return if (reader.read().toInt() == 0) {
-                val identity = MessageIdentity.create(reader)
+                val identity = MillsAndExtraIdentity.create(reader)
                 val data = reader.all()
                 UnknownMessage(
                     identity,
@@ -50,7 +50,7 @@ class UnknownMessage : Message {
         )
     }
 
-    constructor(identity: MessageIdentity, msgBytes: ByteArray) : super(identity) {
+    constructor(identity: MillsAndExtraIdentity, msgBytes: ByteArray) : super(identity) {
         this.msgBytes = msgBytes
         this.digestData = DigestData.digest(
             MessageDigger.Sha3.SHA_512,

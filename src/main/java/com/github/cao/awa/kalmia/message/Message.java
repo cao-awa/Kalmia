@@ -4,25 +4,25 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.convert.ByteArrayConvertable;
 import com.github.cao.awa.kalmia.digest.DigestedObject;
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity;
 import com.github.cao.awa.kalmia.message.display.ClientMessageContent;
 import com.github.cao.awa.kalmia.message.factor.MessageFactor;
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity;
 import com.github.cao.awa.kalmia.message.unknown.UnknownMessage;
 
 public abstract class Message implements DigestedObject, ByteArrayConvertable {
-    private final MessageIdentity identity;
+    private final MillsAndExtraIdentity identity;
 
-    public Message(MessageIdentity identity) {
+    public Message(MillsAndExtraIdentity identity) {
         this.identity = identity;
     }
 
     public Message() {
-        this.identity = MessageIdentity.create(BytesRandomIdentifier.create(22));
+        this.identity = MillsAndExtraIdentity.create(BytesRandomIdentifier.create(22));
     }
 
     public abstract long sender();
 
-    public MessageIdentity identity() {
+    public MillsAndExtraIdentity identity() {
         return this.identity;
     }
 

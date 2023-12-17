@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.session.types.group;
+package com.github.cao.awa.kalmia.session.group;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
@@ -12,10 +12,12 @@ import java.nio.charset.StandardCharsets;
 public class GroupSession extends Session {
     private static final byte[] HEADER = new byte[]{3};
     private final String displayName;
+    private long subscriberCount;
 
-    public GroupSession(long sessionId, String displayName) {
+    public GroupSession(long sessionId, String displayName, long subscriberCount) {
         super(sessionId);
         this.displayName = displayName;
+        this.subscriberCount = subscriberCount;
     }
 
     public static GroupSession create(BytesReader reader) {
@@ -24,7 +26,8 @@ public class GroupSession extends Session {
                     SkippedBase256.readLong(reader),
                     new String(reader.read(Base256.readTag(reader)),
                                StandardCharsets.UTF_8
-                    )
+                    ),
+                    SkippedBase256.readLong(reader)
             );
         }
         return null;
@@ -35,7 +38,8 @@ public class GroupSession extends Session {
         return BytesUtil.concat(header(),
                                 SkippedBase256.longToBuf(sessionId()),
                                 Base256.tagToBuf(this.displayName.length()),
-                                this.displayName.getBytes(StandardCharsets.UTF_8)
+                                this.displayName.getBytes(StandardCharsets.UTF_8),
+                                SkippedBase256.longToBuf(this.subscriberCount)
         );
     }
 
@@ -57,5 +61,13 @@ public class GroupSession extends Session {
     @Override
     public String displayName() {
         return this.displayName;
+    }
+
+    public long subscriberCount() {
+        return this.subscriberCount;
+    }
+
+    public void subscriberCount(long count) {
+        this.subscriberCount = count;
     }
 }

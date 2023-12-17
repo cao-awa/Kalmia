@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.message.identity
+package com.github.cao.awa.kalmia.identity
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.apricot.util.time.TimeUtil
@@ -6,10 +6,10 @@ import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
-class MessageIdentity(private val mills: Long, private val extras: ByteArray) {
+class MillsAndExtraIdentity(private val mills: Long, private val extras: ByteArray) {
     companion object {
         @JvmStatic
-        fun create(reader: BytesReader): MessageIdentity {
+        fun create(reader: BytesReader): MillsAndExtraIdentity {
             val length = Base256.readTag(reader)
 
             val dataReader = reader.reader(length)
@@ -17,15 +17,15 @@ class MessageIdentity(private val mills: Long, private val extras: ByteArray) {
             val mills = Base256.readLong(dataReader)
             val extras = dataReader.all()
 
-            return MessageIdentity(
+            return MillsAndExtraIdentity(
                 mills,
                 extras
             )
         }
 
         @JvmStatic
-        fun create(extras: ByteArray): MessageIdentity {
-            return MessageIdentity(
+        fun create(extras: ByteArray): MillsAndExtraIdentity {
+            return MillsAndExtraIdentity(
                 TimeUtil.millions(),
                 extras
             )
@@ -51,7 +51,7 @@ class MessageIdentity(private val mills: Long, private val extras: ByteArray) {
         if (this === other) return true
         if (this.javaClass != other.javaClass) return false
 
-        other as MessageIdentity
+        other as MillsAndExtraIdentity
 
         if (this.mills != other.mills) return false
         if (!this.extras.contentEquals(other.extras)) return false

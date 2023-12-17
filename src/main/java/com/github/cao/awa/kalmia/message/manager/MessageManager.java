@@ -1,9 +1,9 @@
 package com.github.cao.awa.kalmia.message.manager;
 
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.message.database.message.MessageDatabase;
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity;
 
 import java.util.function.BiConsumer;
 
@@ -33,7 +33,7 @@ public class MessageManager {
         );
     }
 
-    public Message get(MessageIdentity identity) {
+    public Message get(MillsAndExtraIdentity identity) {
         return this.database.get(identity);
     }
 
@@ -75,7 +75,7 @@ public class MessageManager {
         );
     }
 
-    public void set(MessageIdentity identity, Message message) {
+    public void set(MillsAndExtraIdentity identity, Message message) {
         this.database.set(identity.toBytes(),
                           message
         );

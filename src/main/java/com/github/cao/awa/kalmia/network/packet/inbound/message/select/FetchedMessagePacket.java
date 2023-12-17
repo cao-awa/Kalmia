@@ -9,8 +9,8 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.message.select.FetchedMessageEvent;
+import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity;
 import com.github.cao.awa.kalmia.message.Message;
-import com.github.cao.awa.kalmia.message.identity.MessageIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -42,8 +42,8 @@ public class FetchedMessagePacket extends Packet<AuthedRequestHandler> {
         return this.messages;
     }
 
-    public Map<MessageIdentity, Message> identified() {
-        Map<MessageIdentity, Message> map = ApricotCollectionFactor.hashMap();
+    public Map<MillsAndExtraIdentity, Message> identified() {
+        Map<MillsAndExtraIdentity, Message> map = ApricotCollectionFactor.hashMap();
         messages().forEach(message -> map.put(message.identity(),
                                               message
         ));

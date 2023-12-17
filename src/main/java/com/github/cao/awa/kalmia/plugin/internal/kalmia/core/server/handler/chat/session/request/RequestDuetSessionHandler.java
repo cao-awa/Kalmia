@@ -9,7 +9,7 @@ import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in.ChatInSe
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestDuetSessionPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.session.SessionAccessibleData;
-import com.github.cao.awa.kalmia.session.types.duet.DuetSession;
+import com.github.cao.awa.kalmia.session.duet.DuetSession;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 @Auto

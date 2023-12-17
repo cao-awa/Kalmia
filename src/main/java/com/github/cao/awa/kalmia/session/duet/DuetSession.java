@@ -1,4 +1,4 @@
-package com.github.cao.awa.kalmia.session.types.duet;
+package com.github.cao.awa.kalmia.session.duet;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
