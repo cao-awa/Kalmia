@@ -5,7 +5,9 @@ import com.github.cao.awa.apricot.util.digger.MessageDigger
 import com.github.cao.awa.apricot.util.digger.MessageDigger.Sha3
 import com.github.cao.awa.apricot.util.encryption.Crypto
 import com.github.cao.awa.kalmia.bootstrap.Kalmia
-import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
+import com.github.cao.awa.kalmia.constant.KalmiaConstant
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
@@ -21,10 +23,10 @@ class UserMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): UserMessage? {
             return if (reader.read().toInt() == 2) {
-                val identity = MillsAndExtraIdentity.create(reader)
-                val keyId = SkippedBase256.readLong(reader)
-                val signId = SkippedBase256.readLong(reader)
-                val sender = SkippedBase256.readLong(reader)
+                val identity = LongAndExtraIdentity.read(reader)
+                val keyIdentity = PureExtraIdentity.read(reader)
+                val signId = PureExtraIdentity.read(reader)
+                val sender = LongAndExtraIdentity.read(reader)
 
                 val msgLength = SkippedBase256.readInt(reader)
                 val msg = reader.read(msgLength)
@@ -34,7 +36,7 @@ class UserMessage : Message {
 
                 UserMessage(
                     identity,
-                    keyId,
+                    keyIdentity,
                     msg,
                     signId,
                     sign,
@@ -46,9 +48,9 @@ class UserMessage : Message {
         }
     }
 
-    private var keyId: Long
-    private var signId: Long
-    private var sender: Long = 0
+    private var keyIdentity: PureExtraIdentity
+    private var signIdentity: PureExtraIdentity
+    private var sender: LongAndExtraIdentity = KalmiaConstant.UNMARKED_LONG_AND_EXTRA_IDENTITY
     private var msg: ByteArray
     private var sign: ByteArray
     private var digest: DigestData
@@ -61,13 +63,13 @@ class UserMessage : Message {
         var decrypted = byteArrayOf()
 
         val msg = try {
-            if (keyId() == -1L) {
+            if (keyIdentity() == KalmiaConstant.UNMARKED_PURE_IDENTITY) {
                 String(
                     msg(),
                     StandardCharsets.UTF_8
                 )
             } else {
-                decrypted = Crypto.asymmetricDecrypt(msg(), Kalmia.CLIENT.getPrivateKey(keyId(), true))
+                decrypted = Crypto.asymmetricDecrypt(msg(), Kalmia.CLIENT.getPrivateKey(keyIdentity(), true))
 
                 String(
                     decrypted,
@@ -78,11 +80,11 @@ class UserMessage : Message {
             "The message is unable to decrypt, because: $ex"
         }
 
-        val verified = if (signId() == -1L) false else try {
+        val verified = if (signIdentity() == KalmiaConstant.UNMARKED_PURE_IDENTITY) false else try {
             Crypto.asymmetricVerify(
                 decrypted,
                 sign(),
-                Kalmia.CLIENT.getPublicKey(signId(), true)
+                Kalmia.CLIENT.getPublicKey(signIdentity(), true)
             )
         } catch (ex: Exception) {
             false
@@ -91,7 +93,7 @@ class UserMessage : Message {
         try {
             return ClientMessageContent(
                 sender(),
-                "UserMessage{sender=${sender()}, keyId=${keyId()}, signId=${signId()}, msg=${msg}, sign=${
+                "UserMessage{sender=${sender()}, keyId=${keyIdentity()}, signId=${signIdentity()}, msg=${msg}, sign=${
                     MessageDigger.digest(sign(), Sha3.SHA_512)
                 }, digest36${digest().value36()}, verified=${verified}}",
                 msg
@@ -99,7 +101,7 @@ class UserMessage : Message {
         } catch (ex: Exception) {
             return ClientMessageContent(
                 sender(),
-                "UserMessage{sender=${sender()}, keyId=${keyId()}, signId=${signId()}, msg=${
+                "UserMessage{sender=${sender()}, keyId=${keyIdentity()}, signId=${signIdentity()}, msg=${
                     MessageDigger.digest(msg(), Sha3.SHA_512)
                 }, sign=${
                     MessageDigger.digest(sign(), Sha3.SHA_512)
@@ -109,10 +111,16 @@ class UserMessage : Message {
         }
     }
 
-    constructor(keyId: Long, msg: ByteArray, signId: Long, sign: ByteArray, sender: Long) {
-        this.keyId = keyId
+    constructor(
+        keyIdentity: PureExtraIdentity,
+        msg: ByteArray,
+        signIdentity: PureExtraIdentity,
+        sign: ByteArray,
+        sender: LongAndExtraIdentity
+    ) {
+        this.keyIdentity = keyIdentity
         this.msg = msg
-        this.signId = signId
+        this.signIdentity = signIdentity
         this.sign = sign
         this.sender = sender
         this.digest = DigestData.digest(
@@ -122,16 +130,16 @@ class UserMessage : Message {
     }
 
     constructor(
-        identity: MillsAndExtraIdentity,
-        keyId: Long,
+        identity: LongAndExtraIdentity,
+        keyIdentity: PureExtraIdentity,
         msg: ByteArray,
-        signId: Long,
+        signIdentity: PureExtraIdentity,
         sign: ByteArray,
-        sender: Long
+        sender: LongAndExtraIdentity
     ) : super(identity) {
-        this.keyId = keyId
+        this.keyIdentity = keyIdentity
         this.msg = msg
-        this.signId = signId
+        this.signIdentity = signIdentity
         this.sign = sign
         this.sender = sender
         this.digest = DigestData.digest(
@@ -140,15 +148,15 @@ class UserMessage : Message {
         )
     }
 
-    fun keyId(): Long = this.keyId
+    fun keyIdentity(): PureExtraIdentity = this.keyIdentity
 
-    fun signId(): Long = this.signId
+    fun signIdentity(): PureExtraIdentity = this.signIdentity
 
     fun msg(): ByteArray = this.msg
 
     fun sign(): ByteArray = this.sign
 
-    override fun sender(): Long = this.sender
+    override fun sender(): LongAndExtraIdentity = this.sender
 
     override fun digest(): DigestData = this.digest
 
@@ -156,9 +164,9 @@ class UserMessage : Message {
         return BytesUtil.concat(
             header(),
             identity().toBytes(),
-            SkippedBase256.longToBuf(keyId()),
-            SkippedBase256.longToBuf(signId()),
-            SkippedBase256.longToBuf(sender()),
+            keyIdentity().toBytes(),
+            signIdentity().toBytes(),
+            sender().toBytes(),
             SkippedBase256.intToBuf(msg().size),
             msg(),
             Base256.tagToBuf(sign().size),

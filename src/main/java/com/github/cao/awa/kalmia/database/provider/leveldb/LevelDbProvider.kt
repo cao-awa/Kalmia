@@ -8,6 +8,7 @@ import org.iq80.leveldb.DB
 import org.iq80.leveldb.Options
 import org.iq80.leveldb.impl.Iq80DBFactory
 import java.io.File
+import java.util.function.BiConsumer
 import java.util.function.Supplier
 
 class LevelDbProvider(cacheDelegate: Supplier<Map<ByteArray, ByteArray>>, path: String) :
@@ -15,7 +16,7 @@ class LevelDbProvider(cacheDelegate: Supplier<Map<ByteArray, ByteArray>>, path: 
     private val db: DB
 
     init {
-        db = Iq80DBFactory().open(
+        this.db = Iq80DBFactory().open(
             File(path),
             Options().createIfMissing(true)
                 .writeBufferSize(1048560 * 16)
@@ -45,11 +46,20 @@ class LevelDbProvider(cacheDelegate: Supplier<Map<ByteArray, ByteArray>>, path: 
     override fun close(): Boolean {
         return EntrustEnvironment.trys(
             ExceptingSupplier {
-                db.close()
+                this.db.close()
                 cache().clear()
                 true
             },
             ExceptingSupplier { false }
         )
+    }
+
+    override fun forEach(operator: BiConsumer<ByteArray, ByteArray>) {
+        this.db.forEach {
+            operator.accept(
+                it.key,
+                it.value
+            )
+        }
     }
 }

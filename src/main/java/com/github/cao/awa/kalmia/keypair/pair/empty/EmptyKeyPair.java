@@ -1,5 +1,7 @@
 package com.github.cao.awa.kalmia.keypair.pair.empty;
 
+import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.KeyStoreIdentity;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
@@ -12,13 +14,15 @@ import java.security.PublicKey;
 
 public class EmptyKeyPair extends KeyPairStore {
     public EmptyKeyPair() {
-        super(BytesUtil.EMPTY,
+        super(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
+              BytesUtil.EMPTY,
               BytesUtil.EMPTY
         );
     }
 
-    public EmptyKeyPair(byte[] publicKey, byte[] privateKey) {
-        super(publicKey,
+    public EmptyKeyPair(PureExtraIdentity identity, byte[] publicKey, byte[] privateKey) {
+        super(identity,
+              publicKey,
               privateKey
         );
     }

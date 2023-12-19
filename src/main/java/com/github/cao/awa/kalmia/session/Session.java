@@ -3,25 +3,27 @@ package com.github.cao.awa.kalmia.session;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.convert.BytesValueConvertable;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.session.factor.SessionFactor;
 import com.github.cao.awa.kalmia.setting.Settings;
 
 public abstract class Session implements BytesValueConvertable {
-    private final long sessionId;
+    private final PureExtraIdentity identity;
 
-    public Session(long sessionId) {
-        this.sessionId = sessionId;
+    public Session(PureExtraIdentity identity) {
+        this.identity = identity;
     }
 
-    public long sessionId() {
-        return this.sessionId;
+    public PureExtraIdentity identity() {
+        return this.identity;
     }
 
-    public abstract boolean accessible(long userId);
+    public abstract boolean accessible(LongAndExtraIdentity accessIdentity);
 
     public Settings settings() {
         return Kalmia.SERVER.sessionManager()
-                            .settings(this.sessionId);
+                            .settings(identity());
     }
 
     public abstract byte[] header();

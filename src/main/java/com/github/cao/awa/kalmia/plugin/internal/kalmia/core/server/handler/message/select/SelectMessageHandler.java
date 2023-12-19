@@ -27,17 +27,17 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
         MessageManager manager = Kalmia.SERVER.messageManager();
 
-        long currentSeqEnd = manager.seq(packet.sessionId());
+        long currentSeqEnd = manager.seq(packet.sessionIdentity());
 
         List<Message> messages = ApricotCollectionFactor.arrayList();
 
-        if (start > currentSeqEnd || currentSeqEnd == 0) {
+        System.out.println(currentSeqEnd);
+        System.out.println(start);
 
-            messages.add(null);
-
-            router.send(new SelectedMessagePacket(packet.sessionId(),
-                                                  0,
-                                                  0,
+        if (start > packet.to() || start > currentSeqEnd || currentSeqEnd == - 1) {
+            router.send(new SelectedMessagePacket(packet.sessionIdentity(),
+                                                  - 1,
+                                                  - 1,
                                                   currentSeqEnd,
                                                   messages
             ).receipt(packet.receipt()));
@@ -45,14 +45,14 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
             return;
         }
 
-        if (packet.from() == packet.to()) {
-            messages.add(manager.get(packet.sessionId(),
+        if (start == packet.to() || start == currentSeqEnd) {
+            messages.add(manager.get(packet.sessionIdentity(),
                                      packet.from()
             ));
 
-            router.send(new SelectedMessagePacket(packet.sessionId(),
+            router.send(new SelectedMessagePacket(packet.sessionIdentity(),
                                                   packet.from(),
-                                                  packet.to(),
+                                                  packet.from(),
                                                   currentSeqEnd,
                                                   messages
             ).receipt(packet.receipt()));
@@ -72,7 +72,7 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
             long endSelect = start + selected;
 
             try {
-                manager.operation(packet.sessionId(),
+                manager.operation(packet.sessionIdentity(),
                                   start,
                                   endSelect,
                                   (seq, msg) -> {
@@ -86,7 +86,7 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
             realSelected = messages.size() - 1;
 
-            router.send(new SelectedMessagePacket(packet.sessionId(),
+            router.send(new SelectedMessagePacket(packet.sessionIdentity(),
                                                   start,
                                                   start + realSelected,
                                                   currentSeqEnd,

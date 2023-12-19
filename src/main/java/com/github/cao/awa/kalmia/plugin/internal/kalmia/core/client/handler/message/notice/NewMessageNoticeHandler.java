@@ -28,13 +28,13 @@ public class NewMessageNoticeHandler implements NewMessageNoticeEventHandler {
 
         Kalmia.CLIENT.messageManager()
                      .set(
-                             packet.sessionId(),
+                             packet.sessionIdentity(),
                              packet.seq(),
                              packet.message()
                      );
 
         Kalmia.CLIENT.messageManager()
-                     .seq(packet.sessionId(),
+                     .seq(packet.sessionIdentity(),
                           packet.seq()
                      );
 

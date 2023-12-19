@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.message.delete.DeleteMessageEvent;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -18,7 +19,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 public class DeleteMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private long sessionId;
+    private PureExtraIdentity sessionIdentity;
     @AutoData
     @DoNotSet
     private long seq;
@@ -30,14 +31,14 @@ public class DeleteMessagePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Client
-    public DeleteMessagePacket(long sessionId, long seq) {
-        this.sessionId = sessionId;
+    public DeleteMessagePacket(PureExtraIdentity sessionIdentity, long seq) {
+        this.sessionIdentity = sessionIdentity;
         this.seq = seq;
     }
 
     @Getter
-    public long sessionId() {
-        return this.sessionId;
+    public PureExtraIdentity sessionIdentity() {
+        return this.sessionIdentity;
     }
 
     @Getter

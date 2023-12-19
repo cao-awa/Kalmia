@@ -27,14 +27,14 @@ public class SentMessageHandler implements SentMessageEventHandler {
                             IDT: {}""",
                     packet.seq(),
                     packet.handler()
-                          .uid(),
+                          .accessIdentity(),
                     Mathematics.radix(packet.receipt(),
                                       36
                     )
         );
 
         Kalmia.CLIENT.messageManager()
-                     .set(packet.sessionId(),
+                     .set(packet.sessionIdentity(),
                           packet.seq(),
                           packet.message()
                      );

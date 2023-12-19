@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.key.select.SelectedKeyStoreEvent;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
@@ -22,15 +23,15 @@ import java.util.Map;
 public class SelectedKeyStorePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private Map<Long, KeyPairStore> keys;
+    private Map<PureExtraIdentity, KeyPairStore> keys;
 
     @Server
-    public SelectedKeyStorePacket(Map<Long, KeyPairStore> keys) {
+    public SelectedKeyStorePacket(Map<PureExtraIdentity, KeyPairStore> keys) {
         this.keys = keys;
     }
 
     @Server
-    public SelectedKeyStorePacket(long id, KeyPairStore key) {
+    public SelectedKeyStorePacket(PureExtraIdentity id, KeyPairStore key) {
         this.keys = ApricotCollectionFactor.hashMap();
         this.keys.put(id,
                       key
@@ -44,7 +45,7 @@ public class SelectedKeyStorePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Getter
-    public Map<Long, KeyPairStore> keys() {
+    public Map<PureExtraIdentity, KeyPairStore> keys() {
         return this.keys;
     }
 }

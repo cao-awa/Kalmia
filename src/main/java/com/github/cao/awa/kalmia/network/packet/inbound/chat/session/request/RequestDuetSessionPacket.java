@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.chat.session.request.RequestDuetSessionEvent;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in.ChatInSessionPacket;
@@ -27,11 +28,11 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 public class RequestDuetSessionPacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private long targetUid;
+    private LongAndExtraIdentity targetUser;
 
     @Client
-    public RequestDuetSessionPacket(long targetUid) {
-        this.targetUid = targetUid;
+    public RequestDuetSessionPacket(LongAndExtraIdentity targetUser) {
+        this.targetUser = targetUser;
     }
 
     @Auto
@@ -41,7 +42,7 @@ public class RequestDuetSessionPacket extends Packet<AuthedRequestHandler> {
     }
 
     @Getter
-    public long targetUid() {
-        return this.targetUid;
+    public LongAndExtraIdentity targetUser() {
+        return this.targetUser;
     }
 }

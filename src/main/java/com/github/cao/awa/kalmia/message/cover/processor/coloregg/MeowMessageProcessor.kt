@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.message.cover.processor.coloregg
 
 import com.github.cao.awa.kalmia.bootstrap.Kalmia
 import com.github.cao.awa.kalmia.env.KalmiaEnv
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
 import com.github.cao.awa.kalmia.message.cover.processor.MessageProcessor
 import com.github.cao.awa.kalmia.setting.user.UserSettings
 import java.nio.charset.StandardCharsets
@@ -13,7 +14,7 @@ class MeowMessageProcessor : MessageProcessor() {
         val ID: UUID = UUID.fromString("080c1c64-1236-4313-b053-5828e453203b")
     }
 
-    override fun process(bytes: ByteArray, sender: Long): ByteArray {
+    override fun process(bytes: ByteArray, sender: LongAndExtraIdentity): ByteArray {
         val user = Kalmia.SERVER.userManager()[sender]!!
         val sourceText = String(
             bytes,

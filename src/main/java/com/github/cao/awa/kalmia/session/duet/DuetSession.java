@@ -2,17 +2,18 @@ package com.github.cao.awa.kalmia.session.duet;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
 public class DuetSession extends Session {
     private static final byte[] HEADER = new byte[]{1};
-    private final long target1;
-    private final long target2;
+    private final LongAndExtraIdentity target1;
+    private final LongAndExtraIdentity target2;
 
-    public DuetSession(long sessionId, long target1, long target2) {
-        super(sessionId);
+    public DuetSession(PureExtraIdentity sessionIdentity, LongAndExtraIdentity target1, LongAndExtraIdentity target2) {
+        super(sessionIdentity);
         this.target1 = target1;
         this.target2 = target2;
     }
@@ -20,9 +21,9 @@ public class DuetSession extends Session {
     public static DuetSession create(BytesReader reader) {
         if (reader.read() == 1) {
             return new DuetSession(
-                    SkippedBase256.readLong(reader),
-                    SkippedBase256.readLong(reader),
-                    SkippedBase256.readLong(reader)
+                    PureExtraIdentity.read(reader),
+                    LongAndExtraIdentity.read(reader),
+                    LongAndExtraIdentity.read(reader)
             );
         }
         return null;
@@ -31,18 +32,18 @@ public class DuetSession extends Session {
     @Override
     public byte[] bytes() {
         return BytesUtil.concat(header(),
-                                SkippedBase256.longToBuf(sessionId()),
-                                SkippedBase256.longToBuf(this.target1),
-                                SkippedBase256.longToBuf(this.target2)
+                                identity().toBytes(),
+                                this.target1.toBytes(),
+                                this.target2.toBytes()
         );
     }
 
     @Override
-    public boolean accessible(long userId) {
+    public boolean accessible(LongAndExtraIdentity accessIdentity) {
         return Kalmia.SERVER.sessionManager()
                             .accessible(
-                                    sessionId(),
-                                    userId
+                                    identity(),
+                                    accessIdentity
                             )
                             .accessibleChat(true);
     }
@@ -57,11 +58,11 @@ public class DuetSession extends Session {
         return "" + this.target1;
     }
 
-    public long opposite(long userId) {
-        if (userId == this.target1) {
+    public LongAndExtraIdentity opposite(LongAndExtraIdentity userId) {
+        if (userId.equals(this.target1)) {
             return this.target2;
         }
-        if (userId == this.target2) {
+        if (userId.equals(this.target2)) {
             return this.target1;
         }
         return userId;

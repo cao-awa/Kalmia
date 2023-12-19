@@ -14,7 +14,7 @@ public class LoginWithTokenEventBus extends EventBus<LoginWithTokenEventBusHandl
     public void handle(RequestRouter router, LoginWithTokenPacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.uid(),
+                                          packet.identity(),
                                           packet.token()
         ));
     }

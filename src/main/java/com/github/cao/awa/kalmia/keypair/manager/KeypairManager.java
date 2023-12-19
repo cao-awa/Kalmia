@@ -1,10 +1,10 @@
 package com.github.cao.awa.kalmia.keypair.manager;
 
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.KeyStoreIdentity;
 import com.github.cao.awa.kalmia.keypair.database.KeypairDatabase;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,49 +19,49 @@ public class KeypairManager {
         this.database = new KeypairDatabase(path);
     }
 
-    public synchronized long add(KeyPairStore store) {
+    public PureExtraIdentity add(KeyPairStore store) {
         return this.database.add(store);
     }
 
-    public synchronized void set(long seq, KeyPairStore store) {
-        this.database.set(SkippedBase256.longToBuf(seq),
+    public void set(PureExtraIdentity identity, KeyPairStore store) {
+        this.database.set(identity.extras(),
                           store
         );
     }
 
-    public synchronized long delete(long seq) {
-        this.database.remove(SkippedBase256.longToBuf(seq));
-        return seq;
+    public void delete(PureExtraIdentity identity) {
+        this.database.remove(identity.extras());
     }
 
     @Nullable
-    public synchronized KeyPairStore get(long seq) {
-        return this.database.get(SkippedBase256.longToBuf(seq));
+    public KeyPairStore get(PureExtraIdentity identity) {
+        return this.database.get(identity.extras());
     }
 
-    public KeyPairStore getStore(long seq) {
-        return this.database.createStore(SkippedBase256.longToBuf(seq));
+    public KeyPairStore getStore(PureExtraIdentity identity) {
+        return this.database.createStore(identity.extras());
     }
 
-    public synchronized void operation(BiConsumer<Long, KeyPairStore> action) {
+    public void operation(BiConsumer<PureExtraIdentity, KeyPairStore> action) {
         this.database.operation(action);
     }
 
-    public synchronized void deleteAll() {
+    public void deleteAll() {
         this.database.deleteAll();
     }
 
-    public synchronized PublicKey publicKey(long seq) {
-        return this.database.publicKey(SkippedBase256.longToBuf(seq));
+    public PublicKey publicKey(PureExtraIdentity identity) {
+        return this.database.publicKey(identity.extras());
     }
 
-    public synchronized void publicKey(long seq, PublicKey publicKey) {
-        KeyPairStore store = this.database.createStore(SkippedBase256.longToBuf(seq));
+    public void publicKey(PureExtraIdentity identity, PublicKey publicKey) {
+        KeyPairStore store = this.database.createStore(identity.extras());
 
         KeyStore<? extends PrivateKey> privateKey = store.privateKey();
 
-        this.database.putPublic(SkippedBase256.longToBuf(seq),
+        this.database.putPublic(identity.extras(),
                                 KeyStoreIdentity.createKeyPairStore(
+                                                        identity,
                                                         publicKey,
                                                         privateKey == null ? BytesUtil.EMPTY : privateKey
                                                                 .key()
@@ -70,12 +70,12 @@ public class KeypairManager {
         );
     }
 
-    public byte[] privateKey(long seq) {
-        return this.database.privateKey(SkippedBase256.longToBuf(seq));
+    public byte[] privateKey(PureExtraIdentity identity) {
+        return this.database.privateKey(identity.extras());
     }
 
-    public void privateKey(long seq, KeyStore<? extends PrivateKey> privateKey) {
-        this.database.putPrivate(SkippedBase256.longToBuf(seq),
+    public void privateKey(PureExtraIdentity identity, KeyStore<? extends PrivateKey> privateKey) {
+        this.database.putPrivate(identity.extras(),
                                  privateKey
         );
     }

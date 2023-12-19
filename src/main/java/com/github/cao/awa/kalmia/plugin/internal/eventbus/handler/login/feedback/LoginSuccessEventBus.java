@@ -14,7 +14,7 @@ public class LoginSuccessEventBus extends EventBus<LoginSuccessEventBusHandler> 
     public void handle(RequestRouter router, LoginSuccessPacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.uid(),
+                                          packet.accessIdentity(),
                                           packet.token()
         ));
     }

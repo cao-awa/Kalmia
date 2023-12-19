@@ -22,13 +22,18 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
     @Client
     @Override
     public void handle(RequestRouter router, SelectedMessagePacket packet) {
-        if (packet.sessionCurSeq() == 0) {
+        if (packet.sessionCurSeq() == - 1 || packet.to() == - 1) {
+            LOGGER.info("The session does not have any message");
             return;
         }
 
         if (((packet.to() - packet.from()) + 1) != packet.messages()
                                                          .size()) {
             LOGGER.warn("Wrongly message packet");
+
+            System.out.println(packet.messages());
+
+            System.out.println(packet.from() + ":" + packet.to());
 
             return;
         }
@@ -38,7 +43,7 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
         Message[] messages = packet.messages()
                                    .toArray(Message[] :: new);
 
-        manager.seq(packet.sessionId(),
+        manager.seq(packet.sessionIdentity(),
                     packet.sessionCurSeq()
         );
 
@@ -53,26 +58,25 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
             }
 
             manager.set(
-                    packet.sessionId(),
+                    packet.sessionIdentity(),
                     databaseIndex,
                     msg
             );
         }
 
-//        LOGGER.info("----Test display----");
-//
-//        Kalmia.CLIENT.getMessages(packet.sessionId(),
-//                                  packet.from(),
-//                                  packet.to(),
-//                                  false
-//              )
-//                     .forEach(message -> {
-//                         LOGGER.info("---{}: {}---\n{}\n{}",
-//                                     message.sessionId(),
-//                                     message.seq(),
-//                                     message.sourceContent(),
-//                                     message.coverContent()
-//                         );
-//                     });
+        LOGGER.info("----Test display----");
+
+        Kalmia.CLIENT.getMessages(packet.sessionIdentity(),
+                                  packet.from(),
+                                  packet.to(),
+                                  false
+              )
+                     .forEach(message -> {
+                         LOGGER.info("{}: \n{}",
+                                     message.identity(),
+                                     message.display()
+                                            .coverContent()
+                         );
+                     });
     }
 }

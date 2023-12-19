@@ -17,7 +17,7 @@ public class LoginFailureHandler implements LoginFailureEventHandler {
     @Override
     public void handle(RequestRouter router, LoginFailurePacket packet) {
         System.out.println("---Login failed---");
-        System.out.println("UID: " + packet.uid());
+        System.out.println("UID: " + packet.accessIdentity());
 
         System.out.println(Mathematics.radix(packet.receipt(),
                                              36

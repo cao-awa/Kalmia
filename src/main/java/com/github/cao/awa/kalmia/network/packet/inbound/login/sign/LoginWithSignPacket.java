@@ -11,6 +11,7 @@ import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.login.sign.LoginWithSignEvent;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -23,14 +24,14 @@ import java.security.interfaces.ECPrivateKey;
 public class LoginWithSignPacket extends Packet<StatelessHandler> {
     @AutoData
     @DoNotSet
-    private long uid;
+    private LongAndExtraIdentity uid;
     @AutoData
     @DoNotSet
     private byte[] challengeData;
 
     // Only support ec to use sign login.
     @Client
-    public LoginWithSignPacket(long uid, ECPrivateKey privateKey) {
+    public LoginWithSignPacket(LongAndExtraIdentity uid, ECPrivateKey privateKey) {
         this.uid = uid;
         try {
             this.challengeData = Crypto.ecSign(
@@ -51,7 +52,7 @@ public class LoginWithSignPacket extends Packet<StatelessHandler> {
     }
 
     @Getter
-    public long uid() {
+    public LongAndExtraIdentity accessIdentity() {
         return this.uid;
     }
 

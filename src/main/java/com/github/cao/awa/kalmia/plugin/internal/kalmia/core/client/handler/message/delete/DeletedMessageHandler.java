@@ -17,8 +17,8 @@ public class DeletedMessageHandler implements DeletedMessageEventHandler {
     public void handle(RequestRouter router, DeletedMessagePacket packet) {
         System.out.println("---Message deleted---");
         System.out.println("UID: " + packet.handler()
-                                           .uid());
-        System.out.println("SID: " + packet.sessionId());
+                                           .accessIdentity());
+        System.out.println("SID: " + packet.sessionIdentity());
         System.out.println("SEQ: " + packet.seq());
     }
 }

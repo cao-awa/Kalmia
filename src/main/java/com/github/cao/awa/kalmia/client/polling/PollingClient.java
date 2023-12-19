@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.client.polling;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.client.KalmiaClient;
 import com.github.cao.awa.kalmia.event.Event;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -17,9 +18,9 @@ public class PollingClient {
         this.delegate = delegate;
     }
 
-    public long curMsgSeq(long sessionId) {
+    public long curMsgSeq(PureExtraIdentity sessionIdentity) {
         return this.delegate.messageManager()
-                            .seq(sessionId);
+                            .seq(sessionIdentity);
     }
 
     public byte[] curSessionListenersIdentity() {

@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.database
 
 import com.github.cao.awa.kalmia.database.cache.KeyValueCache
+import java.util.function.BiConsumer
 import java.util.function.Supplier
 
 abstract class KeyValueDatabase<K, V>(cacheDelegate: Supplier<MutableMap<K, V?>>) {
@@ -39,6 +40,10 @@ abstract class KeyValueDatabase<K, V>(cacheDelegate: Supplier<MutableMap<K, V?>>
 
     open fun remove(key1: K, key2: K, key3: K) {
         // Redundancy method.
+    }
+
+    open fun forEach(operator: BiConsumer<K, V>) {
+
     }
 
     open fun close(): Boolean = true

@@ -6,6 +6,8 @@ import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped
 import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
 import com.github.cao.awa.kalmia.database.KeyValueDatabase
 import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.session.Session
 import com.github.cao.awa.kalmia.session.SessionAccessible
@@ -21,17 +23,20 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
         private val ROOT = byteArrayOf(1)
         private val ACCESSIBLE_DELIMITER = byteArrayOf(123)
         private val SETTINGS_DELIMITER = byteArrayOf(111)
-        fun accessibleKey(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray): ByteArray {
+        fun accessibleKey(
+            sessionIdentity: PureExtraIdentity,
+            accessIdentity: LongAndExtraIdentity
+        ): ByteArray {
             return BytesUtil.concat(
-                sid,
+                sessionIdentity.extras(),
                 ACCESSIBLE_DELIMITER,
-                uid
+                accessIdentity.toBytes()
             )
         }
 
-        fun settingsKey(@ShouldSkipped sid: ByteArray): ByteArray {
+        fun settingsKey(@ShouldSkipped sessionIdentity: PureExtraIdentity): ByteArray {
             return BytesUtil.concat(
-                sid,
+                sessionIdentity.extras(),
                 SETTINGS_DELIMITER
             )
         }
@@ -62,67 +67,91 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
 
     fun nextSeq(): Long = seq() + 1
 
-    override operator fun get(@ShouldSkipped sid: ByteArray): Session? {
+    override operator fun get(sessionIdentity: ByteArray): Session? {
         return cache()[
-            sid,
+            sessionIdentity,
             { getSession(it) }
         ]
     }
 
-    fun accessible(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray): SessionAccessibleData {
+    operator fun get(sessionIdentity: PureExtraIdentity): Session? {
+        return this[sessionIdentity.extras()]
+    }
+
+    fun accessible(sessionIdentity: PureExtraIdentity, accessIdentity: LongAndExtraIdentity): SessionAccessibleData {
         val accessible = this.delegate[accessibleKey(
-            sid,
-            uid
+            sessionIdentity,
+            accessIdentity
         )] ?: return SessionAccessibleData(SessionAccessible.DEFAULT_SETTINGS.clone())
         return SessionAccessibleData(accessible)
     }
 
-    fun accessible(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray, data: SessionAccessibleData) {
+    fun accessible(
+        sessionIdentity: PureExtraIdentity,
+        accessIdentity: LongAndExtraIdentity,
+        data: SessionAccessibleData
+    ) {
         this.delegate[accessibleKey(
-            sid,
-            uid
+            sessionIdentity,
+            accessIdentity
         )] = data.bytes()
     }
 
-    fun settings(@ShouldSkipped sid: ByteArray): Settings {
-        val settings = this.delegate[settingsKey(sid)] ?: return Settings()
+    fun settings(identity: PureExtraIdentity): Settings {
+        val settings = this.delegate[settingsKey(identity)] ?: return Settings()
         return Settings.create(BytesReader.of(settings))
     }
 
-    fun settings(@ShouldSkipped sid: ByteArray, settings: Settings) {
-        this.delegate[settingsKey(sid)] = settings.toBytes()
+    fun settings(identity: PureExtraIdentity, settings: Settings) {
+        this.delegate[settingsKey(identity)] = settings.toBytes()
     }
 
-    fun banChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
+    fun banChat(identity: PureExtraIdentity, accessIdentity: LongAndExtraIdentity) {
         val key = accessibleKey(
-            sid,
-            uid
+            identity,
+            accessIdentity
         )
         val accessible = SessionAccessible.banChat(this.delegate[key])
         this.delegate[key] = accessible
     }
 
-    fun approveChat(@ShouldSkipped sid: ByteArray, @ShouldSkipped uid: ByteArray) {
+    fun approveChat(identity: PureExtraIdentity, accessIdentity: LongAndExtraIdentity) {
         val key = accessibleKey(
-            sid,
-            uid
+            identity,
+            accessIdentity
         )
         val accessible = SessionAccessible.approveChat(this.delegate[key])
         this.delegate[key] = accessible
     }
 
-    private fun getSession(@ShouldSkipped sid: ByteArray): Session {
-        val bytes = this.delegate[sid]
-        return if (bytes == null || bytes.isEmpty()) Sessions.INACCESSIBLE else Session.create(bytes)
+    private fun getSession(identity: PureExtraIdentity): Session {
+        return getSession(identity.extras())
     }
 
-    override fun remove(@ShouldSkipped sid: ByteArray) {
+    private fun getSession(identity: ByteArray): Session {
+        val bytes = this.delegate[identity] ?: return Sessions.INACCESSIBLE
+        return Session.create(bytes)
+    }
+
+    override fun remove(@ShouldSkipped identity: ByteArray) {
         cache()
             .delete(
-                sid
+                identity
             ) {
                 this.delegate.remove(it)
             }
+    }
+
+    fun remove(identity: PureExtraIdentity) {
+        remove(identity.extras())
+    }
+
+    fun remove(seq: Long) {
+        remove(identity(seq))
+    }
+
+    fun identity(sid: Long): PureExtraIdentity {
+        return PureExtraIdentity.create(this.delegate[SkippedBase256.longToBuf(sid)])
     }
 
     fun seqAll(action: Consumer<Long>) {
@@ -138,15 +167,31 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
         seqAll { remove(SkippedBase256.longToBuf(it)) }
     }
 
-    fun add(session: Session): Long {
+    fun identity(seq: ByteArray): PureExtraIdentity = PureExtraIdentity.create(this.delegate[seq])
+
+    fun identity(seq: ByteArray, identity: PureExtraIdentity) {
+        this.delegate[seq] = identity.toBytes()
+    }
+
+    fun add(session: Session): PureExtraIdentity {
         val nextSeq = nextSeq()
         val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
-        set(
+
+        // Save the redirector to global id.
+        identity(
             nextSeqByte,
+            session.identity()
+        )
+
+        // Update index.
+        curSeq(nextSeqByte)
+
+        // Update message.
+        set(
+            session.identity(),
             session
         )
-        curSeq(nextSeqByte)
-        return nextSeq
+        return session.identity()
     }
 
     fun curSeq(curSeq: Long) = curSeq(SkippedBase256.longToBuf(curSeq))
@@ -155,16 +200,19 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
         this.delegate[ROOT] = curSeq
     }
 
-    override fun set(@ShouldSkipped seq: ByteArray, session: Session?) {
+    override fun set(sessionIdentity: ByteArray, session: Session?) {
         if (session == null) {
-            remove(seq)
+            remove(sessionIdentity)
             return
         }
 
-        if (SkippedBase256.readLong(BytesReader.of(seq)) >= nextSeq()) {
-            this.delegate[ROOT] = seq
-        }
+        this.delegate[sessionIdentity] = session.bytes()
+    }
 
-        this.delegate[seq] = session.bytes()
+    fun set(sessionIdentity: PureExtraIdentity, session: Session?) {
+        set(
+            sessionIdentity.extras(),
+            session
+        )
     }
 }

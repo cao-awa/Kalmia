@@ -5,6 +5,7 @@ import com.github.cao.awa.kalmia.client.polling.PollingClient;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
@@ -84,24 +85,24 @@ public class Kalmia {
     }
 
     public static void setupTest() throws Exception {
-        Set<Long> keys = SERVER.userManager()
-                               .keyStores(1);
+        Set<PureExtraIdentity> keys = SERVER.userManager()
+                                            .keyStores(KalmiaEnv.testUser1.identity());
 
-        keys.add(0L);
-        keys.add(1L);
+        keys.add(KalmiaEnv.testKeypair0.identity());
+        keys.add(KalmiaEnv.testKeypair1.identity());
 
         SERVER.userManager()
-              .keyStores(1,
+              .keyStores(KalmiaEnv.testUser1.identity(),
                          keys
               );
 
         SERVER.keypairManager()
-              .set(0,
+              .set(KalmiaEnv.testKeypair0.identity(),
                    KalmiaEnv.testKeypair0
               );
 
         SERVER.keypairManager()
-              .set(1,
+              .set(KalmiaEnv.testKeypair1.identity(),
                    KalmiaEnv.testKeypair1
               );
     }

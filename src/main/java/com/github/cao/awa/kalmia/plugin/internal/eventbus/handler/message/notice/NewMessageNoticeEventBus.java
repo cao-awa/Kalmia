@@ -14,7 +14,7 @@ public class NewMessageNoticeEventBus extends EventBus<NewMessageNoticeEventBusH
     public void handle(RequestRouter router, NewMessageNoticePacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.sessionId(),
+                                          packet.sessionIdentity(),
                                           packet.seq(),
                                           packet.message()
         ));

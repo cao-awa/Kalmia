@@ -18,11 +18,11 @@ public class TranslationLoginWithPasswordHandler implements TranslationLoginWith
     public void handle(TranslationRouter router, TranslationLoginWithPasswordPacket packet) {
         RequestRouter requestRouter = KalmiaTranslationEnv.router(router);
 
-        System.out.println(packet.uid() + ":" + packet.password());
+        System.out.println(packet.accessIdentity() + ":" + packet.password());
 
         router.send(new TranslationProxyStatusPacket("status.kalmia.login"));
 
-        requestRouter.send(new LoginWithPasswordPacket(packet.uid(),
+        requestRouter.send(new LoginWithPasswordPacket(packet.accessIdentity(),
                                                        packet.password()
         ));
     }

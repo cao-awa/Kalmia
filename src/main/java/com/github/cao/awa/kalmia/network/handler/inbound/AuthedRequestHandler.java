@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.network.handler.inbound;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
@@ -16,14 +17,14 @@ public class AuthedRequestHandler extends PacketHandler<AuthedRequestHandler> {
                                                                                        }
     );
 
-    private long uid;
+    private LongAndExtraIdentity accessIdentity;
 
-    public long uid() {
-        return this.uid;
+    public LongAndExtraIdentity accessIdentity() {
+        return this.accessIdentity;
     }
 
-    public void setUid(long uid) {
-        this.uid = uid;
+    public void accessIdentity(LongAndExtraIdentity accessIdentity) {
+        this.accessIdentity = accessIdentity;
     }
 
     @Override

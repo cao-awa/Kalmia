@@ -1,9 +1,12 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.chat.session.request;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.request.RequestDuetSessionEventHandler;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in.ChatInSessionPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestDuetSessionPacket;
@@ -20,46 +23,45 @@ public class RequestDuetSessionHandler implements RequestDuetSessionEventHandler
     @Server
     @Override
     public void handle(RequestRouter router, RequestDuetSessionPacket packet) {
-        long targetUid = packet.targetUid();
+        LongAndExtraIdentity targetIdentity = packet.targetUser();
         AuthedRequestHandler handler = packet.handler();
 
-        long sessionId = Kalmia.SERVER.userManager()
-                                      .session(handler.uid(),
-                                               targetUid
-                                      );
-        if (sessionId == - 1) {
-            sessionId = Kalmia.SERVER.sessionManager()
-                                     .add(new DuetSession(Kalmia.SERVER.sessionManager()
-                                                                       .nextSeq(),
-                                                          handler.uid(),
-                                                          targetUid
-                                     ));
+        PureExtraIdentity sessionIdentity = Kalmia.SERVER.userManager()
+                                                         .duetSession(handler.accessIdentity(),
+                                                                      targetIdentity
+                                                         );
+        if (sessionIdentity == null) {
+            sessionIdentity = Kalmia.SERVER.sessionManager()
+                                           .add(new DuetSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
+                                                                handler.accessIdentity(),
+                                                                targetIdentity
+                                           ));
 
             // Update session data.
             Kalmia.SERVER.userManager()
-                         .session(handler.uid(),
-                                  targetUid,
-                                  sessionId
+                         .duetSession(handler.accessIdentity(),
+                                      targetIdentity,
+                                      sessionIdentity
                          );
 
             // Update accessible.
             Kalmia.SERVER.sessionManager()
                          .updateAccessible(
-                                 sessionId,
-                                 handler.uid(),
+                                 sessionIdentity,
+                                 handler.accessIdentity(),
                                  SessionAccessibleData :: accessibleChat
                          );
             Kalmia.SERVER.sessionManager()
                          .updateAccessible(
-                                 sessionId,
-                                 targetUid,
+                                 sessionIdentity,
+                                 targetIdentity,
                                  SessionAccessibleData :: accessibleChat
                          );
         }
 
         router.send(new ChatInSessionPacket(
-                targetUid,
-                sessionId
+                targetIdentity,
+                sessionIdentity
         ));
     }
 }

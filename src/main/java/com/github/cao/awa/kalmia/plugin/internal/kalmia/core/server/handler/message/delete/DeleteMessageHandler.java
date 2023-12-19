@@ -18,17 +18,17 @@ public class DeleteMessageHandler implements DeleteMessageEventHandler {
     @Override
     public void handle(RequestRouter router, DeleteMessagePacket packet) {
         System.out.println("UID: " + packet.handler()
-                                           .uid());
-        System.out.println("SID: " + packet.sessionId());
+                                           .accessIdentity());
+        System.out.println("SID: " + packet.sessionIdentity());
         System.out.println("SEQ: " + packet.seq());
 
         Kalmia.SERVER.messageManager()
-                     .delete(packet.sessionId(),
+                     .delete(packet.sessionIdentity(),
                              packet.seq()
                      );
 
         // Response to client the seq.
-        router.send(new DeletedMessagePacket(packet.sessionId(),
+        router.send(new DeletedMessagePacket(packet.sessionIdentity(),
                                              packet.seq()
         ));
 

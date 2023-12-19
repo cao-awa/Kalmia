@@ -7,7 +7,9 @@ import com.github.cao.awa.kalmia.annotations.auto.event.network.NetworkEventTarg
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
+import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.message.send.SendMessageEvent;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -19,13 +21,13 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 public class SendMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private long sessionId;
+    private PureExtraIdentity sessionIdentity;
     @AutoData
     @DoNotSet
-    private long keyId;
+    private PureExtraIdentity keyIdentity;
     @AutoData
     @DoNotSet
-    private long signId;
+    private PureExtraIdentity signIdentity;
     @AutoData
     @DoNotSet
     private byte[] message;
@@ -43,37 +45,37 @@ public class SendMessagePacket extends Packet<AuthedRequestHandler> {
     }
 
     /**
-     * Send message as signed and crypted.
+     * Send message.
      *
-     * @param sessionId The id of session
-     * @param keyId     The id of crypto key
-     * @param message   The message
-     * @param signId    The id of crypto key
-     * @param sign      The sign data
+     * @param sessionIdentity The id of session
+     * @param keyIdentity     The id of crypto key
+     * @param message         The message
+     * @param signIdentity    The id of crypto key
+     * @param sign            The sign data
      */
     @Client
-    public SendMessagePacket(long sessionId, long keyId, byte[] message, long signId, byte[] sign, boolean disableProcessor) {
-        this.sessionId = sessionId;
-        this.keyId = keyId;
+    public SendMessagePacket(PureExtraIdentity sessionIdentity, PureExtraIdentity keyIdentity, byte[] message, PureExtraIdentity signIdentity, byte[] sign, boolean disableProcessor) {
+        this.sessionIdentity = sessionIdentity;
+        this.keyIdentity = keyIdentity;
         this.message = BytesUtil.orEmpty(message);
-        this.signId = signId;
+        this.signIdentity = signIdentity;
         this.sign = BytesUtil.orEmpty(sign);
         this.disableProcessor = disableProcessor;
     }
 
     @Getter
-    public long sessionId() {
-        return this.sessionId;
+    public PureExtraIdentity sessionIdentity() {
+        return this.sessionIdentity;
     }
 
     @Getter
-    public long keyId() {
-        return this.keyId;
+    public PureExtraIdentity keyIdentity() {
+        return this.keyIdentity;
     }
 
     @Getter
-    public long signId() {
-        return this.signId;
+    public PureExtraIdentity signIdentity() {
+        return this.signIdentity;
     }
 
     @Getter
@@ -92,10 +94,10 @@ public class SendMessagePacket extends Packet<AuthedRequestHandler> {
     }
 
     public boolean signed() {
-        return this.signId != - 1;
+        return ! this.signIdentity.equals(KalmiaConstant.UNMARKED_PURE_IDENTITY);
     }
 
     public boolean crypted() {
-        return this.keyId != - 1;
+        return ! this.keyIdentity.equals(KalmiaConstant.UNMARKED_PURE_IDENTITY);
     }
 }

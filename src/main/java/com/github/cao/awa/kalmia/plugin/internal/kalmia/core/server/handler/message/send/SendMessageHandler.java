@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.mes
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.message.send.SendMessageEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.message.Message;
@@ -39,22 +40,21 @@ public class SendMessageHandler implements SendMessageEventHandler {
                             SID: {}
                             MSG:{}""",
                     packet.handler()
-                          .uid(),
+                          .accessIdentity(),
                     Mathematics.radix(packet.receipt(),
                                       36
                     ),
-                    packet.sessionId(),
+                    packet.sessionIdentity(),
                     packet.message()
         );
 
         Session session = Kalmia.SERVER.sessionManager()
-                                       .session(packet.sessionId());
+                                       .session(packet.sessionIdentity());
 
         boolean accessible = false;
 
         if (session != null) {
-            accessible = session.accessible(packet.handler()
-                                                  .uid());
+            accessible = session.accessible(router.accessIdentity());
         }
 
         if (accessible) {
@@ -66,7 +66,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
                 // Meow when user do not to sign.
                 msg = Kalmia.SERVER.messageProcessor(MeowMessageProcessor.ID)
                                    .process(msg,
-                                            router.uid()
+                                            router.accessIdentity()
                                    );
             }
 
@@ -76,7 +76,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
                                              .processors()) {
                     Kalmia.SERVER.messageProcessor(processor)
                                  .process(msg,
-                                          router.uid()
+                                          router.accessIdentity()
                                  );
                 }
             }
@@ -85,25 +85,25 @@ public class SendMessageHandler implements SendMessageEventHandler {
                               packet.message()
             )) {
                 message = new UserMessage(
-                        packet.keyId(),
+                        packet.keyIdentity(),
                         packet.message(),
-                        packet.signId(),
+                        packet.signIdentity(),
                         packet.sign(),
-                        router.uid()
+                        router.accessIdentity()
                 );
             } else {
                 message = new CoverMessage(
                         // Source data.
                         packet.message(),
-                        router.uid(),
-                        packet.signId(),
+                        router.accessIdentity(),
+                        packet.signIdentity(),
                         packet.sign(),
                         // Cover data.
                         msg,
                         // TODO the cover sender need be a account.
-                        - 1,
+                        KalmiaConstant.UNMARKED_LONG_AND_EXTRA_IDENTITY,
                         // TODO the cover message need to sign.
-                        - 1,
+                        KalmiaConstant.UNMARKED_PURE_IDENTITY,
                         BytesUtil.EMPTY
                 );
 
@@ -112,12 +112,12 @@ public class SendMessageHandler implements SendMessageEventHandler {
 
             long seq = Kalmia.SERVER.messageManager()
                                     .send(
-                                            packet.sessionId(),
+                                            packet.sessionIdentity(),
                                             message
                                     );
 
             // Response to client send result.
-            router.send(new SentMessagePacket(session.sessionId(),
+            router.send(new SentMessagePacket(session.identity(),
                                               seq,
                                               message
             ).receipt(packet.receipt()));
@@ -132,7 +132,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
             // Unable to access the session.
             router.send(new SendMessageRefusedPacket("message.send.refused.session.unable.access").receipt(packet.receipt()));
             LOGGER.warn("The session {} is not accessible",
-                        packet.sessionId()
+                        packet.sessionIdentity()
             );
         }
     }

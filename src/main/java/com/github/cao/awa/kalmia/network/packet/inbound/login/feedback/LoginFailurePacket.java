@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.login.feedback.LoginFailureEvent;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -18,14 +19,14 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 public class LoginFailurePacket extends Packet<StatelessHandler> {
     @AutoData
     @DoNotSet
-    private long uid;
+    private LongAndExtraIdentity accessIdentity;
     @AutoData
     @DoNotSet
     private String reason;
 
     @Server
-    public LoginFailurePacket(long uid, String reason) {
-        this.uid = uid;
+    public LoginFailurePacket(LongAndExtraIdentity accessIdentity, String reason) {
+        this.accessIdentity = accessIdentity;
         this.reason = reason;
     }
 
@@ -36,8 +37,8 @@ public class LoginFailurePacket extends Packet<StatelessHandler> {
     }
 
     @Getter
-    public long uid() {
-        return this.uid;
+    public LongAndExtraIdentity accessIdentity() {
+        return this.accessIdentity;
     }
 
     @Getter

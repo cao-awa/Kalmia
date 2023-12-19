@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.key.select.SelectKeyStoreEvent;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -21,17 +22,17 @@ import java.util.List;
 public class SelectKeyStorePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private List<Long> ids;
+    private List<PureExtraIdentity> keyIdentities;
 
     @Client
-    public SelectKeyStorePacket(List<Long> ids) {
-        this.ids = ids;
+    public SelectKeyStorePacket(List<PureExtraIdentity> keyIdentities) {
+        this.keyIdentities = keyIdentities;
     }
 
     @Client
-    public SelectKeyStorePacket(Long id) {
-        this.ids = ApricotCollectionFactor.arrayList();
-        this.ids.add(id);
+    public SelectKeyStorePacket(PureExtraIdentity id) {
+        this.keyIdentities = ApricotCollectionFactor.arrayList();
+        this.keyIdentities.add(id);
     }
 
     @Auto
@@ -41,7 +42,7 @@ public class SelectKeyStorePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Getter
-    public List<Long> ids() {
-        return this.ids;
+    public List<PureExtraIdentity> keyIdentities() {
+        return this.keyIdentities;
     }
 }

@@ -1,14 +1,15 @@
 package com.github.cao.awa.kalmia.message.display
 
-import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity
 
 class ClientMessage(
-    private val identity: MillsAndExtraIdentity,
-    private val sessionId: Long,
+    private val identity: LongAndExtraIdentity,
+    private val sessionIdentity: PureExtraIdentity,
     private val seq: Long,
     private val content: ClientMessageContent
 ) {
-    fun sessionId(): Long = this.sessionId
+    fun sessionIdentity(): PureExtraIdentity = this.sessionIdentity
 
     fun seq(): Long = this.seq
 
@@ -16,11 +17,11 @@ class ClientMessage(
 
     fun coverContent(): String = this.content.coverContent()
 
-    fun sender(): Long = this.content.sender()
+    fun sender(): LongAndExtraIdentity = this.content.sender()
 
     fun content(): ClientMessageContent = this.content
 
-    fun identity(): MillsAndExtraIdentity = this.identity
+    fun identity(): LongAndExtraIdentity = this.identity
 
-    fun timestamp(): Long = this.identity.mills()
+    fun timestamp(): Long = this.identity.longValue()
 }

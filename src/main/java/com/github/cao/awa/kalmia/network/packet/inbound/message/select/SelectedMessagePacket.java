@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.message.select.SelectedMessageEvent;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
@@ -21,7 +22,7 @@ import java.util.List;
 public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private long sessionId;
+    private PureExtraIdentity sessionIdentity;
     @AutoData
     @DoNotSet
     private long from;
@@ -36,8 +37,8 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     private List<Message> messages;
 
     @Server
-    public SelectedMessagePacket(long sessionId, long from, long to, long sessionCurSeq, List<Message> messages) {
-        this.sessionId = sessionId;
+    public SelectedMessagePacket(PureExtraIdentity sessionIdentity, long from, long to, long sessionCurSeq, List<Message> messages) {
+        this.sessionIdentity = sessionIdentity;
         this.from = from;
         this.to = to;
         this.sessionCurSeq = sessionCurSeq;
@@ -51,8 +52,8 @@ public class SelectedMessagePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Getter
-    public long sessionId() {
-        return this.sessionId;
+    public PureExtraIdentity sessionIdentity() {
+        return this.sessionIdentity;
     }
 
     @Getter

@@ -14,7 +14,7 @@ public class RequestDuetSessionUpdateEventBus extends EventBus<RequestDuetSessio
     public void handle(RequestRouter router, RequestDuetSessionPacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.targetUid()
+                                          packet.targetUser()
         ));
     }
 }

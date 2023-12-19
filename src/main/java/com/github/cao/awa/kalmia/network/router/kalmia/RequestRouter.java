@@ -5,6 +5,7 @@ import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.compress.RequestCompressor;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.compress.RequestCompressorType;
@@ -61,7 +62,7 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private final Consumer<RequestRouter> activeCallback;
     private final RequestCompressor compressor = new RequestCompressor();
     private final Affair funeral = Affair.empty();
-    private long uid;
+    private LongAndExtraIdentity accessIdentity;
     private final RequestRouterMetadata metadata = RequestRouterMetadata.create();
 
     public RequestRouter() {
@@ -73,12 +74,12 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
         setStates(RequestState.HELLO);
     }
 
-    public long uid() {
-        return this.uid;
+    public LongAndExtraIdentity accessIdentity() {
+        return this.accessIdentity;
     }
 
-    public void uid(long uid) {
-        this.uid = uid;
+    public void accessIdentity(LongAndExtraIdentity identity) {
+        this.accessIdentity = identity;
     }
 
     public RequestCompressor getCompressor() {

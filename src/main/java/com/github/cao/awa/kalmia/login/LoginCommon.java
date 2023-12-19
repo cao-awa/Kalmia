@@ -1,19 +1,20 @@
 package com.github.cao.awa.kalmia.login;
 
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 
 public class LoginCommon {
-    public static void login(long uid, RequestRouter router) {
-        Kalmia.SERVER.login(uid,
+    public static void login(LongAndExtraIdentity accessIdentity, RequestRouter router) {
+        Kalmia.SERVER.login(accessIdentity,
                             router
         );
 
-        router.uid(uid);
+        router.accessIdentity(accessIdentity);
     }
 
-    public static void logout(long uid, RequestRouter router) {
-        Kalmia.SERVER.logout(uid,
+    public static void logout(LongAndExtraIdentity accessIdentity, RequestRouter router) {
+        Kalmia.SERVER.logout(accessIdentity,
                              router
         );
     }

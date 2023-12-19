@@ -1,9 +1,11 @@
 package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.chat.session.request;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
+import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.request.RequestGroupSessionEventHandler;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.listeners.SessionListenersUpdatePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestGroupSessionPacket;
@@ -27,23 +29,22 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
     public void handle(RequestRouter router, RequestGroupSessionPacket packet) {
         AuthedRequestHandler handler = packet.handler();
 
-        long sessionId = Kalmia.SERVER.sessionManager()
-                                      .add(new GroupSession(Kalmia.SERVER.sessionManager()
-                                                                         .nextSeq(),
-                                                            packet.name(),
-                                                            0
-                                      ));
+        PureExtraIdentity sessionId = Kalmia.SERVER.sessionManager()
+                                                   .add(new GroupSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
+                                                                         packet.name(),
+                                                                         0
+                                                   ));
 
         // Update session data.
-        List<Long> listeners = Sessions.subscribe(sessionId,
-                                                  router.uid()
+        List<PureExtraIdentity> listeners = Sessions.subscribe(sessionId,
+                                                               router.accessIdentity()
         );
 
         // Update accessible.
         Kalmia.SERVER.sessionManager()
                      .updateAccessible(
                              sessionId,
-                             handler.uid(),
+                             handler.accessIdentity(),
                              SessionAccessibleData :: accessibleChat
                      );
 

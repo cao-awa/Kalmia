@@ -14,7 +14,7 @@ public class LoginWithPasswordEventBus extends EventBus<LoginWithPasswordEventBu
     public void handle(RequestRouter router, LoginWithPasswordPacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.uid(),
+                                          packet.accessIdentity(),
                                           packet.password()
         ));
     }

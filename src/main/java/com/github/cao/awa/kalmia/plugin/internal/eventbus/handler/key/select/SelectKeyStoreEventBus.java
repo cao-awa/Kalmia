@@ -14,7 +14,7 @@ public class SelectKeyStoreEventBus extends EventBus<SelectKeyStoreEventBusHandl
     public void handle(RequestRouter router, SelectKeyStorePacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.ids()
+                                          packet.keyIdentities()
         ));
     }
 }

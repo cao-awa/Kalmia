@@ -1,7 +1,9 @@
 package com.github.cao.awa.kalmia.message.display
 
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
+
 class ClientMessageContent(
-    private val sender: Long,
+    private val sender: LongAndExtraIdentity,
     private val sourceContent: String,
     private val coverContent: String
 ) {
@@ -9,5 +11,5 @@ class ClientMessageContent(
 
     fun coverContent(): String = this.coverContent
 
-    fun sender(): Long = this.sender
+    fun sender(): LongAndExtraIdentity = this.sender
 }

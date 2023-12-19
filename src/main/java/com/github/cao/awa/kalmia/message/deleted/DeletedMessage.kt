@@ -1,8 +1,7 @@
 package com.github.cao.awa.kalmia.message.deleted
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
-import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
 import com.github.cao.awa.kalmia.message.display.ClientMessageContent
@@ -15,9 +14,10 @@ class DeletedMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): DeletedMessage? {
             return if (reader.read().toInt() == -1) {
-                val identity = MillsAndExtraIdentity.create(reader)
-                val sender = SkippedBase256.readLong(reader)
+                val identity = LongAndExtraIdentity.read(reader)
+                val sender = LongAndExtraIdentity.read(reader)
                 val digestData = DigestData.create(reader)
+
                 DeletedMessage(
                     identity,
                     sender,
@@ -29,26 +29,26 @@ class DeletedMessage : Message {
         }
     }
 
-    private val sender: Long
+    private val sender: LongAndExtraIdentity
     private val digestData: DigestData
 
-    constructor(sender: Long, digestData: DigestData) {
+    constructor(sender: LongAndExtraIdentity, digestData: DigestData) {
         this.sender = sender
         this.digestData = digestData
     }
 
-    constructor(identity: MillsAndExtraIdentity, sender: Long, digestData: DigestData) : super(identity) {
+    constructor(
+        identity: LongAndExtraIdentity,
+        sender: LongAndExtraIdentity,
+        digestData: DigestData
+    ) : super(identity) {
         this.sender = sender
         this.digestData = digestData
     }
 
-    override fun sender(): Long {
-        return this.sender
-    }
+    override fun sender(): LongAndExtraIdentity = this.sender
 
-    override fun header(): ByteArray {
-        return HEADER
-    }
+    override fun header(): ByteArray = HEADER
 
     override fun display(): ClientMessageContent {
         return ClientMessageContent(
@@ -66,12 +66,10 @@ class DeletedMessage : Message {
         return BytesUtil.concat(
             header(),
             identity().toBytes(),
-            SkippedBase256.longToBuf(sender()),
+            sender().toBytes(),
             digest().serialize()
         )
     }
 
-    override fun digest(): DigestData {
-        return this.digestData
-    }
+    override fun digest(): DigestData = this.digestData
 }

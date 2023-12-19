@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.keypair.pair.rsa;
 
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.KeyStoreIdentity;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
@@ -10,8 +11,9 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 public class RsaKeyPair extends KeyPairStore {
-    public RsaKeyPair(byte[] publicKey, byte[] privateKey) {
-        super(publicKey,
+    public RsaKeyPair(PureExtraIdentity identity, byte[] publicKey, byte[] privateKey) {
+        super(identity,
+              publicKey,
               privateKey
         );
     }

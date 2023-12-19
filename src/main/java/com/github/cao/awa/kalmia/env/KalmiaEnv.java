@@ -3,7 +3,6 @@ package com.github.cao.awa.kalmia.env;
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.io.IOUtil;
-import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.await.AwaitManager;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.ClientBootstrapConfig;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig;
@@ -18,6 +17,8 @@ import com.github.cao.awa.kalmia.framework.network.unsolve.PacketFramework;
 import com.github.cao.awa.kalmia.framework.plugin.PluginFramework;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializeFramework;
 import com.github.cao.awa.kalmia.framework.serialize.json.JsonSerializeFramework;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
 import com.github.cao.awa.kalmia.language.manager.LanguageTranslationManager;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
@@ -25,6 +26,7 @@ import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFac
 import com.github.cao.awa.kalmia.resource.manager.ResourcesManager;
 import com.github.cao.awa.kalmia.setting.Settings;
 import com.github.cao.awa.kalmia.user.DefaultUser;
+import com.github.cao.awa.kalmia.user.password.UserPassword;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.io.File;
@@ -71,10 +73,15 @@ public class KalmiaEnv {
             14, 14, 14, 14,
     };
 
+    public static final LongAndExtraIdentity testUserIdentity1 = new LongAndExtraIdentity(1,
+                                                                                          new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+    );
+
     public static final DefaultUser testUser1 = EntrustEnvironment.trys(() -> {
-        return new DefaultUser(TimeUtil.millions(),
-                               "123456",
-                               new Settings()
+        return new DefaultUser(
+                testUserIdentity1,
+                new UserPassword("123456"),
+                new Settings()
         );
     });
 
@@ -85,14 +92,21 @@ public class KalmiaEnv {
             13, 14, 15, 16,
     };
 
+    public static final LongAndExtraIdentity testUserIdentity2 = new LongAndExtraIdentity(2,
+                                                                                          new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+    );
     public static final DefaultUser testUser2 = EntrustEnvironment.trys(() -> {
-        return new DefaultUser(TimeUtil.millions(),
-                               "123456",
-                               new Settings()
+        return new DefaultUser(
+                testUserIdentity2,
+                new UserPassword("123456"),
+                new Settings()
         );
     });
 
+    public static final PureExtraIdentity testKeypairIdentity0 = new PureExtraIdentity(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
+    public static final PureExtraIdentity testKeypairIdentity1 = new PureExtraIdentity(new byte[]{16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1});
     public static final EcKeyPair testKeypair0 = EntrustEnvironment.trys(() -> new EcKeyPair(
+            testKeypairIdentity0,
             Mathematics.toBytes(
                     "13mhgvwznod324bdi48k3x43q5q0sip185x5nh8vnnw5452hwwjfm3hfg82429nt0wmbnwvwceupcz9bq3ys9jy0ti2mhuc2l3ulhpk2udvbbhlgq81wutwk4lgmr1mq8htrozgeqnj8t8sfmke4bap74halvb7vib9e5zo5y9uuvirbc7rsujhh84yy0r7h9qb20oz2unblv2h42ip17dimvzhuedr64l8a7o6evsy8wh9o2ut5g",
                     36
@@ -107,6 +121,7 @@ public class KalmiaEnv {
     ));
 
     public static final EcKeyPair testKeypair1 = EntrustEnvironment.trys(() -> new EcKeyPair(
+            testKeypairIdentity1,
             Mathematics.toBytes(
                     "13mhgvwznod324bdi48k3x43q5q0sip185x5nh8vnobd6b4d2kz1lqhz5hs7j0ledngfd1s7zobjb31fkhpsyu8fje35hk5ott7y0qc14k0qqgo5fe8c828gxnhlfx21pxtmaug75xam51q7u2ps7oik6e7h6zc6waggzt9jx366jsg56c9vmux0mmwqdkhxydgdtm3ytlgmn6qlo8y11btd91rw8l76a3pycebz97y9zg6gbtxau",
                     36

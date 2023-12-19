@@ -5,6 +5,7 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.key.select.SelectKeyStoreEventHandler;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.KeyStoreIdentity;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.network.packet.inbound.key.select.SelectKeyStorePacket;
@@ -24,12 +25,12 @@ public class SelectKeyStoreHandler implements SelectKeyStoreEventHandler {
     @Server
     @Override
     public void handle(RequestRouter router, SelectKeyStorePacket packet) {
-        Map<Long, KeyPairStore> result = ApricotCollectionFactor.hashMap();
+        Map<PureExtraIdentity, KeyPairStore> result = ApricotCollectionFactor.hashMap();
 
-        Set<Long> userStores = Kalmia.SERVER.userManager()
-                                            .keyStores(router.uid());
+        Set<PureExtraIdentity> userStores = Kalmia.SERVER.userManager()
+                                                         .keyStores(router.accessIdentity());
 
-        packet.ids()
+        packet.keyIdentities()
               .forEach(id -> {
                   KeyPairStore store = Kalmia.SERVER.keypairManager()
                                                     .getStore(id);
@@ -37,7 +38,8 @@ public class SelectKeyStoreHandler implements SelectKeyStoreEventHandler {
                   // Do not provide private key if the user are not key owner.
                   if (! userStores.contains(id)) {
                       // Clear private key.
-                      store = KeyStoreIdentity.createKeyPairStore(store.publicKey()
+                      store = KeyStoreIdentity.createKeyPairStore(store.identity(),
+                                                                  store.publicKey()
                                                                        .decode(),
                                                                   BytesUtil.EMPTY
                       );

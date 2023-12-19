@@ -8,6 +8,8 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.chat.session.in.ChatInSessionEvent;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestDuetSessionPacket;
@@ -27,15 +29,15 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 public class ChatInSessionPacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private long targetUid;
+    private LongAndExtraIdentity targetUser;
     @AutoData
     @DoNotSet
-    private long sessionId;
+    private PureExtraIdentity sessionIdentity;
 
     @Server
-    public ChatInSessionPacket(long targetUid, long sessionId) {
-        this.targetUid = targetUid;
-        this.sessionId = sessionId;
+    public ChatInSessionPacket(LongAndExtraIdentity targetUser, PureExtraIdentity sessionIdentity) {
+        this.targetUser = targetUser;
+        this.sessionIdentity = sessionIdentity;
     }
 
     @Auto
@@ -45,12 +47,12 @@ public class ChatInSessionPacket extends Packet<AuthedRequestHandler> {
     }
 
     @Getter
-    public long targetUid() {
-        return this.targetUid;
+    public LongAndExtraIdentity targetUser() {
+        return this.targetUser;
     }
 
     @Getter
-    public long sessionId() {
-        return this.sessionId;
+    public PureExtraIdentity sessionIdentity() {
+        return this.sessionIdentity;
     }
 }

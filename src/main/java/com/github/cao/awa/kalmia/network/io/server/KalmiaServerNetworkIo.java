@@ -4,6 +4,7 @@ import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.io.server.channel.KalmiaServerChannelInitializer;
 import com.github.cao.awa.kalmia.network.io.server.channel.kalmiagram.KalmiagramServerChannelInitializer;
 import com.github.cao.awa.kalmia.network.io.server.channel.translation.TranslationServerChannelInitializer;
@@ -50,7 +51,7 @@ public class KalmiaServerNetworkIo {
     private final KalmiaServer server;
     private ChannelFuture channelFuture;
     private final List<RequestRouter> connections = Collections.synchronizedList(ApricotCollectionFactor.arrayList());
-    private final Map<Long, List<RequestRouter>> routers = ApricotCollectionFactor.hashMap();
+    private final Map<LongAndExtraIdentity, List<RequestRouter>> routers = ApricotCollectionFactor.hashMap();
 
     public KalmiaServerNetworkIo(KalmiaServer server) {
         this.server = server;
@@ -63,30 +64,30 @@ public class KalmiaServerNetworkIo {
         }
     }
 
-    public List<RequestRouter> getRouter(long uid) {
-        return this.routers.get(uid);
+    public List<RequestRouter> getRouter(LongAndExtraIdentity accessIdentity) {
+        return this.routers.get(accessIdentity);
     }
 
-    public void login(long uid, RequestRouter router) {
+    public void login(LongAndExtraIdentity accessIdentity, RequestRouter router) {
         this.routers.compute(
-                    uid,
+                    accessIdentity,
                     (k, v) -> v == null ? ApricotCollectionFactor.arrayList() : v
             )
                     .add(router);
         LOGGER.info("Login '{}': {}",
-                    uid,
+                    accessIdentity,
                     router.metadata()
                           .formatConnectionId()
         );
     }
 
-    public void logout(long uid, RequestRouter router) {
-        List<RequestRouter> routers = this.routers.get(uid);
+    public void logout(LongAndExtraIdentity accessIdentity, RequestRouter router) {
+        List<RequestRouter> routers = this.routers.get(accessIdentity);
         if (routers != null) {
             routers.remove(router);
 
             LOGGER.info("Logout '{}': {}",
-                        uid,
+                        accessIdentity,
                         router.metadata()
                               .formatConnectionId()
             );

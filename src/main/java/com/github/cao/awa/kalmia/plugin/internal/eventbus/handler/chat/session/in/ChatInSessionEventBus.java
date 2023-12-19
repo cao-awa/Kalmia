@@ -14,8 +14,8 @@ public class ChatInSessionEventBus extends EventBus<ChatInSessionEventBusHandler
     public void handle(RequestRouter router, ChatInSessionPacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.targetUid(),
-                                          packet.sessionId()
+                                          packet.targetUser(),
+                                          packet.sessionIdentity()
         ));
     }
 }

@@ -1,47 +1,38 @@
-package com.github.cao.awa.kalmia.user;
+package com.github.cao.awa.kalmia.user
 
-import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.setting.Settings;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
+import com.github.cao.awa.kalmia.setting.Settings
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
-public class UselessUser extends User {
-    private static final byte[] HEADER = new byte[]{- 1};
-    private final long markTimestamp;
+class UselessUser : User {
+    companion object {
+        private val HEADER = byteArrayOf(-1)
 
-    public UselessUser(long markTimestamp) {
-        this.markTimestamp = markTimestamp;
-    }
-
-    public long getMarkTimestamp() {
-        return this.markTimestamp;
-    }
-
-    public static UselessUser create(BytesReader reader) {
-        if (reader.read() == - 1) {
-            long timestamp = SkippedBase256.readLong(reader);
-
-            return new UselessUser(timestamp);
-        } else {
-            return null;
+        @JvmStatic
+        fun create(reader: BytesReader): UselessUser? {
+            return if (reader.read().toInt() == -1) {
+                val identity = LongAndExtraIdentity.read(reader)
+                UselessUser(identity)
+            } else {
+                null
+            }
         }
     }
 
-    @Override
-    public byte[] toBytes() {
+    constructor()
+    constructor(identity: LongAndExtraIdentity) : super(identity)
+
+    fun markTimestamp(): Long = identity().longValue()
+
+    override fun toBytes(): ByteArray {
         return BytesUtil.concat(
-                header(),
-                SkippedBase256.longToBuf(this.markTimestamp)
-        );
+            header(),
+            identity().toBytes()
+        )
     }
 
-    @Override
-    public byte[] header() {
-        return HEADER;
-    }
+    override fun header(): ByteArray = HEADER
 
-    @Override
-    public Settings settings() {
-        return new Settings();
-    }
+    override fun settings(): Settings = Settings()
 }

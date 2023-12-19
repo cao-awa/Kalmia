@@ -6,7 +6,8 @@ import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped
 import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
 import com.github.cao.awa.kalmia.database.KeyValueDatabase
 import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
-import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.deleted.DeletedMessage
@@ -21,45 +22,54 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         this.delegate = DatabaseProviders.bytes(path)
     }
 
-    fun operation(@ShouldSkipped sid: ByteArray, action: BiConsumer<Long, Message?>) {
+    fun operation(@ShouldSkipped sessionIdentity: PureExtraIdentity, action: BiConsumer<Long, Message?>) {
         seqAll(
-            sid
+            sessionIdentity
         ) {
             action.accept(
                 it,
                 get(
-                    sid,
+                    sessionIdentity,
                     SkippedBase256.longToBuf(it)
                 )
             )
         }
     }
 
-    fun operation(@ShouldSkipped sid: ByteArray, from: Long, to: Long, action: BiConsumer<Long, Message?>) {
+    fun operation(
+        @ShouldSkipped sessionIdentity: PureExtraIdentity,
+        from: Long,
+        to: Long,
+        action: BiConsumer<Long, Message?>
+    ) {
         seqAll(
-            sid,
+            sessionIdentity,
             from,
             to
         ) {
             action.accept(
                 it,
                 get(
-                    sid,
+                    sessionIdentity,
                     SkippedBase256.longToBuf(it)
                 )
             )
         }
     }
 
-    override operator fun get(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray): Message? {
+    override operator fun get(sessionIdentity: ByteArray, @ShouldSkipped seq: ByteArray): Message? {
         return this[
             identity(
                 key(
-                    sid,
+                    sessionIdentity,
                     seq
                 )
             )
         ]
+    }
+
+    operator fun get(sessionIdentity: PureExtraIdentity, @ShouldSkipped seq: ByteArray): Message? {
+        return this[sessionIdentity.extras(), seq]
     }
 
     override operator fun get(identity: ByteArray): Message? {
@@ -69,7 +79,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         ]
     }
 
-    operator fun get(identity: MillsAndExtraIdentity): Message? {
+    operator fun get(identity: LongAndExtraIdentity): Message? {
         return this[identity.toBytes()]
     }
 
@@ -78,7 +88,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         return Message.create(data)
     }
 
-    fun getMessage(identity: MillsAndExtraIdentity): Message? {
+    fun getMessage(identity: LongAndExtraIdentity): Message? {
         return getMessage(identity.toBytes())
     }
 
@@ -90,20 +100,20 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         }
     }
 
-    fun remove(identity: MillsAndExtraIdentity) {
+    fun remove(identity: LongAndExtraIdentity) {
         remove(identity.toBytes())
     }
 
-    override fun remove(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
+    override fun remove(@ShouldSkipped sessionIdentity: ByteArray, @ShouldSkipped seq: ByteArray) {
         val key = key(
-            sid,
+            sessionIdentity,
             seq
         )
         remove(identity(key))
         this.delegate.remove(key)
     }
 
-    fun markDelete(identity: MillsAndExtraIdentity) {
+    fun markDelete(identity: LongAndExtraIdentity) {
         val source = get(identity) ?: return
         this[identity.toBytes()] = DeletedMessage(
             source.sender(),
@@ -111,27 +121,27 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         )
     }
 
-    fun markDelete(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
+    fun markDelete(sessionIdentity: PureExtraIdentity, @ShouldSkipped seq: ByteArray) {
         markDelete(
             identity(
                 key(
-                    sid,
+                    sessionIdentity,
                     seq
                 )
             )
         )
     }
 
-    fun identity(key: ByteArray): MillsAndExtraIdentity {
-        return MillsAndExtraIdentity.create(BytesReader.of(this.delegate[key]))
+    fun identity(key: ByteArray): LongAndExtraIdentity {
+        return LongAndExtraIdentity.read(BytesReader.of(this.delegate[key]))
     }
 
-    fun identity(sid: ByteArray, seq: ByteArray, messageIdentity: MillsAndExtraIdentity) {
-        this.delegate[key(sid, seq)] = messageIdentity.toBytes()
+    fun identity(sessionIdentity: PureExtraIdentity, seq: ByteArray, messageIdentity: LongAndExtraIdentity) {
+        this.delegate[key(sessionIdentity, seq)] = messageIdentity.toBytes()
     }
 
-    fun seqAll(@ShouldSkipped sid: ByteArray, action: Consumer<Long>) {
-        val count = nextSeq(sid) - 1
+    fun seqAll(@ShouldSkipped sessionIdentity: PureExtraIdentity, action: Consumer<Long>) {
+        val count = nextSeq(sessionIdentity) - 1
         if (count > 0) {
             var seq: Long = 0
             while (true) {
@@ -144,8 +154,8 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         }
     }
 
-    fun seqAll(@ShouldSkipped sid: ByteArray, from: Long, to: Long, action: Consumer<Long>) {
-        val count = nextSeq(sid) - 1
+    fun seqAll(sessionIdentity: PureExtraIdentity, from: Long, to: Long, action: Consumer<Long>) {
+        val count = nextSeq(sessionIdentity) - 1
         if (count > 0) {
             val endIndex = Math.min(
                 to,
@@ -162,39 +172,43 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         }
     }
 
-    fun seq(@ShouldSkipped sid: ByteArray): Long {
-        val seqByte = this.delegate[sid]
+    fun nextSeq(sessionIdentity: PureExtraIdentity): Long = curSeq(sessionIdentity) + 1
+
+    fun curSeq(sessionIdentity: PureExtraIdentity): Long {
+        val seqByte = this.delegate[sessionIdentity.extras()]
         return if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
     }
 
-    fun nextSeq(@ShouldSkipped sid: ByteArray): Long = seq(sid) + 1
-
-    fun seq(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray) {
-        this.delegate[sid] = seq
+    fun curSeq(sessionIdentity: PureExtraIdentity, @ShouldSkipped seq: ByteArray) {
+        this.delegate[sessionIdentity.extras()] = seq
     }
 
-    fun deleteAll(@ShouldSkipped sid: ByteArray) {
+    fun deleteAll(sessionIdentity: PureExtraIdentity) {
         seqAll(
-            sid
+            sessionIdentity
         ) {
             markDelete(
-                sid,
+                sessionIdentity,
                 SkippedBase256.longToBuf(it)
             )
         }
     }
 
-    fun key(@ShouldSkipped sid: ByteArray, @ShouldSkipped seq: ByteArray): ByteArray {
+    fun key(sessionIdentity: ByteArray, @ShouldSkipped seq: ByteArray): ByteArray {
         return BytesUtil.concat(
-            sid,
+            sessionIdentity,
             seq
         )
     }
 
-    fun search(@ShouldSkipped sid: ByteArray, target: String): Set<Long> {
+    fun key(sessionIdentity: PureExtraIdentity, @ShouldSkipped seq: ByteArray): ByteArray {
+        return key(sessionIdentity.extras(), seq)
+    }
+
+    fun search(sessionIdentity: PureExtraIdentity, target: String): Set<Long> {
         val result: Set<Long> = ApricotCollectionFactor.hashSet()
         operation(
-            sid
+            sessionIdentity
         ) { _, _ -> }
         return result
     }
@@ -207,7 +221,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         )
     }
 
-    fun put(identity: MillsAndExtraIdentity, msg: Message) {
+    fun set(identity: LongAndExtraIdentity, msg: Message) {
         this[identity.toBytes()] = msg
     }
 
@@ -219,25 +233,25 @@ class MessageDatabase(path: String) : KeyValueDatabase<ByteArray, Message?>(Apri
         }
     }
 
-    fun send(@ShouldSkipped sid: ByteArray, msg: Message): Long {
-        val nextSeq = nextSeq(sid)
+    fun send(sessionIdentity: PureExtraIdentity, msg: Message): Long {
+        val nextSeq = nextSeq(sessionIdentity)
         val nextSeqByte = SkippedBase256.longToBuf(nextSeq)
 
         // Save the redirector to global id.
         identity(
-            sid,
+            sessionIdentity,
             nextSeqByte,
             msg.identity()
         )
 
         // Update index.
-        seq(
-            sid,
+        curSeq(
+            sessionIdentity,
             nextSeqByte
         )
 
         // Update message.
-        put(
+        set(
             msg.identity(),
             msg
         )

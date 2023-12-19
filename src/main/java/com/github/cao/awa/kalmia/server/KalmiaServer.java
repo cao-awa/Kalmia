@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.ServerBootst
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.launch.done.DoneLaunchEvent;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.manager.KeypairManager;
 import com.github.cao.awa.kalmia.message.cover.processor.MessageProcessor;
 import com.github.cao.awa.kalmia.message.manager.MessageManager;
@@ -87,18 +88,18 @@ public class KalmiaServer {
 
             // TODO
             // Test only
-            this.userManager.set(1,
+            assert KalmiaEnv.testUser1 != null;
+            this.userManager.set(KalmiaEnv.testUser1.identity(),
                                  KalmiaEnv.testUser1
             );
-            this.userManager.set(2,
+
+            assert KalmiaEnv.testUser2 != null;
+            this.userManager.set(KalmiaEnv.testUser2.identity(),
                                  KalmiaEnv.testUser2
             );
 
-            this.sessionManager.set(0,
-                                    new CommunalSession(0,
-                                                        "Test public session",
-                                                        0
-                                    )
+            this.sessionManager.set(CommunalSession.TEST_COMMUNAL_IDENTITY,
+                                    CommunalSession.TEST_COMMUNAL
             );
             this.sessionManager.curSeq(0);
 
@@ -199,18 +200,18 @@ public class KalmiaServer {
         return true;
     }
 
-    public List<RequestRouter> getRouter(long uid) {
-        return this.networkIo.getRouter(uid);
+    public List<RequestRouter> getRouters(LongAndExtraIdentity accessIdentity) {
+        return this.networkIo.getRouter(accessIdentity);
     }
 
-    public void login(long uid, RequestRouter router) {
-        this.networkIo.login(uid,
+    public void login(LongAndExtraIdentity accessIdentity, RequestRouter router) {
+        this.networkIo.login(accessIdentity,
                              router
         );
     }
 
-    public void logout(long uid, RequestRouter router) {
-        this.networkIo.logout(uid,
+    public void logout(LongAndExtraIdentity accessIdentity, RequestRouter router) {
+        this.networkIo.logout(accessIdentity,
                               router
         );
 
@@ -218,7 +219,7 @@ public class KalmiaServer {
     }
 
     public void logout(RequestRouter router) {
-        this.networkIo.logout(router.uid(),
+        this.networkIo.logout(router.accessIdentity(),
                               router
         );
     }

@@ -2,6 +2,8 @@ package com.github.cao.awa.kalmia.session.group;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.session.Session;
@@ -14,8 +16,8 @@ public class GroupSession extends Session {
     private final String displayName;
     private long subscriberCount;
 
-    public GroupSession(long sessionId, String displayName, long subscriberCount) {
-        super(sessionId);
+    public GroupSession(PureExtraIdentity sessionIdentity, String displayName, long subscriberCount) {
+        super(sessionIdentity);
         this.displayName = displayName;
         this.subscriberCount = subscriberCount;
     }
@@ -23,7 +25,7 @@ public class GroupSession extends Session {
     public static GroupSession create(BytesReader reader) {
         if (reader.read() == 3) {
             return new GroupSession(
-                    SkippedBase256.readLong(reader),
+                    PureExtraIdentity.read(reader),
                     new String(reader.read(Base256.readTag(reader)),
                                StandardCharsets.UTF_8
                     ),
@@ -36,7 +38,7 @@ public class GroupSession extends Session {
     @Override
     public byte[] bytes() {
         return BytesUtil.concat(header(),
-                                SkippedBase256.longToBuf(sessionId()),
+                                identity().toBytes(),
                                 Base256.tagToBuf(this.displayName.length()),
                                 this.displayName.getBytes(StandardCharsets.UTF_8),
                                 SkippedBase256.longToBuf(this.subscriberCount)
@@ -44,11 +46,11 @@ public class GroupSession extends Session {
     }
 
     @Override
-    public boolean accessible(long userId) {
+    public boolean accessible(LongAndExtraIdentity accessIdentity) {
         return Kalmia.SERVER.sessionManager()
                             .accessible(
-                                    sessionId(),
-                                    userId
+                                    identity(),
+                                    accessIdentity
                             )
                             .accessibleChat(true);
     }

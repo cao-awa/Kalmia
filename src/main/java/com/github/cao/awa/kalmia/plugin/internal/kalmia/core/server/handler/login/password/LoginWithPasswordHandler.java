@@ -7,6 +7,7 @@ import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.attack.exhaustive.ExhaustiveLogin;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.password.LoginWithPasswordEventHandler;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.login.LoginCommon;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
@@ -27,12 +28,11 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
     @Server
     @Override
     public void handle(RequestRouter router, LoginWithPasswordPacket packet) {
-        long uid = packet.uid();
+        LongAndExtraIdentity accessIdentity = packet.accessIdentity();
         String password = packet.password();
 
-        // Start login here.
         User user = Kalmia.SERVER.userManager()
-                                 .get(uid);
+                                 .get(accessIdentity);
 
         if (user instanceof DefaultUser usr && usr.password()
                                                   .isSha() && Arrays.equals(usr.password()
@@ -44,25 +44,25 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
                                                                             )
         ) && ExhaustiveLogin.validate(router)) {
             router.setStates(RequestState.AUTHED);
-            ((AuthedRequestHandler) router.getHandler()).setUid(uid);
+            ((AuthedRequestHandler) router.getHandler()).accessIdentity(accessIdentity);
 
             byte[] token = BytesRandomIdentifier.create(128);
 
             LoginCommon.login(
-                    packet.uid(),
+                    packet.accessIdentity(),
                     router
             );
 
             loginSuccess(
                     router,
-                    uid,
+                    accessIdentity,
                     token,
                     packet.receipt()
             );
         } else {
             loginFailure(
                     router,
-                    uid,
+                    accessIdentity,
                     "login.failure.pwd_or_uid_is_wrong",
                     packet.receipt()
             );

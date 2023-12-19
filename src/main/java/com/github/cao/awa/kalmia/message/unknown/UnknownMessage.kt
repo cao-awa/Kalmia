@@ -1,10 +1,11 @@
 package com.github.cao.awa.kalmia.message.unknown
 
 import com.github.cao.awa.apricot.annotations.auto.Auto
+import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.apricot.util.digger.MessageDigger
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData
-import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.message.Message
 import com.github.cao.awa.kalmia.message.digest.DigestData
@@ -18,7 +19,7 @@ class UnknownMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): UnknownMessage? {
             return if (reader.read().toInt() == 0) {
-                val identity = MillsAndExtraIdentity.create(reader)
+                val identity = LongAndExtraIdentity.read(reader)
                 val data = reader.all()
                 UnknownMessage(
                     identity,
@@ -50,7 +51,7 @@ class UnknownMessage : Message {
         )
     }
 
-    constructor(identity: MillsAndExtraIdentity, msgBytes: ByteArray) : super(identity) {
+    constructor(identity: LongAndExtraIdentity, msgBytes: ByteArray) : super(identity) {
         this.msgBytes = msgBytes
         this.digestData = DigestData.digest(
             MessageDigger.Sha3.SHA_512,
@@ -66,8 +67,8 @@ class UnknownMessage : Message {
         return this.msgBytes
     }
 
-    override fun sender(): Long {
-        return -1
+    override fun sender(): LongAndExtraIdentity {
+        return LongAndExtraIdentity.create(-1, BytesRandomIdentifier.create(16))
     }
 
     override fun header(): ByteArray {

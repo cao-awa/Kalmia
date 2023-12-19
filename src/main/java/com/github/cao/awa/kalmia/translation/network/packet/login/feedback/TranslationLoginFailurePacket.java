@@ -7,13 +7,14 @@ import com.github.cao.awa.kalmia.annotations.actor.Getter;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.annotations.translation.Translation;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 
 @Translation(type = "login", name = "login_failure")
 public class TranslationLoginFailurePacket extends TranslationPacket {
-    @AutoData(key = "uid")
+    @AutoData(key = "access_identity")
     @DoNotSet
-    private long uid;
+    private LongAndExtraIdentity accessIdentity;
     @AutoData(key = "reason")
     @DoNotSet
     private String reason;
@@ -24,14 +25,14 @@ public class TranslationLoginFailurePacket extends TranslationPacket {
 
     }
 
-    public TranslationLoginFailurePacket(long uid, String reason) {
-        this.uid = uid;
+    public TranslationLoginFailurePacket(LongAndExtraIdentity accessIdentity, String reason) {
+        this.accessIdentity = accessIdentity;
         this.reason = reason;
     }
 
     @Getter
-    public long uid() {
-        return this.uid;
+    public LongAndExtraIdentity accessIdentity() {
+        return this.accessIdentity;
     }
 
     @Getter

@@ -4,8 +4,11 @@ import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.constant.KalmiaConstant;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.feedback.LoginSuccessEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
+import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
@@ -13,6 +16,7 @@ import com.github.cao.awa.kalmia.network.packet.inbound.message.send.SendMessage
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
 import com.github.cao.awa.kalmia.resource.upload.ResourceUpload;
+import com.github.cao.awa.kalmia.session.communal.CommunalSession;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
 import java.io.File;
@@ -29,14 +33,18 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
     @Override
     public void handle(RequestRouter router, LoginSuccessPacket packet) {
         System.out.println("---Login success---");
-        System.out.println("UID: " + packet.uid());
+        System.out.println("UID: " + packet.accessIdentity());
         System.out.println("Token: " + Mathematics.radix(packet.token(),
                                                          36
         ));
 
-        router.uid(packet.uid());
+        router.accessIdentity(packet.accessIdentity());
 
         router.setStates(RequestState.AUTHED);
+
+        if (router.getHandler() instanceof AuthedRequestHandler authedRequestHandler) {
+            authedRequestHandler.accessIdentity(packet.accessIdentity());
+        }
 
 //        EntrustEnvironment.thread(() -> {
 //                              for (int i = 0; i < 500; i++) {
@@ -70,17 +78,17 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 //        router.send(new RequestGroupSessionPacket("Test group"));
 
         if (true) {
-            router.send(new SelectMessagePacket(0,
+            router.send(new SelectMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
                                                 0,
                                                 114514
             ));
         }
 
         if (false) {
-            router.send(new SendMessagePacket(0,
-                                              0,
+            router.send(new SendMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
+                                              KalmiaEnv.testKeypairIdentity0,
                                               "Awa".getBytes(StandardCharsets.UTF_8),
-                                              1,
+                                              KalmiaEnv.testKeypairIdentity1,
                                               new byte[]{1},
                                               false
             ).receipt(Packet.createReceipt()));
@@ -91,20 +99,20 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
                 byte[] source = "Awa123".getBytes(StandardCharsets.UTF_8);
 
                 byte[] msg = Crypto.ecEncrypt(source,
-                                              (ECPublicKey) Kalmia.CLIENT.getPublicKey(0,
+                                              (ECPublicKey) Kalmia.CLIENT.getPublicKey(KalmiaEnv.testKeypairIdentity0,
                                                                                        true
                                               )
                 );
                 byte[] sign = Crypto.ecSign(source,
-                                            (ECPrivateKey) Kalmia.CLIENT.getPrivateKey(1,
+                                            (ECPrivateKey) Kalmia.CLIENT.getPrivateKey(KalmiaEnv.testKeypairIdentity1,
                                                                                        true
                                             )
                 );
 
-                router.send(new SendMessagePacket(0,
-                                                  0,
+                router.send(new SendMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
+                                                  KalmiaEnv.testKeypairIdentity0,
                                                   msg,
-                                                  1,
+                                                  KalmiaEnv.testKeypairIdentity1,
                                                   sign,
                                                   false
                 ).receipt(Packet.createReceipt()));
@@ -127,15 +135,15 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
                 byte[] source = "Test message #{TIME}".getBytes(StandardCharsets.UTF_8);
 
                 byte[] sign = Crypto.ecSign(source,
-                                            (ECPrivateKey) Kalmia.CLIENT.getPrivateKey(1,
+                                            (ECPrivateKey) Kalmia.CLIENT.getPrivateKey(KalmiaEnv.testKeypairIdentity1,
                                                                                        true
                                             )
                 );
 
-                router.send(new SendMessagePacket(0,
-                                                  - 1,
+                router.send(new SendMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
+                                                  KalmiaConstant.UNMARKED_PURE_IDENTITY,
                                                   source,
-                                                  1,
+                                                  KalmiaEnv.testKeypairIdentity1,
                                                   sign,
                                                   false
                 ));
@@ -148,10 +156,10 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
             try {
                 byte[] source = "Test message #{TIME}".getBytes(StandardCharsets.UTF_8);
 
-                router.send(new SendMessagePacket(0,
-                                                  - 1,
+                router.send(new SendMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
+                                                  KalmiaConstant.UNMARKED_PURE_IDENTITY,
                                                   source,
-                                                  - 1,
+                                                  KalmiaConstant.UNMARKED_PURE_IDENTITY,
                                                   new byte[]{},
                                                   false
                 ).receipt(Packet.createReceipt()));

@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.session.manager;
 
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.kalmia.session.SessionAccessibleData;
 import com.github.cao.awa.kalmia.session.database.SessionDatabase;
@@ -17,24 +18,23 @@ public class SessionManager {
         this.database = new SessionDatabase(path);
     }
 
-    public long add(Session session) {
+    public PureExtraIdentity add(Session session) {
         return this.database.add(session);
     }
 
-    public void set(long seq, Session session) {
-        this.database.set(SkippedBase256.longToBuf(seq),
+    public void set(PureExtraIdentity sessionIdentity, Session session) {
+        this.database.set(sessionIdentity,
                           session
         );
     }
 
-    public long delete(long seq) {
-        this.database.remove(SkippedBase256.longToBuf(seq));
-        return seq;
+    public void delete(PureExtraIdentity sessionIdentity) {
+        this.database.remove(sessionIdentity);
     }
 
     @Nullable
-    public Session session(long seq) {
-        return this.database.get(SkippedBase256.longToBuf(seq));
+    public Session session(PureExtraIdentity sessionIdentity) {
+        return this.database.get(sessionIdentity);
     }
 
     public void operation(BiConsumer<Long, Session> action) {
@@ -45,34 +45,34 @@ public class SessionManager {
         this.database.deleteAll();
     }
 
-    public void updateAccessible(long sessionId, long userId, Consumer<SessionAccessibleData> operation) {
+    public void updateAccessible(PureExtraIdentity sessionIdentity, LongAndExtraIdentity accessIdentity, Consumer<SessionAccessibleData> operation) {
         SessionAccessibleData data = this.database.accessible(
-                SkippedBase256.longToBuf(sessionId),
-                SkippedBase256.longToBuf(userId)
+                sessionIdentity,
+                accessIdentity
         );
 
         operation.accept(data);
 
         this.database.accessible(
-                SkippedBase256.longToBuf(sessionId),
-                SkippedBase256.longToBuf(userId),
+                sessionIdentity,
+                accessIdentity,
                 data
         );
     }
 
-    public SessionAccessibleData accessible(long sessionId, long userId) {
+    public SessionAccessibleData accessible(PureExtraIdentity sessionIdentity, LongAndExtraIdentity accessIdentity) {
         return this.database.accessible(
-                SkippedBase256.longToBuf(sessionId),
-                SkippedBase256.longToBuf(userId)
+                sessionIdentity,
+                accessIdentity
         );
     }
 
-    public Settings settings(long sessionId) {
-        return this.database.settings(SkippedBase256.longToBuf(sessionId));
+    public Settings settings(PureExtraIdentity sessionIdentity) {
+        return this.database.settings(sessionIdentity);
     }
 
-    public void settings(long sessionId, Settings settings) {
-        this.database.settings(SkippedBase256.longToBuf(sessionId),
+    public void settings(PureExtraIdentity sessionIdentity, Settings settings) {
+        this.database.settings(sessionIdentity,
                                settings
         );
     }

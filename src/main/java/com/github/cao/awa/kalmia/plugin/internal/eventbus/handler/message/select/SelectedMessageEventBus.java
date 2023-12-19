@@ -14,7 +14,7 @@ public class SelectedMessageEventBus extends EventBus<SelectedMessageEventBusHan
     public void handle(RequestRouter router, SelectedMessagePacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.sessionId(),
+                                          packet.sessionIdentity(),
                                           packet.from(),
                                           packet.to(),
                                           packet.sessionCurSeq(),

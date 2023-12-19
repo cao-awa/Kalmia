@@ -1,16 +1,13 @@
 package com.github.cao.awa.kalmia.user;
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.setting.Settings;
 import com.github.cao.awa.kalmia.user.password.UserPassword;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 
-import java.nio.charset.StandardCharsets;
-
 public class DefaultUser extends User {
     private static final byte[] HEADER = new byte[]{0};
-    private final long joinTimestamp;
     private final UserPassword password;
     private final Settings settings;
 
@@ -18,29 +15,28 @@ public class DefaultUser extends User {
         return this.password;
     }
 
-    public DefaultUser(long timestamp, String password, Settings settings) {
-        this.joinTimestamp = timestamp;
-        this.password = new UserPassword(password.getBytes(StandardCharsets.UTF_8));
+    public DefaultUser(UserPassword password, Settings settings) {
+        this.password = password;
         this.settings = settings;
     }
 
-    public DefaultUser(long timestamp, UserPassword password, Settings settings) {
-        this.joinTimestamp = timestamp;
+    public DefaultUser(LongAndExtraIdentity identity, UserPassword password, Settings settings) {
+        super(identity);
         this.password = password;
         this.settings = settings;
     }
 
     public long joinTimestamp() {
-        return this.joinTimestamp;
+        return identity().longValue();
     }
 
     public static DefaultUser create(BytesReader reader) {
         if (reader.read() == 0) {
-            long timestamp = SkippedBase256.readLong(reader);
+            LongAndExtraIdentity identity = LongAndExtraIdentity.read(reader);
             UserPassword password = UserPassword.create(reader);
             Settings settings = Settings.create(reader);
 
-            return new DefaultUser(timestamp,
+            return new DefaultUser(identity,
                                    password,
                                    settings
             );
@@ -53,8 +49,8 @@ public class DefaultUser extends User {
     public byte[] toBytes() {
         return BytesUtil.concat(
                 header(),
-                SkippedBase256.longToBuf(this.joinTimestamp),
-                password().toBytes(),
+                identity().toBytes(),
+                password().bytes(),
                 settings().toBytes()
         );
     }

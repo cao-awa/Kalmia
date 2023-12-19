@@ -105,6 +105,14 @@ GroupSession
 
 DuetSession
 
+# 4000
+
+PureExtraIdentity
+
+# 4001
+
+LongAndExtraIdentity
+
 # 10000
 
 LanguageSetting

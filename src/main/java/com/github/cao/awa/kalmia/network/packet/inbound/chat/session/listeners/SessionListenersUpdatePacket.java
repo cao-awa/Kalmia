@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.chat.session.in.SessionListenersUpdateEvent;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.session.Session;
@@ -39,9 +40,9 @@ public class SessionListenersUpdatePacket extends Packet<AuthedRequestHandler> {
         return this.sessions;
     }
 
-    public List<Long> mapId() {
+    public List<PureExtraIdentity> mapId() {
         return sessions().stream()
-                         .map(Session :: sessionId).
+                         .map(Session :: identity).
                          toList();
     }
 }

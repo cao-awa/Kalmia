@@ -12,15 +12,19 @@ public class UserPassword implements BytesValueConvertable {
 
     public UserPassword(boolean isSha, byte[] password) {
         this.isSha = isSha;
+        if (password.length > 127) {
+            throw new IllegalArgumentException("The password details cannot larger than 127 bytes");
+        }
         this.password = password;
     }
 
-    public UserPassword(byte[] password) {
-        this.isSha = true;
-        this.password = Mathematics.toBytes(MessageDigger.digest(password,
-                                                                 MessageDigger.Sha3.SHA_512
-                                            ),
-                                            16
+    public UserPassword(String password) {
+        this(true,
+             Mathematics.toBytes(MessageDigger.digest(password,
+                                                      MessageDigger.Sha3.SHA_512
+                                 ),
+                                 16
+             )
         );
     }
 
@@ -30,13 +34,6 @@ public class UserPassword implements BytesValueConvertable {
 
     public byte[] password() {
         return this.password;
-    }
-
-    public byte[] toBytes() {
-        return BytesUtil.concat(new byte[]{(byte) (this.isSha ? 0 : - 1)},
-                                new byte[]{(byte) this.password.length},
-                                this.password
-        );
     }
 
     public static UserPassword create(BytesReader reader) {
@@ -50,6 +47,9 @@ public class UserPassword implements BytesValueConvertable {
 
     @Override
     public byte[] bytes() {
-        return password();
+        return BytesUtil.concat(new byte[]{(byte) (this.isSha ? 0 : - 1)},
+                                new byte[]{(byte) this.password.length},
+                                this.password
+        );
     }
 }

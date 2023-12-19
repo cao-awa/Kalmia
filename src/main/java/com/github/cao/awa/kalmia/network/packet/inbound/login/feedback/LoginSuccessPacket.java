@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.login.feedback.LoginSuccessEvent;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.stateless.StatelessHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
@@ -18,14 +19,14 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 public class LoginSuccessPacket extends Packet<StatelessHandler> {
     @AutoData
     @DoNotSet
-    private long uid;
+    private LongAndExtraIdentity accessIdentity;
     @AutoData
     @DoNotSet
     private byte[] token;
 
     @Server
-    public LoginSuccessPacket(long uid, byte[] token) {
-        this.uid = uid;
+    public LoginSuccessPacket(LongAndExtraIdentity accessIdentity, byte[] token) {
+        this.accessIdentity = accessIdentity;
         this.token = token;
     }
 
@@ -36,8 +37,8 @@ public class LoginSuccessPacket extends Packet<StatelessHandler> {
     }
 
     @Getter
-    public long uid() {
-        return this.uid;
+    public LongAndExtraIdentity accessIdentity() {
+        return this.accessIdentity;
     }
 
     @Getter

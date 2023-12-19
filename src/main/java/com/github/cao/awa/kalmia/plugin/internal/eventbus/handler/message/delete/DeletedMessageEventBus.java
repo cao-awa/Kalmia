@@ -14,7 +14,7 @@ public class DeletedMessageEventBus extends EventBus<DeletedMessageEventBusHandl
     public void handle(RequestRouter router, DeletedMessagePacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.sessionId(),
+                                          packet.sessionIdentity(),
                                           packet.seq()
         ));
     }

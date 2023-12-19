@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoSolvedPacket;
 import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.inbound.message.send.SentMessageEvent;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.message.Message;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
@@ -19,7 +20,7 @@ import com.github.cao.awa.modmdo.annotation.platform.Server;
 public class SentMessagePacket extends Packet<AuthedRequestHandler> {
     @AutoData
     @DoNotSet
-    private long sessionId;
+    private PureExtraIdentity sessionIdentity;
     @AutoData
     @DoNotSet
     private long seq;
@@ -28,8 +29,8 @@ public class SentMessagePacket extends Packet<AuthedRequestHandler> {
     private Message message;
 
     @Server
-    public SentMessagePacket(long sessionId, long seq, Message message) {
-        this.sessionId = sessionId;
+    public SentMessagePacket(PureExtraIdentity sessionIdentity, long seq, Message message) {
+        this.sessionIdentity = sessionIdentity;
         this.seq = seq;
         this.message = message;
     }
@@ -41,8 +42,8 @@ public class SentMessagePacket extends Packet<AuthedRequestHandler> {
     }
 
     @Getter
-    public long sessionId() {
-        return this.sessionId;
+    public PureExtraIdentity sessionIdentity() {
+        return this.sessionIdentity;
     }
 
     @Getter

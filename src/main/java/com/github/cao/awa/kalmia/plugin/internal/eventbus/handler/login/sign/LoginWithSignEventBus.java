@@ -14,7 +14,7 @@ public class LoginWithSignEventBus extends EventBus<LoginWithSignEventBusHandler
     public void handle(RequestRouter router, LoginWithSignPacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.uid(),
+                                          packet.accessIdentity(),
                                           packet.challengeData()
         ));
     }

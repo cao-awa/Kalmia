@@ -15,6 +15,6 @@ public class ChatInSessionHandler implements ChatInSessionEventHandler {
     @Client
     @Override
     public void handle(RequestRouter router, ChatInSessionPacket packet) {
-        System.out.println("Requested session for " + packet.targetUid() + ": " + packet.sessionId());
+        System.out.println("Requested session for " + packet.targetUser() + ": " + packet.sessionIdentity());
     }
 }

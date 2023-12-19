@@ -14,7 +14,7 @@ public class LoginFailureEventBus extends EventBus<LoginFailureEventBusHandler> 
     public void handle(RequestRouter router, LoginFailurePacket packet) {
         trigger(handler -> handler.handle(router,
                                           packet.receipt(),
-                                          packet.uid(),
+                                          packet.accessIdentity(),
                                           packet.reason()
         ));
     }

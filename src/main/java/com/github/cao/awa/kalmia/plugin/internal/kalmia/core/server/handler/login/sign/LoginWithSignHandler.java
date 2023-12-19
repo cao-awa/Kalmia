@@ -5,6 +5,7 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.sign.LoginWithSignEventHandler;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.login.LoginCommon;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;
@@ -24,7 +25,7 @@ public class LoginWithSignHandler implements LoginWithSignEventHandler {
     @Server
     @Override
     public void handle(RequestRouter router, LoginWithSignPacket packet) {
-        long uid = packet.uid();
+        LongAndExtraIdentity accessIdentity = packet.accessIdentity();
 
         boolean verified = false;
 
@@ -43,25 +44,25 @@ public class LoginWithSignHandler implements LoginWithSignEventHandler {
 
         if (verified) {
             router.setStates(RequestState.AUTHED);
-            ((AuthedRequestHandler) router.getHandler()).setUid(uid);
+            ((AuthedRequestHandler) router.getHandler()).accessIdentity(accessIdentity);
 
             byte[] token = BytesRandomIdentifier.create(128);
 
             LoginCommon.login(
-                    packet.uid(),
+                    packet.accessIdentity(),
                     router
             );
 
             loginSuccess(
                     router,
-                    uid,
+                    accessIdentity,
                     token,
                     packet.receipt()
             );
         } else {
             loginFailure(
                     router,
-                    uid,
+                    accessIdentity,
                     "login.failure.unable_to_verify_sign",
                     packet.receipt()
             );

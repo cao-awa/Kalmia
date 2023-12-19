@@ -1,15 +1,14 @@
 package com.github.cao.awa.kalmia.identity
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
-import com.github.cao.awa.apricot.util.time.TimeUtil
 import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 
-class MillsAndExtraIdentity(private val mills: Long, private val extras: ByteArray) {
+open class LongAndExtraIdentity(private val longValue: Long, private val extras: ByteArray) {
     companion object {
         @JvmStatic
-        fun create(reader: BytesReader): MillsAndExtraIdentity {
+        fun read(reader: BytesReader): LongAndExtraIdentity {
             val length = Base256.readTag(reader)
 
             val dataReader = reader.reader(length)
@@ -17,27 +16,27 @@ class MillsAndExtraIdentity(private val mills: Long, private val extras: ByteArr
             val mills = Base256.readLong(dataReader)
             val extras = dataReader.all()
 
-            return MillsAndExtraIdentity(
+            return LongAndExtraIdentity(
                 mills,
                 extras
             )
         }
 
         @JvmStatic
-        fun create(extras: ByteArray): MillsAndExtraIdentity {
-            return MillsAndExtraIdentity(
-                TimeUtil.millions(),
+        fun create(longValue: Long, extras: ByteArray): LongAndExtraIdentity {
+            return LongAndExtraIdentity(
+                longValue,
                 extras
             )
         }
     }
 
-    fun mills(): Long = this.mills
+    fun longValue(): Long = this.longValue
 
     fun extras(): ByteArray = this.extras
 
     fun toBytes(): ByteArray {
-        val mills = Base256.longToBuf(this.mills)
+        val mills = Base256.longToBuf(this.longValue)
         val length = mills.size + this.extras.size
         return BytesUtil.concat(
             Base256.tagToBuf(length),
@@ -51,16 +50,16 @@ class MillsAndExtraIdentity(private val mills: Long, private val extras: ByteArr
         if (this === other) return true
         if (this.javaClass != other.javaClass) return false
 
-        other as MillsAndExtraIdentity
+        other as LongAndExtraIdentity
 
-        if (this.mills != other.mills) return false
+        if (this.longValue != other.longValue) return false
         if (!this.extras.contentEquals(other.extras)) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        val millsHash = this.mills.hashCode()
+        val millsHash = this.longValue.hashCode()
         return 31 * millsHash + this.extras.contentHashCode()
     }
 

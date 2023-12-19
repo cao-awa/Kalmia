@@ -2,7 +2,8 @@ package com.github.cao.awa.kalmia.message.cover
 
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.apricot.util.digger.MessageDigger
-import com.github.cao.awa.kalmia.identity.MillsAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.message.Message
@@ -18,19 +19,19 @@ class CoverMessage : Message {
         @JvmStatic
         fun create(reader: BytesReader): CoverMessage? {
             return if (reader.read().toInt() == 5) {
-                val identity = MillsAndExtraIdentity.create(reader)
+                val identity = LongAndExtraIdentity.read(reader)
 
                 val sourceMessageLength = SkippedBase256.readInt(reader)
                 val sourceMessage = reader.read(sourceMessageLength)
-                val sourceSender = SkippedBase256.readLong(reader)
-                val sourceSignId = SkippedBase256.readLong(reader)
+                val sourceSender = LongAndExtraIdentity.read(reader)
+                val sourceSignIdentity = PureExtraIdentity.read(reader)
                 val sourceSignLength = Base256.readTag(reader)
                 val sourceSign = reader.read(sourceSignLength)
 
                 val coverMessageLength = SkippedBase256.readInt(reader)
                 val coverMessage = reader.read(coverMessageLength)
-                val coverSender = SkippedBase256.readLong(reader)
-                val coverSignId = SkippedBase256.readLong(reader)
+                val coverSender = LongAndExtraIdentity.read(reader)
+                val coverSignIdentity = PureExtraIdentity.read(reader)
                 val coverSignLength = Base256.readTag(reader)
                 val coverSign = reader.read(coverSignLength)
 
@@ -38,11 +39,11 @@ class CoverMessage : Message {
                     identity,
                     sourceMessage,
                     sourceSender,
-                    sourceSignId,
+                    sourceSignIdentity,
                     sourceSign,
                     coverMessage,
                     coverSender,
-                    coverSignId,
+                    coverSignIdentity,
                     coverSign
                 )
             } else {
@@ -52,29 +53,29 @@ class CoverMessage : Message {
     }
 
     private val sourceMessage: ByteArray
-    private val sourceSender: Long
-    private val sourceSignId: Long
+    private val sourceSender: LongAndExtraIdentity
+    private val sourceSignIdentity: PureExtraIdentity
     private val sourceSign: ByteArray
     private val sourceDigest: DigestData
     private val coverMessage: ByteArray
-    private val coverSender: Long
-    private val coverSignId: Long
+    private val coverSender: LongAndExtraIdentity
+    private val coverSignIdentity: PureExtraIdentity
     private val coverSign: ByteArray
     private val coverDigest: DigestData
 
     constructor(
         sourceMessage: ByteArray,
-        sourceSender: Long,
-        sourceSignId: Long,
+        sourceSender: LongAndExtraIdentity,
+        sourceSignIdentity: PureExtraIdentity,
         sourceSign: ByteArray,
         coverMessage: ByteArray,
-        coverSender: Long,
-        coverSignId: Long,
+        coverSender: LongAndExtraIdentity,
+        coverSignIdentity: PureExtraIdentity,
         coverSign: ByteArray
     ) {
         this.sourceMessage = sourceMessage
         this.sourceSender = sourceSender
-        this.sourceSignId = sourceSignId
+        this.sourceSignIdentity = sourceSignIdentity
         this.sourceSign = sourceSign
         this.sourceDigest = DigestData.digest(
             MessageDigger.Sha3.SHA_512,
@@ -82,7 +83,7 @@ class CoverMessage : Message {
         )
         this.coverMessage = coverMessage
         this.coverSender = coverSender
-        this.coverSignId = coverSignId
+        this.coverSignIdentity = coverSignIdentity
         this.coverSign = coverSign
         this.coverDigest = DigestData.digest(
             MessageDigger.Sha3.SHA_512,
@@ -91,19 +92,19 @@ class CoverMessage : Message {
     }
 
     constructor(
-        identity: MillsAndExtraIdentity,
+        identity: LongAndExtraIdentity,
         sourceMessage: ByteArray,
-        sourceSender: Long,
-        sourceSignId: Long,
+        sourceSender: LongAndExtraIdentity,
+        sourceSignIdentity: PureExtraIdentity,
         sourceSign: ByteArray,
         coverMessage: ByteArray,
-        coverSender: Long,
-        coverSignId: Long,
+        coverSender: LongAndExtraIdentity,
+        coverSignIdentity: PureExtraIdentity,
         coverSign: ByteArray
     ) : super(identity) {
         this.sourceMessage = sourceMessage
         this.sourceSender = sourceSender
-        this.sourceSignId = sourceSignId
+        this.sourceSignIdentity = sourceSignIdentity
         this.sourceSign = sourceSign
         this.sourceDigest = DigestData.digest(
             MessageDigger.Sha3.SHA_512,
@@ -111,7 +112,7 @@ class CoverMessage : Message {
         )
         this.coverMessage = coverMessage
         this.coverSender = coverSender
-        this.coverSignId = coverSignId
+        this.coverSignIdentity = coverSignIdentity
         this.coverSign = coverSign
         this.coverDigest = DigestData.digest(
             MessageDigger.Sha3.SHA_512,
@@ -119,15 +120,15 @@ class CoverMessage : Message {
         )
     }
 
-    override fun sender(): Long = coverSender()
+    override fun sender(): LongAndExtraIdentity = coverSender()
 
     override fun digest(): DigestData = coverDigest()
 
     fun sourceMessage(): ByteArray = this.sourceMessage
 
-    fun sourceSender(): Long = this.sourceSender
+    fun sourceSender(): LongAndExtraIdentity = this.sourceSender
 
-    fun sourceSignId(): Long = this.sourceSignId
+    fun sourceSignIdentity(): PureExtraIdentity = this.sourceSignIdentity
 
     fun sourceSign(): ByteArray = this.sourceSign
 
@@ -135,9 +136,9 @@ class CoverMessage : Message {
 
     fun coverMessage(): ByteArray = this.coverMessage
 
-    fun coverSender(): Long = this.coverSender
+    fun coverSender(): LongAndExtraIdentity = this.coverSender
 
-    fun coverSignId(): Long = this.coverSignId
+    fun coverSignIdentity(): PureExtraIdentity = this.coverSignIdentity
 
     fun coverSign(): ByteArray = this.coverSign
 
@@ -164,14 +165,14 @@ class CoverMessage : Message {
             identity().toBytes(),
             SkippedBase256.intToBuf(sourceMessage().size),
             sourceMessage(),
-            SkippedBase256.longToBuf(sourceSender()),
-            SkippedBase256.longToBuf(sourceSignId()),
+            sourceSender().toBytes(),
+            sourceSignIdentity().toBytes(),
             Base256.tagToBuf(sourceSign().size),
             sourceSign(),
             SkippedBase256.intToBuf(coverMessage().size),
             coverMessage(),
-            SkippedBase256.longToBuf(coverSender()),
-            SkippedBase256.longToBuf(coverSignId()),
+            coverSender().toBytes(),
+            coverSignIdentity().toBytes(),
             Base256.tagToBuf(coverSign().size),
             coverSign()
         )

@@ -1,6 +1,7 @@
 package com.github.cao.awa.kalmia.keypair;
 
 import com.github.cao.awa.apricot.util.encryption.Crypto;
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
@@ -57,13 +58,15 @@ public class KeyStoreIdentity {
         return - 1;
     }
 
-    public static KeyPairStore createKeyPairStore(PublicKey publicKey, byte[] privateKey) {
+    public static KeyPairStore createKeyPairStore(PureExtraIdentity keypairIdentity, PublicKey publicKey, byte[] privateKey) {
         int identity = getIdentity(publicKey);
         return switch (identity) {
-            case RSA_IDENTITY -> new RsaKeyPair(publicKey.getEncoded(),
+            case RSA_IDENTITY -> new RsaKeyPair(keypairIdentity,
+                                                publicKey.getEncoded(),
                                                 privateKey
             );
-            case EC_IDENTITY -> new EcKeyPair(publicKey.getEncoded(),
+            case EC_IDENTITY -> new EcKeyPair(keypairIdentity,
+                                              publicKey.getEncoded(),
                                               privateKey
             );
             case EMPTY_IDENTITY -> new EmptyKeyPair();
@@ -71,8 +74,9 @@ public class KeyStoreIdentity {
         };
     }
 
-    public static KeyPairStore createKeyPairStore(KeyPair keypair) {
-        return createKeyPairStore(keypair.getPublic(),
+    public static KeyPairStore createKeyPairStore(PureExtraIdentity identity, KeyPair keypair) {
+        return createKeyPairStore(identity,
+                                  keypair.getPublic(),
                                   BytesUtil.EMPTY
         );
     }
