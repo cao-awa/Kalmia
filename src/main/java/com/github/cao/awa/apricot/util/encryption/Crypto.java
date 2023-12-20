@@ -8,8 +8,12 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.IESParameterSpec;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -78,6 +82,58 @@ public class Crypto {
                       new IvParameterSpec(iv)
         );
         return instance.doFinal(content);
+    }
+
+    public static void aesEncryptFile(File inputFile, File outputFile, byte[] cipher, byte[] iv) throws Exception {
+        aesCryptToFile(
+                inputFile,
+                outputFile,
+                cipher,
+                iv,
+                Cipher.ENCRYPT_MODE
+        );
+    }
+
+    public static void aesDecryptFile(File inputFile, File outputFile, byte[] cipher, byte[] iv) throws Exception {
+        aesCryptToFile(
+                inputFile,
+                outputFile,
+                cipher,
+                iv,
+                Cipher.DECRYPT_MODE
+        );
+    }
+
+    public static void aesCryptToFile(File inputFile, File outputFile, byte[] cipher, byte[] iv, int mode) throws Exception {
+        if (iv.length != 16) {
+            iv = DEFAULT_KEY_IV;
+        }
+        Cipher instance = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        instance.init(mode,
+                      new SecretKeySpec(cipher,
+                                        "AES"
+                      ),
+                      new IvParameterSpec(iv)
+        );
+        FileOutputStream fileOutput = new FileOutputStream(outputFile);
+        CipherOutputStream output = new CipherOutputStream(fileOutput,
+                                                           instance
+        );
+
+        FileInputStream fileInput = new FileInputStream(inputFile);
+        byte[] buffer = new byte[16384];
+        int length;
+        while ((length = fileInput.read(buffer)) != - 1) {
+            output.write(buffer,
+                         0,
+                         length
+            );
+            output.flush();
+        }
+
+        output.close();
+        fileInput.close();
+        fileOutput.close();
     }
 
     public static KeyPair rsaKeypair(int size) throws NoSuchAlgorithmException, NoSuchProviderException {
