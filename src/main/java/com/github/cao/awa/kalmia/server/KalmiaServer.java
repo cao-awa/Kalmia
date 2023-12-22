@@ -89,12 +89,12 @@ public class KalmiaServer {
             // TODO
             // Test only
             assert KalmiaEnv.testUser1 != null;
-            this.userManager.set(KalmiaEnv.testUser1.identity(),
+            this.userManager.set(0,
                                  KalmiaEnv.testUser1
             );
 
             assert KalmiaEnv.testUser2 != null;
-            this.userManager.set(KalmiaEnv.testUser2.identity(),
+            this.userManager.set(1,
                                  KalmiaEnv.testUser2
             );
 
@@ -143,7 +143,7 @@ public class KalmiaServer {
                     new FileWriter(configFile),
                     IOUtil.read(
                             new InputStreamReader(
-                                    ResourceLoader.get(KalmiaConstant.SERVER_DEFAULT_CONFIG_PATH)
+                                    ResourceLoader.stream(KalmiaConstant.SERVER_DEFAULT_CONFIG_PATH)
                             )
                     )
             );

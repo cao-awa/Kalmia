@@ -31,8 +31,7 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
         List<Message> messages = ApricotCollectionFactor.arrayList();
 
-        System.out.println(currentSeqEnd);
-        System.out.println(start);
+        System.out.println(start + ":" + packet.to() + "(" + currentSeqEnd + ")");
 
         if (start > packet.to() || start > currentSeqEnd || currentSeqEnd == - 1) {
             router.send(new SelectedMessagePacket(packet.sessionIdentity(),

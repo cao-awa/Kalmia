@@ -3,8 +3,8 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client.handler.han
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.hello.server.ServerHelloEventHandler;
+import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
@@ -43,7 +43,9 @@ public class ServerHelloHandler implements ServerHelloEventHandler {
 
         // TODO
         //     Try login(will delete in releases).
-        router.send(new LoginWithPasswordPacket(KalmiaEnv.testUser1.identity(),
+        router.send(new LoginWithPasswordPacket(LongAndExtraIdentity.create(0,
+                                                                            new byte[]{123}
+        ),
                                                 "123456"
         ));
     }

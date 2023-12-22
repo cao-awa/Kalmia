@@ -5,6 +5,7 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
 import com.github.cao.awa.kalmia.annotations.number.encode.ShouldSkipped
 import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
 import com.github.cao.awa.kalmia.database.KeyValueDatabase
+import com.github.cao.awa.kalmia.database.key.BytesKey
 import com.github.cao.awa.kalmia.database.provider.DatabaseProviders
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity
@@ -18,7 +19,7 @@ import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
-class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(ApricotCollectionFactor::hashMap) {
+class SessionDatabase(path: String) : KeyValueDatabase<BytesKey, Session?>(ApricotCollectionFactor::hashMap) {
     companion object {
         private val ROOT = byteArrayOf(1)
         private val ACCESSIBLE_DELIMITER = byteArrayOf(123)
@@ -26,18 +27,22 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
         fun accessibleKey(
             sessionIdentity: PureExtraIdentity,
             accessIdentity: LongAndExtraIdentity
-        ): ByteArray {
-            return BytesUtil.concat(
-                sessionIdentity.extras(),
-                ACCESSIBLE_DELIMITER,
-                accessIdentity.toBytes()
+        ): BytesKey {
+            return BytesKey(
+                BytesUtil.concat(
+                    sessionIdentity.extras(),
+                    ACCESSIBLE_DELIMITER,
+                    accessIdentity.toBytes()
+                )
             )
         }
 
-        fun settingsKey(@ShouldSkipped sessionIdentity: PureExtraIdentity): ByteArray {
-            return BytesUtil.concat(
-                sessionIdentity.extras(),
-                SETTINGS_DELIMITER
+        fun settingsKey(@ShouldSkipped sessionIdentity: PureExtraIdentity): BytesKey {
+            return BytesKey(
+                BytesUtil.concat(
+                    sessionIdentity.extras(),
+                    SETTINGS_DELIMITER
+                )
             )
         }
     }
@@ -54,20 +59,20 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
             for (seq in 0 until nextSeq) {
                 action.accept(
                     seq,
-                    get(SkippedBase256.longToBuf(seq))
+                    get(BytesKey(SkippedBase256.longToBuf(seq)))
                 )
             }
         }
     }
 
     fun seq(): Long {
-        val seqByte = this.delegate[ROOT]
+        val seqByte = this.delegate[BytesKey(ROOT)]
         return if (seqByte == null) -1 else SkippedBase256.readLong(BytesReader.of(seqByte))
     }
 
     fun nextSeq(): Long = seq() + 1
 
-    override operator fun get(sessionIdentity: ByteArray): Session? {
+    override operator fun get(sessionIdentity: BytesKey): Session? {
         return cache()[
             sessionIdentity,
             { getSession(it) }
@@ -75,7 +80,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
     }
 
     operator fun get(sessionIdentity: PureExtraIdentity): Session? {
-        return this[sessionIdentity.extras()]
+        return this[BytesKey(sessionIdentity.extras())]
     }
 
     fun accessible(sessionIdentity: PureExtraIdentity, accessIdentity: LongAndExtraIdentity): SessionAccessibleData {
@@ -125,15 +130,15 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
     }
 
     private fun getSession(identity: PureExtraIdentity): Session {
-        return getSession(identity.extras())
+        return getSession(BytesKey(identity.extras()))
     }
 
-    private fun getSession(identity: ByteArray): Session {
+    private fun getSession(identity: BytesKey): Session {
         val bytes = this.delegate[identity] ?: return Sessions.INACCESSIBLE
         return Session.create(bytes)
     }
 
-    override fun remove(@ShouldSkipped identity: ByteArray) {
+    override fun remove(@ShouldSkipped identity: BytesKey) {
         cache()
             .delete(
                 identity
@@ -143,7 +148,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
     }
 
     fun remove(identity: PureExtraIdentity) {
-        remove(identity.extras())
+        remove(BytesKey(identity.extras()))
     }
 
     fun remove(seq: Long) {
@@ -151,7 +156,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
     }
 
     fun identity(sid: Long): PureExtraIdentity {
-        return PureExtraIdentity.create(this.delegate[SkippedBase256.longToBuf(sid)])
+        return PureExtraIdentity.create(this.delegate[BytesKey(SkippedBase256.longToBuf(sid))])
     }
 
     fun seqAll(action: Consumer<Long>) {
@@ -164,12 +169,12 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
     }
 
     fun deleteAll() {
-        seqAll { remove(SkippedBase256.longToBuf(it)) }
+        seqAll { remove(BytesKey(SkippedBase256.longToBuf(it))) }
     }
 
-    fun identity(seq: ByteArray): PureExtraIdentity = PureExtraIdentity.create(this.delegate[seq])
+    fun identity(seq: BytesKey): PureExtraIdentity = PureExtraIdentity.create(this.delegate[seq])
 
-    fun identity(seq: ByteArray, identity: PureExtraIdentity) {
+    fun identity(seq: BytesKey, identity: PureExtraIdentity) {
         this.delegate[seq] = identity.toBytes()
     }
 
@@ -179,7 +184,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
 
         // Save the redirector to global id.
         identity(
-            nextSeqByte,
+            BytesKey(nextSeqByte),
             session.identity()
         )
 
@@ -197,10 +202,10 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
     fun curSeq(curSeq: Long) = curSeq(SkippedBase256.longToBuf(curSeq))
 
     private fun curSeq(curSeq: ByteArray) {
-        this.delegate[ROOT] = curSeq
+        this.delegate[BytesKey(ROOT)] = curSeq
     }
 
-    override fun set(sessionIdentity: ByteArray, session: Session?) {
+    override fun set(sessionIdentity: BytesKey, session: Session?) {
         if (session == null) {
             remove(sessionIdentity)
             return
@@ -211,7 +216,7 @@ class SessionDatabase(path: String) : KeyValueDatabase<ByteArray, Session?>(Apri
 
     fun set(sessionIdentity: PureExtraIdentity, session: Session?) {
         set(
-            sessionIdentity.extras(),
+            BytesKey(sessionIdentity.extras()),
             session
         )
     }

@@ -16,6 +16,8 @@ import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @AutoSolvedPacket(id = 500, crypto = true)
 @NetworkEventTarget(SessionListenersUpdateEvent.class)
@@ -40,9 +42,9 @@ public class SessionListenersUpdatePacket extends Packet<AuthedRequestHandler> {
         return this.sessions;
     }
 
-    public List<PureExtraIdentity> mapId() {
+    public Set<PureExtraIdentity> mapId() {
         return sessions().stream()
                          .map(Session :: identity).
-                         toList();
+                         collect(Collectors.toSet());
     }
 }

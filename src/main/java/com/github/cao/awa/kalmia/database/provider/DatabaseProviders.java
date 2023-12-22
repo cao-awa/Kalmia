@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.database.provider;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase;
+import com.github.cao.awa.kalmia.database.key.BytesKey;
 import com.github.cao.awa.kalmia.database.provider.leveldb.LevelDbProvider;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ public class DatabaseProviders {
         );
     }
 
-    public static KeyValueBytesDatabase bytes(Supplier<Map<byte[], byte[]>> delegate, String path) throws Exception {
+    public static KeyValueBytesDatabase bytes(Supplier<Map<BytesKey, byte[]>> delegate, String path) throws Exception {
         return new LevelDbProvider(
                 delegate,
                 path

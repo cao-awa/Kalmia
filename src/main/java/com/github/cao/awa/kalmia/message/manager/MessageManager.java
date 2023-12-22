@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.message.manager;
 
+import com.github.cao.awa.kalmia.database.key.BytesKey;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
@@ -23,14 +24,14 @@ public class MessageManager {
 
     public long delete(PureExtraIdentity sessionIdentity, long seq) {
         this.database.markDelete(sessionIdentity,
-                                 SkippedBase256.longToBuf(seq)
+                                 BytesKey.of(SkippedBase256.longToBuf(seq))
         );
         return seq;
     }
 
     public Message get(PureExtraIdentity sessionIdentity, long seq) {
         return this.database.get(sessionIdentity,
-                                 SkippedBase256.longToBuf(seq)
+                                 BytesKey.of(SkippedBase256.longToBuf(seq))
         );
     }
 
@@ -67,7 +68,7 @@ public class MessageManager {
     public void set(PureExtraIdentity sessionIdentity, long seq, Message msg) {
         this.database.identity(
                 sessionIdentity,
-                SkippedBase256.longToBuf(seq),
+                BytesKey.of(SkippedBase256.longToBuf(seq)),
                 msg.identity()
         );
 
@@ -77,7 +78,7 @@ public class MessageManager {
     }
 
     public void set(LongAndExtraIdentity identity, Message message) {
-        this.database.set(identity.toBytes(),
+        this.database.set(BytesKey.of(identity.toBytes()),
                           message
         );
     }

@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.keypair.manager;
 
+import com.github.cao.awa.kalmia.database.key.BytesKey;
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.KeyStoreIdentity;
 import com.github.cao.awa.kalmia.keypair.database.KeypairDatabase;
@@ -24,22 +25,22 @@ public class KeypairManager {
     }
 
     public void set(PureExtraIdentity identity, KeyPairStore store) {
-        this.database.set(identity.extras(),
+        this.database.set(BytesKey.of(identity.extras()),
                           store
         );
     }
 
     public void delete(PureExtraIdentity identity) {
-        this.database.remove(identity.extras());
+        this.database.remove(BytesKey.of(identity.extras()));
     }
 
     @Nullable
     public KeyPairStore get(PureExtraIdentity identity) {
-        return this.database.get(identity.extras());
+        return this.database.get(BytesKey.of(identity.extras()));
     }
 
     public KeyPairStore getStore(PureExtraIdentity identity) {
-        return this.database.createStore(identity.extras());
+        return this.database.createStore(BytesKey.of(identity.extras()));
     }
 
     public void operation(BiConsumer<PureExtraIdentity, KeyPairStore> action) {
@@ -51,15 +52,15 @@ public class KeypairManager {
     }
 
     public PublicKey publicKey(PureExtraIdentity identity) {
-        return this.database.publicKey(identity.extras());
+        return this.database.publicKey(BytesKey.of(identity.extras()));
     }
 
     public void publicKey(PureExtraIdentity identity, PublicKey publicKey) {
-        KeyPairStore store = this.database.createStore(identity.extras());
+        KeyPairStore store = this.database.createStore(BytesKey.of(identity.extras()));
 
         KeyStore<? extends PrivateKey> privateKey = store.privateKey();
 
-        this.database.putPublic(identity.extras(),
+        this.database.putPublic(BytesKey.of(identity.extras()),
                                 KeyStoreIdentity.createKeyPairStore(
                                                         identity,
                                                         publicKey,
@@ -71,11 +72,11 @@ public class KeypairManager {
     }
 
     public byte[] privateKey(PureExtraIdentity identity) {
-        return this.database.privateKey(identity.extras());
+        return this.database.privateKey(BytesKey.of(identity.extras()));
     }
 
     public void privateKey(PureExtraIdentity identity, KeyStore<? extends PrivateKey> privateKey) {
-        this.database.putPrivate(identity.extras(),
+        this.database.putPrivate(BytesKey.of(identity.extras()),
                                  privateKey
         );
     }

@@ -102,13 +102,13 @@ public class KalmiaPreSharedCipher {
 
         EntrustEnvironment.trys(() -> {
                                     IOUtil.write(new FileOutputStream(KalmiaConstant.MAIN_KEYPAIR_META_PATH),
-                                                 ResourceLoader.get("kalmiagram/secret/main/cipher.json")
+                                                 ResourceLoader.stream("kalmiagram/secret/main/cipher.json")
                                     );
                                 }
         );
 
         EntrustEnvironment.trys(() -> {
-                                    InputStream input = ResourceLoader.get("kalmiagram/secret/main/SECRET_PRIVATE");
+            InputStream input = ResourceLoader.stream("kalmiagram/secret/main/SECRET_PRIVATE");
 
                                     if (input == null) {
                                         return;
@@ -122,7 +122,7 @@ public class KalmiaPreSharedCipher {
 
         EntrustEnvironment.trys(() -> {
                                     IOUtil.write(new FileOutputStream(KalmiaConstant.MAIN_PUBLIC_KEY_PATH),
-                                                 ResourceLoader.get("kalmiagram/secret/main/SECRET_PUBLIC")
+                                                 ResourceLoader.stream("kalmiagram/secret/main/SECRET_PUBLIC")
                                     );
                                 }
         );

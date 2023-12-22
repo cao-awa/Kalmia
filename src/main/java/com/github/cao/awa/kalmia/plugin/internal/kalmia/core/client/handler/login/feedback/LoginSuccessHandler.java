@@ -77,7 +77,7 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 
 //        router.send(new RequestGroupSessionPacket("Test group"));
 
-        if (true) {
+        if (false) {
             router.send(new SelectMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
                                                 0,
                                                 114514

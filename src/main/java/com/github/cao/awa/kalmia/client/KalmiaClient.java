@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -115,7 +116,7 @@ public class KalmiaClient {
                     new FileWriter(configFile),
                     IOUtil.read(
                             new InputStreamReader(
-                                    ResourceLoader.get(KalmiaConstant.CLIENT_DEFAULT_CONFIG_PATH)
+                                    ResourceLoader.stream(KalmiaConstant.CLIENT_DEFAULT_CONFIG_PATH)
                             )
                     )
             );
@@ -152,7 +153,7 @@ public class KalmiaClient {
         new KalmiaClientNetworkIo(this).connect(this.bootstrapConfig.clientNetwork());
     }
 
-    public List<PureExtraIdentity> sessionIds() {
+    public Set<PureExtraIdentity> sessionIds() {
         return userManager().sessionListeners(router().accessIdentity());
     }
 
@@ -336,4 +337,8 @@ public class KalmiaClient {
             return null;
         }
     }
+
+//    public Session getSession(PureExtraIdentity identity, boolean awaitGet) {
+//
+//    }
 }

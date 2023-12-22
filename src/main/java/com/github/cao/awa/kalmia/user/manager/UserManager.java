@@ -7,7 +7,6 @@ import com.github.cao.awa.kalmia.user.User;
 import com.github.cao.awa.kalmia.user.database.UserDatabase;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -22,9 +21,18 @@ public class UserManager {
         return this.database.add(user);
     }
 
-    public void set(LongAndExtraIdentity accessIdentity, User user) {
-        this.database.set(accessIdentity,
+    public void set(User user) {
+        this.database.set(user.identity(),
                           user
+        );
+    }
+
+    public void set(long seq, User user) {
+        this.database.set(user.identity(),
+                          user
+        );
+        this.database.setSeqRedirect(seq,
+                                     user.identity()
         );
     }
 
@@ -58,14 +66,14 @@ public class UserManager {
         );
     }
 
-    public List<PureExtraIdentity> sessionListeners(LongAndExtraIdentity accessIdentity) {
-        List<PureExtraIdentity> list = this.database.sessionListeners(accessIdentity);
+    public Set<PureExtraIdentity> sessionListeners(LongAndExtraIdentity accessIdentity) {
+        Set<PureExtraIdentity> list = this.database.sessionListeners(accessIdentity);
         // TODO test only
         list.add(CommunalSession.TEST_COMMUNAL_IDENTITY);
         return list;
     }
 
-    public void sessionListeners(LongAndExtraIdentity accessIdentity, List<PureExtraIdentity> listeners) {
+    public void sessionListeners(LongAndExtraIdentity accessIdentity, Set<PureExtraIdentity> listeners) {
         this.database.sessionListeners(accessIdentity,
                                        listeners
         );

@@ -6,7 +6,7 @@ import java.util.function.Function
 
 class KeyValueCache<K, V>(private val cache: MutableMap<K, V?>) {
     operator fun get(key: K, getter: Function<K, V?>): V? {
-        var result = cache[key]
+        var result = this.cache[key]
         if (result == null) {
             result = getter.apply(key)
             cache(
@@ -24,7 +24,7 @@ class KeyValueCache<K, V>(private val cache: MutableMap<K, V?>) {
 
     fun expire(key: K): V? = this.cache.remove(key)
 
-    fun update(key: K, value: V, updater: BiConsumer<K, V>): V? {
+    fun update(key: K, value: V?, updater: BiConsumer<K, V?>): V? {
         updater.accept(
             key,
             value

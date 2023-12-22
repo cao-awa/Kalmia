@@ -197,7 +197,7 @@ public class KalmiaEnv {
                                 KalmiaConstant.LANGUAGE_TRANSLATION_MAIN_RESOURCE_PATH + "/" + name + ".json",
                                 StandardCharsets.UTF_8
                         ),
-                        IOUtil.read(new InputStreamReader(ResourceLoader.get(langFile)))
+                        IOUtil.read(new InputStreamReader(ResourceLoader.stream(langFile)))
                 );
             } catch (Exception e) {
                 e.printStackTrace();

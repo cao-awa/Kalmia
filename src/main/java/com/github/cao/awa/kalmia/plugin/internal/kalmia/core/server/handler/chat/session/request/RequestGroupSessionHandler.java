@@ -17,6 +17,7 @@ import com.github.cao.awa.kalmia.session.group.GroupSession;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Auto
@@ -36,8 +37,8 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
                                                    ));
 
         // Update session data.
-        List<PureExtraIdentity> listeners = Sessions.subscribe(sessionId,
-                                                               router.accessIdentity()
+        Set<PureExtraIdentity> listeners = Sessions.subscribe(sessionId,
+                                                              router.accessIdentity()
         );
 
         // Update accessible.
