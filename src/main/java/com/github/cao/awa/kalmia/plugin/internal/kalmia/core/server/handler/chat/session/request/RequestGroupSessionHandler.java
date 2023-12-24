@@ -6,7 +6,6 @@ import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.request.RequestGroupSessionEventHandler;
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
-import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.listeners.SessionListenersUpdatePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestGroupSessionPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
@@ -28,8 +27,6 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
     @Server
     @Override
     public void handle(RequestRouter router, RequestGroupSessionPacket packet) {
-        AuthedRequestHandler handler = packet.handler();
-
         PureExtraIdentity sessionId = Kalmia.SERVER.sessionManager()
                                                    .add(new GroupSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
                                                                          packet.name(),
@@ -45,7 +42,7 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
         Kalmia.SERVER.sessionManager()
                      .updateAccessible(
                              sessionId,
-                             handler.accessIdentity(),
+                             router.accessIdentity(),
                              SessionAccessibleData :: accessibleChat
                      );
 

@@ -10,7 +10,6 @@ import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.login.LoginCommon;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
@@ -44,7 +43,6 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
                                                                             )
         ) && ExhaustiveLogin.validate(router)) {
             router.setStates(RequestState.AUTHED);
-            ((AuthedRequestHandler) router.getHandler()).accessIdentity(accessIdentity);
 
             byte[] token = BytesRandomIdentifier.create(128);
 

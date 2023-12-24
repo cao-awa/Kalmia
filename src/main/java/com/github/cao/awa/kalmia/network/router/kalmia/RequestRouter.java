@@ -108,7 +108,7 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
         try {
             if (msg.requireCrypto()) {
                 if (this.transportLayer.crypto() instanceof NoCrypto) {
-                    send(new OperationInvalidPacket("Crypto are missing by required"));
+                    send(new OperationInvalidPacket("packet.crypto.required").receipt(msg.receipt()));
                     return;
                 }
             }
@@ -126,7 +126,7 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
             // TODO
             e.printStackTrace();
 
-            send(new OperationInvalidPacket("Server internal error"));
+            send(new OperationInvalidPacket("server.internal.error").receipt(msg.receipt()));
         } catch (Exception e) {
             BugTrace.trace(e,
                            "Event pipeline happened exception or packet deserialize not completed, please check last bug trace and report theses trace"

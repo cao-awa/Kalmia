@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.network.router.translation;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
+import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.NetworkRouter;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
@@ -79,12 +80,15 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
     }
 
     public void send(TranslationPacket packet) {
-        this.context.writeAndFlush(packet.toFrame(this));
+        this.context.channel()
+                    .eventLoop()
+                    .execute(() -> {
+                        this.context.writeAndFlush(packet.toFrame(this));
+                    });
     }
 
-    @Deprecated
-    public void send(byte[] bytes) {
-        this.context.writeAndFlush(bytes);
+    public void sendImmediately(Packet<?> packet) {
+        this.context.writeAndFlush(packet);
     }
 
     @Override
@@ -101,7 +105,7 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
 
                 // Aftermath for wrongly append fragment.
                 // In normally, this is redundancy plan, do not wish it be happens.
-                if (this.stitching.length() > 0) {
+                if (! this.stitching.isEmpty()) {
                     // Handle the wrong frame forcefully.
                     LOGGER.debug("Aftermath for wrongly append fragment");
                     handleFrame(this.stitching.toString());
@@ -111,7 +115,7 @@ public class TranslationRouter extends NetworkRouter<WebSocketFrame> {
             } else {
                 // Not final fragment should be stitching to one.
                 // Usually the fragment stitching length must 0, else then mean it is a wrong.
-                if (this.stitching.length() == 0) {
+                if (this.stitching.isEmpty()) {
                     // Append this fragment.
                     this.stitching.append(textFrame.text());
                 } else {

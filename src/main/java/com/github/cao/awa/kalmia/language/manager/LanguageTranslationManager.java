@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.language.manager;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.io.IOUtil;
@@ -9,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,23 +40,63 @@ public class LanguageTranslationManager {
                     try {
                         JSONObject json = JSONObject.parse(IOUtil.read(new FileReader(langFile)));
 
-                        Map<String, String> translationKeyMap = this.translations.get(langName);
+                        Map<String, String> translationMap = this.translations.get(langName);
 
-                        json.forEach((key, value) -> {
-                            translationKeyMap.put(
-                                    key,
-                                    value.toString()
-                            );
-                        });
+                        loadInner(json,
+                                  translationMap
+                        );
                     } catch (Exception e) {
                         LOGGER.error("Failed to load language '{}' at '{}'",
                                      langName,
-                                     langFile.getAbsolutePath()
+                                     langFile.getAbsolutePath(),
+                                     e
                         );
                     }
                 }
             }
         }
+    }
+
+    private void loadInner(JSONObject json, Map<String, String> translationMap) {
+        json.forEach((key, value) -> {
+            loadInner(key,
+                      value,
+                      translationMap
+            );
+        });
+    }
+
+    private void loadInner(String key, Object value, Map<String, String> translationMap) {
+        if (value instanceof JSONObject innerObject) {
+            loadInner(innerObject,
+                      translationMap
+            );
+            return;
+        }
+        if (value instanceof JSONArray innerArray) {
+            innerArray.forEach(o -> {
+                if (o instanceof JSONObject json) {
+                    loadInner(key,
+                              json,
+                              translationMap
+                    );
+                    return;
+                }
+                if (o instanceof JSONArray array) {
+                    loadInner(key,
+                              array,
+                              translationMap
+                    );
+                    return;
+                }
+                throw new IllegalArgumentException("Language array can only contains JSONObject or JSONArray object");
+            });
+            return;
+        }
+        translationMap.put(
+                key,
+                value.toString()
+        );
     }
 
     public String translation(String languageKey, String translationKey, Object... args) {
@@ -65,6 +107,16 @@ public class LanguageTranslationManager {
 
         String translationValue = translationKeyMap.get(translationKey);
 
-        return translationValue == null ? translationKey : translationValue.formatted(args);
+        if (translationValue == null) {
+            return translationKey;
+        }
+
+        args = Arrays.stream(args)
+                     .map(o -> translation(languageKey,
+                                           o.toString()
+                     ))
+                     .toArray();
+
+        return translationValue.formatted(args);
     }
 }

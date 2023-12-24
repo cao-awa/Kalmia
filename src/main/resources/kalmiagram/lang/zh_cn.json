@@ -1,3 +1,24 @@
 {
-    "unsigned.coloregg.meow": "喵~"
+    "#coloreggs": {
+        "coloregg.unsigned.meow": "喵~"
+    },
+    "#invalid-operations": {
+        "server.internal.error": "服务器内部错误",
+        "packet.crypto.required": "加密在对此数据包是必要的"
+    },
+    "@translation": {
+        "#proxy-status": {
+            "status.kalmia.connecting": "正在尝试连接到山月桂服务器",
+            "status.kalmia.disconnected": "已与山月桂服务器断开连接",
+            "status.kalmia.handshake.ec": "正在进行握手至椭圆曲线阶段",
+            "status.kalmia.handshake.hello": "正在进行握手至ServerHello阶段",
+            "status.kalmia.login": "正在尝试登录"
+        },
+        "#login-status": {
+            "login.failure.pwd_or_identity_is_wrong": "密码或标识错误",
+            "login.failure.unable_to_verify_sign": "无法验证签名",
+            "login.failure.invalid_token": "无效的token",
+            "login.failure.handshake_required": "未完成连接握手"
+        }
+    }
 }

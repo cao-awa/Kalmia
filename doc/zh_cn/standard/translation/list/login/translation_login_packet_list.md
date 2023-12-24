@@ -8,10 +8,10 @@
 |:-----:|:-------------------:|
 | login | login_with_password |
 
-| 字段名 | 要求的值 | 类型  |
-|:---:|:----:|:---:|
-| uid | 用户ID | 数字  | 
-| pwd |  密码  | 字符串 |
+|   字段名    | 要求的值 |          类型          |
+|:--------:|:----:|:--------------------:|
+| identity | 用户标识 | LongAndExtraIdentity | 
+|   pwd    |  密码  |         字符串          |
 
 # 推送
 
@@ -23,10 +23,10 @@
 |:-----:|:-------------:|
 | login | login_success |
 
-|  字段名  |  可能的值   | 类型  |
-|:-----:|:-------:|:---:|
-|  uid  |  用户ID   | 数字  | 
-| token | 登录token | 字符串 |       
+|   字段名    |  可能的值   |          类型          |
+|:--------:|:-------:|:--------------------:|
+| identity |  用户标识   | LongAndExtraIdentity | 
+|  token   | 登录token |         字符串          |       
 
 ## Login failure
 
@@ -36,14 +36,14 @@
 |:-----:|:-------------:|
 | login | login_failure |
 
-|  字段名   | 可能的值 | 类型  |
-|:------:|:----:|:---:|
-|  uid   | 用户ID | 数字  |
-| reason | 失败原因 | 字符串 |       
+|   字段名    | 可能的值 |          类型          |
+|:--------:|:----:|:--------------------:|
+| identity | 用户标识 | LongAndExtraIdentity |
+|  reason  | 失败原因 |         字符串          |       
 
-|                原因键名                 |    意味    |     
-|:-----------------------------------:|:--------:|
-|  login.failure.pwd_or_uid_is_wrong  | 密码或UID错误 |
-| login.failure.unable_to_verify_sign |  无法验证签名  |
-|     login.failure.invalid_token     | 无效的Token |
-|  login.failure.handshake_required   |  未完成握手   |
+|                  原因键名                  |    意味    |     
+|:--------------------------------------:|:--------:|
+| login.failure.pwd_or_identity_is_wrong | 密码或标识错误  |
+|  login.failure.unable_to_verify_sign   |  无法验证签名  |
+|      login.failure.invalid_token       | 无效的Token |
+|    login.failure.handshake_required    |  未完成握手   |

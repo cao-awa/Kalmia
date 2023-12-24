@@ -7,7 +7,6 @@ import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.sign.LoginWithSignEventHandler;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.login.LoginCommon;
-import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.sign.LoginWithSignPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
@@ -33,8 +32,7 @@ public class LoginWithSignHandler implements LoginWithSignEventHandler {
             // TODO
 //            verified = ExhaustiveLogin.validate(router) && Crypto.ecVerify(KalmiaEnv.CHALLENGE_DATA,
 //                                                                           packet.challengeData(),
-//                                                                           (ECPublicKey) Kalmia.SERVER.userManager()
-//                                                                                                      .publicKey(uid)
+//                                                                           (ECPublicKey) Kalmia.SERVER.keypairManager().publicKey()
 //            );
         } catch (Exception e) {
             BugTrace.trace(e,
@@ -44,7 +42,6 @@ public class LoginWithSignHandler implements LoginWithSignEventHandler {
 
         if (verified) {
             router.setStates(RequestState.AUTHED);
-            ((AuthedRequestHandler) router.getHandler()).accessIdentity(accessIdentity);
 
             byte[] token = BytesRandomIdentifier.create(128);
 

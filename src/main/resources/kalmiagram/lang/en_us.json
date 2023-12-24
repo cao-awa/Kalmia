@@ -1,3 +1,24 @@
 {
-    "unsigned.coloregg.meow": " Meow~"
+    "#coloreggs": {
+        "coloregg.unsigned.meow": " Meow~"
+    },
+    "#invalid-operations": {
+        "server.internal.error": "Server internal error",
+        "packet.crypto.required": "Crypto are missing by required"
+    },
+    "@translation": {
+        "#proxy-status": {
+            "status.kalmia.connecting": "Trying connect to kalmia server",
+            "status.kalmia.disconnected": "Disconnected from kalmia server",
+            "status.kalmia.handshake.ec": "Preparing ec stage in handshaking",
+            "status.kalmia.handshake.hello": "Preparing ServerHello stage in handshaking",
+            "status.kalmia.login": "Trying login"
+        },
+        "#login-status": {
+            "login.failure.pwd_or_identity_is_wrong": "The password or identity is wrong",
+            "login.failure.unable_to_verify_sign": "Unable to verify the signature",
+            "login.failure.invalid_token": "Invalid token",
+            "login.failure.handshake_required": "Required complete handshake"
+        }
+    }
 }

@@ -8,7 +8,6 @@ import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.login.feedback.LoginSuccessEventHandler;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.feedback.LoginSuccessPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
@@ -41,10 +40,6 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
         router.accessIdentity(packet.accessIdentity());
 
         router.setStates(RequestState.AUTHED);
-
-        if (router.getHandler() instanceof AuthedRequestHandler authedRequestHandler) {
-            authedRequestHandler.accessIdentity(packet.accessIdentity());
-        }
 
 //        EntrustEnvironment.thread(() -> {
 //                              for (int i = 0; i < 500; i++) {

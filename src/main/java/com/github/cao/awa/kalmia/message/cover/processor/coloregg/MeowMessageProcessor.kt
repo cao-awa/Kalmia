@@ -24,7 +24,7 @@ class MeowMessageProcessor : MessageProcessor() {
             user.settings()
                 .get(UserSettings.LANGUAGE)
                 .languageKey(),
-            "unsigned.coloregg.meow"
+            "coloregg.unsigned.meow"
         )).toByteArray(StandardCharsets.UTF_8)
     }
 

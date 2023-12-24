@@ -7,7 +7,6 @@ import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.chat.session.request.RequestDuetSessionEventHandler;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
-import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.in.ChatInSessionPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.chat.session.request.RequestDuetSessionPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
@@ -24,22 +23,21 @@ public class RequestDuetSessionHandler implements RequestDuetSessionEventHandler
     @Override
     public void handle(RequestRouter router, RequestDuetSessionPacket packet) {
         LongAndExtraIdentity targetIdentity = packet.targetUser();
-        AuthedRequestHandler handler = packet.handler();
 
         PureExtraIdentity sessionIdentity = Kalmia.SERVER.userManager()
-                                                         .duetSession(handler.accessIdentity(),
+                                                         .duetSession(router.accessIdentity(),
                                                                       targetIdentity
                                                          );
         if (sessionIdentity == null) {
             sessionIdentity = Kalmia.SERVER.sessionManager()
                                            .add(new DuetSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
-                                                                handler.accessIdentity(),
+                                                                router.accessIdentity(),
                                                                 targetIdentity
                                            ));
 
             // Update session data.
             Kalmia.SERVER.userManager()
-                         .duetSession(handler.accessIdentity(),
+                         .duetSession(router.accessIdentity(),
                                       targetIdentity,
                                       sessionIdentity
                          );
@@ -48,7 +46,7 @@ public class RequestDuetSessionHandler implements RequestDuetSessionEventHandler
             Kalmia.SERVER.sessionManager()
                          .updateAccessible(
                                  sessionIdentity,
-                                 handler.accessIdentity(),
+                                 router.accessIdentity(),
                                  SessionAccessibleData :: accessibleChat
                          );
             Kalmia.SERVER.sessionManager()

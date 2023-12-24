@@ -20,11 +20,12 @@ public interface LoginEventHandler<P extends Packet<?>, E extends NetworkEvent<P
                                            token
         ).receipt(receipt));
 
+        router.accessIdentity(accessIdentity);
 
         List<Session> sessions = ApricotCollectionFactor.arrayList();
 
         Kalmia.SERVER.userManager()
-                     .sessionListeners(router.accessIdentity())
+                     .sessionListeners(accessIdentity)
                      .forEach(id -> {
                          Session session = Kalmia.SERVER.sessionManager()
                                                         .session(id);

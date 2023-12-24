@@ -39,8 +39,7 @@ public class SendMessageHandler implements SendMessageEventHandler {
                             IDT: {}
                             SID: {}
                             MSG:{}""",
-                    packet.handler()
-                          .accessIdentity(),
+                    router.accessIdentity(),
                     Mathematics.radix(packet.receipt(),
                                       36
                     ),

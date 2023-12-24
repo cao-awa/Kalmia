@@ -26,8 +26,7 @@ public class SentMessageHandler implements SentMessageEventHandler {
                             UID: {}
                             IDT: {}""",
                     packet.seq(),
-                    packet.handler()
-                          .accessIdentity(),
+                    router.accessIdentity(),
                     Mathematics.radix(packet.receipt(),
                                       36
                     )
