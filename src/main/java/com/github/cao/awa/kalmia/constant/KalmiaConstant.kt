@@ -24,6 +24,8 @@ object KalmiaConstant {
     const val SERVER_DEFAULT_CONFIG_PATH = "kalmiagram/config/default-server-config.json"
     const val CLIENT_CONFIG_PATH = "configs/client-config.json"
     const val CLIENT_DEFAULT_CONFIG_PATH = "kalmiagram/config/default-client-config.json"
+    const val ROUTER_CONFIG_PATH = "configs/router-config.json"
+    const val ROUTER_DEFAULT_CONFIG_PATH = "kalmiagram/config/default-router-config.json"
 
     const val KEYPAIR_STORAGE_PATH = "ciphers/"
     const val MAIN_KEYPAIR_META_PATH = "ciphers/main/cipher.json"

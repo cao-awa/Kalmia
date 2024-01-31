@@ -109,6 +109,15 @@ public class BytesReader {
         return this.flag;
     }
 
+    public int cursor() {
+        return this.cursor;
+    }
+
+    public BytesReader cursor(int cursor) {
+        this.cursor = cursor;
+        return this;
+    }
+
     public int readable() {
         return this.bytes.length - this.cursor;
     }

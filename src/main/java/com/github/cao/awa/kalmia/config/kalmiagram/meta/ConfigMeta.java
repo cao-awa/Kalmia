@@ -3,10 +3,10 @@ package com.github.cao.awa.kalmia.config.kalmiagram.meta;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.config.ConfigElement;
 
-public class BootstrapConfigMeta extends ConfigElement {
+public class ConfigMeta extends ConfigElement {
     private final int version;
 
-    public BootstrapConfigMeta(int version) {
+    public ConfigMeta(int version) {
         this.version = version;
     }
 
@@ -22,7 +22,7 @@ public class BootstrapConfigMeta extends ConfigElement {
         return json;
     }
 
-    public static BootstrapConfigMeta read(JSONObject json, BootstrapConfigMeta compute) {
+    public static ConfigMeta read(JSONObject json, ConfigMeta compute) {
         if (compute == null) {
             throw new IllegalArgumentException("Compute argument cannot be null");
         }
@@ -41,6 +41,6 @@ public class BootstrapConfigMeta extends ConfigElement {
                 compute.version()
         );
 
-        return new BootstrapConfigMeta(version);
+        return new ConfigMeta(version);
     }
 }

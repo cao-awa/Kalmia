@@ -1,9 +1,16 @@
 package com.github.cao.awa.kalmia.network.router.kalmia;
 
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
+import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.bug.BugTrace;
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.network.RouterNetworkConfig;
+import com.github.cao.awa.kalmia.constant.KalmiaConstant;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.mathematic.base.Base256;
@@ -33,6 +40,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.net.SocketException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -64,6 +75,7 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private final Affair funeral = Affair.empty();
     private LongAndExtraIdentity accessIdentity;
     private final RequestRouterMetadata metadata = RequestRouterMetadata.create();
+    private RouterNetworkConfig networkConfig = KalmiaEnv.DEFAULT_ROUTER_NETWORK_CONFIG;
 
     public RequestRouter() {
         this(Consumers.doNothing());
@@ -153,6 +165,49 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
         this.context.channel()
                     .closeFuture()
                     .addListener(this :: disconnect);
+        setupNetworkConfig();
+    }
+
+    public void setupNetworkConfig() throws Exception {
+        prepareConfig();
+
+        this.networkConfig = RouterNetworkConfig.read(
+                JSONObject.parse(
+                        IOUtil.read(new FileReader(KalmiaConstant.ROUTER_CONFIG_PATH))
+                ),
+                KalmiaEnv.DEFAULT_ROUTER_NETWORK_CONFIG
+        );
+
+        rewriteConfig(this.networkConfig);
+    }
+
+    public static void rewriteConfig(RouterNetworkConfig networkConfig) throws Exception {
+        LOGGER.info("Rewriting router config");
+
+        IOUtil.write(new FileWriter(KalmiaConstant.ROUTER_CONFIG_PATH),
+                     networkConfig.toJSON()
+                                  .toString(JSONWriter.Feature.PrettyFormat)
+        );
+    }
+
+    public static void prepareConfig() throws Exception {
+        LOGGER.info("Preparing router config");
+
+        File configFile = new File(KalmiaConstant.ROUTER_CONFIG_PATH);
+
+        configFile.getParentFile()
+                  .mkdirs();
+
+        if (! configFile.isFile()) {
+            IOUtil.write(
+                    new FileWriter(configFile),
+                    IOUtil.read(
+                            new InputStreamReader(
+                                    ResourceLoader.stream(KalmiaConstant.ROUTER_DEFAULT_CONFIG_PATH)
+                            )
+                    )
+            );
+        }
     }
 
     public void disconnect() {
@@ -193,36 +248,43 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
                                           .decompress(reader.all());
     }
 
-    public byte[] encode(byte[] sourceText) {
+    public byte[] encode(byte[] sourceData) {
+        RequestCompressor compressor = getCompressor();
+
         // Compress the packet data.
-        int compressId = getCompressor()
-                .id();
+        int compressId;
 
-        byte[] compressResult = getCompressor()
-                .compress(sourceText);
+        byte[] compressResult;
 
-        LOGGER.debug("Trying compress with {}",
-                     RequestCompressorType.TYPES.get(getCompressor()
-                                                             .id())
-        );
-
-        // If data length is not reduced, then do not use the compress result.
-        if (sourceText.length > compressResult.length) {
-            // Success to compress, use the compressed result.
-            LOGGER.debug("Success to compress: {}(source) > {}(compressed)",
-                         sourceText.length,
-                         compressResult.length
-            );
-        } else {
-            LOGGER.debug("Failed to compress: {}(source) <= {}(compressed)",
-                         sourceText.length,
-                         compressResult.length
-            );
-
-            // Unable to compress, use the source.
-            compressResult = sourceText;
-
+        // Do not compress when data smaller than 1423 bytes.
+        if (sourceData.length < this.networkConfig.compressThreshold()) {
             compressId = RequestCompressorType.NONE.id();
+            compressResult = sourceData;
+        } else {
+            LOGGER.debug("Trying compress with {}",
+                         RequestCompressorType.TYPES.get(compressor.id())
+            );
+
+            compressId = compressor.id();
+            compressResult = compressor.compress(sourceData);
+
+            // If data length is not reduced, then do not use the compress result.
+            if (sourceData.length > compressResult.length) {
+                // Success to compress, use the compressed result.
+                LOGGER.debug("Success to compress: {}(source) > {}(compressed)",
+                             sourceData.length,
+                             compressResult.length
+                );
+            } else {
+                LOGGER.debug("Failed to compress: {}(source) <= {}(compressed)",
+                             sourceData.length,
+                             compressResult.length
+                );
+
+                // Unable to compress, use the source.
+                compressId = RequestCompressorType.NONE.id();
+                compressResult = sourceData;
+            }
         }
 
         // Encode the data with transport layer.

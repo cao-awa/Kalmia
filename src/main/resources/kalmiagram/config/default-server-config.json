@@ -8,8 +8,7 @@
         "use-epoll": true
     },
     "translation": {
-        "enable": false,
-        "server-host": "",
-        "server-port": -1
-    }
+        "enable": false
+    },
+    "server-name": "Kalmia server"
 }

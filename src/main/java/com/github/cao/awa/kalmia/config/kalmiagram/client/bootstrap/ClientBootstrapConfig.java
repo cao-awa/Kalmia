@@ -3,18 +3,18 @@ package com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.config.ConfigElement;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.BootstrapConfigMeta;
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta;
 
 public class ClientBootstrapConfig extends ConfigElement {
-    private final BootstrapConfigMeta meta;
+    private final ConfigMeta meta;
     private final ClientNetworkConfig clientNetwork;
 
-    public ClientBootstrapConfig(BootstrapConfigMeta meta, ClientNetworkConfig clientNetwork) {
+    public ClientBootstrapConfig(ConfigMeta meta, ClientNetworkConfig clientNetwork) {
         this.meta = meta;
         this.clientNetwork = clientNetwork;
     }
 
-    public BootstrapConfigMeta meta() {
+    public ConfigMeta meta() {
         return this.meta;
     }
 
@@ -42,7 +42,7 @@ public class ClientBootstrapConfig extends ConfigElement {
             return compute;
         }
 
-        BootstrapConfigMeta meta = BootstrapConfigMeta.read(
+        ConfigMeta meta = ConfigMeta.read(
                 subObject(json,
                           "config-meta"
                 ),

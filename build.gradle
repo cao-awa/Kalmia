@@ -19,8 +19,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
-    shadow 'io.netty:netty-all:4.1.101.Final'
-    shadow 'io.netty:netty-transport-native-epoll:4.1.101.Final'
+    shadow 'io.netty:netty-all:4.1.106.Final'
+    shadow 'io.netty:netty-transport-native-epoll:4.1.106.Final'
     shadow 'com.alibaba.fastjson2:fastjson2:2.0.22'
 
     shadow 'org.slf4j:slf4j-api:2.0.6'

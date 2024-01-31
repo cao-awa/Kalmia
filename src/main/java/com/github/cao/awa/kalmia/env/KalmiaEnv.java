@@ -6,7 +6,8 @@ import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.await.AwaitManager;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.ClientBootstrapConfig;
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.BootstrapConfigMeta;
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta;
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.network.RouterNetworkConfig;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.ServerBootstrapConfig;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation.BootstrapTranslationConfig;
@@ -38,7 +39,7 @@ public class KalmiaEnv {
     public static final String VERSION = "1.0.0";
 
     public static final ServerBootstrapConfig DEFAULT_SERVER_BOOTSTRAP_CONFIG = new ServerBootstrapConfig(
-            new BootstrapConfigMeta(0),
+            new ConfigMeta(0),
             new ServerNetworkConfig(
                     "127.0.0.1",
                     12345,
@@ -51,12 +52,17 @@ public class KalmiaEnv {
     );
 
     public static final ClientBootstrapConfig DEFAULT_CLIENT_BOOTSTRAP_CONFIG = new ClientBootstrapConfig(
-            new BootstrapConfigMeta(0),
+            new ConfigMeta(0),
             new ClientNetworkConfig(
                     "127.0.0.1",
                     12345,
                     true
             )
+    );
+
+    public static final RouterNetworkConfig DEFAULT_ROUTER_NETWORK_CONFIG = new RouterNetworkConfig(
+            new ConfigMeta(0),
+            1423
     );
 
     public static final byte[] CHALLENGE_DATA = new byte[]{

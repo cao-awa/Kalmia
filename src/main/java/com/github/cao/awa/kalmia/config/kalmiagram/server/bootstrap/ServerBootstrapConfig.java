@@ -2,24 +2,24 @@ package com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.kalmia.config.ConfigElement;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.BootstrapConfigMeta;
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
 import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation.BootstrapTranslationConfig;
 
 public class ServerBootstrapConfig extends ConfigElement {
-    private final BootstrapConfigMeta meta;
+    private final ConfigMeta meta;
     private final ServerNetworkConfig serverNetwork;
     private final BootstrapTranslationConfig translation;
     private final String serverName;
 
-    public ServerBootstrapConfig(BootstrapConfigMeta meta, ServerNetworkConfig serverNetwork, BootstrapTranslationConfig translation, String serverName) {
+    public ServerBootstrapConfig(ConfigMeta meta, ServerNetworkConfig serverNetwork, BootstrapTranslationConfig translation, String serverName) {
         this.meta = meta;
         this.serverNetwork = serverNetwork;
         this.translation = translation;
         this.serverName = serverName;
     }
 
-    public BootstrapConfigMeta meta() {
+    public ConfigMeta meta() {
         return this.meta;
     }
 
@@ -61,7 +61,7 @@ public class ServerBootstrapConfig extends ConfigElement {
             return compute;
         }
 
-        BootstrapConfigMeta meta = BootstrapConfigMeta.read(
+        ConfigMeta meta = ConfigMeta.read(
                 subObject(json,
                           "config-meta"
                 ),

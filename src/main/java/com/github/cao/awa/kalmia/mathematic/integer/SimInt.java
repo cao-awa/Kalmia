@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.mathematic.integer;
 
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.receptacle.*;
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.receptacle.Receptacle;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -33,12 +33,15 @@ public class SimInt {
     }
 
     public SimInt(String init, int radix) {
-        BigInteger integer = new BigInteger(init, radix);
-        int size = integer.toString(2).length();
+        BigInteger integer = new BigInteger(init,
+                                            radix
+        );
+        int size = integer.toString(2)
+                          .length();
         this.size = size;
         this.bits = new boolean[size];
         char[] charArray = integer.toString(2)
-                .toCharArray();
+                                  .toCharArray();
         int index = 0;
         for (int i = charArray.length - 1; i > - 1; i--) {
             char c = charArray[i];
@@ -154,9 +157,17 @@ public class SimInt {
                 0
         );
         mutInteger.bitwise(bit -> {
-            result.add(other().bitwise(xBit -> xBit && bit)
-                              .rs(rs.set(rs.get() + 1)
-                                    .get()));
+            result.add(
+                    other().bitwise(
+                                   xBit -> xBit && bit
+                           )
+                           .rs(
+                                   rs.set(
+                                             rs.get() + 1
+                                     )
+                                     .get()
+                           )
+            );
         });
         return result;
     }
@@ -240,7 +251,7 @@ public class SimInt {
     public static SimInt of(String integer, int radix) {
         return new SimInt(
                 integer,
-                 radix
+                radix
         );
     }
 
