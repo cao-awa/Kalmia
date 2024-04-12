@@ -91,7 +91,7 @@ public class KalmiaServerNetworkIo {
             this.channelFuture = bootstrap.channel(channel).group(boss, worker).option(ChannelOption.SO_BACKLOG, 256).childOption(
                     // Real-time response is necessary
                     // Enable TCP no delay to improve response speeds
-                    ChannelOption.TCP_NODELAY, true).childHandler(this.channelInitializer).bind(config.bindHost(), config.bindPort()).syncUninterruptibly().channel().closeFuture().sync();
+                    ChannelOption.TCP_NODELAY, true).childHandler(this.channelInitializer).bind(config.getBindHost(), config.getBindPort()).syncUninterruptibly().channel().closeFuture().sync();
         } finally {
             boss.shutdownGracefully();
             worker.shutdownGracefully();
