@@ -1,74 +1,45 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network;
+package com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network
 
-import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.kalmia.config.ConfigElement;
+import com.alibaba.fastjson2.JSONObject
+import com.github.cao.awa.kalmia.config.ConfigElement
 
-public class ClientNetworkConfig extends ConfigElement {
-    private final String connectHost;
-    private final int connectPort;
-    private final boolean useEpoll;
-
-    public ClientNetworkConfig(String connectHost, int connectPort, boolean useEpoll) {
-        this.connectHost = connectHost;
-        this.connectPort = connectPort;
-        this.useEpoll = useEpoll;
+class ClientNetworkConfig(
+    val connectHost: String, val connectPort: Int, val useEpoll: Boolean
+) : ConfigElement() {
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["connect-host"] = this.connectHost
+        json["connect-port"] = this.connectPort
+        json["use-epoll"] = this.useEpoll
+        return json
     }
 
-    public String connectHost() {
-        return this.connectHost;
-    }
+    companion object {
+        @JvmStatic
+        fun read(json: JSONObject?, compute: ClientNetworkConfig?): ClientNetworkConfig {
+            if (compute == null) {
+                throw IllegalArgumentException("Compute argument cannot be null")
+            }
 
-    public int connectPort() {
-        return this.connectPort;
-    }
+            if (json == null) {
+                return compute
+            }
 
-    public boolean useEpoll() {
-        return this.useEpoll;
-    }
+            val bindHost: String = compute(
+                json, "connect-host", compute::connectHost
+            )
 
-    @Override
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        json.put("connect-host",
-                 this.connectHost
-        );
-        json.put("connect-port",
-                 this.connectPort
-        );
-        json.put("use-epoll",
-                 this.useEpoll
-        );
-        return json;
-    }
+            val bindPort: Int = compute(
+                json, "connect-port", compute::connectPort
+            )
 
-    public static ClientNetworkConfig read(JSONObject json, ClientNetworkConfig compute) {
-        if (compute == null) {
-            throw new IllegalArgumentException("Compute argument cannot be null");
+            val useEpoll: Boolean = compute(
+                json, "use-epoll", compute::useEpoll
+            )
+
+            return ClientNetworkConfig(
+                bindHost, bindPort, useEpoll
+            )
         }
-
-        if (json == null) {
-            return compute;
-        }
-
-        String bindHost = compute(json,
-                                  "connect-host",
-                                  compute :: connectHost
-        );
-
-        int bindPort = compute(json,
-                               "connect-port",
-                               compute :: connectPort
-        );
-
-        boolean useEpoll = compute(json,
-                                   "use-epoll",
-                                   compute :: useEpoll
-        );
-
-        return new ClientNetworkConfig(
-                bindHost,
-                bindPort,
-                useEpoll
-        );
     }
 }

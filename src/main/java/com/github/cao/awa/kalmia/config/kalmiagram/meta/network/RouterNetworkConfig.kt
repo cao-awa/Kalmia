@@ -7,8 +7,6 @@ import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta
 class RouterNetworkConfig(
     val meta: ConfigMeta, val compressThreshold: Int
 ) : ConfigElement() {
-
-
     override fun toJSON(): JSONObject {
         val json = JSONObject()
         json["config-meta"] = this.meta.toJSON()

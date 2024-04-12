@@ -47,7 +47,7 @@ public class KalmiaClientNetworkIo {
     }
 
     public void connect(final ClientNetworkConfig config) throws Exception {
-        boolean expectEpoll = config.useEpoll();
+        boolean expectEpoll = config.getUseEpoll();
         boolean epoll = Epoll.isAvailable();
 
         LOGGER.info(expectEpoll ?
@@ -78,8 +78,8 @@ public class KalmiaClientNetworkIo {
                                           )
                                           .handler(this.channelInitializer)
                                           .connect(
-                                                  config.connectHost(),
-                                                  config.connectPort()
+                                                  config.getConnectHost(),
+                                                  config.getConnectPort()
                                           )
                                           .syncUninterruptibly()
                                           .channel()

@@ -84,12 +84,7 @@ public class KalmiaClient {
     public static void setupBootstrapConfig() throws Exception {
         prepareConfig();
 
-        clientBootstrapConfig = ClientBootstrapConfig.read(
-                JSONObject.parse(
-                        IOUtil.read(new FileReader(KalmiaConstant.CLIENT_CONFIG_PATH))
-                ),
-                KalmiaEnv.DEFAULT_CLIENT_BOOTSTRAP_CONFIG
-        );
+        clientBootstrapConfig = ClientBootstrapConfig.read(JSONObject.parse(IOUtil.read(new FileReader(KalmiaConstant.CLIENT_CONFIG_PATH))), KalmiaEnv.DEFAULT_CLIENT_BOOTSTRAP_CONFIG);
 
         rewriteConfig(clientBootstrapConfig);
     }
@@ -97,10 +92,7 @@ public class KalmiaClient {
     public static void rewriteConfig(ClientBootstrapConfig bootstrapConfig) throws Exception {
         LOGGER.info("Rewriting client config");
 
-        IOUtil.write(new FileWriter(KalmiaConstant.CLIENT_CONFIG_PATH),
-                     bootstrapConfig.toJSON()
-                                    .toString(JSONWriter.Feature.PrettyFormat)
-        );
+        IOUtil.write(new FileWriter(KalmiaConstant.CLIENT_CONFIG_PATH), bootstrapConfig.toJSON().toString(JSONWriter.Feature.PrettyFormat));
     }
 
     public static void prepareConfig() throws Exception {
@@ -108,18 +100,10 @@ public class KalmiaClient {
 
         File configFile = new File(KalmiaConstant.CLIENT_CONFIG_PATH);
 
-        configFile.getParentFile()
-                  .mkdirs();
+        configFile.getParentFile().mkdirs();
 
-        if (! configFile.isFile()) {
-            IOUtil.write(
-                    new FileWriter(configFile),
-                    IOUtil.read(
-                            new InputStreamReader(
-                                    ResourceLoader.stream(KalmiaConstant.CLIENT_DEFAULT_CONFIG_PATH)
-                            )
-                    )
-            );
+        if (!configFile.isFile()) {
+            IOUtil.write(new FileWriter(configFile), IOUtil.read(new InputStreamReader(ResourceLoader.stream(KalmiaConstant.CLIENT_DEFAULT_CONFIG_PATH))));
         }
     }
 
@@ -145,8 +129,7 @@ public class KalmiaClient {
     }
 
     public boolean useEpoll() {
-        return this.bootstrapConfig.clientNetwork()
-                                   .useEpoll();
+        return this.bootstrapConfig.clientNetwork().getUseEpoll();
     }
 
     public void connect() throws Exception {
@@ -162,16 +145,9 @@ public class KalmiaClient {
             byte[] receipt = Packet.createReceipt();
 
             try {
-                return KalmiaEnv.awaitManager.awaitGet(receipt,
-                                                       () -> messageManager().seq(sessionIdentity),
-                                                       () -> {
-                                                           router().send(new SelectMessagePacket(sessionIdentity,
-                                                                                                 0,
-                                                                                                 0
-                                                           ).receipt(receipt));
-                                                       },
-                                                       true
-                );
+                return KalmiaEnv.awaitManager.awaitGet(receipt, () -> messageManager().seq(sessionIdentity), () -> {
+                    router().send(new SelectMessagePacket(sessionIdentity, 0, 0).receipt(receipt));
+                }, true);
             } catch (Exception e) {
                 return messageManager().seq(sessionIdentity);
             }
@@ -187,51 +163,27 @@ public class KalmiaClient {
             byte[] receipt = Packet.createReceipt();
 
             try {
-                KalmiaEnv.awaitManager.awaitGet(receipt,
-                                                () -> {
-                                                    operationMessages((seq, msg) -> messages.add(msg),
-                                                                      sessionIdentity,
-                                                                      startSelect,
-                                                                      endSelect
-                                                    );
+                KalmiaEnv.awaitManager.awaitGet(receipt, () -> {
+                    operationMessages((seq, msg) -> messages.add(msg), sessionIdentity, startSelect, endSelect);
 
-                                                    return null;
-                                                },
-                                                () -> {
-                                                    router().send(new SelectMessagePacket(sessionIdentity,
-                                                                                          startSelect,
-                                                                                          endSelect
-                                                    ).receipt(receipt));
-                                                },
-                                                true
-                );
+                    return null;
+                }, () -> {
+                    router().send(new SelectMessagePacket(sessionIdentity, startSelect, endSelect).receipt(receipt));
+                }, true);
             } catch (Exception e) {
                 messages.clear();
 
-                operationMessages((seq, msg) -> messages.add(msg),
-                                  sessionIdentity,
-                                  startSelect,
-                                  endSelect
-                );
+                operationMessages((seq, msg) -> messages.add(msg), sessionIdentity, startSelect, endSelect);
             }
         } else {
-            operationMessages((seq, msg) -> messages.add(msg),
-                              sessionIdentity,
-                              startSelect,
-                              endSelect
-            );
+            operationMessages((seq, msg) -> messages.add(msg), sessionIdentity, startSelect, endSelect);
         }
 
         return messages;
     }
 
     public void operationMessages(BiConsumer<Long, Message> operator, PureExtraIdentity sessionIdentity, long startSelect, long endSelect) {
-        messageManager()
-                .operation(sessionIdentity,
-                           startSelect,
-                           endSelect,
-                           operator
-                );
+        messageManager().operation(sessionIdentity, startSelect, endSelect, operator);
     }
 
     public Message getMessages(PureExtraIdentity sessionIdentity, long messageSeq, boolean awaitGet) {
@@ -240,22 +192,11 @@ public class KalmiaClient {
             if (awaitGet) {
                 byte[] receipt = Packet.createReceipt();
 
-                message = KalmiaEnv.awaitManager.awaitGet(
-                        receipt,
-                        () -> messageManager().get(sessionIdentity,
-                                                   messageSeq
-                        ),
-                        () -> {
-                            router().send(new SelectMessagePacket(sessionIdentity,
-                                                                  messageSeq,
-                                                                  messageSeq
-                            ).receipt(receipt));
-                        }
-                );
+                message = KalmiaEnv.awaitManager.awaitGet(receipt, () -> messageManager().get(sessionIdentity, messageSeq), () -> {
+                    router().send(new SelectMessagePacket(sessionIdentity, messageSeq, messageSeq).receipt(receipt));
+                });
             } else {
-                message = messageManager().get(sessionIdentity,
-                                               messageSeq
-                );
+                message = messageManager().get(sessionIdentity, messageSeq);
             }
         } catch (InterruptedException ignored) {
 
@@ -265,16 +206,8 @@ public class KalmiaClient {
     }
 
     public ClientMessage getClientMessage(PureExtraIdentity sessionIdentity, long messageSeq, boolean awaitGet) {
-        Message message = getMessages(sessionIdentity,
-                                      messageSeq,
-                                      awaitGet
-        );
-        return new ClientMessage(
-                message.identity(),
-                sessionIdentity,
-                messageSeq,
-                message.display()
-        );
+        Message message = getMessages(sessionIdentity, messageSeq, awaitGet);
+        return new ClientMessage(message.identity(), sessionIdentity, messageSeq, message.display());
     }
 
     public PublicKey getPublicKey(PureExtraIdentity identity, boolean awaitGet) {
@@ -284,11 +217,7 @@ public class KalmiaClient {
             if (awaitGet) {
                 byte[] receipt = Packet.createReceipt();
 
-                publicKey = KalmiaEnv.awaitManager.awaitGet(
-                        receipt,
-                        () -> keypairManager().publicKey(identity),
-                        () -> router().send(new SelectKeyStorePacket(identity).receipt(receipt))
-                );
+                publicKey = KalmiaEnv.awaitManager.awaitGet(receipt, () -> keypairManager().publicKey(identity), () -> router().send(new SelectKeyStorePacket(identity).receipt(receipt)));
             } else {
                 publicKey = keypairManager().publicKey(identity);
             }
@@ -306,11 +235,7 @@ public class KalmiaClient {
             if (awaitGet) {
                 byte[] receipt = Packet.createReceipt();
 
-                publicKey = KalmiaEnv.awaitManager.awaitGet(
-                        receipt,
-                        () -> decryptPrivateKey(identity),
-                        () -> router().send(new SelectKeyStorePacket(identity).receipt(receipt))
-                );
+                publicKey = KalmiaEnv.awaitManager.awaitGet(receipt, () -> decryptPrivateKey(identity), () -> router().send(new SelectKeyStorePacket(identity).receipt(receipt)));
             } else {
                 publicKey = decryptPrivateKey(identity);
             }
@@ -324,14 +249,9 @@ public class KalmiaClient {
     public PrivateKey decryptPrivateKey(PureExtraIdentity identity) {
         try {
             KeyPairStore store = keypairManager().getStore(identity);
-            return KeyStoreIdentity.createPrivateKey(
-                    store.type(),
-                    Crypto.aesDecrypt(store.privateKey()
-                                           .key(),
-                                      // TODO
-                                      KalmiaEnv.testUer2AesCipher
-                    )
-            );
+            return KeyStoreIdentity.createPrivateKey(store.type(), Crypto.aesDecrypt(store.privateKey().key(),
+                    // TODO
+                    KalmiaEnv.testUer2AesCipher));
         } catch (Exception e) {
             e.printStackTrace();
             return null;

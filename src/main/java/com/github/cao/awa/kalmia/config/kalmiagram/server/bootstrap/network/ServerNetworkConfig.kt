@@ -6,7 +6,6 @@ import com.github.cao.awa.kalmia.config.ConfigElement
 class ServerNetworkConfig(
     val bindHost: String, val bindPort: Int, val useEpoll: Boolean
 ) : ConfigElement() {
-
     override fun toJSON(): JSONObject {
         val json = JSONObject();
         json["bind-host"] = this.bindHost
