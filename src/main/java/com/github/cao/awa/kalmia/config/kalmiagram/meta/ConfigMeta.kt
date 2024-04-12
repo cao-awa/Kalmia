@@ -1,46 +1,31 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.meta;
+package com.github.cao.awa.kalmia.config.kalmiagram.meta
 
-import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.kalmia.config.ConfigElement;
+import com.alibaba.fastjson2.JSONObject
+import com.github.cao.awa.kalmia.config.ConfigElement
 
-public class ConfigMeta extends ConfigElement {
-    private final int version;
-
-    public ConfigMeta(int version) {
-        this.version = version;
+class ConfigMeta(val version: Int) : ConfigElement() {
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["version"] = this.version
+        return json
     }
 
-    public int version() {
-        return this.version;
-    }
+    companion object {
+        @JvmStatic
+        fun read(json: JSONObject?, compute: ConfigMeta?): ConfigMeta {
+            if (compute == null) {
+                throw IllegalArgumentException("Compute argument cannot be null")
+            }
 
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        json.put("version",
-                 this.version
-        );
-        return json;
-    }
+            if (json == null) {
+                return compute
+            }
 
-    public static ConfigMeta read(JSONObject json, ConfigMeta compute) {
-        if (compute == null) {
-            throw new IllegalArgumentException("Compute argument cannot be null");
+            val version: Int = Math.max(
+                compute(json, "version", compute::version), compute.version
+            )
+
+            return ConfigMeta(version)
         }
-
-        if (json == null) {
-            return compute;
-        }
-
-        int version = compute(json,
-                              "version",
-                              compute :: version
-        );
-
-        version = Math.max(
-                version,
-                compute.version()
-        );
-
-        return new ConfigMeta(version);
     }
 }
