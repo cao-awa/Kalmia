@@ -1,42 +1,28 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation;
+package com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation
 
-import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.kalmia.config.ConfigElement;
+import com.alibaba.fastjson2.JSONObject
+import com.github.cao.awa.kalmia.config.ConfigElement
 
-public class BootstrapTranslationConfig extends ConfigElement {
-    private final boolean enable;
-
-    public BootstrapTranslationConfig(boolean enable) {
-        this.enable = enable;
+class BootstrapTranslationConfig(val enable: Boolean) : ConfigElement() {
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["enable"] = this.enable
+        return json
     }
 
-    public boolean enable() {
-        return this.enable;
-    }
+    companion object {
+        fun read(json: JSONObject?, compute: BootstrapTranslationConfig?): BootstrapTranslationConfig {
+            if (compute == null) {
+                throw IllegalArgumentException("Compute argument cannot be null")
+            }
 
-    @Override
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        json.put("enable",
-                 this.enable
-        );
-        return json;
-    }
+            if (json == null) {
+                return compute
+            }
 
-    public static BootstrapTranslationConfig read(JSONObject json, BootstrapTranslationConfig compute) {
-        if (compute == null) {
-            throw new IllegalArgumentException("Compute argument cannot be null");
+            val enable: Boolean = compute(json, "enable", compute::enable)
+
+            return BootstrapTranslationConfig(enable)
         }
-
-        if (json == null) {
-            return compute;
-        }
-
-        boolean enable = compute(json,
-                                 "enable",
-                                 compute :: enable
-        );
-
-        return new BootstrapTranslationConfig(enable);
     }
 }

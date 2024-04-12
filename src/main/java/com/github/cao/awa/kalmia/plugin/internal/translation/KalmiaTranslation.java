@@ -41,6 +41,6 @@ public class KalmiaTranslation extends Plugin {
 
     @Override
     public boolean canLoad() {
-        return KalmiaServer.serverBootstrapConfig.getTranslation().enable();
+        return KalmiaServer.serverBootstrapConfig.getTranslation().getEnable();
     }
 }

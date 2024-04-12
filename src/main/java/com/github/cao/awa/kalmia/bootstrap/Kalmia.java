@@ -52,8 +52,7 @@ public class Kalmia {
 
         KalmiaEnv.setupServer();
 
-        if (KalmiaServer.serverBootstrapConfig.getTranslation()
-                                              .enable()) {
+        if (KalmiaServer.serverBootstrapConfig.getTranslation().getEnable()) {
             KalmiaTranslationEnv.setupFrameworks();
         }
 
@@ -74,9 +73,7 @@ public class Kalmia {
         KalmiaEnv.setupClient();
 
         CLIENT.activeCallback(router -> {
-            router.send(new ClientHelloPacket(KalmiaConstant.STANDARD_REQUEST_PROTOCOL,
-                                              "KalmiaWww v1.0.1"
-            ));
+            router.send(new ClientHelloPacket(KalmiaConstant.STANDARD_REQUEST_PROTOCOL, "KalmiaWww v1.0.1"));
         });
 
         PollingClient.CLIENT = new PollingClient(CLIENT);
@@ -85,26 +82,16 @@ public class Kalmia {
     }
 
     public static void setupTest() throws Exception {
-        Set<PureExtraIdentity> keys = SERVER.userManager()
-                                            .keyStores(KalmiaEnv.testUser1.identity());
+        Set<PureExtraIdentity> keys = SERVER.userManager().keyStores(KalmiaEnv.testUser1.identity());
 
         keys.add(KalmiaEnv.testKeypair0.identity());
         keys.add(KalmiaEnv.testKeypair1.identity());
 
-        SERVER.userManager()
-              .keyStores(KalmiaEnv.testUser1.identity(),
-                         keys
-              );
+        SERVER.userManager().keyStores(KalmiaEnv.testUser1.identity(), keys);
 
-        SERVER.keypairManager()
-              .set(KalmiaEnv.testKeypair0.identity(),
-                   KalmiaEnv.testKeypair0
-              );
+        SERVER.keypairManager().set(KalmiaEnv.testKeypair0.identity(), KalmiaEnv.testKeypair0);
 
-        SERVER.keypairManager()
-              .set(KalmiaEnv.testKeypair1.identity(),
-                   KalmiaEnv.testKeypair1
-              );
+        SERVER.keypairManager().set(KalmiaEnv.testKeypair1.identity(), KalmiaEnv.testKeypair1);
     }
 
     public static void setupEnvironment() {
@@ -119,41 +106,19 @@ public class Kalmia {
 
         }
 
-        UserFactor.register(- 1,
-                            UselessUser :: create
-        );
-        UserFactor.register(0,
-                            DefaultUser :: create
-        );
+        UserFactor.register(-1, UselessUser::create);
+        UserFactor.register(0, DefaultUser::create);
 
-        MessageFactor.register(- 1,
-                               DeletedMessage :: create
-        );
-        MessageFactor.register(2,
-                               UserMessage :: create
-        );
-        MessageFactor.register(5,
-                               CoverMessage :: create
-        );
+        MessageFactor.register(-1, DeletedMessage::create);
+        MessageFactor.register(2, UserMessage::create);
+        MessageFactor.register(5, CoverMessage::create);
 
-        KeyPairStoreFactor.register(0,
-                                    RsaKeyPair :: new
-        );
-        KeyPairStoreFactor.register(1,
-                                    EcKeyPair :: new
-        );
-        KeyPairStoreFactor.register(123,
-                                    EmptyKeyPair :: new
-        );
+        KeyPairStoreFactor.register(0, RsaKeyPair::new);
+        KeyPairStoreFactor.register(1, EcKeyPair::new);
+        KeyPairStoreFactor.register(123, EmptyKeyPair::new);
 
-        SessionFactor.register(1,
-                               DuetSession :: create
-        );
-        SessionFactor.register(2,
-                               CommunalSession :: create
-        );
-        SessionFactor.register(3,
-                               GroupSession :: create
-        );
+        SessionFactor.register(1, DuetSession::create);
+        SessionFactor.register(2, CommunalSession::create);
+        SessionFactor.register(3, GroupSession::create);
     }
 }

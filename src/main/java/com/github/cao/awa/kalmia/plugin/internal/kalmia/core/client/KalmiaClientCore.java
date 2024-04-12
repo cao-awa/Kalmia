@@ -21,6 +21,6 @@ public class KalmiaClientCore extends Plugin {
 
     @Override
     public boolean forceRegister() {
-        return KalmiaServer.serverBootstrapConfig.getTranslation().enable();
+        return KalmiaServer.serverBootstrapConfig.getTranslation().getEnable();
     }
 }
