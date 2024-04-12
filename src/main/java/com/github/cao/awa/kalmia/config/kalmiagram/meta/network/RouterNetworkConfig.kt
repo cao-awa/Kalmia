@@ -1,62 +1,45 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.meta.network;
+package com.github.cao.awa.kalmia.config.kalmiagram.meta.network
 
-import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.kalmia.config.ConfigElement;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta;
+import com.alibaba.fastjson2.JSONObject
+import com.github.cao.awa.kalmia.config.ConfigElement
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta
 
-public class RouterNetworkConfig extends ConfigElement {
-    private final ConfigMeta meta;
-    private final int compressThreshold;
+class RouterNetworkConfig(
+    val meta: ConfigMeta, val compressThreshold: Int
+) : ConfigElement() {
 
-    public RouterNetworkConfig(ConfigMeta meta, int compressThreshold) {
-        this.meta = meta;
-        this.compressThreshold = compressThreshold;
+
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["config-meta"] = this.meta.toJSON()
+        json["compress-threshold"] = this.compressThreshold
+        return json
     }
 
-    public ConfigMeta meta() {
-        return this.meta;
-    }
+    companion object {
+        @JvmStatic
+        fun read(json: JSONObject?, compute: RouterNetworkConfig?): RouterNetworkConfig {
+            if (compute == null) {
+                throw IllegalArgumentException("Compute argument cannot be null")
+            }
 
-    public int compressThreshold() {
-        return this.compressThreshold;
-    }
+            if (json == null) {
+                return compute
+            }
 
-    @Override
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        json.put("config-meta",
-                 this.meta.toJSON()
-        );
-        json.put("compress-threshold",
-                 this.compressThreshold
-        );
-        return json;
-    }
+            val meta: ConfigMeta = ConfigMeta.read(
+                subObject(
+                    json, "config-meta"
+                ), compute.meta
+            );
 
-    public static RouterNetworkConfig read(JSONObject json, RouterNetworkConfig compute) {
-        if (compute == null) {
-            throw new IllegalArgumentException("Compute argument cannot be null");
+            val compressThreshold: Int = compute(
+                json, "compress-threshold", compute::compressThreshold
+            );
+
+            return RouterNetworkConfig(
+                meta, compressThreshold
+            )
         }
-
-        if (json == null) {
-            return compute;
-        }
-
-        ConfigMeta meta = ConfigMeta.read(
-                subObject(json,
-                          "config-meta"
-                ),
-                compute.meta()
-        );
-
-        int compressThreshold = compute(json,
-                                        "compress-threshold",
-                                        compute :: compressThreshold
-        );
-
-        return new RouterNetworkConfig(
-                meta,
-                compressThreshold
-        );
     }
 }

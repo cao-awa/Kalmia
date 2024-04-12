@@ -257,7 +257,7 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
         byte[] compressResult;
 
         // Do not compress when data smaller than 1423 bytes.
-        if (sourceData.length < this.networkConfig.compressThreshold()) {
+        if (sourceData.length < this.networkConfig.getCompressThreshold()) {
             compressId = RequestCompressorType.NONE.id();
             compressResult = sourceData;
         } else {
