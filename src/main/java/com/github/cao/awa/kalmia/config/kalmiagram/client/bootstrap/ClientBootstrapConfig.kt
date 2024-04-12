@@ -1,63 +1,47 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap;
+package com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap
 
-import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.kalmia.config.ConfigElement;
-import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta;
+import com.alibaba.fastjson2.JSONObject
+import com.github.cao.awa.kalmia.config.ConfigElement
+import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta
 
-public class ClientBootstrapConfig extends ConfigElement {
-    private final ConfigMeta meta;
-    private final ClientNetworkConfig clientNetwork;
+class ClientBootstrapConfig(
+    val meta: ConfigMeta, val clientNetwork: ClientNetworkConfig
+) : ConfigElement() {
 
-    public ClientBootstrapConfig(ConfigMeta meta, ClientNetworkConfig clientNetwork) {
-        this.meta = meta;
-        this.clientNetwork = clientNetwork;
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["config-meta"] = this.meta.toJSON()
+        json["client-network"] = this.clientNetwork.toJSON()
+        return json
     }
 
-    public ConfigMeta meta() {
-        return this.meta;
-    }
+    companion object {
+        @JvmStatic
+        fun read(json: JSONObject?, compute: ClientBootstrapConfig?): ClientBootstrapConfig {
+            if (compute == null) {
+                throw IllegalArgumentException("Compute argument cannot be null");
+            }
 
-    public ClientNetworkConfig clientNetwork() {
-        return this.clientNetwork;
-    }
+            if (json == null) {
+                return compute
+            }
 
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        json.put("config-meta",
-                 this.meta.toJSON()
-        );
-        json.put("client-network",
-                 this.clientNetwork.toJSON()
-        );
-        return json;
-    }
+            val meta: ConfigMeta = ConfigMeta.read(
+                subObject(
+                    json, "config-meta"
+                ), compute.meta
+            )
 
-    public static ClientBootstrapConfig read(JSONObject json, ClientBootstrapConfig compute) {
-        if (compute == null) {
-            throw new IllegalArgumentException("Compute argument cannot be null");
+            val serverNetwork: ClientNetworkConfig = ClientNetworkConfig.read(
+                subObject(
+                    json, "client-network"
+                ), compute.clientNetwork
+            )
+
+            return ClientBootstrapConfig(
+                meta, serverNetwork
+            )
         }
-
-        if (json == null) {
-            return compute;
-        }
-
-        ConfigMeta meta = ConfigMeta.read(
-                subObject(json,
-                          "config-meta"
-                ),
-                compute.meta()
-        );
-
-        ClientNetworkConfig serverNetwork = ClientNetworkConfig.read(
-                subObject(json,
-                          "client-network"
-                ),
-                compute.clientNetwork()
-        );
-
-        return new ClientBootstrapConfig(meta,
-                                         serverNetwork
-        );
     }
 }

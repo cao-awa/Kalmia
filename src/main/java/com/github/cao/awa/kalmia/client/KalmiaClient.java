@@ -129,11 +129,11 @@ public class KalmiaClient {
     }
 
     public boolean useEpoll() {
-        return this.bootstrapConfig.clientNetwork().getUseEpoll();
+        return this.bootstrapConfig.getClientNetwork().getUseEpoll();
     }
 
     public void connect() throws Exception {
-        new KalmiaClientNetworkIo(this).connect(this.bootstrapConfig.clientNetwork());
+        new KalmiaClientNetworkIo(this).connect(this.bootstrapConfig.getClientNetwork());
     }
 
     public Set<PureExtraIdentity> sessionIds() {
