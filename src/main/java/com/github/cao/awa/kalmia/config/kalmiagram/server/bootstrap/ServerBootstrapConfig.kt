@@ -1,96 +1,63 @@
-package com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap;
+package com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap
 
-import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.kalmia.config.ConfigElement;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta;
-import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation.BootstrapTranslationConfig;
+import com.alibaba.fastjson2.JSONObject
+import com.github.cao.awa.kalmia.config.ConfigElement
+import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta
+import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig
+import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation.BootstrapTranslationConfig
 
-public class ServerBootstrapConfig extends ConfigElement {
-    private final ConfigMeta meta;
-    private final ServerNetworkConfig serverNetwork;
-    private final BootstrapTranslationConfig translation;
-    private final String serverName;
+class ServerBootstrapConfig(
+    val meta: ConfigMeta,
+    val serverNetwork: ServerNetworkConfig,
+    val translation: BootstrapTranslationConfig,
+    val serverName: String
+) : ConfigElement() {
 
-    public ServerBootstrapConfig(ConfigMeta meta, ServerNetworkConfig serverNetwork, BootstrapTranslationConfig translation, String serverName) {
-        this.meta = meta;
-        this.serverNetwork = serverNetwork;
-        this.translation = translation;
-        this.serverName = serverName;
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["config-meta"] = this.meta.toJSON()
+        json["server-network"] = this.serverNetwork.toJSON()
+        json["translation"] = this.translation.toJSON()
+        json["server-name"] = this.serverName
+        return json
     }
 
-    public ConfigMeta meta() {
-        return this.meta;
-    }
+    companion object {
+        @JvmStatic
+        fun read(json: JSONObject?, compute: ServerBootstrapConfig?): ServerBootstrapConfig {
+            if (compute == null) {
+                throw IllegalArgumentException("Compute argument cannot be null")
+            }
 
-    public ServerNetworkConfig serverNetwork() {
-        return this.serverNetwork;
-    }
+            if (json == null) {
+                return compute
+            }
 
-    public BootstrapTranslationConfig translation() {
-        return this.translation;
-    }
+            val meta: ConfigMeta = ConfigMeta.read(
+                subObject(
+                    json, "config-meta"
+                ), compute.meta
+            )
 
-    public String serverName() {
-        return this.serverName;
-    }
+            val serverNetwork: ServerNetworkConfig = ServerNetworkConfig.read(
+                subObject(
+                    json, "server-network"
+                ), compute.serverNetwork
+            )
 
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        json.put("config-meta",
-                 this.meta.toJSON()
-        );
-        json.put("server-network",
-                 this.serverNetwork.toJSON()
-        );
-        json.put("translation",
-                 this.translation.toJSON()
-        );
-        json.put("server-name",
-                 this.serverName
-        );
-        return json;
-    }
+            val translation: BootstrapTranslationConfig = BootstrapTranslationConfig.read(
+                subObject(
+                    json, "translation"
+                ), compute.translation
+            )
 
-    public static ServerBootstrapConfig read(JSONObject json, ServerBootstrapConfig compute) {
-        if (compute == null) {
-            throw new IllegalArgumentException("Compute argument cannot be null");
+            val serverName: String = compute(
+                json, "server-name", compute::serverName
+            )
+
+            return ServerBootstrapConfig(
+                meta, serverNetwork, translation, serverName
+            )
         }
-
-        if (json == null) {
-            return compute;
-        }
-
-        ConfigMeta meta = ConfigMeta.read(
-                subObject(json,
-                          "config-meta"
-                ),
-                compute.meta()
-        );
-
-        ServerNetworkConfig serverNetwork = ServerNetworkConfig.read(
-                subObject(json,
-                          "server-network"
-                ),
-                compute.serverNetwork()
-        );
-
-        BootstrapTranslationConfig translation = BootstrapTranslationConfig.read(
-                subObject(json,
-                          "translation"
-                ),
-                compute.translation()
-        );
-
-        String serverName = compute(json,
-                                    "server-name",
-                                    compute :: serverName
-        );
-
-        return new ServerBootstrapConfig(meta,
-                                         serverNetwork,
-                                         translation,
-                                         serverName
-        );
     }
 }

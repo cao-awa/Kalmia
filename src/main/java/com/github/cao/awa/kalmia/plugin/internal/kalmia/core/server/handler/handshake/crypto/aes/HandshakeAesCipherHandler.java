@@ -36,7 +36,7 @@ public class HandshakeAesCipherHandler implements HandshakeAesCipherEventHandler
 
             // Send server hello.
             router.send(new ServerHelloPacket(
-                    KalmiaServer.serverBootstrapConfig.serverName(),
+                    KalmiaServer.serverBootstrapConfig.getServerName(),
                     KalmiaConstant.BUILD_NAME,
                     // Crypto encoded IV, use to sync server session IV.
                     iv

@@ -52,7 +52,7 @@ public class Kalmia {
 
         KalmiaEnv.setupServer();
 
-        if (KalmiaServer.serverBootstrapConfig.translation()
+        if (KalmiaServer.serverBootstrapConfig.getTranslation()
                                               .enable()) {
             KalmiaTranslationEnv.setupFrameworks();
         }

@@ -8,10 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Auto
-@AutoPlugin(
-        name = "kalmia_test",
-        uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE816"
-)
+@AutoPlugin(name = "kalmia_test", uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE816")
 public class KalmiaTest extends Plugin {
     private static final Logger LOGGER = LogManager.getLogger("KalmiaTestPlugin");
 
@@ -22,7 +19,6 @@ public class KalmiaTest extends Plugin {
 
     @Override
     public boolean canLoad() {
-        return ! KalmiaServer.serverBootstrapConfig.translation()
-                                                   .enable();
+        return !KalmiaServer.serverBootstrapConfig.getTranslation().enable();
     }
 }

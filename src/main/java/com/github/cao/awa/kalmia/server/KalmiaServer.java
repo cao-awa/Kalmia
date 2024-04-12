@@ -89,18 +89,12 @@ public class KalmiaServer {
             // TODO
             // Test only
             assert KalmiaEnv.testUser1 != null;
-            this.userManager.set(0,
-                                 KalmiaEnv.testUser1
-            );
+            this.userManager.set(0, KalmiaEnv.testUser1);
 
             assert KalmiaEnv.testUser2 != null;
-            this.userManager.set(1,
-                                 KalmiaEnv.testUser2
-            );
+            this.userManager.set(1, KalmiaEnv.testUser2);
 
-            this.sessionManager.set(CommunalSession.TEST_COMMUNAL_IDENTITY,
-                                    CommunalSession.TEST_COMMUNAL
-            );
+            this.sessionManager.set(CommunalSession.TEST_COMMUNAL_IDENTITY, CommunalSession.TEST_COMMUNAL);
             this.sessionManager.curSeq(0);
 
         } catch (Exception e) {
@@ -111,12 +105,7 @@ public class KalmiaServer {
     public static void setupBootstrapConfig() throws Exception {
         prepareConfig();
 
-        serverBootstrapConfig = ServerBootstrapConfig.read(
-                JSONObject.parse(
-                        IOUtil.read(new FileReader(KalmiaConstant.SERVER_CONFIG_PATH))
-                ),
-                KalmiaEnv.DEFAULT_SERVER_BOOTSTRAP_CONFIG
-        );
+        serverBootstrapConfig = ServerBootstrapConfig.read(JSONObject.parse(IOUtil.read(new FileReader(KalmiaConstant.SERVER_CONFIG_PATH))), KalmiaEnv.DEFAULT_SERVER_BOOTSTRAP_CONFIG);
 
         rewriteConfig(serverBootstrapConfig);
     }
@@ -124,10 +113,7 @@ public class KalmiaServer {
     public static void rewriteConfig(ServerBootstrapConfig bootstrapConfig) throws Exception {
         LOGGER.info("Rewriting server config");
 
-        IOUtil.write(new FileWriter(KalmiaConstant.SERVER_CONFIG_PATH),
-                     bootstrapConfig.toJSON()
-                                    .toString(JSONWriter.Feature.PrettyFormat)
-        );
+        IOUtil.write(new FileWriter(KalmiaConstant.SERVER_CONFIG_PATH), bootstrapConfig.toJSON().toString(JSONWriter.Feature.PrettyFormat));
     }
 
     public static void prepareConfig() throws Exception {
@@ -135,18 +121,10 @@ public class KalmiaServer {
 
         File configFile = new File(KalmiaConstant.SERVER_CONFIG_PATH);
 
-        configFile.getParentFile()
-                  .mkdirs();
+        configFile.getParentFile().mkdirs();
 
-        if (! configFile.isFile()) {
-            IOUtil.write(
-                    new FileWriter(configFile),
-                    IOUtil.read(
-                            new InputStreamReader(
-                                    ResourceLoader.stream(KalmiaConstant.SERVER_DEFAULT_CONFIG_PATH)
-                            )
-                    )
-            );
+        if (!configFile.isFile()) {
+            IOUtil.write(new FileWriter(configFile), IOUtil.read(new InputStreamReader(ResourceLoader.stream(KalmiaConstant.SERVER_DEFAULT_CONFIG_PATH))));
         }
     }
 
@@ -158,21 +136,11 @@ public class KalmiaServer {
 
     public void registerMessageProcessor(MessageProcessor processor) {
         if (this.messageProcessors.get(processor.id()) == null) {
-            this.messageProcessors.put(processor.id(),
-                                       processor
-            );
+            this.messageProcessors.put(processor.id(), processor);
 
-            LOGGER.info("Registered message processor '{}' by id '{}'",
-                        processor.getClass()
-                                 .getName(),
-                        processor.id()
-            );
+            LOGGER.info("Registered message processor '{}' by id '{}'", processor.getClass().getName(), processor.id());
         } else {
-            LOGGER.warn("Unable to register message processor '{}' by id '{}', because this id has already used",
-                        processor.getClass()
-                                 .getName(),
-                        processor.id()
-            );
+            LOGGER.warn("Unable to register message processor '{}' by id '{}', because this id has already used", processor.getClass().getName(), processor.id());
         }
     }
 
@@ -183,9 +151,7 @@ public class KalmiaServer {
 
         task(() -> {
             try {
-                this.networkIo.start(
-                        this.bootstrapConfig.serverNetwork()
-                );
+                this.networkIo.start(this.bootstrapConfig.getServerNetwork());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -205,22 +171,16 @@ public class KalmiaServer {
     }
 
     public void login(LongAndExtraIdentity accessIdentity, RequestRouter router) {
-        this.networkIo.login(accessIdentity,
-                             router
-        );
+        this.networkIo.login(accessIdentity, router);
     }
 
     public void logout(LongAndExtraIdentity accessIdentity, RequestRouter router) {
-        this.networkIo.logout(accessIdentity,
-                              router
-        );
+        this.networkIo.logout(accessIdentity, router);
 
         this.sessionListeners.unsubscribe(router);
     }
 
     public void logout(RequestRouter router) {
-        this.networkIo.logout(router.accessIdentity(),
-                              router
-        );
+        this.networkIo.logout(router.accessIdentity(), router);
     }
 }

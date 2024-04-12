@@ -38,14 +38,8 @@ import java.util.function.Supplier;
 @Stable
 public class KalmiaServerNetworkIo {
     private static final Logger LOGGER = LogManager.getLogger("KalmiaNetworkIo");
-    private static final Supplier<NioEventLoopGroup> DEFAULT_CHANNEL = () -> new NioEventLoopGroup(
-            0,
-            ExecutorFactor.intensiveIo()
-    );
-    private static final Supplier<EpollEventLoopGroup> EPOLL_CHANNEL = () -> new EpollEventLoopGroup(
-            0,
-            ExecutorFactor.intensiveIo()
-    );
+    private static final Supplier<NioEventLoopGroup> DEFAULT_CHANNEL = () -> new NioEventLoopGroup(0, ExecutorFactor.intensiveIo());
+    private static final Supplier<EpollEventLoopGroup> EPOLL_CHANNEL = () -> new EpollEventLoopGroup(0, ExecutorFactor.intensiveIo());
 
     private final KalmiaServerChannelInitializer channelInitializer;
     private final KalmiaServer server;
@@ -55,9 +49,7 @@ public class KalmiaServerNetworkIo {
 
     public KalmiaServerNetworkIo(KalmiaServer server) {
         this.server = server;
-        if (server.bootstrapConfig()
-                  .translation()
-                  .enable()) {
+        if (server.bootstrapConfig().getTranslation().enable()) {
             this.channelInitializer = new TranslationServerChannelInitializer(server).subscribe(this.connections);
         } else {
             this.channelInitializer = new KalmiagramServerChannelInitializer(server).subscribe(this.connections);
@@ -69,16 +61,8 @@ public class KalmiaServerNetworkIo {
     }
 
     public void login(LongAndExtraIdentity accessIdentity, RequestRouter router) {
-        this.routers.compute(
-                    accessIdentity,
-                    (k, v) -> v == null ? ApricotCollectionFactor.arrayList() : v
-            )
-                    .add(router);
-        LOGGER.info("Login '{}': {}",
-                    accessIdentity,
-                    router.metadata()
-                          .formatConnectionId()
-        );
+        this.routers.compute(accessIdentity, (k, v) -> v == null ? ApricotCollectionFactor.arrayList() : v).add(router);
+        LOGGER.info("Login '{}': {}", accessIdentity, router.metadata().formatConnectionId());
     }
 
     public void logout(LongAndExtraIdentity accessIdentity, RequestRouter router) {
@@ -86,11 +70,7 @@ public class KalmiaServerNetworkIo {
         if (routers != null) {
             routers.remove(router);
 
-            LOGGER.info("Logout '{}': {}",
-                        accessIdentity,
-                        router.metadata()
-                              .formatConnectionId()
-            );
+            LOGGER.info("Logout '{}': {}", accessIdentity, router.metadata().formatConnectionId());
         }
     }
 
@@ -98,46 +78,20 @@ public class KalmiaServerNetworkIo {
         boolean expectEpoll = this.server.useEpoll();
         boolean epoll = Epoll.isAvailable();
 
-        LOGGER.info(expectEpoll ?
-                            epoll ?
-                                    "Kalmia network io using Epoll" :
-                                    "Kalmia network io expected Epoll, but Epoll is not available, switch to NIO" :
-                            "Kalmia network io using NIO");
+        LOGGER.info(expectEpoll ? epoll ? "Kalmia network io using Epoll" : "Kalmia network io expected Epoll, but Epoll is not available, switch to NIO" : "Kalmia network io using NIO");
 
         Supplier<? extends EventLoopGroup> lazy = epoll ? EPOLL_CHANNEL : DEFAULT_CHANNEL;
 
-        Class<? extends ServerSocketChannel> channel = epoll ?
-                EpollServerSocketChannel.class :
-                NioServerSocketChannel.class;
+        Class<? extends ServerSocketChannel> channel = epoll ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
 
         EventLoopGroup boss = lazy.get();
         EventLoopGroup worker = lazy.get();
         ServerBootstrap bootstrap = new ServerBootstrap();
         try {
-            this.channelFuture = bootstrap.channel(channel)
-                                          .group(
-                                                  boss,
-                                                  worker
-                                          )
-                                          .option(
-                                                  ChannelOption.SO_BACKLOG,
-                                                  256
-                                          )
-                                          .childOption(
-                                                  // Real-time response is necessary
-                                                  // Enable TCP no delay to improve response speeds
-                                                  ChannelOption.TCP_NODELAY,
-                                                  true
-                                          )
-                                          .childHandler(this.channelInitializer)
-                                          .bind(
-                                                  config.bindHost(),
-                                                  config.bindPort()
-                                          )
-                                          .syncUninterruptibly()
-                                          .channel()
-                                          .closeFuture()
-                                          .sync();
+            this.channelFuture = bootstrap.channel(channel).group(boss, worker).option(ChannelOption.SO_BACKLOG, 256).childOption(
+                    // Real-time response is necessary
+                    // Enable TCP no delay to improve response speeds
+                    ChannelOption.TCP_NODELAY, true).childHandler(this.channelInitializer).bind(config.bindHost(), config.bindPort()).syncUninterruptibly().channel().closeFuture().sync();
         } finally {
             boss.shutdownGracefully();
             worker.shutdownGracefully();
@@ -146,10 +100,8 @@ public class KalmiaServerNetworkIo {
 
     public void shutdown() {
         try {
-            this.connections.forEach(RequestRouter :: disconnect);
-            this.channelFuture.channel()
-                              .close()
-                              .sync();
+            this.connections.forEach(RequestRouter::disconnect);
+            this.channelFuture.channel().close().sync();
         } catch (InterruptedException interruptedException) {
             LOGGER.error("Interrupted whilst closing channel");
         }

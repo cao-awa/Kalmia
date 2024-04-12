@@ -14,10 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Auto
-@AutoPlugin(
-        name = "kalmia_translation",
-        uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE817"
-)
+@AutoPlugin(name = "kalmia_translation", uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE817")
 public class KalmiaTranslation extends Plugin {
     private static final Logger LOGGER = LogManager.getLogger("KalmiaTranslation");
 
@@ -26,35 +23,24 @@ public class KalmiaTranslation extends Plugin {
         LOGGER.info("Loading kalmia translation");
 
         KalmiaEventBus.handshakePreSharedEc.trigger((router, receipt, cipherField) -> {
-            KalmiaTranslationEnv.translationRouter(router)
-                                .send(new TranslationProxyStatusPacket("status.kalmia.handshake.ec"));
+            KalmiaTranslationEnv.translationRouter(router).send(new TranslationProxyStatusPacket("status.kalmia.handshake.ec"));
         });
 
         KalmiaEventBus.loginFailure.trigger((router, receipt, uid, reason) -> {
-            KalmiaTranslationEnv.translationRouter(router)
-                                .send(new TranslationLoginFailurePacket(uid,
-                                                                        reason
-                                ));
+            KalmiaTranslationEnv.translationRouter(router).send(new TranslationLoginFailurePacket(uid, reason));
         });
 
         KalmiaEventBus.loginSuccess.trigger((router, receipt, uid, token) -> {
-            KalmiaTranslationEnv.translationRouter(router)
-                                .send(new TranslationLoginSuccessPacket(uid,
-                                                                        Mathematics.radix(token,
-                                                                                          36
-                                                                        )
-                                ));
+            KalmiaTranslationEnv.translationRouter(router).send(new TranslationLoginSuccessPacket(uid, Mathematics.radix(token, 36)));
         });
 
         KalmiaEventBus.serverHello.trigger((router, receipt, testKey, testSha, iv) -> {
-            KalmiaTranslationEnv.translationRouter(router)
-                                .send(new TranslationProxyStatusPacket("status.kalmia.handshake.hello"));
+            KalmiaTranslationEnv.translationRouter(router).send(new TranslationProxyStatusPacket("status.kalmia.handshake.hello"));
         });
     }
 
     @Override
     public boolean canLoad() {
-        return KalmiaServer.serverBootstrapConfig.translation()
-                                                 .enable();
+        return KalmiaServer.serverBootstrapConfig.getTranslation().enable();
     }
 }

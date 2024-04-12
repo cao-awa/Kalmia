@@ -10,10 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 @Auto
 @Client
-@AutoPlugin(
-        name = "kalmia_client",
-        uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE815"
-)
+@AutoPlugin(name = "kalmia_client", uuid = "C942B874-2E65-CCB4-8B8C-0C743E7BE815")
 public class KalmiaClientCore extends Plugin {
     private static final Logger LOGGER = LogManager.getLogger("KalmiaClientCore");
 
@@ -24,7 +21,6 @@ public class KalmiaClientCore extends Plugin {
 
     @Override
     public boolean forceRegister() {
-        return KalmiaServer.serverBootstrapConfig.translation()
-                                                 .enable();
+        return KalmiaServer.serverBootstrapConfig.getTranslation().enable();
     }
 }
