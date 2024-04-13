@@ -17,11 +17,7 @@ import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 class MessageDatabase(path: String) : KeyValueDatabase<BytesKey, Message?>(ApricotCollectionFactor::hashMap) {
-    private val delegate: KeyValueBytesDatabase
-
-    init {
-        this.delegate = DatabaseProviders.bytes(path)
-    }
+    private val delegate: KeyValueBytesDatabase = DatabaseProviders.bytes(path)
 
     fun operation(@ShouldSkipped sessionIdentity: PureExtraIdentity, action: BiConsumer<Long, Message?>) {
         seqAll(
@@ -58,12 +54,12 @@ class MessageDatabase(path: String) : KeyValueDatabase<BytesKey, Message?>(Apric
         }
     }
 
-    override operator fun get(sessionIdentity: BytesKey, @ShouldSkipped seq: BytesKey): Message? {
+    override operator fun get(key1: BytesKey, @ShouldSkipped key2: BytesKey): Message? {
         return this[
             identity(
                 key(
-                    sessionIdentity,
-                    seq
+                    key1,
+                    key2
                 )
             )
         ]
@@ -73,9 +69,9 @@ class MessageDatabase(path: String) : KeyValueDatabase<BytesKey, Message?>(Apric
         return this[BytesKey(sessionIdentity.extras()), seq]
     }
 
-    override operator fun get(identity: BytesKey): Message? {
+    override operator fun get(key: BytesKey): Message? {
         return cache()[
-            identity,
+            key,
             { getMessage(it) }
         ]
     }
@@ -93,9 +89,9 @@ class MessageDatabase(path: String) : KeyValueDatabase<BytesKey, Message?>(Apric
         return getMessage(BytesKey(identity.toBytes()))
     }
 
-    override fun remove(identity: BytesKey) {
+    override fun remove(key: BytesKey) {
         cache().delete(
-            identity
+            key
         ) {
             this.delegate.remove(it)
         }
@@ -105,10 +101,10 @@ class MessageDatabase(path: String) : KeyValueDatabase<BytesKey, Message?>(Apric
         remove(BytesKey(identity.toBytes()))
     }
 
-    override fun remove(@ShouldSkipped sessionIdentity: BytesKey, @ShouldSkipped seq: BytesKey) {
+    override fun remove(@ShouldSkipped key1: BytesKey, @ShouldSkipped key2: BytesKey) {
         val key = key(
-            sessionIdentity,
-            seq
+            key1,
+            key2
         )
         remove(identity(key))
         this.delegate.remove(key)
@@ -208,7 +204,7 @@ class MessageDatabase(path: String) : KeyValueDatabase<BytesKey, Message?>(Apric
         return key(BytesKey(sessionIdentity.extras()), seq)
     }
 
-    fun search(sessionIdentity: PureExtraIdentity, target: String): Set<Long> {
+    fun search(sessionIdentity: PureExtraIdentity): Set<Long> {
         val result: Set<Long> = ApricotCollectionFactor.hashSet()
         operation(
             sessionIdentity
@@ -216,10 +212,10 @@ class MessageDatabase(path: String) : KeyValueDatabase<BytesKey, Message?>(Apric
         return result
     }
 
-    override fun set(identity: BytesKey, msg: Message?) {
+    override fun set(key: BytesKey, value: Message?) {
         cache().update(
-            identity,
-            msg,
+            key,
+            value,
             this::update
         )
     }
