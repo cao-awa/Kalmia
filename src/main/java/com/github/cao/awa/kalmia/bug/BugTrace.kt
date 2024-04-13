@@ -1,31 +1,25 @@
-package com.github.cao.awa.kalmia.bug;
+package com.github.cao.awa.kalmia.bug
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
-public class BugTrace {
-    private static final Logger LOGGER = LogManager.getLogger("BugTracer");
+object BugTrace {
+    private val LOGGER: Logger = LogManager.getLogger("BugTracer")
 
-    public static void trace(Exception exception, String info) {
-        trace(exception,
-              info,
-              false
-        );
+    @JvmStatic
+    fun trace(exception: Exception, info: String) {
+        trace(
+            exception, info, false
+        )
     }
 
-    public static void trace(Exception exception, String info, boolean pleaseReport) {
-        LOGGER.error((pleaseReport ? "[Please report] " : "") + info,
-                     exception
-        );
+    @JvmStatic
+    fun trace(exception: Exception, info: String, pleaseReport: Boolean) {
+        LOGGER.error((if (pleaseReport) "[Please report] " else "") + info, exception)
     }
 
-    public static void trace(String info) {
-        trace(info,
-              false
-        );
-    }
-
-    public static void trace(String info, boolean pleaseReport) {
-        LOGGER.error((pleaseReport ? "[Please report] " : "") + info);
+    @JvmStatic
+    fun trace(info: String, pleaseReport: Boolean) {
+        LOGGER.error((if (pleaseReport) "[Please report] " else "") + info)
     }
 }
