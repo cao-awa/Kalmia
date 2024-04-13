@@ -1,122 +1,87 @@
-package com.github.cao.awa.kalmia.language.manager;
+package com.github.cao.awa.kalmia.language.manager
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.apricot.util.io.IOUtil;
-import com.github.cao.awa.kalmia.constant.KalmiaConstant;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.alibaba.fastjson2.JSONArray
+import com.alibaba.fastjson2.JSONObject
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.apricot.util.io.IOUtil
+import com.github.cao.awa.kalmia.constant.KalmiaConstant
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
-import java.io.File;
-import java.io.FileReader;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import java.io.File
+import java.io.FileReader
+import java.util.Arrays
+import java.util.Objects
 
-public class LanguageTranslationManager {
-    private static final Logger LOGGER = LogManager.getLogger("LanguageTranslationManager");
-    private final Map<String, Map<String, String>> translations = ApricotCollectionFactor.hashMap();
+class LanguageTranslationManager {
+    private val translations: MutableMap<String, MutableMap<String, String>> = ApricotCollectionFactor.hashMap()
 
-    public void load() {
-        File resDir = new File(KalmiaConstant.LANGUAGE_TRANSLATION_RESOURCE_PATH);
-        for (File langDir : Objects.requireNonNull(resDir.listFiles())) {
-            for (File langFile : Objects.requireNonNull(langDir.listFiles())) {
-                String langName = langFile.getName();
+    fun load() {
+        val resDir = File(KalmiaConstant.LANGUAGE_TRANSLATION_RESOURCE_PATH)
+        for (langDir in Objects.requireNonNull(resDir.listFiles())) {
+            for (langFile in Objects.requireNonNull(langDir.listFiles())) {
+                var langName: String = langFile.name
                 if (langName.endsWith(".json")) {
-                    langName = langName.replace(".json",
-                                                ""
-                    );
+                    langName = langName.replace(".json", "")
 
-                    this.translations.compute(langName,
-                                              (languageKey, translationKeyMap) -> {
-                                                  if (translationKeyMap == null) {
-                                                      translationKeyMap = ApricotCollectionFactor.hashMap();
-                                                  }
-                                                  return translationKeyMap;
-                                              }
-                    );
+                    translations.compute(langName) { _, translationKeyMap ->
+                        return@compute translationKeyMap ?: ApricotCollectionFactor.hashMap()
+                    }
 
                     try {
-                        JSONObject json = JSONObject.parse(IOUtil.read(new FileReader(langFile)));
+                        val json: JSONObject = JSONObject.parse(IOUtil.read(FileReader(langFile)));
 
-                        Map<String, String> translationMap = this.translations.get(langName);
+                        val translationMap: MutableMap<String, String> =
+                            translations[langName] ?: throw RuntimeException()
 
-                        loadInner(json,
-                                  translationMap
-                        );
-                    } catch (Exception e) {
-                        LOGGER.error("Failed to load language '{}' at '{}'",
-                                     langName,
-                                     langFile.getAbsolutePath(),
-                                     e
-                        );
+                        loadInner(json, translationMap)
+                    } catch (e: Exception) {
+                        LOGGER.error("Failed to load language '{}' at '{}'", langName, langFile.getAbsolutePath(), e)
                     }
                 }
             }
         }
     }
 
-    private void loadInner(JSONObject json, Map<String, String> translationMap) {
-        json.forEach((key, value) -> {
-            loadInner(key,
-                      value,
-                      translationMap
-            );
-        });
+    private fun loadInner(json: JSONObject, translationMap: MutableMap<String, String>) {
+        json.forEach { key, value ->
+            loadInner(key, value, translationMap)
+        }
     }
 
-    private void loadInner(String key, Object value, Map<String, String> translationMap) {
-        if (value instanceof JSONObject innerObject) {
-            loadInner(innerObject,
-                      translationMap
-            );
-            return;
+    private fun loadInner(key: String, value: Any, translationMap: MutableMap<String, String>) {
+        if (value is JSONObject) {
+            loadInner(value, translationMap)
+            return
         }
-        if (value instanceof JSONArray innerArray) {
-            innerArray.forEach(o -> {
-                if (o instanceof JSONObject json) {
-                    loadInner(key,
-                              json,
-                              translationMap
-                    );
-                    return;
+        if (value is JSONArray) {
+            value.forEach { o ->
+                if (o is JSONObject) {
+                    loadInner(key, o, translationMap)
+                    return
                 }
-                if (o instanceof JSONArray array) {
-                    loadInner(key,
-                              array,
-                              translationMap
-                    );
-                    return;
+                if (o is JSONArray) {
+                    loadInner(key, o, translationMap)
+                    return
                 }
-                throw new IllegalArgumentException("Language array can only contains JSONObject or JSONArray object");
-            });
-            return;
+                throw IllegalArgumentException("Language array can only contains JSONObject or JSONArray object")
+            }
+            return
         }
-        translationMap.put(
-                key,
-                value.toString()
-        );
+        translationMap[key] = value.toString()
     }
 
-    public String translation(String languageKey, String translationKey, Object... args) {
-        Map<String, String> translationKeyMap = this.translations.get(languageKey);
-        if (translationKeyMap == null) {
-            return translationKey;
-        }
+    fun translation(languageKey: String, translationKey: String, vararg args: Any): String {
+        val translationKeyMap: Map<String, String> = translations[languageKey] ?: return translationKey
 
-        String translationValue = translationKeyMap.get(translationKey);
+        val translationValue: String = translationKeyMap[translationKey] ?: return translationKey
 
-        if (translationValue == null) {
-            return translationKey;
-        }
+        // TODO
+        return translationValue.formatted(Arrays.stream(args).map { o -> translation(languageKey, o.toString()) }
+            .toArray())
+    }
 
-        args = Arrays.stream(args)
-                     .map(o -> translation(languageKey,
-                                           o.toString()
-                     ))
-                     .toArray();
-
-        return translationValue.formatted(args);
+    companion object {
+        private val LOGGER: Logger = LogManager.getLogger("LanguageTranslationManager")
     }
 }
