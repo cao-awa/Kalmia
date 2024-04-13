@@ -25,21 +25,11 @@ class ClientNetworkConfig(
                 return compute
             }
 
-            val bindHost: String = compute(
-                json, "connect-host", compute::connectHost
-            )
+            val bindHost: String = compute(json, "connect-host", compute::connectHost)
+            val bindPort: Int = compute(json, "connect-port", compute::connectPort)
+            val useEpoll: Boolean = compute(json, "use-epoll", compute::useEpoll)
 
-            val bindPort: Int = compute(
-                json, "connect-port", compute::connectPort
-            )
-
-            val useEpoll: Boolean = compute(
-                json, "use-epoll", compute::useEpoll
-            )
-
-            return ClientNetworkConfig(
-                bindHost, bindPort, useEpoll
-            )
+            return ClientNetworkConfig(bindHost, bindPort, useEpoll)
         }
     }
 }

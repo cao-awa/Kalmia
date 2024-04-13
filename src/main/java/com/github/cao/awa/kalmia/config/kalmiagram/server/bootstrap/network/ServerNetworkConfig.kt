@@ -26,9 +26,7 @@ class ServerNetworkConfig(
             }
 
             val bindHost: String = compute(json, "bind-host", compute::bindHost)
-
             val bindPort: Int = compute(json, "bind-port", compute::bindPort)
-
             val useEpoll: Boolean = compute(json, "use-epoll", compute::useEpoll)
 
             return ServerNetworkConfig(bindHost, bindPort, useEpoll)

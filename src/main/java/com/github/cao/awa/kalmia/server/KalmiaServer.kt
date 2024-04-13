@@ -36,45 +36,32 @@ import kotlin.collections.MutableList
 import kotlin.collections.MutableMap
 
 class KalmiaServer(config: ServerBootstrapConfig) {
-    val bootstrapConfig: ServerBootstrapConfig
-    private val networkIo: KalmiaServerNetworkIo
-    val messageManager: MessageManager
-    val userManager: UserManager
-    val keypairManager: KeypairManager
-    val sessionManager: SessionManager
+    val bootstrapConfig: ServerBootstrapConfig = config
+    private val networkIo: KalmiaServerNetworkIo = KalmiaServerNetworkIo(this)
+    val messageManager: MessageManager = MessageManager("data/server/msg")
+    val userManager: UserManager = UserManager("data/server/usr")
+    val keypairManager: KeypairManager = KeypairManager("data/server/keypair")
+    val sessionManager: SessionManager = SessionManager("data/server/session")
     private val messageProcessors: MutableMap<UUID, MessageProcessor> = ApricotCollectionFactor.hashMap()
     private val sessionListeners: SessionListeners = SessionListeners()
     private var started: Boolean = false
     private val executor: ExecutorService = Executors.newCachedThreadPool()
-    
+
     fun messageProcessor(id: UUID): MessageProcessor {
         messageProcessors[id].let { throw RuntimeException() }
     }
 
     init {
-        try {
-            bootstrapConfig = config
+        // TODO
+        // Just for test
+        assert(KalmiaEnv.testUser1 != null)
+        userManager.set(0, KalmiaEnv.testUser1)
 
-            networkIo = KalmiaServerNetworkIo(this)
+        assert(KalmiaEnv.testUser2 != null)
+        userManager.set(1, KalmiaEnv.testUser2)
 
-            messageManager = MessageManager("data/server/msg")
-            userManager = UserManager("data/server/usr")
-            keypairManager = KeypairManager("data/server/keypair")
-            sessionManager = SessionManager("data/server/session")
-
-            // TODO
-            // Just for test
-            assert(KalmiaEnv.testUser1 != null)
-            userManager.set(0, KalmiaEnv.testUser1)
-
-            assert(KalmiaEnv.testUser2 != null)
-            userManager.set(1, KalmiaEnv.testUser2)
-
-            sessionManager.set(CommunalSession.TEST_COMMUNAL_IDENTITY, CommunalSession.TEST_COMMUNAL)
-            sessionManager.curSeq(0)
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
+        sessionManager.set(CommunalSession.TEST_COMMUNAL_IDENTITY, CommunalSession.TEST_COMMUNAL)
+        sessionManager.curSeq(0)
     }
 
     fun startup() {
@@ -85,7 +72,6 @@ class KalmiaServer(config: ServerBootstrapConfig) {
     fun registerMessageProcessor(processor: MessageProcessor) {
         if (messageProcessors[processor.id()] == null) {
             messageProcessors[processor.id()] = processor
-
             LOGGER.info("Registered message processor '{}' by id '{}'", processor.javaClass.name, processor.id())
         } else {
             LOGGER.warn(
@@ -101,7 +87,7 @@ class KalmiaServer(config: ServerBootstrapConfig) {
 
         started = true
 
-        task { ->
+        task {
             try {
                 networkIo.start(bootstrapConfig.serverNetwork)
             } catch (e: Exception) {
@@ -139,7 +125,6 @@ class KalmiaServer(config: ServerBootstrapConfig) {
         private val LOGGER: Logger = LogManager.getLogger("KalmiaServer")
         lateinit var serverBootstrapConfig: ServerBootstrapConfig
 
-        @JvmStatic
         fun setupBootstrapConfig() {
             prepareConfig()
 
@@ -147,11 +132,11 @@ class KalmiaServer(config: ServerBootstrapConfig) {
                 JSONObject.parse(IOUtil.read(FileReader(KalmiaConstant.SERVER_CONFIG_PATH))),
                 KalmiaEnv.DEFAULT_SERVER_BOOTSTRAP_CONFIG
             )
-
+            
             rewriteConfig(serverBootstrapConfig)
         }
 
-        fun rewriteConfig(bootstrapConfig: ServerBootstrapConfig) {
+        private fun rewriteConfig(bootstrapConfig: ServerBootstrapConfig) {
             LOGGER.info("Rewriting server config");
 
             IOUtil.write(
@@ -160,14 +145,14 @@ class KalmiaServer(config: ServerBootstrapConfig) {
             )
         }
 
-        fun prepareConfig() {
+        private fun prepareConfig() {
             LOGGER.info("Preparing server config")
 
             val configFile = File(KalmiaConstant.SERVER_CONFIG_PATH)
 
-            configFile.getParentFile().mkdirs()
+            configFile.parentFile.mkdirs()
 
-            if (!configFile.isFile()) {
+            if (!configFile.isFile) {
                 IOUtil.write(
                     FileWriter(configFile),
                     IOUtil.read(InputStreamReader(ResourceLoader.stream(KalmiaConstant.SERVER_DEFAULT_CONFIG_PATH)))

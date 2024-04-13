@@ -21,9 +21,7 @@ class ConfigMeta(val version: Int) : ConfigElement() {
                 return compute
             }
 
-            val version: Int = Math.max(
-                compute(json, "version", compute::version), compute.version
-            )
+            val version: Int = Math.max(compute(json, "version", compute::version), compute.version)
 
             return ConfigMeta(version)
         }

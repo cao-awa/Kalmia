@@ -25,19 +25,11 @@ class RouterNetworkConfig(
                 return compute
             }
 
-            val meta: ConfigMeta = ConfigMeta.read(
-                subObject(
-                    json, "config-meta"
-                ), compute.meta
-            );
+            val meta: ConfigMeta = ConfigMeta.read(subObject(json, "config-meta"), compute.meta)
 
-            val compressThreshold: Int = compute(
-                json, "compress-threshold", compute::compressThreshold
-            );
+            val compressThreshold: Int = compute(json, "compress-threshold", compute::compressThreshold)
 
-            return RouterNetworkConfig(
-                meta, compressThreshold
-            )
+            return RouterNetworkConfig(meta, compressThreshold)
         }
     }
 }

@@ -26,21 +26,12 @@ class ClientBootstrapConfig(
                 return compute
             }
 
-            val meta: ConfigMeta = ConfigMeta.read(
-                subObject(
-                    json, "config-meta"
-                ), compute.meta
-            )
+            val meta: ConfigMeta = ConfigMeta.read(subObject(json, "config-meta"), compute.meta)
 
-            val serverNetwork: ClientNetworkConfig = ClientNetworkConfig.read(
-                subObject(
-                    json, "client-network"
-                ), compute.clientNetwork
-            )
+            val serverNetwork: ClientNetworkConfig =
+                ClientNetworkConfig.read(subObject(json, "client-network"), compute.clientNetwork)
 
-            return ClientBootstrapConfig(
-                meta, serverNetwork
-            )
+            return ClientBootstrapConfig(meta, serverNetwork)
         }
     }
 }

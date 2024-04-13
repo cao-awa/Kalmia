@@ -87,8 +87,7 @@ class KalmiaClient(config: ClientBootstrapConfig) {
             val receipt: ByteArray = Packet.createReceipt()
 
             return try {
-                KalmiaEnv.awaitManager.awaitGet(
-                    receipt,
+                KalmiaEnv.awaitManager.awaitGet(receipt,
                     { messageManager.seq(sessionIdentity) },
                     { router.send(SelectMessagePacket(sessionIdentity, 0, 0).receipt(receipt)) },
                     true
@@ -112,7 +111,6 @@ class KalmiaClient(config: ClientBootstrapConfig) {
             try {
                 KalmiaEnv.awaitManager.awaitGet(receipt, {
                     operationMessages({ _, msg -> messages.add(msg) }, sessionIdentity, startSelect, endSelect)
-
                     return@awaitGet null
                 }, {
                     router.send(SelectMessagePacket(sessionIdentity, startSelect, endSelect).receipt(receipt))
@@ -177,9 +175,9 @@ class KalmiaClient(config: ClientBootstrapConfig) {
     }
 
     fun decryptPrivateKey(identity: PureExtraIdentity): PrivateKey? {
-        try {
+        return try {
             val store: KeyPairStore = keypairManager.getStore(identity)
-            return KeyStoreIdentity.createPrivateKey(
+            KeyStoreIdentity.createPrivateKey(
                 store.type(), Crypto.aesDecrypt(
                     store.privateKey().key(),
                     // TODO
@@ -188,7 +186,7 @@ class KalmiaClient(config: ClientBootstrapConfig) {
             )
         } catch (e: Exception) {
             e.printStackTrace()
-            return null
+            null
         }
     }
 

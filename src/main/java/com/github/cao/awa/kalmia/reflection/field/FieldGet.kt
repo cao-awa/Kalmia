@@ -1,72 +1,72 @@
-package com.github.cao.awa.kalmia.reflection.field;
+package com.github.cao.awa.kalmia.reflection.field
 
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
 
-import java.util.List;
-import java.util.function.Function;
+import java.util.function.Function
 
-public class FieldGet<R, I> {
-    private final Class<I> target;
-    private final List<String> gets = ApricotCollectionFactor.arrayList();
-    private final List<Function<Class<I>, R>> backups = ApricotCollectionFactor.arrayList();
+class FieldGet<R, I> {
+    private lateinit var target: Class<I>
+    private val gets: MutableList<String> = ApricotCollectionFactor.arrayList()
+    private val backups: MutableList<Function<Class<I>, R>> = ApricotCollectionFactor.arrayList()
 
-    private FieldGet(I target) {
-        this.target = EntrustEnvironment.cast(target.getClass());
+    private constructor(target: I) {
+        return EntrustEnvironment.cast(Class<I>::javaClass) ?: throw RuntimeException()
     }
 
-    private FieldGet(Class<I> target) {
-        this.target = EntrustEnvironment.cast(target);
+    private constructor(target: Class<I>) {
+        this.target = EntrustEnvironment.cast(target) ?: throw RuntimeException()
     }
 
-    public static <X, Y> FieldGet<X, Y> create(Y target, String name) {
-        return new FieldGet<X, Y>(target).or(name);
+    fun or(name: String): FieldGet<R, I> {
+        this.gets.add(name)
+        return this
     }
 
-    public static <X, Y> FieldGet<X, Y> create(Class<Y> target, String name) {
-        return new FieldGet<X, Y>(target).or(name);
+    fun or(function: Function<Class<I>, R>): FieldGet<R, I> {
+        this.backups.add(function)
+        return this
     }
 
-    public FieldGet<R, I> or(String name) {
-        this.gets.add(name);
-        return this;
-    }
+    fun <Z> get(): Z? {
+        val clazz: Class<I> = EntrustEnvironment.cast<Class<I>>(this.target) ?: throw RuntimeException()
 
-    public FieldGet<R, I> or(Function<Class<I>, R> function) {
-        this.backups.add(function);
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <Z> Z get() {
-        Class<I> clazz = EntrustEnvironment.cast(this.target);
-
-        assert clazz != null;
-        for (String name : this.gets) {
+        for (name in this.gets) {
             try {
-                Object o = clazz.getField(name)
-                                .get(this.target);
+                val o: Any? = clazz.getField(name).get(this.target)
 
                 if (o != null) {
-                    return (Z) o;
+                    return o as Z
                 }
-            } catch (Exception e) {
+            } catch (_: Exception) {
 
             }
         }
 
-        for (Function<Class<I>, R> supplier : this.backups) {
+        for (supplier in backups) {
             try {
-                R r = supplier.apply(clazz);
+                val r: R = supplier.apply(clazz)
 
                 if (r != null) {
-                    return (Z) r;
+                    return r as Z
                 }
-            } catch (Exception e) {
+            } catch (_: Exception) {
 
             }
         }
 
-        return null;
+        return null
+    }
+
+    companion object {
+        @JvmStatic
+        fun <X, Y> create(target: Y, name: String): FieldGet<X, Y> {
+            return FieldGet<X, Y>(target).or(name)
+        }
+
+        @JvmStatic
+        fun <X, Y> create(target: Class<Y>, name: String): FieldGet<X, Y> {
+            return FieldGet<X, Y>(target).or(name)
+        }
     }
 }

@@ -11,14 +11,10 @@ import java.util.*
 object PreSharedCipherEncode {
     @JvmStatic
     fun encodeEcPrivate(privateKey: ECPrivateKey, useBase64: Boolean): String {
-        val data =
-            if (useBase64)
-                Base64.getEncoder().encodeToString(privateKey.encoded)
-            else
-                Mathematics.radix(
-                    privateKey.encoded,
-                    36
-                )
+        val data = if (useBase64) Base64.getEncoder().encodeToString(privateKey.encoded)
+        else Mathematics.radix(
+            privateKey.encoded, 36
+        )
 
         val json = JSONObject()
 
@@ -47,14 +43,10 @@ object PreSharedCipherEncode {
 
     @JvmStatic
     fun encodeEcPublic(publicKey: ECPublicKey, useBase64: Boolean): String {
-        val data =
-            if (useBase64)
-                Base64.getEncoder().encodeToString(publicKey.encoded)
-            else
-                Mathematics.radix(
-                    publicKey.encoded,
-                    36
-                )
+        val data = if (useBase64) Base64.getEncoder().encodeToString(publicKey.encoded)
+        else Mathematics.radix(
+            publicKey.encoded, 36
+        )
 
         val json = JSONObject()
 

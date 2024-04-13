@@ -24,10 +24,10 @@ public class PluginFramework extends ReflectionFramework {
     public void work() {
         // Working stream...
         reflection().getTypesAnnotatedWith(Auto.class)
-                    .stream()
-                    .filter(this :: match)
-                    .map(this :: cast)
-                    .forEach(this :: build);
+                .stream()
+                .filter(this::match)
+                .map(this::cast)
+                .forEach(this::build);
     }
 
     public boolean match(Class<?> clazz) {
@@ -43,19 +43,19 @@ public class PluginFramework extends ReflectionFramework {
         AutoPlugin autoAnnotation = clazz.getAnnotation(AutoPlugin.class);
 
         UUID uuid = FieldGet.create(
-                                    // Can use 'UUID' or 'ID' field name for automatic loading.
-                                    clazz,
-                                    "UUID"
-                            )
-                            .or("ID")
-                            // If don't use field loading, will get uuid by annotation.
-                            .or(p -> UUID.fromString(autoAnnotation.uuid()))
-                            .get();
+                        // Can use 'UUID' or 'ID' field name for automatic loading.
+                        clazz,
+                        "UUID"
+                )
+                .or("ID")
+                // If don't use field loading, will get uuid by annotation.
+                .or(p -> UUID.fromString(autoAnnotation.uuid()))
+                .get();
 
         try {
             // Create and register.
             Plugin plugin = clazz.getConstructor()
-                                 .newInstance();
+                    .newInstance();
 
             boolean shouldLoad;
 
@@ -67,7 +67,7 @@ public class PluginFramework extends ReflectionFramework {
 
 
                 // Always load plugin when simultaneously annotated @Server and @Client and when don't annotated.
-                if ((loadWhenServer && loadWhenClient) || (! loadWhenServer && ! loadWhenClient)) {
+                if ((loadWhenServer && loadWhenClient) || (!loadWhenServer && !loadWhenClient)) {
                     shouldLoad = true;
                 } else {
                     // Load by environment annotation.
@@ -76,23 +76,23 @@ public class PluginFramework extends ReflectionFramework {
             }
 
             LOGGER.info("Register plugin '{}' ({})",
-                        autoAnnotation.name(),
-                        uuid
+                    autoAnnotation.name(),
+                    uuid
             );
 
             this.plugins.put(plugin,
-                             uuid
+                    uuid
             );
             this.nameToPlugin.put(autoAnnotation.name(),
-                                  plugin
+                    plugin
             );
 
             if (shouldLoad) {
                 // Do not trigger load when plugin refused loading.
-                if (! plugin.canLoad()) {
+                if (!plugin.canLoad()) {
                     LOGGER.info("Plugin '{}' ({}) refused loading",
-                                autoAnnotation.name(),
-                                uuid
+                            autoAnnotation.name(),
+                            uuid
                     );
 
                     return;
@@ -102,8 +102,8 @@ public class PluginFramework extends ReflectionFramework {
             }
         } catch (Exception e) {
             LOGGER.warn("Failed load plugin: {} ({})",
-                        autoAnnotation.name(),
-                        uuid
+                    autoAnnotation.name(),
+                    uuid
             );
             e.printStackTrace();
         }
@@ -115,7 +115,7 @@ public class PluginFramework extends ReflectionFramework {
 
     public String name(Plugin plugin) {
         return this.nameToPlugin.inverse()
-                                .get(plugin);
+                .get(plugin);
     }
 
     public Plugin plugin(String name) {
@@ -124,6 +124,6 @@ public class PluginFramework extends ReflectionFramework {
 
     public Plugin plugin(UUID uuid) {
         return this.plugins.inverse()
-                           .get(uuid);
+                .get(uuid);
     }
 }

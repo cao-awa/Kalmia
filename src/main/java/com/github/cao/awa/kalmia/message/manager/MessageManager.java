@@ -17,22 +17,16 @@ public class MessageManager {
     }
 
     public long send(PureExtraIdentity sessionIdentity, Message msg) {
-        return this.database.send(sessionIdentity,
-                                  msg
-        );
+        return this.database.send(sessionIdentity, msg);
     }
 
     public long delete(PureExtraIdentity sessionIdentity, long seq) {
-        this.database.markDelete(sessionIdentity,
-                                 BytesKey.of(SkippedBase256.longToBuf(seq))
-        );
+        this.database.markDelete(sessionIdentity, BytesKey.of(SkippedBase256.longToBuf(seq)));
         return seq;
     }
 
     public Message get(PureExtraIdentity sessionIdentity, long seq) {
-        return this.database.get(sessionIdentity,
-                                 BytesKey.of(SkippedBase256.longToBuf(seq))
-        );
+        return this.database.get(sessionIdentity, BytesKey.of(SkippedBase256.longToBuf(seq)));
     }
 
     public Message get(LongAndExtraIdentity identity) {
@@ -40,17 +34,11 @@ public class MessageManager {
     }
 
     public void operation(PureExtraIdentity sessionIdentity, BiConsumer<Long, Message> action) {
-        this.database.operation(sessionIdentity,
-                                action
-        );
+        this.database.operation(sessionIdentity, action);
     }
 
     public void operation(PureExtraIdentity sessionIdentity, long from, long to, BiConsumer<Long, Message> action) {
-        this.database.operation(sessionIdentity,
-                                from,
-                                to,
-                                action
-        );
+        this.database.operation(sessionIdentity, from, to, action);
     }
 
     public long seq(PureExtraIdentity sessionIdentity) {
@@ -66,26 +54,16 @@ public class MessageManager {
     }
 
     public void set(PureExtraIdentity sessionIdentity, long seq, Message msg) {
-        this.database.identity(
-                sessionIdentity,
-                BytesKey.of(SkippedBase256.longToBuf(seq)),
-                msg.identity()
-        );
+        this.database.identity(sessionIdentity, BytesKey.of(SkippedBase256.longToBuf(seq)), msg.identity());
 
-        this.database.set(msg.identity(),
-                          msg
-        );
+        this.database.set(msg.identity(), msg);
     }
 
     public void set(LongAndExtraIdentity identity, Message message) {
-        this.database.set(BytesKey.of(identity.toBytes()),
-                          message
-        );
+        this.database.set(BytesKey.of(identity.toBytes()), message);
     }
 
     public void seq(PureExtraIdentity sessionIdentity, long seq) {
-        this.database.curSeq(sessionIdentity,
-                             SkippedBase256.longToBuf(seq)
-        );
+        this.database.curSeq(sessionIdentity, SkippedBase256.longToBuf(seq));
     }
 }

@@ -18,6 +18,6 @@ abstract class KeyManager<T> {
     }
 
     fun has(field: String): Boolean {
-        return get(field) != null;
+        return get(field) != null
     }
 }

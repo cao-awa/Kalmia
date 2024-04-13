@@ -19,11 +19,5 @@ abstract class ConfigElement {
         fun subObject(json: JSONObject, key: String): JSONObject {
             return EntrustEnvironment.result(json) { jsonObject -> jsonObject.getJSONObject(key) }
         }
-
-        @JvmStatic
-        fun subArray(json: JSONObject, key: String): JSONArray {
-            return EntrustEnvironment.result(json) { jsonObject -> jsonObject.getJSONArray(key) }
-        }
-
     }
 }
