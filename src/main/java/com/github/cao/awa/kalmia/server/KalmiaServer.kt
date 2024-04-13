@@ -48,7 +48,7 @@ class KalmiaServer(config: ServerBootstrapConfig) {
     private val executor: ExecutorService = Executors.newCachedThreadPool()
     
     fun messageProcessor(id: UUID): MessageProcessor {
-        return messageProcessors[id].let { throw RuntimeException() }
+        messageProcessors[id].let { throw RuntimeException() }
     }
 
     init {

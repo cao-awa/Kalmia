@@ -44,7 +44,7 @@ object ResourceUpload {
     fun upload(file: File, router: RequestRouter) {
         val receipt = Packet.createReceipt();
 
-        upload(file) { startPos, data, isFinal ->
+        upload(file) { _, data, isFinal ->
             KalmiaEnv.awaitManager.await(receipt, {
 
             }, {

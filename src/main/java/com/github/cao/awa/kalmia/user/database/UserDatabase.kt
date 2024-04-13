@@ -100,9 +100,9 @@ class UserDatabase(path: String) : KeyValueDatabase<BytesKey, User?>(ApricotColl
         }
     }
 
-    override operator fun get(uid: BytesKey): User? {
+    override operator fun get(key: BytesKey): User? {
         return cache()[
-            uid,
+            key,
             { getUser(it) }
         ]
     }
@@ -120,9 +120,9 @@ class UserDatabase(path: String) : KeyValueDatabase<BytesKey, User?>(ApricotColl
         return User.create(bytes)
     }
 
-    override fun remove(accessIdentity: BytesKey) {
+    override fun remove(key: BytesKey) {
         cache().delete(
-            accessIdentity,
+            key,
             this.delegate::remove
         )
     }
@@ -180,13 +180,13 @@ class UserDatabase(path: String) : KeyValueDatabase<BytesKey, User?>(ApricotColl
 
     fun nextSeq(): Long = seq() + 1
 
-    override operator fun set(accessIdentity: BytesKey, user: User?) {
-        if (user == null) {
-            markUseless(accessIdentity)
+    override operator fun set(key: BytesKey, value: User?) {
+        if (value == null) {
+            markUseless(key)
             return
         }
 
-        this.delegate[accessIdentity] = user.toBytes()
+        this.delegate[key] = value.toBytes()
     }
 
     operator fun set(accessIdentity: LongAndExtraIdentity, user: User?) {

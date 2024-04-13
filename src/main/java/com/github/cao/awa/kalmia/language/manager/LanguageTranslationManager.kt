@@ -29,7 +29,7 @@ class LanguageTranslationManager {
                     }
 
                     try {
-                        val json: JSONObject = JSONObject.parse(IOUtil.read(FileReader(langFile)));
+                        val json: JSONObject = JSONObject.parse(IOUtil.read(FileReader(langFile)))
 
                         val translationMap: MutableMap<String, String> =
                             translations[langName] ?: throw RuntimeException()

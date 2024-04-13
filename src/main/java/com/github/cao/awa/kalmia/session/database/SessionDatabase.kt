@@ -72,9 +72,9 @@ class SessionDatabase(path: String) : KeyValueDatabase<BytesKey, Session?>(Apric
 
     fun nextSeq(): Long = seq() + 1
 
-    override operator fun get(sessionIdentity: BytesKey): Session? {
+    override operator fun get(key: BytesKey): Session? {
         return cache()[
-            sessionIdentity,
+            key,
             { getSession(it) }
         ]
     }
@@ -138,10 +138,10 @@ class SessionDatabase(path: String) : KeyValueDatabase<BytesKey, Session?>(Apric
         return Session.create(bytes)
     }
 
-    override fun remove(@ShouldSkipped identity: BytesKey) {
+    override fun remove(@ShouldSkipped key: BytesKey) {
         cache()
             .delete(
-                identity
+                key
             ) {
                 this.delegate.remove(it)
             }
@@ -205,13 +205,13 @@ class SessionDatabase(path: String) : KeyValueDatabase<BytesKey, Session?>(Apric
         this.delegate[BytesKey(ROOT)] = curSeq
     }
 
-    override fun set(sessionIdentity: BytesKey, session: Session?) {
-        if (session == null) {
-            remove(sessionIdentity)
+    override fun set(key: BytesKey, value: Session?) {
+        if (value == null) {
+            remove(key)
             return
         }
 
-        this.delegate[sessionIdentity] = session.bytes()
+        this.delegate[key] = value.bytes()
     }
 
     fun set(sessionIdentity: PureExtraIdentity, session: Session?) {

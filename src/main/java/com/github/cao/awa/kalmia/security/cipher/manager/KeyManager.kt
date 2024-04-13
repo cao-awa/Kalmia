@@ -1,27 +1,23 @@
-package com.github.cao.awa.kalmia.security.cipher.manager;
+package com.github.cao.awa.kalmia.security.cipher.manager
 
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
 
-import java.util.Map;
+abstract class KeyManager<T> {
+    private val keys: MutableMap<String, T> = ApricotCollectionFactor.hashMap()
 
-public abstract class KeyManager<T> {
-    private final Map<String, T> keys = ApricotCollectionFactor.hashMap();
-
-    public void add(String field, T key) {
-        this.keys.put(field,
-                      key
-        );
+    fun add(field: String, key: T) {
+        this.keys[field] = key
     }
 
-    public void delete(String field) {
-        this.keys.remove(field);
+    fun delete(field: String) {
+        this.keys.remove(field)
     }
 
-    public T get(String field) {
-        return this.keys.get(field);
+    fun get(field: String): T {
+        return this.keys[field] ?: throw RuntimeException()
     }
 
-    public boolean has(String field) {
+    fun has(field: String): Boolean {
         return get(field) != null;
     }
 }

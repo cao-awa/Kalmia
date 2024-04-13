@@ -64,8 +64,8 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<BytesKey, KeyPairStore?>
         this.delegate[identity] = putStore.toBytes()
     }
 
-    override operator fun get(identity: BytesKey): KeyPairStore? {
-        return cache()[identity, this::createStore]
+    override operator fun get(key: BytesKey): KeyPairStore? {
+        return cache()[key, this::createStore]
     }
 
     fun privateKey(identity: BytesKey): ByteArray {

@@ -1,9 +1,9 @@
-package com.github.cao.awa.kalmia.security.cipher.manager.rsa;
+package com.github.cao.awa.kalmia.security.cipher.manager.rsa
 
-import com.github.cao.awa.kalmia.security.cipher.manager.KeyManager;
+import com.github.cao.awa.kalmia.security.cipher.manager.KeyManager
 
-import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.RSAPublicKey
 
-public class RsaPubkeyManager extends KeyManager<RSAPublicKey> {
+class RsaPubkeyManager : KeyManager<RSAPublicKey>() {
 
 }
