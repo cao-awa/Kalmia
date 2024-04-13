@@ -8,7 +8,6 @@ import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta
 class ClientBootstrapConfig(
     val meta: ConfigMeta, val clientNetwork: ClientNetworkConfig
 ) : ConfigElement() {
-
     override fun toJSON(): JSONObject {
         val json = JSONObject()
         json["config-meta"] = this.meta.toJSON()

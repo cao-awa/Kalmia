@@ -1,30 +1,29 @@
-package com.github.cao.awa.kalmia.config;
+package com.github.cao.awa.kalmia.config
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.alibaba.fastjson2.JSONArray
+import com.alibaba.fastjson2.JSONObject
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
 
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Supplier
 
-public abstract class ConfigElement {
-    public abstract JSONObject toJSON();
+abstract class ConfigElement {
+    abstract fun toJSON(): JSONObject
 
-    @SuppressWarnings("unchecked")
-    public static <T> T compute(JSONObject json, String key, Supplier<T> compute) {
-        return (T) Optional.ofNullable(json.get(key))
-                           .orElseGet(compute);
-    }
+    companion object {
+        @JvmStatic
+        fun <T> compute(json: JSONObject, key: String, compute: Supplier<T>): T {
+            return json[key].let { compute.get() }
+        }
 
-    public static JSONObject subObject(JSONObject json, String key) {
-        return EntrustEnvironment.result(json,
-                                         jsonObject -> jsonObject.getJSONObject(key)
-        );
-    }
+        @JvmStatic
+        fun subObject(json: JSONObject, key: String): JSONObject {
+            return EntrustEnvironment.result(json) { jsonObject -> jsonObject.getJSONObject(key) }
+        }
 
-    public static JSONArray subArray(JSONObject json, String key) {
-        return EntrustEnvironment.result(json,
-                                         jsonObject -> jsonObject.getJSONArray(key)
-        );
+        @JvmStatic
+        fun subArray(json: JSONObject, key: String): JSONArray {
+            return EntrustEnvironment.result(json) { jsonObject -> jsonObject.getJSONArray(key) }
+        }
+
     }
 }
