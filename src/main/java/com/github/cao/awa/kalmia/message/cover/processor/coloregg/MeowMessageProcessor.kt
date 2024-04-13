@@ -15,7 +15,7 @@ class MeowMessageProcessor : MessageProcessor() {
     }
 
     override fun process(bytes: ByteArray, sender: LongAndExtraIdentity): ByteArray {
-        val user = Kalmia.SERVER.userManager()[sender]!!
+        val user = Kalmia.SERVER.userManager[sender]!!
         val sourceText = String(
             bytes,
             StandardCharsets.UTF_8

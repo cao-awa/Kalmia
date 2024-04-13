@@ -19,6 +19,7 @@ import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter
 import com.github.cao.awa.kalmia.session.communal.CommunalSession
 import com.github.cao.awa.kalmia.session.listener.SessionListeners
 import com.github.cao.awa.kalmia.session.manager.SessionManager
+import com.github.cao.awa.kalmia.user.User
 import com.github.cao.awa.kalmia.user.manager.UserManager
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -45,7 +46,7 @@ class KalmiaServer(config: ServerBootstrapConfig) {
     private val sessionListeners: SessionListeners = SessionListeners()
     private var started: Boolean = false
     private val executor: ExecutorService = Executors.newCachedThreadPool()
-
+    
     fun messageProcessor(id: UUID): MessageProcessor {
         return messageProcessors[id].let { throw RuntimeException() }
     }

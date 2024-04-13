@@ -1,44 +1,43 @@
-package com.github.cao.awa.kalmia.client.polling;
+package com.github.cao.awa.kalmia.client.polling
 
-import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
-import com.github.cao.awa.kalmia.client.KalmiaClient;
-import com.github.cao.awa.kalmia.event.Event;
-import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
+import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier
+import com.github.cao.awa.kalmia.client.KalmiaClient
+import com.github.cao.awa.kalmia.event.Event
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Queue
+import java.util.concurrent.ConcurrentLinkedQueue
 
-public class PollingClient {
-    public static PollingClient CLIENT;
-    private final KalmiaClient delegate;
-    private byte[] sessionListenersIdentity = BytesRandomIdentifier.create(24);
-    private final Queue<Event> stackingNotices = new ConcurrentLinkedQueue<>();
+class PollingClient(
+    private val delegate: KalmiaClient
+) {
+    private var sessionListenersIdentity: ByteArray = BytesRandomIdentifier.create(24)
+    private val stackingNotices: Queue<Event> = ConcurrentLinkedQueue()
 
-    public PollingClient(KalmiaClient delegate) {
-        this.delegate = delegate;
+    fun curMsgSeq(sessionIdentity: PureExtraIdentity): Long {
+        return delegate.messageManager().seq(sessionIdentity)
     }
 
-    public long curMsgSeq(PureExtraIdentity sessionIdentity) {
-        return this.delegate.messageManager()
-                            .seq(sessionIdentity);
+    fun curSessionListenersIdentity(): ByteArray {
+        return sessionListenersIdentity
     }
 
-    public byte[] curSessionListenersIdentity() {
-        return this.sessionListenersIdentity;
+    fun sessionListenersIdentity(sessionListenersIdentity: ByteArray) {
+        this.sessionListenersIdentity = sessionListenersIdentity
     }
 
-    public void sessionListenersIdentity(byte[] sessionListenersIdentity) {
-        this.sessionListenersIdentity = sessionListenersIdentity;
-    }
-
-    public Event curStackingNotice() {
+    fun curStackingNotice(): Event? {
         if (this.stackingNotices.isEmpty()) {
-            return null;
+            return null
         }
-        return this.stackingNotices.poll();
+        return this.stackingNotices.poll()
     }
 
-    public void stackingNotice(Event notice) {
-        this.stackingNotices.add(notice);
+    fun stackingNotice(notice: Event) {
+        stackingNotices.add(notice)
+    }
+
+    companion object {
+        lateinit var CLIENT: PollingClient
     }
 }

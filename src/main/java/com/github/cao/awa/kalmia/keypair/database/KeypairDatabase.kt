@@ -17,28 +17,22 @@ import java.security.PublicKey
 import java.util.function.BiConsumer
 
 class KeypairDatabase(path: String?) : KeyValueDatabase<BytesKey, KeyPairStore?>(ApricotCollectionFactor::hashMap) {
-    private val delegate: KeyValueBytesDatabase
+    private val delegate: KeyValueBytesDatabase = DatabaseProviders.bytes(path)
 
-    init {
-        this.delegate = DatabaseProviders.bytes(path)
-    }
-
-    override operator fun set(identity: BytesKey, keypair: KeyPairStore?) {
-        if (keypair == null) {
-            remove(identity)
+    override operator fun set(key: BytesKey, value: KeyPairStore?) {
+        if (value == null) {
+            remove(key)
             return
         }
 
-        keypair.privateKey().decode(true)
+        value.privateKey().decode(true)
 
         putPublic(
-            identity,
-            keypair.publicKey()
+            key, value.publicKey()
         )
 
         putPrivate(
-            identity,
-            keypair.privateKey()
+            key, value.privateKey()
         )
     }
 
@@ -52,9 +46,7 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<BytesKey, KeyPairStore?>
 
         val store = createStore(identity)
         val putStore = KeyStoreIdentity.createKeyPairStore(
-            store.identity(),
-            store.publicKey().decode(),
-            privateKey.key()
+            store.identity(), store.publicKey().decode(), privateKey.key()
         )
 
         this.delegate[identity] = putStore.toBytes()
@@ -66,9 +58,7 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<BytesKey, KeyPairStore?>
 
         val store = createStore(identity)
         val putStore = KeyStoreIdentity.createKeyPairStore(
-            store.identity(),
-            decoded,
-            store.privateKey().key()
+            store.identity(), decoded, store.privateKey().key()
         )
 
         this.delegate[identity] = putStore.toBytes()
@@ -93,8 +83,7 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<BytesKey, KeyPairStore?>
 
     override fun remove(key: BytesKey) {
         cache().delete(
-            key,
-            this.delegate::remove
+            key, this.delegate::remove
         )
     }
 
@@ -108,8 +97,7 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<BytesKey, KeyPairStore?>
         forEach { _, v ->
             if (v != null) {
                 action.accept(
-                    v.identity(),
-                    v
+                    v.identity(), v
                 )
             }
         }
@@ -125,8 +113,7 @@ class KeypairDatabase(path: String?) : KeyValueDatabase<BytesKey, KeyPairStore?>
         this.delegate.forEach { k, v ->
             val store = KeyPairStore.create(BytesReader.of(v))
             operator.accept(
-                k,
-                store
+                k, store
             )
         }
     }
