@@ -1,33 +1,32 @@
-package com.github.cao.awa.kalmia.attack.replay;
+package com.github.cao.awa.kalmia.attack.replay
 
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.apricot.util.time.TimeUtil;
-import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.apricot.util.time.TimeUtil
+import com.github.cao.awa.kalmia.mathematic.Mathematics
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
-import java.util.List;
+object ReplayAttack {
+    private val LOGGER: Logger = LogManager.getLogger("ReplayAttack")
 
-public class ReplayAttack {
-    private static final Logger LOGGER = LogManager.getLogger("ReplayAttack");
+    // private val invalidMarks: List<ByteArray> = ApricotCollectionFactor.timedList(4000)
+    private val invalidMarks: MutableList<String> = ApricotCollectionFactor.timedList(4000)
 
-    //    private static final List<byte[]> invalidMarks = ApricotCollectionFactor.timedList(4000);
-    private static final List<String> invalidMarks = ApricotCollectionFactor.timedList(4000);
-
-    public static boolean validate(byte[] mark, long timestamp) {
+    @JvmStatic
+    fun validate(mark: ByteArray, timestamp: Long): Boolean {
         if (TimeUtil.processMillion(timestamp) > 4000) {
-            return false;
+            return false
         }
 
-        String radixMark = Mathematics.radix(mark,
-                                             36
+        val radixMark: String = Mathematics.radix(
+            mark, 36
         );
 
-        if (invalidMarks.contains(radixMark)) {
-            return false;
+        return if (invalidMarks.contains(radixMark)) {
+            false
         } else {
-            invalidMarks.add(radixMark);
-            return true;
+            invalidMarks.add(radixMark)
+            true
         }
     }
 }
