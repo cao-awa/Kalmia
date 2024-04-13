@@ -1,19 +1,18 @@
-package com.github.cao.awa.kalmia.attack.exhaustive;
+package com.github.cao.awa.kalmia.attack.exhaustive
 
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter
 
-import java.util.List;
+object ExhaustiveLogin {
+    private val invalidRouters: MutableList<RequestRouter> = ApricotCollectionFactor.timedList(1500)
 
-public class ExhaustiveLogin {
-    private static final List<RequestRouter> invalidRouters = ApricotCollectionFactor.timedList(1500);
-
-    public static boolean validate(RequestRouter router) {
-        if (invalidRouters.contains(router)) {
-            return false;
+    @JvmStatic
+    fun validate(router: RequestRouter): Boolean {
+        return if (invalidRouters.contains(router)) {
+            false
         } else {
-            invalidRouters.add(router);
-            return true;
+            invalidRouters.add(router)
+            true
         }
     }
 }

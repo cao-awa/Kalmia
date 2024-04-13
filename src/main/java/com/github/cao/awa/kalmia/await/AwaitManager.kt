@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 class AwaitManager {
-    private val executor: ScheduledExecutorService = ScheduledThreadPoolExecutor(1);
+    private val executor: ScheduledExecutorService = ScheduledThreadPoolExecutor(1)
     private val awaiting: MutableMap<String, Long> = ApricotCollectionFactor.hashMap()
 
     fun awaitManager() {
