@@ -1,124 +1,129 @@
-package com.github.cao.awa.kalmia.bootstrap;
+package com.github.cao.awa.kalmia.bootstrap
 
-import com.github.cao.awa.kalmia.client.KalmiaClient;
-import com.github.cao.awa.kalmia.client.polling.PollingClient;
-import com.github.cao.awa.kalmia.constant.KalmiaConstant;
-import com.github.cao.awa.kalmia.env.KalmiaEnv;
-import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
-import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
-import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
-import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair;
-import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair;
-import com.github.cao.awa.kalmia.keypair.store.KeyPairStoreFactor;
-import com.github.cao.awa.kalmia.message.cover.CoverMessage;
-import com.github.cao.awa.kalmia.message.deleted.DeletedMessage;
-import com.github.cao.awa.kalmia.message.factor.MessageFactor;
-import com.github.cao.awa.kalmia.message.user.UserMessage;
-import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.client.ClientHelloPacket;
-import com.github.cao.awa.kalmia.server.KalmiaServer;
-import com.github.cao.awa.kalmia.session.communal.CommunalSession;
-import com.github.cao.awa.kalmia.session.duet.DuetSession;
-import com.github.cao.awa.kalmia.session.factor.SessionFactor;
-import com.github.cao.awa.kalmia.session.group.GroupSession;
-import com.github.cao.awa.kalmia.user.DefaultUser;
-import com.github.cao.awa.kalmia.user.UselessUser;
-import com.github.cao.awa.kalmia.user.factor.UserFactor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.github.cao.awa.kalmia.client.KalmiaClient
+import com.github.cao.awa.kalmia.client.polling.PollingClient
+import com.github.cao.awa.kalmia.constant.KalmiaConstant
+import com.github.cao.awa.kalmia.env.KalmiaEnv
+import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv
+import com.github.cao.awa.kalmia.identity.PureExtraIdentity
+import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair
+import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair
+import com.github.cao.awa.kalmia.keypair.pair.rsa.RsaKeyPair
+import com.github.cao.awa.kalmia.keypair.store.KeyPairStoreFactor
+import com.github.cao.awa.kalmia.message.cover.CoverMessage
+import com.github.cao.awa.kalmia.message.deleted.DeletedMessage
+import com.github.cao.awa.kalmia.message.factor.MessageFactor
+import com.github.cao.awa.kalmia.message.user.UserMessage
+import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.client.ClientHelloPacket
+import com.github.cao.awa.kalmia.server.KalmiaServer
+import com.github.cao.awa.kalmia.session.communal.CommunalSession
+import com.github.cao.awa.kalmia.session.duet.DuetSession
+import com.github.cao.awa.kalmia.session.factor.SessionFactor
+import com.github.cao.awa.kalmia.session.group.GroupSession
+import com.github.cao.awa.kalmia.user.DefaultUser
+import com.github.cao.awa.kalmia.user.UselessUser
+import com.github.cao.awa.kalmia.user.factor.UserFactor
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
-import java.util.Set;
+object Kalmia {
+    private val LOGGER: Logger = LogManager.getLogger("Kalmia")
+    lateinit var SERVER: KalmiaServer
+    lateinit var CLIENT: KalmiaClient
 
-public class Kalmia {
-    private static final Logger LOGGER = LogManager.getLogger("Kalmia");
-    public static KalmiaServer SERVER;
-    public static KalmiaClient CLIENT;
-
-    public static void main(String[] args) {
+    @JvmStatic
+    fun main(args: Array<String>) {
         try {
-            startServer();
-        } catch (Exception e) {
-            e.printStackTrace();
+            startServer()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
-    public static void startServer() throws Exception {
-        setupEnvironment();
+    @JvmStatic
+    fun startServer() {
+        setupEnvironment()
 
-        LOGGER.info("Starting kalmia server");
+        LOGGER.info("Starting kalmia server")
 
-        SERVER = new KalmiaServer(KalmiaServer.serverBootstrapConfig);
+        SERVER = KalmiaServer(KalmiaServer.serverBootstrapConfig)
 
-        LOGGER.info("Setup kalmia server");
+        LOGGER.info("Setup kalmia server")
 
-        KalmiaEnv.setupServer();
+        KalmiaEnv.setupServer()
 
-        if (KalmiaServer.serverBootstrapConfig.getTranslation().getEnable()) {
-            KalmiaTranslationEnv.setupFrameworks();
+        if (KalmiaServer.serverBootstrapConfig.translation.enable) {
+            KalmiaTranslationEnv.setupFrameworks()
         }
 
-        setupTest();
+        setupTest()
 
-        SERVER.startup();
+        SERVER.startup()
     }
 
-    public static void startClient() throws Exception {
-        setupEnvironment();
+    @JvmStatic
+    fun startClient() {
+        setupEnvironment()
 
-        LOGGER.info("Starting kalmia client");
+        LOGGER.info("Starting kalmia client")
 
-        CLIENT = new KalmiaClient(KalmiaClient.clientBootstrapConfig);
+        CLIENT = KalmiaClient(KalmiaClient.clientBootstrapConfig)
 
-        LOGGER.info("Setup kalmia client");
+        LOGGER.info("Setup kalmia client")
 
-        KalmiaEnv.setupClient();
+        KalmiaEnv.setupClient()
 
-        CLIENT.activeCallback(router -> {
-            router.send(new ClientHelloPacket(KalmiaConstant.STANDARD_REQUEST_PROTOCOL, "KalmiaWww v1.0.1"));
-        });
+        CLIENT.activeCallback { router ->
+            router.send(ClientHelloPacket(KalmiaConstant.STANDARD_REQUEST_PROTOCOL, "KalmiaWww v1.0.1"))
+        }
 
-        PollingClient.CLIENT = new PollingClient(CLIENT);
+        PollingClient.CLIENT = PollingClient(CLIENT)
 
         CLIENT.connect();
     }
 
-    public static void setupTest() throws Exception {
-        Set<PureExtraIdentity> keys = SERVER.getUserManager().keyStores(KalmiaEnv.testUser1.identity());
+    fun setupTest() {
+        val keys: MutableSet<PureExtraIdentity> = SERVER.userManager.keyStores(KalmiaEnv.testUser1.identity())
 
-        keys.add(KalmiaEnv.testKeypair0.identity());
-        keys.add(KalmiaEnv.testKeypair1.identity());
+        keys.add(KalmiaEnv.testKeypair0.identity())
+        keys.add(KalmiaEnv.testKeypair1.identity())
 
-        SERVER.getUserManager().keyStores(KalmiaEnv.testUser1.identity(), keys);
+        SERVER.userManager.keyStores(KalmiaEnv.testUser1.identity(), keys)
 
-        SERVER.getKeypairManager().set(KalmiaEnv.testKeypair0.identity(), KalmiaEnv.testKeypair0);
+        SERVER.keypairManager.set(KalmiaEnv.testKeypair0.identity(), KalmiaEnv.testKeypair0)
 
-        SERVER.getKeypairManager().set(KalmiaEnv.testKeypair1.identity(), KalmiaEnv.testKeypair1);
+        SERVER.keypairManager.set(KalmiaEnv.testKeypair1.identity(), KalmiaEnv.testKeypair1)
     }
 
-    public static void setupEnvironment() {
+    private fun setupEnvironment() {
         try {
-            KalmiaServer.setupBootstrapConfig();
-        } catch (Exception ignored) {
-
-        }
-        try {
-            KalmiaClient.setupBootstrapConfig();
-        } catch (Exception ignored) {
+            KalmiaServer.setupBootstrapConfig()
+            KalmiaClient.setupBootstrapConfig()
+        } catch (_: Exception) {
 
         }
 
-        UserFactor.register(-1, UselessUser::create);
-        UserFactor.register(0, DefaultUser::create);
+        UserFactor.register(-1, UselessUser::create)
+        UserFactor.register(0, DefaultUser::create)
 
-        MessageFactor.register(-1, DeletedMessage::create);
-        MessageFactor.register(2, UserMessage::create);
-        MessageFactor.register(5, CoverMessage::create);
+        MessageFactor.register(-1, DeletedMessage::create)
+        MessageFactor.register(2, UserMessage::create)
+        MessageFactor.register(5, CoverMessage::create)
 
-        KeyPairStoreFactor.register(0, RsaKeyPair::new);
-        KeyPairStoreFactor.register(1, EcKeyPair::new);
-        KeyPairStoreFactor.register(123, EmptyKeyPair::new);
+        KeyPairStoreFactor.register(0) { identity, publicKey, privateKey ->
+            RsaKeyPair(
+                identity, publicKey, privateKey
+            )
+        }
+        KeyPairStoreFactor.register(1) { identity, publicKey, privateKey -> EcKeyPair(identity, publicKey, privateKey) }
+        KeyPairStoreFactor.register(123) { identity, publicKey, privateKey ->
+            EmptyKeyPair(
+                identity, publicKey, privateKey
+            )
+        }
 
-        SessionFactor.register(1, DuetSession::create);
-        SessionFactor.register(2, CommunalSession::create);
-        SessionFactor.register(3, GroupSession::create);
+        SessionFactor.register(1, DuetSession::create)
+        SessionFactor.register(2, CommunalSession::create)
+        SessionFactor.register(3, GroupSession::create)
     }
 }

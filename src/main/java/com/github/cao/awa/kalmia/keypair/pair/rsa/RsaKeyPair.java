@@ -12,10 +12,7 @@ import java.security.PublicKey;
 
 public class RsaKeyPair extends KeyPairStore {
     public RsaKeyPair(PureExtraIdentity identity, byte[] publicKey, byte[] privateKey) {
-        super(identity,
-              publicKey,
-              privateKey
-        );
+        super(identity, publicKey, privateKey);
     }
 
     @Override
@@ -26,15 +23,11 @@ public class RsaKeyPair extends KeyPairStore {
 
     @Override
     public KeyStore<? extends PublicKey> createPublicStore(byte[] publicKey) {
-        return new RsaPublicKeyStore(this,
-                                     publicKey
-        );
+        return new RsaPublicKeyStore(this, publicKey);
     }
 
     @Override
     public KeyStore<? extends PrivateKey> createPrivateStore(byte[] privateKey) {
-        return new RsaPrivateKeyStore(this,
-                                      privateKey
-        );
+        return new RsaPrivateKeyStore(this, privateKey);
     }
 }
