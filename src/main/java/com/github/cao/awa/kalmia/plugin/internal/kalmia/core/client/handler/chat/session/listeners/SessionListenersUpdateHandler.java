@@ -22,18 +22,11 @@ public class SessionListenersUpdateHandler implements SessionListenersUpdateEven
     @Client
     @Override
     public void handle(RequestRouter router, SessionListenersUpdatePacket packet) {
-        Kalmia.CLIENT.userManager()
-                     .sessionListeners(router.accessIdentity(),
-                                       packet.mapId()
-                     );
+        Kalmia.CLIENT.getUserManager().sessionListeners(router.accessIdentity(), packet.mapId());
 
-        packet.sessions()
-              .forEach(session -> {
-                  Kalmia.CLIENT.sessionManager()
-                               .set(session.identity(),
-                                    session
-                               );
-              });
+        packet.sessions().forEach(session -> {
+            Kalmia.CLIENT.getSessionManager().set(session.identity(), session);
+        });
 
         PollingClient.CLIENT.sessionListenersIdentity(BytesRandomIdentifier.create(24));
     }

@@ -38,7 +38,7 @@ public class SelectedMessageHandler implements SelectedMessageEventHandler {
             return;
         }
 
-        MessageManager manager = Kalmia.CLIENT.messageManager();
+        MessageManager manager = Kalmia.CLIENT.getMessageManager();
 
         Message[] messages = packet.messages()
                                    .toArray(Message[] :: new);

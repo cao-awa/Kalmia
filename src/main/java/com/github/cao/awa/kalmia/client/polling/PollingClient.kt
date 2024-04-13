@@ -15,7 +15,7 @@ class PollingClient(
     private val stackingNotices: Queue<Event> = ConcurrentLinkedQueue()
 
     fun curMsgSeq(sessionIdentity: PureExtraIdentity): Long {
-        return delegate.messageManager().seq(sessionIdentity)
+        return delegate.messageManager.seq(sessionIdentity)
     }
 
     fun curSessionListenersIdentity(): ByteArray {

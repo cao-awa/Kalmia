@@ -21,21 +21,11 @@ public class SentMessageHandler implements SentMessageEventHandler {
     @Override
     public void handle(RequestRouter router, SentMessagePacket packet) {
         LOGGER.info("""
-                            --Sent message--
-                            SEQ:{}
-                            UID: {}
-                            IDT: {}""",
-                    packet.seq(),
-                    router.accessIdentity(),
-                    Mathematics.radix(packet.receipt(),
-                                      36
-                    )
-        );
+                --Sent message--
+                SEQ:{}
+                UID: {}
+                IDT: {}""", packet.seq(), router.accessIdentity(), Mathematics.radix(packet.receipt(), 36));
 
-        Kalmia.CLIENT.messageManager()
-                     .set(packet.sessionIdentity(),
-                          packet.seq(),
-                          packet.message()
-                     );
+        Kalmia.CLIENT.getMessageManager().set(packet.sessionIdentity(), packet.seq(), packet.message());
     }
 }

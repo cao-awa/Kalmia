@@ -34,11 +34,10 @@ public class KalmiaClientChannelInitializer extends ChannelInitializer<SocketCha
      */
     @Override
     protected void initChannel(SocketChannel ch) {
-        ch.config()
-          .setRecvByteBufAllocator(new FixedRecvByteBufAllocator(IntegerConstants.K_16));
+        ch.config().setRecvByteBufAllocator(new FixedRecvByteBufAllocator(IntegerConstants.K_16));
         ChannelPipeline pipeline = ch.pipeline();
         // Do decode.
-        RequestRouter router = new RequestRouter(this.client.activeCallback());
+        RequestRouter router = new RequestRouter(this.client.getActiveCallback());
         this.client.router(router);
         pipeline.addLast(new RequestDecoder(router));
         pipeline.addLast(new RequestEncoder(router));

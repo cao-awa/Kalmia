@@ -26,29 +26,14 @@ public class NewMessageNoticeHandler implements NewMessageNoticeEventHandler {
     public void handle(RequestRouter router, NewMessageNoticePacket packet) {
         Message message = packet.message();
 
-        Kalmia.CLIENT.messageManager()
-                     .set(
-                             packet.sessionIdentity(),
-                             packet.seq(),
-                             packet.message()
-                     );
+        Kalmia.CLIENT.getMessageManager().set(packet.sessionIdentity(), packet.seq(), packet.message());
 
-        Kalmia.CLIENT.messageManager()
-                     .seq(packet.sessionIdentity(),
-                          packet.seq()
-                     );
+        Kalmia.CLIENT.getMessageManager().seq(packet.sessionIdentity(), packet.seq());
 
         if (message instanceof DeletedMessage deleted) {
-            LOGGER.info("New message from {}: {}",
-                        packet.message()
-                              .sender(),
-                        deleted.digest()
-                               .value36()
-            );
+            LOGGER.info("New message from {}: {}", packet.message().sender(), deleted.digest().value36());
         } else if (message instanceof UnknownMessage unknown) {
-            LOGGER.info("New message from unknown: {}",
-                        Arrays.toString(unknown.details())
-            );
+            LOGGER.info("New message from unknown: {}", Arrays.toString(unknown.details()));
         }
     }
 }

@@ -20,7 +20,7 @@ public class FetchedMessageHandler implements FetchedMessageEventHandler {
     public void handle(RequestRouter router, FetchedMessagePacket packet) {
         packet.messages()
               .forEach(message -> {
-                  Kalmia.CLIENT.messageManager()
+                  Kalmia.CLIENT.getMessageManager()
                                .set(message.identity(),
                                     message
                                );
