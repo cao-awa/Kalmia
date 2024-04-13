@@ -49,7 +49,7 @@ public class KalmiaServerNetworkIo {
 
     public KalmiaServerNetworkIo(KalmiaServer server) {
         this.server = server;
-        if (server.bootstrapConfig().getTranslation().getEnable()) {
+        if (server.getBootstrapConfig().getTranslation().getEnable()) {
             this.channelInitializer = new TranslationServerChannelInitializer(server).subscribe(this.connections);
         } else {
             this.channelInitializer = new KalmiagramServerChannelInitializer(server).subscribe(this.connections);

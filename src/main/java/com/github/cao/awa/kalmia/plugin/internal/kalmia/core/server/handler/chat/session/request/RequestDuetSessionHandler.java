@@ -24,42 +24,18 @@ public class RequestDuetSessionHandler implements RequestDuetSessionEventHandler
     public void handle(RequestRouter router, RequestDuetSessionPacket packet) {
         LongAndExtraIdentity targetIdentity = packet.targetUser();
 
-        PureExtraIdentity sessionIdentity = Kalmia.SERVER.userManager()
-                                                         .duetSession(router.accessIdentity(),
-                                                                      targetIdentity
-                                                         );
+        PureExtraIdentity sessionIdentity = Kalmia.SERVER.getUserManager().duetSession(router.accessIdentity(), targetIdentity);
         if (sessionIdentity == null) {
-            sessionIdentity = Kalmia.SERVER.sessionManager()
-                                           .add(new DuetSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
-                                                                router.accessIdentity(),
-                                                                targetIdentity
-                                           ));
+            sessionIdentity = Kalmia.SERVER.getSessionManager().add(new DuetSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)), router.accessIdentity(), targetIdentity));
 
             // Update session data.
-            Kalmia.SERVER.userManager()
-                         .duetSession(router.accessIdentity(),
-                                      targetIdentity,
-                                      sessionIdentity
-                         );
+            Kalmia.SERVER.getUserManager().duetSession(router.accessIdentity(), targetIdentity, sessionIdentity);
 
             // Update accessible.
-            Kalmia.SERVER.sessionManager()
-                         .updateAccessible(
-                                 sessionIdentity,
-                                 router.accessIdentity(),
-                                 SessionAccessibleData :: accessibleChat
-                         );
-            Kalmia.SERVER.sessionManager()
-                         .updateAccessible(
-                                 sessionIdentity,
-                                 targetIdentity,
-                                 SessionAccessibleData :: accessibleChat
-                         );
+            Kalmia.SERVER.getSessionManager().updateAccessible(sessionIdentity, router.accessIdentity(), SessionAccessibleData::accessibleChat);
+            Kalmia.SERVER.getSessionManager().updateAccessible(sessionIdentity, targetIdentity, SessionAccessibleData::accessibleChat);
         }
 
-        router.send(new ChatInSessionPacket(
-                targetIdentity,
-                sessionIdentity
-        ));
+        router.send(new ChatInSessionPacket(targetIdentity, sessionIdentity));
     }
 }

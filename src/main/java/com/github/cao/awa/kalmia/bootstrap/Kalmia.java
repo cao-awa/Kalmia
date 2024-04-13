@@ -82,27 +82,27 @@ public class Kalmia {
     }
 
     public static void setupTest() throws Exception {
-        Set<PureExtraIdentity> keys = SERVER.userManager().keyStores(KalmiaEnv.testUser1.identity());
+        Set<PureExtraIdentity> keys = SERVER.getUserManager().keyStores(KalmiaEnv.testUser1.identity());
 
         keys.add(KalmiaEnv.testKeypair0.identity());
         keys.add(KalmiaEnv.testKeypair1.identity());
 
-        SERVER.userManager().keyStores(KalmiaEnv.testUser1.identity(), keys);
+        SERVER.getUserManager().keyStores(KalmiaEnv.testUser1.identity(), keys);
 
-        SERVER.keypairManager().set(KalmiaEnv.testKeypair0.identity(), KalmiaEnv.testKeypair0);
+        SERVER.getKeypairManager().set(KalmiaEnv.testKeypair0.identity(), KalmiaEnv.testKeypair0);
 
-        SERVER.keypairManager().set(KalmiaEnv.testKeypair1.identity(), KalmiaEnv.testKeypair1);
+        SERVER.getKeypairManager().set(KalmiaEnv.testKeypair1.identity(), KalmiaEnv.testKeypair1);
     }
 
     public static void setupEnvironment() {
         try {
             KalmiaServer.setupBootstrapConfig();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
         try {
             KalmiaClient.setupBootstrapConfig();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
 

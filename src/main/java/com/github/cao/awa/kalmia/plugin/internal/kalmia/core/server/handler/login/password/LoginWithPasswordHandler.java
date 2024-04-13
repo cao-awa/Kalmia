@@ -30,40 +30,18 @@ public class LoginWithPasswordHandler implements LoginWithPasswordEventHandler {
         LongAndExtraIdentity accessIdentity = packet.accessIdentity();
         String password = packet.password();
 
-        User user = Kalmia.SERVER.userManager()
-                                 .get(accessIdentity);
+        User user = Kalmia.SERVER.getUserManager().get(accessIdentity);
 
-        if (user instanceof DefaultUser usr && usr.password()
-                                                  .isSha() && Arrays.equals(usr.password()
-                                                                               .password(),
-                                                                            Mathematics.toBytes(MessageDigger.digest(password,
-                                                                                                                     MessageDigger.Sha3.SHA_512
-                                                                                                ),
-                                                                                                16
-                                                                            )
-        ) && ExhaustiveLogin.validate(router)) {
+        if (user instanceof DefaultUser usr && usr.password().isSha() && Arrays.equals(usr.password().password(), Mathematics.toBytes(MessageDigger.digest(password, MessageDigger.Sha3.SHA_512), 16)) && ExhaustiveLogin.validate(router)) {
             router.setStates(RequestState.AUTHED);
 
             byte[] token = BytesRandomIdentifier.create(128);
 
-            LoginCommon.login(
-                    packet.accessIdentity(),
-                    router
-            );
+            LoginCommon.login(packet.accessIdentity(), router);
 
-            loginSuccess(
-                    router,
-                    accessIdentity,
-                    token,
-                    packet.receipt()
-            );
+            loginSuccess(router, accessIdentity, token, packet.receipt());
         } else {
-            loginFailure(
-                    router,
-                    accessIdentity,
-                    "login.failure.pwd_or_uid_is_wrong",
-                    packet.receipt()
-            );
+            loginFailure(router, accessIdentity, "login.failure.pwd_or_uid_is_wrong", packet.receipt());
         }
     }
 }

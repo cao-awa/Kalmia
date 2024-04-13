@@ -11,15 +11,11 @@ public class Sessions {
     public static final Session INACCESSIBLE = new InaccessibleSession();
 
     public static Set<PureExtraIdentity> subscribe(PureExtraIdentity sessionIdentity, LongAndExtraIdentity accessIdentity) {
-        Set<PureExtraIdentity> listeners = Kalmia.SERVER.userManager()
-                                                        .sessionListeners(accessIdentity);
+        Set<PureExtraIdentity> listeners = Kalmia.SERVER.getUserManager().sessionListeners(accessIdentity);
 
         listeners.add(sessionIdentity);
 
-        Kalmia.SERVER.userManager()
-                     .sessionListeners(accessIdentity,
-                                       listeners
-                     );
+        Kalmia.SERVER.getUserManager().sessionListeners(accessIdentity, listeners);
 
         return listeners;
     }

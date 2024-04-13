@@ -22,8 +22,7 @@ public abstract class Session implements BytesValueConvertable {
     public abstract boolean accessible(LongAndExtraIdentity accessIdentity);
 
     public Settings settings() {
-        return Kalmia.SERVER.sessionManager()
-                            .settings(identity());
+        return Kalmia.SERVER.getSessionManager().settings(identity());
     }
 
     public abstract byte[] header();
@@ -42,8 +41,6 @@ public abstract class Session implements BytesValueConvertable {
 
         reader.back(1);
 
-        return SessionFactor.create(id,
-                                    reader
-        );
+        return SessionFactor.create(id, reader);
     }
 }

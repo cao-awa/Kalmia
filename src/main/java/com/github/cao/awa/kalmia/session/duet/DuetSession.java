@@ -20,32 +20,19 @@ public class DuetSession extends Session {
 
     public static DuetSession create(BytesReader reader) {
         if (reader.read() == 1) {
-            return new DuetSession(
-                    PureExtraIdentity.read(reader),
-                    LongAndExtraIdentity.read(reader),
-                    LongAndExtraIdentity.read(reader)
-            );
+            return new DuetSession(PureExtraIdentity.read(reader), LongAndExtraIdentity.read(reader), LongAndExtraIdentity.read(reader));
         }
         return null;
     }
 
     @Override
     public byte[] bytes() {
-        return BytesUtil.concat(header(),
-                                identity().toBytes(),
-                                this.target1.toBytes(),
-                                this.target2.toBytes()
-        );
+        return BytesUtil.concat(header(), identity().toBytes(), this.target1.toBytes(), this.target2.toBytes());
     }
 
     @Override
     public boolean accessible(LongAndExtraIdentity accessIdentity) {
-        return Kalmia.SERVER.sessionManager()
-                            .accessible(
-                                    identity(),
-                                    accessIdentity
-                            )
-                            .accessibleChat(true);
+        return Kalmia.SERVER.getSessionManager().accessible(identity(), accessIdentity).accessibleChat(true);
     }
 
     @Override

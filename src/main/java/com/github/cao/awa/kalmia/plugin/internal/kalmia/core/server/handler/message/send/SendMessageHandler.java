@@ -34,21 +34,13 @@ public class SendMessageHandler implements SendMessageEventHandler {
     @Override
     public void handle(RequestRouter router, SendMessagePacket packet) {
         LOGGER.info("""
-                            --Send message--
-                            UID: {}
-                            IDT: {}
-                            SID: {}
-                            MSG:{}""",
-                    router.accessIdentity(),
-                    Mathematics.radix(packet.receipt(),
-                                      36
-                    ),
-                    packet.sessionIdentity(),
-                    packet.message()
-        );
+                --Send message--
+                UID: {}
+                IDT: {}
+                SID: {}
+                MSG:{}""", router.accessIdentity(), Mathematics.radix(packet.receipt(), 36), packet.sessionIdentity(), packet.message());
 
-        Session session = Kalmia.SERVER.sessionManager()
-                                       .session(packet.sessionIdentity());
+        Session session = Kalmia.SERVER.getSessionManager().session(packet.sessionIdentity());
 
         boolean accessible = false;
 
@@ -61,78 +53,43 @@ public class SendMessageHandler implements SendMessageEventHandler {
 
             byte[] msg = packet.message();
 
-            if (! packet.signed() && ! packet.crypted()) {
+            if (!packet.signed() && !packet.crypted()) {
                 // Meow when user do not to sign.
-                msg = Kalmia.SERVER.messageProcessor(MeowMessageProcessor.ID)
-                                   .process(msg,
-                                            router.accessIdentity()
-                                   );
+                msg = Kalmia.SERVER.messageProcessor(MeowMessageProcessor.ID).process(msg, router.accessIdentity());
             }
 
-            if (! packet.crypted()) {
-                for (UUID processor : session.settings()
-                                             .get(SessionSettings.ENABLED_PROCESSORS)
-                                             .processors()) {
-                    Kalmia.SERVER.messageProcessor(processor)
-                                 .process(msg,
-                                          router.accessIdentity()
-                                 );
+            if (!packet.crypted()) {
+                for (UUID processor : session.settings().get(SessionSettings.ENABLED_PROCESSORS).processors()) {
+                    Kalmia.SERVER.messageProcessor(processor).process(msg, router.accessIdentity());
                 }
             }
 
-            if (Arrays.equals(msg,
-                              packet.message()
-            )) {
-                message = new UserMessage(
-                        packet.keyIdentity(),
-                        packet.message(),
-                        packet.signIdentity(),
-                        packet.sign(),
-                        router.accessIdentity()
-                );
+            if (Arrays.equals(msg, packet.message())) {
+                message = new UserMessage(packet.keyIdentity(), packet.message(), packet.signIdentity(), packet.sign(), router.accessIdentity());
             } else {
                 message = new CoverMessage(
                         // Source data.
-                        packet.message(),
-                        router.accessIdentity(),
-                        packet.signIdentity(),
-                        packet.sign(),
+                        packet.message(), router.accessIdentity(), packet.signIdentity(), packet.sign(),
                         // Cover data.
                         msg,
                         // TODO the cover sender need be a account.
                         KalmiaConstant.UNMARKED_LONG_AND_EXTRA_IDENTITY,
                         // TODO the cover message need to sign.
-                        KalmiaConstant.UNMARKED_PURE_IDENTITY,
-                        BytesUtil.EMPTY
-                );
+                        KalmiaConstant.UNMARKED_PURE_IDENTITY, BytesUtil.EMPTY);
 
                 LOGGER.info("Processor has processed message");
             }
 
-            long seq = Kalmia.SERVER.messageManager()
-                                    .send(
-                                            packet.sessionIdentity(),
-                                            message
-                                    );
+            long seq = Kalmia.SERVER.getMessageManager().send(packet.sessionIdentity(), message);
 
             // Response to client send result.
-            router.send(new SentMessagePacket(session.identity(),
-                                              seq,
-                                              message
-            ).receipt(packet.receipt()));
+            router.send(new SentMessagePacket(session.identity(), seq, message).receipt(packet.receipt()));
 
-            LOGGER.info("Sent message at seq {}: {}",
-                        seq,
-                        Mathematics.radix(packet.receipt(),
-                                          36
-                        )
-            );
+            LOGGER.info("Sent message at seq {}: {}", seq, Mathematics.radix(packet.receipt(), 36));
         } else {
             // Unable to access the session.
             router.send(new SendMessageRefusedPacket("message.send.refused.session.unable.access").receipt(packet.receipt()));
-            LOGGER.warn("The session {} is not accessible",
-                        packet.sessionIdentity()
-            );
+            LOGGER.warn("The session {} is not accessible", packet.sessionIdentity());
         }
     }
 }

@@ -27,28 +27,19 @@ public class SelectKeyStoreHandler implements SelectKeyStoreEventHandler {
     public void handle(RequestRouter router, SelectKeyStorePacket packet) {
         Map<PureExtraIdentity, KeyPairStore> result = ApricotCollectionFactor.hashMap();
 
-        Set<PureExtraIdentity> userStores = Kalmia.SERVER.userManager()
-                                                         .keyStores(router.accessIdentity());
+        Set<PureExtraIdentity> userStores = Kalmia.SERVER.getUserManager().keyStores(router.accessIdentity());
 
-        packet.keyIdentities()
-              .forEach(id -> {
-                  KeyPairStore store = Kalmia.SERVER.keypairManager()
-                                                    .getStore(id);
+        packet.keyIdentities().forEach(id -> {
+            KeyPairStore store = Kalmia.SERVER.getKeypairManager().getStore(id);
 
-                  // Do not provide private key if the user are not key owner.
-                  if (! userStores.contains(id)) {
-                      // Clear private key.
-                      store = KeyStoreIdentity.createKeyPairStore(store.identity(),
-                                                                  store.publicKey()
-                                                                       .decode(),
-                                                                  BytesUtil.EMPTY
-                      );
-                  }
+            // Do not provide private key if the user are not key owner.
+            if (!userStores.contains(id)) {
+                // Clear private key.
+                store = KeyStoreIdentity.createKeyPairStore(store.identity(), store.publicKey().decode(), BytesUtil.EMPTY);
+            }
 
-                  result.put(id,
-                             store
-                  );
-              });
+            result.put(id, store);
+        });
 
         router.send(new SelectedKeyStorePacket(result).receipt(packet.receipt()));
     }

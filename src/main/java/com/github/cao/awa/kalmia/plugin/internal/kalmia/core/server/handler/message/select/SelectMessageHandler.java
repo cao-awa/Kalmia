@@ -25,7 +25,7 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
         long start = packet.from();
         int realSelected;
 
-        MessageManager manager = Kalmia.SERVER.messageManager();
+        MessageManager manager = Kalmia.SERVER.getMessageManager();
 
         long currentSeqEnd = manager.seq(packet.sessionIdentity());
 
@@ -33,66 +33,41 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
 
         System.out.println(start + ":" + packet.to() + "(" + currentSeqEnd + ")");
 
-        if (start > packet.to() || start > currentSeqEnd || currentSeqEnd == - 1) {
-            router.send(new SelectedMessagePacket(packet.sessionIdentity(),
-                                                  - 1,
-                                                  - 1,
-                                                  currentSeqEnd,
-                                                  messages
-            ).receipt(packet.receipt()));
+        if (start > packet.to() || start > currentSeqEnd || currentSeqEnd == -1) {
+            router.send(new SelectedMessagePacket(packet.sessionIdentity(), -1, -1, currentSeqEnd, messages).receipt(packet.receipt()));
 
             return;
         }
 
         if (start == packet.to() || start == currentSeqEnd) {
-            messages.add(manager.get(packet.sessionIdentity(),
-                                     packet.from()
-            ));
+            messages.add(manager.get(packet.sessionIdentity(), packet.from()));
 
-            router.send(new SelectedMessagePacket(packet.sessionIdentity(),
-                                                  packet.from(),
-                                                  packet.from(),
-                                                  currentSeqEnd,
-                                                  messages
-            ).receipt(packet.receipt()));
+            router.send(new SelectedMessagePacket(packet.sessionIdentity(), packet.from(), packet.from(), currentSeqEnd, messages).receipt(packet.receipt()));
 
             return;
         }
 
-        long end = Math.min(packet.to(),
-                            currentSeqEnd
-        );
+        long end = Math.min(packet.to(), currentSeqEnd);
 
         while (start < end) {
-            long selected = Math.min(end - start,
-                                     200
-            );
+            long selected = Math.min(end - start, 200);
 
             long endSelect = start + selected;
 
             try {
-                manager.operation(packet.sessionIdentity(),
-                                  start,
-                                  endSelect,
-                                  (seq, msg) -> {
-                                      System.out.println(msg);
-                                      messages.add(msg);
-                                  }
-                );
+                manager.operation(packet.sessionIdentity(), start, endSelect, (seq, msg) -> {
+                    System.out.println(msg);
+                    messages.add(msg);
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             realSelected = messages.size() - 1;
 
-            router.send(new SelectedMessagePacket(packet.sessionIdentity(),
-                                                  start,
-                                                  start + realSelected,
-                                                  currentSeqEnd,
-                                                  // Copy the list, because it will be cleared immediately.
-                                                  messages.stream()
-                                                          .toList()
-            ).receipt(packet.receipt()));
+            router.send(new SelectedMessagePacket(packet.sessionIdentity(), start, start + realSelected, currentSeqEnd,
+                    // Copy the list, because it will be cleared immediately.
+                    messages.stream().toList()).receipt(packet.receipt()));
 
             start += selected + 1;
 

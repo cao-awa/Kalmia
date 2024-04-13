@@ -21,15 +21,10 @@ public class DeleteMessageHandler implements DeleteMessageEventHandler {
         System.out.println("SID: " + packet.sessionIdentity());
         System.out.println("SEQ: " + packet.seq());
 
-        Kalmia.SERVER.messageManager()
-                     .delete(packet.sessionIdentity(),
-                             packet.seq()
-                     );
+        Kalmia.SERVER.getMessageManager().delete(packet.sessionIdentity(), packet.seq());
 
         // Response to client the seq.
-        router.send(new DeletedMessagePacket(packet.sessionIdentity(),
-                                             packet.seq()
-        ));
+        router.send(new DeletedMessagePacket(packet.sessionIdentity(), packet.seq()));
 
 //        Kalmia.SERVER.messageManager().operation(123, (s, m) -> {
 //            System.out.println("---");

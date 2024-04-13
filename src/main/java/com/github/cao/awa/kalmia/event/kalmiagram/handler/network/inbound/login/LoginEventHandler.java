@@ -16,34 +16,27 @@ import java.util.List;
 
 public interface LoginEventHandler<P extends Packet<?>, E extends NetworkEvent<P>> extends NetworkEventHandler<P, E> {
     default void loginSuccess(RequestRouter router, LongAndExtraIdentity accessIdentity, byte[] token, byte[] receipt) {
-        router.send(new LoginSuccessPacket(accessIdentity,
-                                           token
-        ).receipt(receipt));
+        router.send(new LoginSuccessPacket(accessIdentity, token).receipt(receipt));
 
         router.accessIdentity(accessIdentity);
 
         List<Session> sessions = ApricotCollectionFactor.arrayList();
 
-        Kalmia.SERVER.userManager()
-                     .sessionListeners(accessIdentity)
-                     .forEach(id -> {
-                         Session session = Kalmia.SERVER.sessionManager()
-                                                        .session(id);
+        Kalmia.SERVER.getUserManager().sessionListeners(accessIdentity).forEach(id -> {
+            Session session = Kalmia.SERVER.getSessionManager().session(id);
 
-                         if (session == null) {
-                             return;
-                         }
+            if (session == null) {
+                return;
+            }
 
-                         sessions.add(session);
-                     });
+            sessions.add(session);
+        });
 
         // Update listeners every time when login success.
         router.send(new SessionListenersUpdatePacket(sessions));
     }
 
     default void loginFailure(RequestRouter router, LongAndExtraIdentity accessIdentity, String reason, byte[] receipt) {
-        router.send(new LoginFailurePacket(accessIdentity,
-                                           reason
-        ).receipt(receipt));
+        router.send(new LoginFailurePacket(accessIdentity, reason).receipt(receipt));
     }
 }

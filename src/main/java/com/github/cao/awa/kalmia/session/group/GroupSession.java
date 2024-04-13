@@ -24,35 +24,19 @@ public class GroupSession extends Session {
 
     public static GroupSession create(BytesReader reader) {
         if (reader.read() == 3) {
-            return new GroupSession(
-                    PureExtraIdentity.read(reader),
-                    new String(reader.read(Base256.readTag(reader)),
-                               StandardCharsets.UTF_8
-                    ),
-                    SkippedBase256.readLong(reader)
-            );
+            return new GroupSession(PureExtraIdentity.read(reader), new String(reader.read(Base256.readTag(reader)), StandardCharsets.UTF_8), SkippedBase256.readLong(reader));
         }
         return null;
     }
 
     @Override
     public byte[] bytes() {
-        return BytesUtil.concat(header(),
-                                identity().toBytes(),
-                                Base256.tagToBuf(this.displayName.length()),
-                                this.displayName.getBytes(StandardCharsets.UTF_8),
-                                SkippedBase256.longToBuf(this.subscriberCount)
-        );
+        return BytesUtil.concat(header(), identity().toBytes(), Base256.tagToBuf(this.displayName.length()), this.displayName.getBytes(StandardCharsets.UTF_8), SkippedBase256.longToBuf(this.subscriberCount));
     }
 
     @Override
     public boolean accessible(LongAndExtraIdentity accessIdentity) {
-        return Kalmia.SERVER.sessionManager()
-                            .accessible(
-                                    identity(),
-                                    accessIdentity
-                            )
-                            .accessibleChat(true);
+        return Kalmia.SERVER.getSessionManager().accessible(identity(), accessIdentity).accessibleChat(true);
     }
 
     @Override

@@ -27,28 +27,15 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
     @Server
     @Override
     public void handle(RequestRouter router, RequestGroupSessionPacket packet) {
-        PureExtraIdentity sessionId = Kalmia.SERVER.sessionManager()
-                                                   .add(new GroupSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
-                                                                         packet.name(),
-                                                                         0
-                                                   ));
+        PureExtraIdentity sessionId = Kalmia.SERVER.getSessionManager().add(new GroupSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)), packet.name(), 0));
 
         // Update session data.
-        Set<PureExtraIdentity> listeners = Sessions.subscribe(sessionId,
-                                                              router.accessIdentity()
-        );
+        Set<PureExtraIdentity> listeners = Sessions.subscribe(sessionId, router.accessIdentity());
 
         // Update accessible.
-        Kalmia.SERVER.sessionManager()
-                     .updateAccessible(
-                             sessionId,
-                             router.accessIdentity(),
-                             SessionAccessibleData :: accessibleChat
-                     );
+        Kalmia.SERVER.getSessionManager().updateAccessible(sessionId, router.accessIdentity(), SessionAccessibleData::accessibleChat);
 
-        List<Session> sessions = listeners.stream()
-                                          .map(Kalmia.SERVER.sessionManager() :: session)
-                                          .collect(Collectors.toList());
+        List<Session> sessions = listeners.stream().map(Kalmia.SERVER.getSessionManager()::session).collect(Collectors.toList());
 
         router.send(new SessionListenersUpdatePacket(sessions));
     }

@@ -23,15 +23,13 @@ public class FetchMessageHandler implements FetchMessageEventHandler {
     public void handle(RequestRouter router, FetchMessagePacket packet) {
         List<Message> result = ApricotCollectionFactor.arrayList();
 
-        packet.identities()
-              .forEach(identity -> {
-                  Message message = Kalmia.SERVER.messageManager()
-                                                 .get(identity);
-                  if (message == null) {
-                      return;
-                  }
-                  result.add(message);
-              });
+        packet.identities().forEach(identity -> {
+            Message message = Kalmia.SERVER.getMessageManager().get(identity);
+            if (message == null) {
+                return;
+            }
+            result.add(message);
+        });
 
         router.send(new FetchedMessagePacket(result).receipt(packet.receipt()));
     }
