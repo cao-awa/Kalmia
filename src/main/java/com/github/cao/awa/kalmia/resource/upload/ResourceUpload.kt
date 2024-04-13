@@ -26,16 +26,10 @@ object ResourceUpload {
             }
             val data = ByteArray(length)
             System.arraycopy(
-                buffer,
-                0,
-                data,
-                0,
-                length
+                buffer, 0, data, 0, length
             )
             operator.accept(
-                startPos,
-                data,
-                length != buffer.size
+                startPos, data, length != buffer.size
             )
         }
     }

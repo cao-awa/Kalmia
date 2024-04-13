@@ -32,10 +32,7 @@ class ResourcesManager(private val path: String) {
                 }
 
                 needRemoves.forEach(this.writing::remove)
-            },
-            0,
-            30,
-            TimeUnit.SECONDS
+            }, 0, 30, TimeUnit.SECONDS
         )
     }
 
@@ -66,16 +63,10 @@ class ResourcesManager(private val path: String) {
             }
             val data = ByteArray(length)
             System.arraycopy(
-                buffer,
-                0,
-                data,
-                0,
-                length
+                buffer, 0, data, 0, length
             )
             operator.accept(
-                startPos,
-                data,
-                length != buffer.size
+                startPos, data, length != buffer.size
             )
         }
     }
@@ -121,8 +112,7 @@ class ResourcesManager(private val path: String) {
 
     fun getResourceKey(identity: ByteArray): String {
         return Mathematics.radix(
-            identity,
-            36
+            identity, 36
         )
     }
 }
