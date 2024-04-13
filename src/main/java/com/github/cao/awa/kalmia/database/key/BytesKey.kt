@@ -8,7 +8,7 @@ class BytesKey(private val key: ByteArray) {
 
     fun key(): ByteArray = this.key
 
-    override fun equals(o: Any?): Boolean = this === o || o is BytesKey && this.key.contentEquals(o.key)
+    override fun equals(other: Any?): Boolean = this === other || other is BytesKey && this.key.contentEquals(other.key)
 
     override fun hashCode(): Int = this.key.contentHashCode()
 }
