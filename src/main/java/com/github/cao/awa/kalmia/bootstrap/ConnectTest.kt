@@ -1,16 +1,12 @@
-package com.github.cao.awa.kalmia.bootstrap;
+package com.github.cao.awa.kalmia.bootstrap
 
-public class ConnectTest {
-    public static void main(String[] args) throws Exception {
-        testConnect();
+object ConnectTest {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        testConnect()
     }
 
-    //    @Test
-    public static void testConnect() throws Exception {
-        Kalmia.startClient();
-    }
-
-    private static void startServer() throws Exception {
-        Kalmia.startServer();
+    private fun testConnect() {
+        Kalmia.startClient()
     }
 }
