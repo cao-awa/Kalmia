@@ -79,7 +79,7 @@ object Kalmia {
 
         PollingClient.CLIENT = PollingClient(CLIENT)
 
-        CLIENT.connect();
+        CLIENT.connect()
     }
 
     fun setupTest() {
@@ -110,17 +110,9 @@ object Kalmia {
         MessageFactor.register(2, UserMessage::create)
         MessageFactor.register(5, CoverMessage::create)
 
-        KeyPairStoreFactor.register(0) { identity, publicKey, privateKey ->
-            RsaKeyPair(
-                identity, publicKey, privateKey
-            )
-        }
-        KeyPairStoreFactor.register(1) { identity, publicKey, privateKey -> EcKeyPair(identity, publicKey, privateKey) }
-        KeyPairStoreFactor.register(123) { identity, publicKey, privateKey ->
-            EmptyKeyPair(
-                identity, publicKey, privateKey
-            )
-        }
+        KeyPairStoreFactor.register(0, ::RsaKeyPair)
+        KeyPairStoreFactor.register(1, ::EcKeyPair)
+        KeyPairStoreFactor.register(123, ::EmptyKeyPair)
 
         SessionFactor.register(1, DuetSession::create)
         SessionFactor.register(2, CommunalSession::create)

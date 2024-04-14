@@ -27,18 +27,8 @@ import java.util.List;
 public abstract class ReflectionFramework {
     private static final Logger LOGGER = LogManager.getLogger("ReflectionFramework");
     private static final Reflections REFLECTIONS = EntrustEnvironment.trys(() -> {
-        File kalmiaJar = new File(URLDecoder.decode(
-                ResourceLoader.class.getProtectionDomain()
-                                    .getCodeSource()
-                                    .getLocation()
-                                    .getPath(),
-                StandardCharsets.UTF_8
-        ));
-        return new Reflections(new ConfigurationBuilder().addUrls(JarSearchLoader.load(new File("mods")))
-                                                         .addUrls(ClasspathHelper.forPackage(""))
-                                                         .addUrls(kalmiaJar.toURI()
-                                                                           .toURL())
-                                                         .addScanners(Scanners.TypesAnnotated));
+        File kalmiaJar = new File(URLDecoder.decode(ResourceLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath(), StandardCharsets.UTF_8));
+        return new Reflections(new ConfigurationBuilder().addUrls(JarSearchLoader.load(new File("mods"))).addUrls(ClasspathHelper.forPackage("")).addUrls(kalmiaJar.toURI().toURL()).addScanners(Scanners.TypesAnnotated));
     });
 
     public Reflections reflection() {
@@ -49,15 +39,10 @@ public abstract class ReflectionFramework {
 
     public boolean checkFields(String target, List<String> field) {
         if (field.size() > 0) {
-            LOGGER.error("'{}' has missing required field(s): {}",
-                         target,
-                         field
-            );
+            LOGGER.error("'{}' has missing required field(s): {}", target, field);
             return false;
         } else {
-            LOGGER.debug("'{}' has passed checking required field(s)",
-                         target
-            );
+            LOGGER.debug("'{}' has passed checking required field(s)", target);
             return true;
         }
     }
@@ -79,9 +64,7 @@ public abstract class ReflectionFramework {
     }
 
     public static Field ensureAccessible(@NotNull Field field) {
-        return ensureAccessible(field,
-                                null
-        );
+        return ensureAccessible(field, null);
     }
 
     public static Field ensureAccessible(@NotNull Field field, @Nullable Object obj) {
