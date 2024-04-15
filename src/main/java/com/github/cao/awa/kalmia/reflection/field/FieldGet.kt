@@ -6,12 +6,13 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import java.util.function.Function
 
 class FieldGet<R, I> {
-    private lateinit var target: Class<I>
+    private var target: Class<I>
     private val gets: MutableList<String> = ApricotCollectionFactor.arrayList()
     private val backups: MutableList<Function<Class<I>, R>> = ApricotCollectionFactor.arrayList()
 
     private constructor(target: I) {
-        return EntrustEnvironment.cast(Class<I>::javaClass) ?: throw RuntimeException()
+        this.target =
+            EntrustEnvironment.cast((target ?: throw RuntimeException())::class.java) ?: throw RuntimeException()
     }
 
     private constructor(target: Class<I>) {
@@ -36,7 +37,8 @@ class FieldGet<R, I> {
                 val o: Any? = clazz.getField(name).get(this.target)
 
                 if (o != null) {
-                    return o as Z
+                    // TODO
+                    return o as? Z
                 }
             } catch (_: Exception) {
 
@@ -48,6 +50,7 @@ class FieldGet<R, I> {
                 val r: R = supplier.apply(clazz)
 
                 if (r != null) {
+                    // TODO
                     return r as Z
                 }
             } catch (_: Exception) {

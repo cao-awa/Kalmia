@@ -7,8 +7,6 @@ import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnv
 import java.util.function.Supplier
 
 abstract class ConfigElement {
-    abstract fun toJSON(): JSONObject
-
     companion object {
         @JvmStatic
         fun <T> compute(json: JSONObject, key: String, compute: Supplier<T>): T {
@@ -20,4 +18,6 @@ abstract class ConfigElement {
             return EntrustEnvironment.result(json) { jsonObject -> jsonObject.getJSONObject(key) }
         }
     }
+
+    abstract fun toJSON(): JSONObject
 }

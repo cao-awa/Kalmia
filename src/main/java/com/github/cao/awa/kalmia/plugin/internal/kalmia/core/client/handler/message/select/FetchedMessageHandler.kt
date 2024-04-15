@@ -13,17 +13,12 @@ import org.apache.logging.log4j.Logger;
 @Auto
 @Client
 @PluginRegister(name = "kalmia_client")
-public class FetchedMessageHandler implements FetchedMessageEventHandler {
-    private static final Logger LOGGER = LogManager.getLogger("FetchedMessageHandler");
+class FetchedMessageHandler : FetchedMessageEventHandler {
+    companion object {
+        private val LOGGER: Logger = LogManager.getLogger("FetchedMessageHandler")
+    }
 
-    @Override
-    public void handle(RequestRouter router, FetchedMessagePacket packet) {
-        packet.messages()
-              .forEach(message -> {
-                  Kalmia.CLIENT.getMessageManager()
-                               .set(message.identity(),
-                                    message
-                               );
-              });
+    override fun handle(router: RequestRouter, packet: FetchedMessagePacket) {
+        packet.messages().forEach { message -> Kalmia.CLIENT.messageManager.set(message.identity(), message) }
     }
 }
