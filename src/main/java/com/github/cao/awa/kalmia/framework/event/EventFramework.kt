@@ -46,34 +46,30 @@ class EventFramework : ReflectionFramework() {
         return EventHandler::class.java.isAssignableFrom(clazz)
     }
 
-    fun cast(clazz: Class<*>): Class<out EventHandler<*>>? {
-        return EntrustEnvironment.cast(clazz)
+    fun cast(clazz: Class<*>): Class<out EventHandler<*>> {
+        return EntrustEnvironment.cast(clazz) ?: throw RuntimeException()
     }
 
-    fun build(clazz: Class<out EventHandler<*>>?) {
-        if (clazz == null) {
-            throw RuntimeException()
-        }
+    fun build(clazz: Class<out EventHandler<*>>) {
         if (Modifier.isInterface(clazz.modifiers)) {
             return
         }
 
         // Get plugin register annotation used to get plugin name to auto register.
-        val pluginAnnotation: PluginRegister = clazz.getAnnotation(PluginRegister::class.java)
-        var shouldLoad: Boolean = false
+        val pluginAnnotation: PluginRegister = clazz.getAnnotation(PluginRegister::class.java) ?: return
 
-        if (KalmiaEnv.pluginFramework.plugin(pluginAnnotation.name).forceRegister()) {
-            shouldLoad = true
+        val shouldLoad: Boolean = if (KalmiaEnv.pluginFramework.plugin(pluginAnnotation.name).forceRegister()) {
+            true
         } else {
             val loadWhenServer: Boolean = clazz.isAnnotationPresent(Server::class.java)
             val loadWhenClient: Boolean = clazz.isAnnotationPresent(Client::class.java)
 
             // Always load plugin when simultaneously annotated @Server and @Client and when don't annotate.
             if ((loadWhenServer && loadWhenClient) || (!loadWhenServer && !loadWhenClient)) {
-                shouldLoad = true
+                true
             } else {
                 // Load by environment annotation.
-                shouldLoad = if (KalmiaEnv.serverSideLoading) loadWhenServer else loadWhenClient
+                if (KalmiaEnv.serverSideLoading) loadWhenServer else loadWhenClient
             }
         }
 
@@ -86,43 +82,69 @@ class EventFramework : ReflectionFramework() {
                 val handler: EventHandler<*> = clazz.getConstructor().newInstance()
 
                 // Declare way to register.
-                val autoAnnotation: AutoHandler = clazz.getAnnotation(AutoHandler::class.java)
+                val autoAnnotation: AutoHandler? = clazz.getAnnotation(AutoHandler::class.java)
 
-                val adder: Consumer<Class<out Event>> = { event -> handlers.compute(event, computeHandler(handler)) }
-
-                // Do potential coding problem tests.
-                val annotations: MutableSet<AutoHandler> = AnnotationUtil.getAnnotations(
-                    handler::class.java, AutoHandler::class.java
-                )
+                val adder: Consumer<Class<out Event>> =
+                    Consumer { event -> handlers.compute(event, computeHandler(handler)) }
 
                 // Do potential coding problem tests.
-                if (annotations.size == 2) {
-                    annotations.remove(autoAnnotation)
-                    LOGGER.warn(
-                        "Targeted event handler '{}' declared a target '{}', but its superclass expected another target '{}', this may be a wrong, please check it",
+                val annotations: MutableSet<AutoHandler> =
+                    AnnotationUtil.getAnnotations(handler.javaClass, AutoHandler::class.java)
+                        ?: throw RuntimeException()
+                if (autoAnnotation == null) {
+                    // Do potential coding problem tests.
+                    if (annotations.size > 1) {
+                        // Available declared target over than 1 means one handler matched to multi event.
+                        // This behavior is not expected in current kalmia event framework.
+                        LOGGER.error(
+                            "Class chains found the target over than 1 available declared, that wrongly, unable to register the '{}'",
+                            handler.javaClass.name
+                        );
+
+                        return;
+                    }
+
+                    for (interfaceOf in clazz.interfaces) {
+                        EntrustEnvironment.cast(interfaceOf)?.let { target(it)?.let { adder.accept(it) } }
+                    }
+
+                    // Auto register in undeclared.
+                    LOGGER.info(
+                        "Registered auto event handler '{}' via plugin '{}'",
                         handler.javaClass.name,
-                        autoAnnotation.value.java.name,
-                        annotations.toArray(AutoHandler()[0])[0].value()
-                    )
-                } else if (annotations.size > 2) {
-                    // Available declared target over than 1 means one handler matched to multi event.
-                    // This behavior is not expected in current kalmia event framework.
-                    LOGGER.error(
-                        "Class chains found the target over than 2 available declared, that wrongly, unable to register the '{}'",
-                        handler.javaClass.name
-                    )
+                        pluginAnnotation.name
+                    );
+                } else {
+                    // Do potential coding problem tests.
+                    if (annotations.size == 2) {
+                        annotations.remove(autoAnnotation)
+                        LOGGER.warn(
+                            "Targeted event handler '{}' declared a target '{}', but its superclass expected another target '{}', this may be a wrong, please check it",
+                            handler.javaClass.name,
+                            autoAnnotation.value.java.name,
+                            annotations.toTypedArray<AutoHandler?>()[0].value
 
-                    return
+                        );
+                    } else if (annotations.size > 2) {
+                        // Available declared target over than 1 means one handler matched to multi event.
+                        // This behavior is not expected in current kalmia event framework.
+                        LOGGER.error(
+                            "Class chains found the target over than 2 available declared, that wrongly, unable to register the '{}'",
+                            handler.javaClass.name
+                        );
+
+                        return;
+                    }
+
+                    adder.accept(autoAnnotation.value)
+
+                    // Targeted  register in declared.
+                    LOGGER.info(
+                        "Registered targeted event handler '{}' via plugin '{}'",
+                        handler.javaClass.name,
+                        pluginAnnotation.name
+                    );
                 }
-
-                adder.accept(autoAnnotation.value.java)
-
-                // Targeted  register in declared.
-                LOGGER.info(
-                    "Registered targeted event handler '{}' via plugin '{}'",
-                    handler.javaClass.name,
-                    pluginAnnotation.name
-                )
 
                 this.handlerBelongs[handler] = pluginAnnotation.name
             } catch (e: Exception) {
@@ -153,12 +175,10 @@ class EventFramework : ReflectionFramework() {
     }
 
     fun computeHandler(handler: EventHandler<*>): BiFunction<Class<out Event>, List<EventHandler<*>>, List<EventHandler<*>>> {
-        return { event, handlers ->
-            if (handlers == null) {
-                handlers = ApricotCollectionFactor.arrayList()
-            }
+        return BiFunction { _, handlers: List<EventHandler<*>>? ->
+            val handlers: MutableList<*> = handlers ?: ApricotCollectionFactor.arrayList()
 
-            val handlerType: Class<out EventHandler<?>> = cast(handler.javaClass)
+            val handlerType: Class<out EventHandler<*>> = cast(handler.javaClass)
 
             if (registeredHandlers.contains(handlerType)) {
                 LOGGER.warn(
@@ -172,7 +192,10 @@ class EventFramework : ReflectionFramework() {
         }
     }
 
-    fun autoHandler(handler: Class<out EventHandler<*>>): Class<out EventHandler<*>>? {
+    fun autoHandler(handler: Class<out EventHandler<*>>?): Class<out EventHandler<*>> {
+        if (handler == null) {
+            throw RuntimeException()
+        }
         if (Modifier.isInterface(handler.modifiers)) {
             val autoHandler: AutoHandler = handler.getAnnotation(AutoHandler::class.java)
 
