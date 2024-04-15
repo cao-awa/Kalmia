@@ -26,6 +26,10 @@ import java.util.function.BiFunction
 import java.util.function.Consumer
 
 class EventFramework : ReflectionFramework() {
+    companion object {
+        private val LOGGER: Logger = LogManager.getLogger("EventFramework")
+    }
+
     private val executor: ExecutorService = ExecutorFactor.intensiveCpu()
     private val handlers: MutableMap<Class<out Event>, List<EventHandler<*>>> = ApricotCollectionFactor.hashMap()
     private val handlerBelongs: MutableMap<EventHandler<*>, String> = ApricotCollectionFactor.hashMap()
@@ -85,6 +89,7 @@ class EventFramework : ReflectionFramework() {
                 val autoAnnotation: AutoHandler? = clazz.getAnnotation(AutoHandler::class.java)
 
                 val adder: Consumer<Class<out Event>> =
+                    // TODO
                     Consumer { event -> handlers.compute(event, computeHandler(handler)) }
 
                 // Do potential coding problem tests.
@@ -105,6 +110,7 @@ class EventFramework : ReflectionFramework() {
                     }
 
                     for (interfaceOf in clazz.interfaces) {
+                        // TODO
                         EntrustEnvironment.cast(interfaceOf)?.let { target(it)?.let { adder.accept(it) } }
                     }
 
@@ -122,6 +128,7 @@ class EventFramework : ReflectionFramework() {
                             "Targeted event handler '{}' declared a target '{}', but its superclass expected another target '{}', this may be a wrong, please check it",
                             handler.javaClass.name,
                             autoAnnotation.value.java.name,
+                            // TODO
                             annotations.toTypedArray<AutoHandler?>()[0].value
 
                         );
@@ -136,6 +143,7 @@ class EventFramework : ReflectionFramework() {
                         return;
                     }
 
+                    // TODO
                     adder.accept(autoAnnotation.value)
 
                     // Targeted  register in declared.
@@ -156,6 +164,7 @@ class EventFramework : ReflectionFramework() {
     fun registerHandler(handler: EventHandler<*>, plugin: Plugin) {
         val autoAnnotation: AutoHandler = AnnotationUtil.getAnnotation(handler.javaClass, AutoHandler::class.java)
 
+        // TODO
         handlers.compute(autoAnnotation.value.java, computeHandler(handler))
 
         handlerBelongs[handler] = KalmiaEnv.pluginFramework.name(plugin)
@@ -176,6 +185,7 @@ class EventFramework : ReflectionFramework() {
 
     fun computeHandler(handler: EventHandler<*>): BiFunction<Class<out Event>, List<EventHandler<*>>, List<EventHandler<*>>> {
         return BiFunction { _, handlers: List<EventHandler<*>>? ->
+            // TODO
             val handlers: MutableList<*> = handlers ?: ApricotCollectionFactor.arrayList()
 
             val handlerType: Class<out EventHandler<*>> = cast(handler.javaClass)
@@ -186,6 +196,7 @@ class EventFramework : ReflectionFramework() {
                     handlerType
                 )
             }
+            // TODO
             handlers.add(handler)
             registeredHandlers.add(handlerType)
             handlers
@@ -245,6 +256,7 @@ class EventFramework : ReflectionFramework() {
     }
 
     fun handleEvent(handler: EventHandler<*>, event: Event) {
+        // TODO
         val handleAction: Runnable = {
             handler.handle(EntrustEnvironment.cast(event))
         }
@@ -268,9 +280,5 @@ class EventFramework : ReflectionFramework() {
         return KalmiaEnv.pluginFramework.plugin(
             handlerBelongs[handler] ?: handler.javaClass.getAnnotation(PluginRegister::class.java).name
         )
-    }
-
-    companion object {
-        private val LOGGER: Logger = LogManager.getLogger("EventFramework")
     }
 }
