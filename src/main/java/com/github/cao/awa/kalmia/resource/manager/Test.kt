@@ -17,7 +17,7 @@ object Test {
         try {
             val fileOutput: FileOutputStream = FileOutputStream("res/b.txt");
 
-            manager.getShardedResource("A.txt", 16384) { startPos, bytes, isFinal ->
+            manager.getShardedResource("A.txt", 16384) { _, bytes, _ ->
                 try {
                     output.write(bytes)
                     fileOutput.write(bytes)

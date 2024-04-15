@@ -36,6 +36,47 @@ import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 class KalmiaClient(config: ClientBootstrapConfig) {
+    companion object {
+        private val LOGGER: Logger = LogManager.getLogger("KalmiaClient")
+        lateinit var clientBootstrapConfig: ClientBootstrapConfig
+
+        @JvmStatic
+        fun setupBootstrapConfig() {
+            prepareConfig()
+
+            clientBootstrapConfig = ClientBootstrapConfig.read(
+                JSONObject.parse(IOUtil.read(FileReader(KalmiaConstant.CLIENT_CONFIG_PATH))),
+                KalmiaEnv.DEFAULT_CLIENT_BOOTSTRAP_CONFIG
+            )
+
+            rewriteConfig(clientBootstrapConfig)
+        }
+
+        fun rewriteConfig(bootstrapConfig: ClientBootstrapConfig) {
+            LOGGER.info("Rewriting client config")
+
+            IOUtil.write(
+                FileWriter(KalmiaConstant.CLIENT_CONFIG_PATH),
+                bootstrapConfig.toJSON().toString(JSONWriter.Feature.PrettyFormat)
+            )
+        }
+
+        fun prepareConfig() {
+            LOGGER.info("Preparing client config")
+
+            val configFile = File(KalmiaConstant.CLIENT_CONFIG_PATH)
+
+            configFile.parentFile.mkdirs()
+
+            if (!configFile.isFile) {
+                IOUtil.write(
+                    FileWriter(configFile),
+                    IOUtil.read(InputStreamReader(ResourceLoader.stream(KalmiaConstant.CLIENT_DEFAULT_CONFIG_PATH)))
+                )
+            }
+        }
+    }
+
     private val bootstrapConfig: ClientBootstrapConfig
     val messageManager: MessageManager
     val userManager: UserManager
@@ -187,47 +228,6 @@ class KalmiaClient(config: ClientBootstrapConfig) {
         } catch (e: Exception) {
             e.printStackTrace()
             null
-        }
-    }
-
-    companion object {
-        private val LOGGER: Logger = LogManager.getLogger("KalmiaClient")
-        lateinit var clientBootstrapConfig: ClientBootstrapConfig
-
-        @JvmStatic
-        fun setupBootstrapConfig() {
-            prepareConfig()
-
-            clientBootstrapConfig = ClientBootstrapConfig.read(
-                JSONObject.parse(IOUtil.read(FileReader(KalmiaConstant.CLIENT_CONFIG_PATH))),
-                KalmiaEnv.DEFAULT_CLIENT_BOOTSTRAP_CONFIG
-            )
-
-            rewriteConfig(clientBootstrapConfig)
-        }
-
-        fun rewriteConfig(bootstrapConfig: ClientBootstrapConfig) {
-            LOGGER.info("Rewriting client config")
-
-            IOUtil.write(
-                FileWriter(KalmiaConstant.CLIENT_CONFIG_PATH),
-                bootstrapConfig.toJSON().toString(JSONWriter.Feature.PrettyFormat)
-            )
-        }
-
-        fun prepareConfig() {
-            LOGGER.info("Preparing client config")
-
-            val configFile = File(KalmiaConstant.CLIENT_CONFIG_PATH)
-
-            configFile.parentFile.mkdirs()
-
-            if (!configFile.isFile) {
-                IOUtil.write(
-                    FileWriter(configFile),
-                    IOUtil.read(InputStreamReader(ResourceLoader.stream(KalmiaConstant.CLIENT_DEFAULT_CONFIG_PATH)))
-                )
-            }
         }
     }
 }
