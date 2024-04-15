@@ -3,17 +3,7 @@ package com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network
 import com.alibaba.fastjson2.JSONObject
 import com.github.cao.awa.kalmia.config.ConfigElement
 
-class ServerNetworkConfig(
-    val bindHost: String, val bindPort: Int, val useEpoll: Boolean
-) : ConfigElement() {
-    override fun toJSON(): JSONObject {
-        val json = JSONObject();
-        json["bind-host"] = this.bindHost
-        json["bind-port"] = this.bindPort
-        json["use-epoll"] = this.useEpoll
-        return json
-    }
-
+class ServerNetworkConfig(val bindHost: String, val bindPort: Int, val useEpoll: Boolean) : ConfigElement() {
     companion object {
         @JvmStatic
         fun read(json: JSONObject?, compute: ServerNetworkConfig?): ServerNetworkConfig {
@@ -31,5 +21,13 @@ class ServerNetworkConfig(
 
             return ServerNetworkConfig(bindHost, bindPort, useEpoll)
         }
+    }
+
+    override fun toJSON(): JSONObject {
+        val json = JSONObject();
+        json["bind-host"] = this.bindHost
+        json["bind-port"] = this.bindPort
+        json["use-epoll"] = this.useEpoll
+        return json
     }
 }

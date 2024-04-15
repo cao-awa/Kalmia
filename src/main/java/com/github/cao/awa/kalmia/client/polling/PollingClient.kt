@@ -8,9 +8,11 @@ import com.github.cao.awa.kalmia.identity.PureExtraIdentity
 import java.util.Queue
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class PollingClient(
-    private val delegate: KalmiaClient
-) {
+class PollingClient(private val delegate: KalmiaClient) {
+    companion object {
+        lateinit var CLIENT: PollingClient
+    }
+
     private var sessionListenersIdentity: ByteArray = BytesRandomIdentifier.create(24)
     private val stackingNotices: Queue<Event> = ConcurrentLinkedQueue()
 
@@ -35,9 +37,5 @@ class PollingClient(
 
     fun stackingNotice(notice: Event) {
         stackingNotices.add(notice)
-    }
-
-    companion object {
-        lateinit var CLIENT: PollingClient
     }
 }

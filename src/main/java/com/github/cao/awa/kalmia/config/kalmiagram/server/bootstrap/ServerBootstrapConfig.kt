@@ -12,15 +12,6 @@ class ServerBootstrapConfig(
     val translation: BootstrapTranslationConfig,
     val serverName: String
 ) : ConfigElement() {
-    override fun toJSON(): JSONObject {
-        val json = JSONObject()
-        json["config-meta"] = this.meta.toJSON()
-        json["server-network"] = this.serverNetwork.toJSON()
-        json["translation"] = this.translation.toJSON()
-        json["server-name"] = this.serverName
-        return json
-    }
-
     companion object {
         @JvmStatic
         fun read(json: JSONObject?, compute: ServerBootstrapConfig?): ServerBootstrapConfig {
@@ -47,5 +38,14 @@ class ServerBootstrapConfig(
 
             return ServerBootstrapConfig(meta, serverNetwork, translation, serverName)
         }
+    }
+
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["config-meta"] = this.meta.toJSON()
+        json["server-network"] = this.serverNetwork.toJSON()
+        json["translation"] = this.translation.toJSON()
+        json["server-name"] = this.serverName
+        return json
     }
 }

@@ -4,16 +4,7 @@ import com.alibaba.fastjson2.JSONObject
 import com.github.cao.awa.kalmia.config.ConfigElement
 import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta
 
-class RouterNetworkConfig(
-    val meta: ConfigMeta, val compressThreshold: Int
-) : ConfigElement() {
-    override fun toJSON(): JSONObject {
-        val json = JSONObject()
-        json["config-meta"] = this.meta.toJSON()
-        json["compress-threshold"] = this.compressThreshold
-        return json
-    }
-
+class RouterNetworkConfig(val meta: ConfigMeta, val compressThreshold: Int) : ConfigElement() {
     companion object {
         @JvmStatic
         fun read(json: JSONObject?, compute: RouterNetworkConfig?): RouterNetworkConfig {
@@ -31,5 +22,12 @@ class RouterNetworkConfig(
 
             return RouterNetworkConfig(meta, compressThreshold)
         }
+    }
+
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["config-meta"] = this.meta.toJSON()
+        json["compress-threshold"] = this.compressThreshold
+        return json
     }
 }

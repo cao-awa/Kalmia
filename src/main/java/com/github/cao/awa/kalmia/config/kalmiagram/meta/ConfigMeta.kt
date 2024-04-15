@@ -4,12 +4,6 @@ import com.alibaba.fastjson2.JSONObject
 import com.github.cao.awa.kalmia.config.ConfigElement
 
 class ConfigMeta(val version: Int) : ConfigElement() {
-    override fun toJSON(): JSONObject {
-        val json = JSONObject()
-        json["version"] = this.version
-        return json
-    }
-
     companion object {
         @JvmStatic
         fun read(json: JSONObject?, compute: ConfigMeta?): ConfigMeta {
@@ -21,9 +15,15 @@ class ConfigMeta(val version: Int) : ConfigElement() {
                 return compute
             }
 
-            val version: Int = Math.max(compute(json, "version", compute::version), compute.version)
+            val version: Int = compute(json, "version", compute::version).coerceAtLeast(compute.version)
 
             return ConfigMeta(version)
         }
+    }
+
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["version"] = this.version
+        return json
     }
 }

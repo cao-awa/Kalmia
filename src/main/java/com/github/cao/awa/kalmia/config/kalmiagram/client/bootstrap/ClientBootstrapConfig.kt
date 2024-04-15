@@ -5,16 +5,7 @@ import com.github.cao.awa.kalmia.config.ConfigElement
 import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig
 import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta
 
-class ClientBootstrapConfig(
-    val meta: ConfigMeta, val clientNetwork: ClientNetworkConfig
-) : ConfigElement() {
-    override fun toJSON(): JSONObject {
-        val json = JSONObject()
-        json["config-meta"] = this.meta.toJSON()
-        json["client-network"] = this.clientNetwork.toJSON()
-        return json
-    }
-
+class ClientBootstrapConfig(val meta: ConfigMeta, val clientNetwork: ClientNetworkConfig) : ConfigElement() {
     companion object {
         @JvmStatic
         fun read(json: JSONObject?, compute: ClientBootstrapConfig?): ClientBootstrapConfig {
@@ -33,5 +24,12 @@ class ClientBootstrapConfig(
 
             return ClientBootstrapConfig(meta, serverNetwork)
         }
+    }
+
+    override fun toJSON(): JSONObject {
+        val json = JSONObject()
+        json["config-meta"] = this.meta.toJSON()
+        json["client-network"] = this.clientNetwork.toJSON()
+        return json
     }
 }
