@@ -14,7 +14,7 @@ abstract class KeyManager<T> {
     }
 
     fun get(field: String): T {
-        return this.keys[field] ?: throw RuntimeException()
+        return this.keys[field]!!
     }
 
     fun has(field: String): Boolean {

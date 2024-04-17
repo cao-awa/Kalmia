@@ -51,7 +51,7 @@ class EventFramework : ReflectionFramework() {
     }
 
     fun cast(clazz: Class<*>): Class<out EventHandler<*>> {
-        return EntrustEnvironment.cast(clazz) ?: throw RuntimeException()
+        return EntrustEnvironment.cast(clazz)!!
     }
 
     fun build(clazz: Class<out EventHandler<*>>) {
@@ -89,13 +89,11 @@ class EventFramework : ReflectionFramework() {
                 val autoAnnotation: AutoHandler? = clazz.getAnnotation(AutoHandler::class.java)
 
                 val adder: Consumer<Class<out Event>> =
-                    // TODO
                     Consumer { event -> handlers.compute(event, computeHandler(handler)) }
 
                 // Do potential coding problem tests.
                 val annotations: MutableSet<AutoHandler> =
-                    AnnotationUtil.getAnnotations(handler.javaClass, AutoHandler::class.java)
-                        ?: throw RuntimeException()
+                    AnnotationUtil.getAnnotations(handler.javaClass, AutoHandler::class.java)!!
                 if (autoAnnotation == null) {
                     // Do potential coding problem tests.
                     if (annotations.size > 1) {
@@ -104,14 +102,13 @@ class EventFramework : ReflectionFramework() {
                         LOGGER.error(
                             "Class chains found the target over than 1 available declared, that wrongly, unable to register the '{}'",
                             handler.javaClass.name
-                        );
+                        )
 
-                        return;
+                        return
                     }
 
-                    for (interfaceOf in clazz.interfaces) {
-                        // TODO
-                        EntrustEnvironment.cast(interfaceOf)?.let { target(it)?.let { adder.accept(it) } }
+                    for (interfaceOf in (clazz.interfaces)) {
+                        adder.accept(target(EntrustEnvironment.cast<Class<out EventHandler<*>>>(interfaceOf)!!)!!)
                     }
 
                     // Auto register in undeclared.
@@ -119,7 +116,7 @@ class EventFramework : ReflectionFramework() {
                         "Registered auto event handler '{}' via plugin '{}'",
                         handler.javaClass.name,
                         pluginAnnotation.name
-                    );
+                    )
                 } else {
                     // Do potential coding problem tests.
                     if (annotations.size == 2) {
@@ -128,30 +125,27 @@ class EventFramework : ReflectionFramework() {
                             "Targeted event handler '{}' declared a target '{}', but its superclass expected another target '{}', this may be a wrong, please check it",
                             handler.javaClass.name,
                             autoAnnotation.value.java.name,
-                            // TODO
-                            annotations.toTypedArray<AutoHandler?>()[0].value
-
-                        );
+                            annotations.toTypedArray<AutoHandler?>()[0]?.value
+                        )
                     } else if (annotations.size > 2) {
                         // Available declared target over than 1 means one handler matched to multi event.
                         // This behavior is not expected in current kalmia event framework.
                         LOGGER.error(
                             "Class chains found the target over than 2 available declared, that wrongly, unable to register the '{}'",
                             handler.javaClass.name
-                        );
+                        )
 
-                        return;
+                        return
                     }
 
-                    // TODO
-                    adder.accept(autoAnnotation.value)
+                    adder.accept(autoAnnotation.value.java)
 
                     // Targeted  register in declared.
                     LOGGER.info(
                         "Registered targeted event handler '{}' via plugin '{}'",
                         handler.javaClass.name,
                         pluginAnnotation.name
-                    );
+                    )
                 }
 
                 this.handlerBelongs[handler] = pluginAnnotation.name
@@ -164,7 +158,6 @@ class EventFramework : ReflectionFramework() {
     fun registerHandler(handler: EventHandler<*>, plugin: Plugin) {
         val autoAnnotation: AutoHandler = AnnotationUtil.getAnnotation(handler.javaClass, AutoHandler::class.java)
 
-        // TODO
         handlers.compute(autoAnnotation.value.java, computeHandler(handler))
 
         handlerBelongs[handler] = KalmiaEnv.pluginFramework.name(plugin)
@@ -183,10 +176,10 @@ class EventFramework : ReflectionFramework() {
         }
     }
 
-    fun computeHandler(handler: EventHandler<*>): BiFunction<Class<out Event>, List<EventHandler<*>>, List<EventHandler<*>>> {
+    fun computeHandler(handler: EventHandler<*>): BiFunction<in Class<out Event>, in List<EventHandler<*>>?, out List<EventHandler<*>>> {
         return BiFunction { _, handlers: List<EventHandler<*>>? ->
-            // TODO
-            val handlers: MutableList<*> = handlers ?: ApricotCollectionFactor.arrayList()
+            val handlers: MutableList<EventHandler<*>> =
+                handlers?.toMutableList() ?: ApricotCollectionFactor.arrayList()
 
             val handlerType: Class<out EventHandler<*>> = cast(handler.javaClass)
 
@@ -196,7 +189,7 @@ class EventFramework : ReflectionFramework() {
                     handlerType
                 )
             }
-            // TODO
+
             handlers.add(handler)
             registeredHandlers.add(handlerType)
             handlers
@@ -221,7 +214,7 @@ class EventFramework : ReflectionFramework() {
     }
 
     fun fireEvent(event: Event) {
-        val handlers: List<EventHandler<*>> = this.handlers[event.javaClass] ?: throw RuntimeException()
+        val handlers: List<EventHandler<*>> = this.handlers[event.javaClass]!!
 
         if (missingHandler(handlers, event)) {
             return
@@ -237,7 +230,7 @@ class EventFramework : ReflectionFramework() {
     }
 
     fun fireEvent(event: NetworkEvent<*>) {
-        val handlers: List<EventHandler<*>> = handlers[event.javaClass] ?: throw RuntimeException()
+        val handlers: List<EventHandler<*>> = handlers[event.javaClass]!!
 
         if (missingHandler(handlers, event)) {
             return
@@ -256,13 +249,12 @@ class EventFramework : ReflectionFramework() {
     }
 
     fun handleEvent(handler: EventHandler<*>, event: Event) {
-        // TODO
-        val handleAction: Runnable = {
+        val handleAction: () -> Unit = {
             handler.handle(EntrustEnvironment.cast(event))
         }
 
         if (ThreadingUtil.forceMainThread(handler.javaClass)) {
-            handleAction.run()
+            handleAction.run {}
         } else {
             this.executor.execute(handleAction)
         }
