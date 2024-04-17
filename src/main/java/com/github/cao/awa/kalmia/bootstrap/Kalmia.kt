@@ -89,9 +89,7 @@ object Kalmia {
         keys.add(KalmiaEnv.testKeypair1.identity())
 
         SERVER.userManager.keyStores(KalmiaEnv.testUser1.identity(), keys)
-
         SERVER.keypairManager.set(KalmiaEnv.testKeypair0.identity(), KalmiaEnv.testKeypair0)
-
         SERVER.keypairManager.set(KalmiaEnv.testKeypair1.identity(), KalmiaEnv.testKeypair1)
     }
 

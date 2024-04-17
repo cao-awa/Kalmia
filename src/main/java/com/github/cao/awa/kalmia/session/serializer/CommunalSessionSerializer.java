@@ -14,6 +14,6 @@ public class CommunalSessionSerializer implements BytesSerializer<CommunalSessio
 
     @Override
     public CommunalSession deserialize(BytesReader reader) {
-        return CommunalSession.create(reader);
+        return (CommunalSession) CommunalSession.create(reader);
     }
 }
