@@ -76,8 +76,7 @@ class LanguageTranslationManager {
 
         val translationValue: String = translationKeyMap[translationKey] ?: return translationKey
 
-        // TODO
-        return translationValue.formatted(Arrays.stream(args).map { o -> translation(languageKey, o.toString()) }
+        return translationValue.format(Arrays.stream(args).map { o -> translation(languageKey, o.toString()) }
             .toArray())
     }
 
