@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.framework.config
 
 import com.alibaba.fastjson2.JSONArray
 import com.alibaba.fastjson2.JSONObject
+import com.alibaba.fastjson2.JSONWriter
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
 import com.github.cao.awa.apricot.util.io.IOUtil
@@ -20,6 +21,7 @@ import com.github.cao.awa.kalmia.exception.auto.config.WrongConfigTemplateExcept
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
 import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer
+import org.apache.commons.codec.binary.StringUtils
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
@@ -112,7 +114,7 @@ class ConfigFramework : ReflectionFramework() {
                         file.createNewFile()
                         IOUtil.write(
                             FileOutputStream("./$location"),
-                            ResourceLoader.stream("kalmiagram/$location")
+                            ResourceLoader.stream(location)
                         )
                     }, { ex ->
                         LOGGER.warn(
@@ -121,10 +123,53 @@ class ConfigFramework : ReflectionFramework() {
                             ex
                         )
                     })
+                } else {
+                    computeDefaultTemplate(file, location)
                 }
                 this.templatePaths[key] = location
             }
         }
+    }
+
+    private fun computeDefaultTemplate(file: File, location: String) {
+        // 读取默认模板
+        val defaultTemplate =
+            JSONObject.parse(StringUtils.newStringUtf8(IOUtil.readBytes(ResourceLoader.stream(location))))
+        // 读取当前模板
+        val currentTemplate = JSONObject.parse(IOUtil.read(FileReader(file)))
+
+        // 默认和当前模板都存在元数据时才能计算模板
+        if (defaultTemplate.containsKey("metadata") && currentTemplate.containsKey("metadata")) {
+            // 仅当配置版本不一致时计算模板
+            if (defaultTemplate.getJSONObject("metadata")
+                    .getInteger("version") !=
+                currentTemplate.getJSONObject("metadata")
+                    .getInteger("version")
+            ) {
+                // 写入当前模板没有的内容
+                for (entry in defaultTemplate) {
+                    if (!currentTemplate.containsKey(entry.key)) {
+                        currentTemplate[entry.key] = entry.value;
+                    }
+                }
+
+                // 删除当前模板多余的内容
+                for (entry in currentTemplate) {
+                    if (!defaultTemplate.containsKey(entry.key)) {
+                        currentTemplate.remove(entry.key)
+                    }
+                }
+
+                // 更新配置版本
+                currentTemplate["metadata"] = defaultTemplate["metadata"]
+            }
+        }
+
+        // 写入当前模板
+        IOUtil.write(
+            FileOutputStream("./$location"),
+            currentTemplate.toString(JSONWriter.Feature.PrettyFormat)
+        )
     }
 
     private fun loadTemplates() {
