@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.framework.translation.event.TranslationEventFramework;
 import com.github.cao.awa.kalmia.framework.translation.packet.TranslationPacketFramework;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;
+import com.github.cao.awa.kalmia.translation.network.router.TranslationRouter;
 
 import java.util.List;
 import java.util.Map;

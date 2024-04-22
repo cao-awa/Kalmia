@@ -1,8 +1,8 @@
 package com.github.cao.awa.kalmia.translation.event;
 
 import com.github.cao.awa.kalmia.event.Event;
-import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
+import com.github.cao.awa.kalmia.translation.network.router.TranslationRouter;
 
 public class TranslationEvent<T extends TranslationPacket> extends Event {
     private final TranslationRouter router;

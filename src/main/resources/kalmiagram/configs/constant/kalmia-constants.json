@@ -1,0 +1,10 @@
+{
+    "true": true,
+    "false": false,
+    "k": 1024,
+    "k16": 16384,
+    "int_max": 2147483647,
+    "long_max": 9223372036854775807,
+    "server_port": 45678,
+    "ciphers_directory": "./ciphers/"
+}

@@ -11,7 +11,7 @@ public abstract class Plugin {
 
     @Auto
     public UUID uuid() {
-        return KalmiaEnv.pluginFramework.uuid(this);
+        return KalmiaEnv.PLUGIN_FRAMEWORK.uuid(this);
     }
 
     public void registerHandler(EventHandler<?> handler) {
@@ -25,14 +25,14 @@ public abstract class Plugin {
     }
 
     public void forceRegisterHandler(EventHandler<?> handler) {
-        KalmiaEnv.eventFramework.registerHandler(handler,
-                                                 this
+        KalmiaEnv.EVENT_FRAMEWORK.registerHandler(handler,
+                                                  this
         );
     }
 
     public void optionalRegisterHandler(EventHandler<?> handler) {
-        KalmiaEnv.eventFramework.optionalRegisterHandler(handler,
-                                                         this
+        KalmiaEnv.EVENT_FRAMEWORK.optionalRegisterHandler(handler,
+                                                          this
         );
     }
 

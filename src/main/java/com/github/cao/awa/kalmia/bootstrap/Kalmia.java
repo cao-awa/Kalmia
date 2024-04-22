@@ -46,14 +46,15 @@ public class Kalmia {
 
         LOGGER.info("Starting kalmia server");
 
-        SERVER = new KalmiaServer(KalmiaServer.serverBootstrapConfig);
+        KalmiaEnv.setupServer();
+
+        SERVER = new KalmiaServer();
 
         LOGGER.info("Setup kalmia server");
 
-        KalmiaEnv.setupServer();
-
-        if (KalmiaServer.serverBootstrapConfig.translation()
-                                              .enable()) {
+        if (SERVER.serverBootstrapConfig.get()
+                .translation.get()
+                .enabled.get()) {
             KalmiaTranslationEnv.setupFrameworks();
         }
 
@@ -67,7 +68,7 @@ public class Kalmia {
 
         LOGGER.info("Starting kalmia client");
 
-        CLIENT = new KalmiaClient(KalmiaClient.clientBootstrapConfig);
+        CLIENT = new KalmiaClient();
 
         LOGGER.info("Setup kalmia client");
 
@@ -108,17 +109,6 @@ public class Kalmia {
     }
 
     public static void setupEnvironment() {
-        try {
-            KalmiaServer.setupBootstrapConfig();
-        } catch (Exception e) {
-
-        }
-        try {
-            KalmiaClient.setupBootstrapConfig();
-        } catch (Exception e) {
-
-        }
-
         UserFactor.register(- 1,
                             UselessUser :: create
         );

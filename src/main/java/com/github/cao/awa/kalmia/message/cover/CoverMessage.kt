@@ -150,8 +150,11 @@ class CoverMessage : Message {
 
     override fun display(): ClientMessageContent {
         return ClientMessageContent(
-            sender(),
-            "CoverMessage",
+            sourceSender(),
+            String(
+                sourceMessage(),
+                StandardCharsets.UTF_8
+            ),
             String(
                 coverMessage(),
                 StandardCharsets.UTF_8

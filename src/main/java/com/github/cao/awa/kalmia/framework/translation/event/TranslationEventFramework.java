@@ -5,9 +5,9 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotations.auto.event.translation.TranslationEventTarget;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
-import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;
 import com.github.cao.awa.kalmia.translation.event.TranslationEvent;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
+import com.github.cao.awa.kalmia.translation.network.router.TranslationRouter;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,7 +67,7 @@ public class TranslationEventFramework extends ReflectionFramework {
                                .getName()
             );
         } else {
-            KalmiaEnv.eventFramework.fireEvent(h
+            KalmiaEnv.EVENT_FRAMEWORK.fireEvent(h
                                                        .apply(router,
                                                               packet
                                                        ));

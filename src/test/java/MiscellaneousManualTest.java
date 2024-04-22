@@ -2,6 +2,7 @@ import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.apricot.identifier.RandomIdentifier;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
+import com.github.cao.awa.kalmia.env.security.key.PreSharedCipherEncode;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 
 import java.security.KeyPair;
@@ -9,6 +10,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 
 public class MiscellaneousManualTest {
     public static void main(String[] args) {
@@ -23,7 +25,7 @@ public class MiscellaneousManualTest {
 //            System.out.println(TimeUtil.processMillion(start) + "ms");
             start = TimeUtil.millions();
 
-            aes();
+            ecSign();
 
             System.out.println(TimeUtil.processMillion(start) + "ms");
 
@@ -166,24 +168,31 @@ public class MiscellaneousManualTest {
     }
 
     public static void ecSign() throws Exception {
-        ECPublicKey publicKey = Crypto.decodeEcPubkey(Mathematics.toBytes("28lbr8j2ese9enb00e8kwy62v8zky2peyojoepyntitqufu4o77qpndw1y0k8kjwdzb9way1r6fkhqlaznid8udyx3azxsc2744ly1iyfifytsfq4qqfsvnmrd64r9jkizuzr3e9i4w2oslxphcxjvvyknb3ish8sx70mdvxsok7z27mh7ijh3clmb",
-                                                                          36
-        ));
-        ECPrivateKey privateKey = Crypto.decodeEcPrikey(Mathematics.toBytes("duumyfr69utbni86zki6mhah52785oqn0lfhh08qcr7t0cht01jn8smbvu0isu4jncsmwww82sr4wdxay221d9ctaahszwyxsokafl8kpj9gqfnjps9q8gnux16uqr9yawx21aodp85vznc420cje4897p04te9cklsdn1j97mum1v7dhx3raodldd9b4warajakeilzpfryxqn564wcd3u7cll323vkj35etr8wbm3kbku83sfmmkhsyciz8nla78hvm292iohvbuoyl5ejqdseoycoxk5dqnefi8e9cdbn",
-                                                                            36
-        ));
+        KeyPair keyPair = Crypto.ecKeyPair(521);
+        ECPublicKey publicKey = (ECPublicKey) keyPair.getPublic();
+        ECPrivateKey privateKey = (ECPrivateKey) keyPair.getPrivate();
 
-        byte[] plaintext = "awaqwq".getBytes();
+        System.out.println(PreSharedCipherEncode.encodeEcPublic(publicKey,
+                                                                true
+        ));
+        System.out.println(PreSharedCipherEncode.encodeEcPrivate(privateKey,
+                                                                 true
+        ));
+//        ECPublicKey publicKey = Crypto.decodeEcPubkey(Mathematics.toBytes("28lbr8j2ese9enb00e8kwy62v8zky2peyojoepyntitqufu4o77qpndw1y0k8kjwdzb9way1r6fkhqlaznid8udyx3azxsc2744ly1iyfifytsfq4qqfsvnmrd64r9jkizuzr3e9i4w2oslxphcxjvvyknb3ish8sx70mdvxsok7z27mh7ijh3clmb",
+//                                                                          36
+//        ));
+//        ECPrivateKey privateKey = Crypto.decodeEcPrikey(Mathematics.toBytes("duumyfr69utbni86zki6mhah52785oqn0lfhh08qcr7t0cht01jn8smbvu0isu4jncsmwww82sr4wdxay221d9ctaahszwyxsokafl8kpj9gqfnjps9q8gnux16uqr9yawx21aodp85vznc420cje4897p04te9cklsdn1j97mum1v7dhx3raodldd9b4warajakeilzpfryxqn564wcd3u7cll323vkj35etr8wbm3kbku83sfmmkhsyciz8nla78hvm292iohvbuoyl5ejqdseoycoxk5dqnefi8e9cdbn",
+//                                                                            36
+//        ));
 
-        byte[] ciphertext = Crypto.ecEncrypt(plaintext,
-                                             publicKey
+        byte[] plaintext = "Test".getBytes();
+
+        byte[] ciphertext = Crypto.ecSign(plaintext,
+                                          privateKey
         );
 
-        System.out.println(new String(Crypto.ecDecrypt(ciphertext,
-                                                       privateKey
-        )));
-
-        System.out.println(new String(ciphertext));
+        System.out.println(new String(Base64.getEncoder()
+                                            .encode(ciphertext)));
 
         System.out.println(Crypto.ecVerify(plaintext,
                                            Crypto.ecSign(plaintext,

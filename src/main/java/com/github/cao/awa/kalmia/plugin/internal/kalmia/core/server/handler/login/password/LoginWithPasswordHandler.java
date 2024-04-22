@@ -12,7 +12,7 @@ import com.github.cao.awa.kalmia.login.LoginCommon;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.kalmia.user.DefaultUser;
 import com.github.cao.awa.kalmia.user.User;
 import com.github.cao.awa.modmdo.annotation.platform.Server;

@@ -6,7 +6,6 @@ import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.message.cover.processor.coloregg.MeowMessageProcessor;
 import com.github.cao.awa.kalmia.message.cover.processor.time.TimeMessageProcessor;
 import com.github.cao.awa.kalmia.plugin.Plugin;
-import com.github.cao.awa.kalmia.server.KalmiaServer;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +29,8 @@ public class KalmiaServerCore extends Plugin {
 
     @Override
     public boolean canLoad() {
-        return ! KalmiaServer.serverBootstrapConfig.translation()
-                                                   .enable();
+        return ! Kalmia.SERVER.serverBootstrapConfig.get()
+                .translation.get()
+                .enabled.get();
     }
 }

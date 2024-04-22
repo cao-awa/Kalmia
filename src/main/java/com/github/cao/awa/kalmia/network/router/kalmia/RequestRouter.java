@@ -1,15 +1,12 @@
 package com.github.cao.awa.kalmia.network.router.kalmia;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONWriter;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.apricot.util.io.IOUtil;
+import com.github.cao.awa.kalmia.annotations.config.AutoConfig;
 import com.github.cao.awa.kalmia.bug.BugTrace;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.network.RouterNetworkConfig;
-import com.github.cao.awa.kalmia.constant.KalmiaConstant;
+import com.github.cao.awa.kalmia.config.instance.ConfigEntry;
+import com.github.cao.awa.kalmia.config.network.router.RequestRouterConfig;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.function.provider.Consumers;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
@@ -29,8 +26,8 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.OperationInvalidPacket;
 import com.github.cao.awa.kalmia.network.router.NetworkRouter;
-import com.github.cao.awa.kalmia.network.router.kalmia.meta.RequestRouterMetadata;
-import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
+import com.github.cao.awa.kalmia.network.router.meta.RequestRouterMetadata;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -40,10 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.net.SocketException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -51,7 +44,7 @@ import java.util.function.Consumer;
 
 public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private static final Logger LOGGER = LogManager.getLogger("RequestRouter");
-    private final ExecutorService executor = ExecutorFactor.intensiveCpu();
+    private final ExecutorService executor = ExecutorFactor.intensiveIo();
     private final Map<RequestState, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.hashMap(),
                                                                                               handlers -> {
                                                                                                   handlers.put(RequestState.HELLO,
@@ -75,7 +68,8 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private final Affair funeral = Affair.empty();
     private LongAndExtraIdentity accessIdentity;
     private final RequestRouterMetadata metadata = RequestRouterMetadata.create();
-    private RouterNetworkConfig networkConfig = KalmiaEnv.DEFAULT_ROUTER_NETWORK_CONFIG;
+    @AutoConfig
+    public final ConfigEntry<RequestRouterConfig> config = ConfigEntry.entry();
 
     public RequestRouter() {
         this(Consumers.doNothing());
@@ -165,49 +159,7 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
         this.context.channel()
                     .closeFuture()
                     .addListener(this :: disconnect);
-        setupNetworkConfig();
-    }
-
-    public void setupNetworkConfig() throws Exception {
-        prepareConfig();
-
-        this.networkConfig = RouterNetworkConfig.read(
-                JSONObject.parse(
-                        IOUtil.read(new FileReader(KalmiaConstant.ROUTER_CONFIG_PATH))
-                ),
-                KalmiaEnv.DEFAULT_ROUTER_NETWORK_CONFIG
-        );
-
-        rewriteConfig(this.networkConfig);
-    }
-
-    public static void rewriteConfig(RouterNetworkConfig networkConfig) throws Exception {
-        LOGGER.info("Rewriting router config");
-
-        IOUtil.write(new FileWriter(KalmiaConstant.ROUTER_CONFIG_PATH),
-                     networkConfig.toJSON()
-                                  .toString(JSONWriter.Feature.PrettyFormat)
-        );
-    }
-
-    public static void prepareConfig() throws Exception {
-        LOGGER.info("Preparing router config");
-
-        File configFile = new File(KalmiaConstant.ROUTER_CONFIG_PATH);
-
-        configFile.getParentFile()
-                  .mkdirs();
-
-        if (! configFile.isFile()) {
-            IOUtil.write(
-                    new FileWriter(configFile),
-                    IOUtil.read(
-                            new InputStreamReader(
-                                    ResourceLoader.stream(KalmiaConstant.ROUTER_DEFAULT_CONFIG_PATH)
-                            )
-                    )
-            );
-        }
+        KalmiaEnv.CONFIG_FRAMEWORK.createConfig(this);
     }
 
     public void disconnect() {
@@ -256,8 +208,8 @@ public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
 
         byte[] compressResult;
 
-        // Do not compress when data smaller than 1423 bytes.
-        if (sourceData.length < this.networkConfig.compressThreshold()) {
+        // Do not compress when data smaller than specially bytes, default is 1423.
+        if (sourceData.length < this.config.get().compressThreshold.get()) {
             compressId = RequestCompressorType.NONE.id();
             compressResult = sourceData;
         } else {

@@ -30,7 +30,7 @@ public class RequestDuetSessionHandler implements RequestDuetSessionEventHandler
                                                          );
         if (sessionIdentity == null) {
             sessionIdentity = Kalmia.SERVER.sessionManager()
-                                           .add(new DuetSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
+                                           .create(new DuetSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
                                                                 router.accessIdentity(),
                                                                 targetIdentity
                                            ));

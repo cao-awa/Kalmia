@@ -74,8 +74,8 @@ public class EventFramework extends ReflectionFramework {
 
         boolean shouldLoad;
 
-        if (KalmiaEnv.pluginFramework.plugin(pluginAnnotation.name())
-                                     .forceRegister()) {
+        if (KalmiaEnv.PLUGIN_FRAMEWORK.plugin(pluginAnnotation.name())
+                                      .forceRegister()) {
             shouldLoad = true;
         } else {
             boolean loadWhenServer = clazz.isAnnotationPresent(Server.class);
@@ -92,8 +92,8 @@ public class EventFramework extends ReflectionFramework {
 
         if (shouldLoad) {
             try {
-                if (! KalmiaEnv.pluginFramework.plugin(pluginAnnotation.name())
-                                               .enabled()) {
+                if (! KalmiaEnv.PLUGIN_FRAMEWORK.plugin(pluginAnnotation.name())
+                                                .enabled()) {
                     return;
                 }
 
@@ -199,14 +199,14 @@ public class EventFramework extends ReflectionFramework {
 
         this.handlerBelongs.put(
                 handler,
-                KalmiaEnv.pluginFramework.name(plugin)
+                KalmiaEnv.PLUGIN_FRAMEWORK.name(plugin)
         );
 
         LOGGER.info(
                 "Registered manual event handler '{}' via plugin '{}'",
                 handler.getClass()
                        .getName(),
-                KalmiaEnv.pluginFramework.name(plugin)
+                KalmiaEnv.PLUGIN_FRAMEWORK.name(plugin)
         );
     }
 
@@ -331,7 +331,7 @@ public class EventFramework extends ReflectionFramework {
 
     public Plugin plugin(EventHandler<?> handler) {
         String name = this.handlerBelongs.get(handler);
-        return KalmiaEnv.pluginFramework.plugin(
+        return KalmiaEnv.PLUGIN_FRAMEWORK.plugin(
                 name != null ? name :
                         handler.getClass()
                                .getAnnotation(PluginRegister.class)

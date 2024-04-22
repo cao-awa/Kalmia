@@ -3,14 +3,14 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server.handler.han
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.event.kalmiagram.handler.network.inbound.handshake.crypto.aes.HandshakeAesCipherEventHandler;
 import com.github.cao.awa.kalmia.network.encode.kalmiagram.crypto.symmetric.aes.AesCrypto;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.crypto.aes.HandshakeAesCipherPacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.handshake.hello.server.ServerHelloPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.kalmia.status.RequestState;
-import com.github.cao.awa.kalmia.server.KalmiaServer;
+import com.github.cao.awa.kalmia.network.router.status.RequestState;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +36,7 @@ public class HandshakeAesCipherHandler implements HandshakeAesCipherEventHandler
 
             // Send server hello.
             router.send(new ServerHelloPacket(
-                    KalmiaServer.serverBootstrapConfig.serverName(),
+                    Kalmia.SERVER.serverBootstrapConfig.get().name.get(),
                     KalmiaConstant.BUILD_NAME,
                     // Crypto encoded IV, use to sync server session IV.
                     iv

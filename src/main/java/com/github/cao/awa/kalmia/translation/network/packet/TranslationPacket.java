@@ -6,7 +6,7 @@ import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.annotations.translation.Translation;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.AnnotationUtil;
-import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;
+import com.github.cao.awa.kalmia.translation.network.router.TranslationRouter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
@@ -20,8 +20,8 @@ public abstract class TranslationPacket {
 
     public TranslationPacket(JSONObject json) {
         try {
-            KalmiaEnv.jsonSerializeFramework.create(this,
-                                                    json
+            KalmiaEnv.JSON_SERIALIZE_FRAMEWORK.create(this,
+                                                      json
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,7 +53,7 @@ public abstract class TranslationPacket {
     public JSONObject toJSON(TranslationRouter router) {
         try {
             JSONObject json = new JSONObject();
-            JSONObject data = KalmiaEnv.jsonSerializeFramework.payload(this);
+            JSONObject data = KalmiaEnv.JSON_SERIALIZE_FRAMEWORK.payload(this);
 
             Translation translation = AnnotationUtil.getAnnotation(this,
                                                                    Translation.class

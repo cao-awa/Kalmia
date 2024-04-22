@@ -5,6 +5,7 @@ import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoJsonSerializer;
+import com.github.cao.awa.kalmia.annotations.auto.serializer.Missing;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -117,9 +118,7 @@ public class JsonSerializeFramework extends ReflectionFramework {
         LinkedList<Field> fields = ApricotCollectionFactor.linkedList();
         for (Field e : clazz.getDeclaredFields()) {
             if (e.isAnnotationPresent(AutoData.class)) {
-                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),
-                                            object
-                ));
+                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName())));
             }
         }
         return fields;
@@ -155,21 +154,31 @@ public class JsonSerializeFramework extends ReflectionFramework {
             String key = data.key()
                              .equals("") ? field.getName() : data.key();
 
-            Object deserialized = deserialize(json,
-                                              key,
-                                              field.get(object),
-                                              field
-            );
+            try {
+                Object deserialized = deserialize(json,
+                                                  key,
+                                                  field.get(object),
+                                                  field
+                );
 
-            field.set(object,
-                      deserialized
-            );
+                field.set(object,
+                          deserialized
+                );
+            } catch (Exception e) {
+                if (! field.isAnnotationPresent(Missing.class)) {
+                    throw e;
+                }
+            }
         }
 
         return object;
     }
 
     public void serialize(JSONObject json, String key, Object object, Field field) {
+        if (object == null) {
+            return;
+        }
+
         JsonSerializer<?> serializer = getSerializer(field.getType());
 
         if (serializer == null) {

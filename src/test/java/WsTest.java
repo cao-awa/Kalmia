@@ -8,7 +8,7 @@ import java.net.URI;
 public class WsTest {
     public static void main(String[] args) {
         try {
-            WebSocketClient client = new WebSocketClient(new URI("ws://127.0.0.1:54321")) {
+            WebSocketClient client = new WebSocketClient(new URI("ws://127.0.0.1:12345")) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
 
@@ -33,6 +33,19 @@ public class WsTest {
                                          "data": {
                                              "uid": 1,
                                              "pwd": "123456"
+                                         }
+                                     }
+                                     """);
+
+                        send("""
+                                     {
+                                         "post_type": "message",
+                                         "post_name": "select_message",
+                                         "time": 1697986847811,
+                                         "data": {
+                                             "session_identity": "25burfp0j7epb0hqfcuw340g",
+                                             "from": 0,
+                                             "to": 114514
                                          }
                                      }
                                      """);
@@ -65,7 +78,10 @@ public class WsTest {
                                     "time": 1697986847811,
                                     "data": {
                                         "cipher": "awa",
-                                        "identity": "aaaaaabbbbbbbwwwwwwdddddd"
+                                        "identity": "aaaaaabbbbbbbwwwwwwdddddd",
+                                        "server_host": "127.0.0.1",
+                                        "server_port": 54321,
+                                        "data_save": true
                                     }
                                 }
                                 """);

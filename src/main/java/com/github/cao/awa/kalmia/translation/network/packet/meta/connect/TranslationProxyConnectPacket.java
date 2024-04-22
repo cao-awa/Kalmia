@@ -11,6 +11,7 @@ import com.github.cao.awa.kalmia.translation.event.inbound.meta.connect.Translat
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
+@Server
 @Translation(type = "meta", name = "proxy_connect")
 @TranslationEventTarget(TranslationProxyConnectEvent.class)
 public class TranslationProxyConnectPacket extends TranslationPacket {

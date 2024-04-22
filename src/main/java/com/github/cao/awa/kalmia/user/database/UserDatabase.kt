@@ -62,7 +62,7 @@ class UserDatabase(path: String) : KeyValueDatabase<BytesKey, User?>(ApricotColl
 
         val reader = BytesReader.of(this.delegate[key])
 
-        val result: HashSet<PureExtraIdentity> = ApricotCollectionFactor.hashSet()
+        val result: MutableSet<PureExtraIdentity> = ApricotCollectionFactor.hashSet()
 
         while (reader.readable(1)) {
             result.add(PureExtraIdentity.read(reader))
@@ -215,7 +215,7 @@ class UserDatabase(path: String) : KeyValueDatabase<BytesKey, User?>(ApricotColl
     fun sessionListeners(accessIdentity: LongAndExtraIdentity): Set<PureExtraIdentity> {
         val reader = BytesReader.of(this.delegate[sessionListenersKey(accessIdentity)])
 
-        val result: HashSet<PureExtraIdentity> = ApricotCollectionFactor.hashSet();
+        val result: MutableSet<PureExtraIdentity> = ApricotCollectionFactor.hashSet();
 
         while (reader.readable(1)) {
             result.add(PureExtraIdentity.read(reader))

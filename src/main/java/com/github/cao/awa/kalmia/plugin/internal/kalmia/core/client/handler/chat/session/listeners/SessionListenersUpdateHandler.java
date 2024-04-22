@@ -35,6 +35,8 @@ public class SessionListenersUpdateHandler implements SessionListenersUpdateEven
                                );
               });
 
-        PollingClient.CLIENT.sessionListenersIdentity(BytesRandomIdentifier.create(24));
+        if (PollingClient.CLIENT != null) {
+            PollingClient.CLIENT.sessionListenersIdentity(BytesRandomIdentifier.create(24));
+        }
     }
 }

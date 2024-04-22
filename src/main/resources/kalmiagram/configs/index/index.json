@@ -1,0 +1,27 @@
+{
+    "MetadataConfigTemplate": "config-metadata.json",
+    "constant": {
+        "C": "kalmia-constants.json"
+    },
+    "network": {
+        "router": {
+            "RequestRouterConfigTemplate": "router-config.json"
+        }
+    },
+    "server": {
+        "bootstrap": {
+            "network": {
+                "KalmiaServerBootstrapNetworkConfigTemplate": "kalmia-server-bootstrap-network.json"
+            }
+        },
+        "KalmiaServerConfigTemplate": "server-config.json"
+    },
+    "client": {
+        "bootstrap": {
+            "network": {
+                "KalmiaClientBootstrapNetworkConfigTemplate": "kalmia-client-bootstrap-network.json"
+            }
+        },
+        "KalmiaClientConfigTemplate": "client-config.json"
+    }
+}

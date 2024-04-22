@@ -36,6 +36,57 @@ public class EntrustEnvironment {
         trys(() -> action.accept(target));
     }
 
+    public static <R extends Throwable> void reThrow(ExceptingRunnable runnable, Function<Exception, R> makeException) throws R {
+        try {
+            runnable.apply();
+        } catch (Exception e) {
+            throw makeException.apply(e);
+        }
+    }
+
+    public static <E extends Throwable, R extends Throwable> void reThrow(ExceptingRunnable runnable, Class<E> specifiedType, Function<E, R> makeException, Function<Exception, R> whenOther) throws R {
+        try {
+            runnable.apply();
+        } catch (Exception e) {
+            E specifiedEx;
+            try {
+                specifiedEx = specifiedType.cast(e);
+            } catch (Exception ignored) {
+                throw whenOther.apply(e);
+            }
+            throw makeException.apply(specifiedEx);
+        }
+    }
+
+    public static <E extends Throwable, R extends Throwable> void reThrow(ExceptingRunnable runnable, Class<E> specifiedType, Function<E, R> makeException, Consumer<Exception> whenOther) throws R {
+        try {
+            runnable.apply();
+        } catch (Exception e) {
+            E specifiedEx;
+            try {
+                specifiedEx = specifiedType.cast(e);
+            } catch (Exception ignored) {
+                whenOther.accept(e);
+                return;
+            }
+            throw makeException.apply(specifiedEx);
+        }
+    }
+
+    public static <E extends Throwable, R extends Throwable> void reThrow(ExceptingRunnable runnable, Class<E> specifiedType, Function<E, R> makeException) throws R {
+        try {
+            runnable.apply();
+        } catch (Exception e) {
+            E specifiedEx;
+            try {
+                specifiedEx = specifiedType.cast(e);
+            } catch (Exception ignored) {
+                return;
+            }
+            throw makeException.apply(specifiedEx);
+        }
+    }
+
     /**
      * Do action, and ignored exception.
      *

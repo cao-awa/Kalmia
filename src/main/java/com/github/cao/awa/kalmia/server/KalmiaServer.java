@@ -1,12 +1,10 @@
 package com.github.cao.awa.kalmia.server;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONWriter;
-import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.apricot.util.io.IOUtil;
-import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.ServerBootstrapConfig;
-import com.github.cao.awa.kalmia.constant.KalmiaConstant;
+import com.github.cao.awa.kalmia.annotations.config.AutoConfig;
+import com.github.cao.awa.kalmia.config.instance.ConfigEntry;
+import com.github.cao.awa.kalmia.config.server.KalmiaServerConfig;
+import com.github.cao.awa.kalmia.config.server.bootstrap.network.KalmiaServerBootstrapNetworkConfig;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.launch.done.DoneLaunchEvent;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
@@ -23,10 +21,6 @@ import com.github.cao.awa.kalmia.user.manager.UserManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,8 +29,10 @@ import java.util.concurrent.Executors;
 
 public class KalmiaServer {
     private static final Logger LOGGER = LogManager.getLogger("KalmiaServer");
-    public static ServerBootstrapConfig serverBootstrapConfig;
-    private final ServerBootstrapConfig bootstrapConfig;
+    @AutoConfig
+    public final ConfigEntry<KalmiaServerConfig> serverBootstrapConfig = ConfigEntry.entry();
+    @AutoConfig
+    public final ConfigEntry<KalmiaServerBootstrapNetworkConfig> bootstrapConfig = ConfigEntry.entry();
     private final KalmiaServerNetworkIo networkIo;
     private final MessageManager messageManager;
     private final UserManager userManager;
@@ -49,10 +45,6 @@ public class KalmiaServer {
 
     public boolean isStarted() {
         return this.started;
-    }
-
-    public ServerBootstrapConfig bootstrapConfig() {
-        return this.bootstrapConfig;
     }
 
     public UserManager userManager() {
@@ -75,9 +67,9 @@ public class KalmiaServer {
         return this.messageProcessors.get(id);
     }
 
-    public KalmiaServer(ServerBootstrapConfig config) {
+    public KalmiaServer() {
         try {
-            this.bootstrapConfig = config;
+//            KalmiaEnv.CONFIG_FRAMEWORK.createConfig(this);
 
             this.networkIo = new KalmiaServerNetworkIo(this);
 
@@ -98,9 +90,7 @@ public class KalmiaServer {
                                  KalmiaEnv.testUser2
             );
 
-            this.sessionManager.set(CommunalSession.TEST_COMMUNAL_IDENTITY,
-                                    CommunalSession.TEST_COMMUNAL
-            );
+            this.sessionManager.createWithOutAdd(CommunalSession.TEST_COMMUNAL);
             this.sessionManager.curSeq(0);
 
         } catch (Exception e) {
@@ -108,52 +98,10 @@ public class KalmiaServer {
         }
     }
 
-    public static void setupBootstrapConfig() throws Exception {
-        prepareConfig();
-
-        serverBootstrapConfig = ServerBootstrapConfig.read(
-                JSONObject.parse(
-                        IOUtil.read(new FileReader(KalmiaConstant.SERVER_CONFIG_PATH))
-                ),
-                KalmiaEnv.DEFAULT_SERVER_BOOTSTRAP_CONFIG
-        );
-
-        rewriteConfig(serverBootstrapConfig);
-    }
-
-    public static void rewriteConfig(ServerBootstrapConfig bootstrapConfig) throws Exception {
-        LOGGER.info("Rewriting server config");
-
-        IOUtil.write(new FileWriter(KalmiaConstant.SERVER_CONFIG_PATH),
-                     bootstrapConfig.toJSON()
-                                    .toString(JSONWriter.Feature.PrettyFormat)
-        );
-    }
-
-    public static void prepareConfig() throws Exception {
-        LOGGER.info("Preparing server config");
-
-        File configFile = new File(KalmiaConstant.SERVER_CONFIG_PATH);
-
-        configFile.getParentFile()
-                  .mkdirs();
-
-        if (! configFile.isFile()) {
-            IOUtil.write(
-                    new FileWriter(configFile),
-                    IOUtil.read(
-                            new InputStreamReader(
-                                    ResourceLoader.stream(KalmiaConstant.SERVER_DEFAULT_CONFIG_PATH)
-                            )
-                    )
-            );
-        }
-    }
-
     public void startup() throws Exception {
         setupNetwork();
 
-        KalmiaEnv.eventFramework.fireEvent(new DoneLaunchEvent());
+        KalmiaEnv.EVENT_FRAMEWORK.fireEvent(new DoneLaunchEvent());
     }
 
     public void registerMessageProcessor(MessageProcessor processor) {
@@ -184,7 +132,7 @@ public class KalmiaServer {
         task(() -> {
             try {
                 this.networkIo.start(
-                        this.bootstrapConfig.serverNetwork()
+                        this.bootstrapConfig.get()
                 );
             } catch (Exception e) {
                 e.printStackTrace();

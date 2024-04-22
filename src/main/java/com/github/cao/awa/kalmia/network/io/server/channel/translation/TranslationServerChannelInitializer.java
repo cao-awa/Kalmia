@@ -1,8 +1,8 @@
 package com.github.cao.awa.kalmia.network.io.server.channel.translation;
 
 import com.github.cao.awa.kalmia.network.io.server.channel.KalmiaServerChannelInitializer;
-import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;
 import com.github.cao.awa.kalmia.server.KalmiaServer;
+import com.github.cao.awa.kalmia.translation.network.router.TranslationRouter;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;

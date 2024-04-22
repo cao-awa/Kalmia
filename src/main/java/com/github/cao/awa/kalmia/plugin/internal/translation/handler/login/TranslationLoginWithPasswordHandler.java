@@ -5,10 +5,10 @@ import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.network.packet.inbound.login.password.LoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.kalmia.network.router.translation.TranslationRouter;
 import com.github.cao.awa.kalmia.translation.event.handler.inbound.login.password.TranslationLoginWithPasswordEventHandler;
 import com.github.cao.awa.kalmia.translation.network.packet.login.TranslationLoginWithPasswordPacket;
 import com.github.cao.awa.kalmia.translation.network.packet.meta.status.TranslationProxyStatusPacket;
+import com.github.cao.awa.kalmia.translation.network.router.TranslationRouter;
 
 @Auto
 @PluginRegister(name = "kalmia_translation")
@@ -22,8 +22,12 @@ public class TranslationLoginWithPasswordHandler implements TranslationLoginWith
 
         router.send(new TranslationProxyStatusPacket("status.kalmia.login"));
 
-        requestRouter.send(new LoginWithPasswordPacket(packet.accessIdentity(),
-                                                       packet.password()
-        ));
+        System.out.println(packet.uid());
+
+        if (false) {
+            requestRouter.send(new LoginWithPasswordPacket(packet.accessIdentity(),
+                                                           packet.password()
+            ));
+        }
     }
 }

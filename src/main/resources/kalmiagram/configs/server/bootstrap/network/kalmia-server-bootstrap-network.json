@@ -1,0 +1,8 @@
+{
+    "metadata": {
+        "version": 0
+    },
+    "bind_port": "@INHERITED:C#server_port",
+    "bind_host": "127.0.0.1",
+    "use_epoll": true
+}

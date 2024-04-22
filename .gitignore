@@ -23,10 +23,10 @@ bin/
 *.DS_Store
 
 # kalmia
-run/
-logs/
-configs/
-data/
-ciphers/
-resources/
-src/main/resources/kalmiagram/secret/main/SECRET_PRIVATE
+/run/
+/logs/
+/configs/
+/data/
+/ciphers/
+/resources/
+/src/main/resources/kalmiagram/secret/main/SECRET_PRIVATE

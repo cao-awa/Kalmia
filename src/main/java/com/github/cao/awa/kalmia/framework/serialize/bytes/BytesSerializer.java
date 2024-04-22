@@ -14,10 +14,10 @@ public interface BytesSerializer<T> {
     T deserialize(BytesReader reader);
 
     default Class<T>[] target() {
-        return EntrustEnvironment.cast(KalmiaEnv.bytesSerializerFramework.target(this));
+        return EntrustEnvironment.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.target(this));
     }
 
     default long id() {
-        return KalmiaEnv.bytesSerializerFramework.id(this);
+        return KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.id(this);
     }
 }

@@ -69,10 +69,9 @@ public class NetworkEventFramework extends ReflectionFramework {
                                .getName()
             );
         } else {
-            KalmiaEnv.eventFramework.fireEvent(h
-                                                       .apply(router,
-                                                              packet
-                                                       ));
+            KalmiaEnv.EVENT_FRAMEWORK.fireEvent(h.apply(router,
+                                                        packet
+            ));
         }
     }
 }

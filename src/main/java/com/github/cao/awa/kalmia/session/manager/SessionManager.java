@@ -22,6 +22,35 @@ public class SessionManager {
         return this.database.add(session);
     }
 
+    public PureExtraIdentity create(Session session) {
+        appendCreatedMessage(session);
+
+        return add(session);
+    }
+
+    public void createWithOutAdd(Session session) {
+        appendCreatedMessage(session);
+
+        set(session.identity(),
+            session
+        );
+    }
+
+    public void appendCreatedMessage(Session session) {
+//        Kalmia.SERVER.messageManager()
+//                     .send(
+//                             session.identity(),
+//                              TODO replace to AssembledMessage and TranslateMessage in future.
+//                             new UserMessage(
+//                                     KalmiaConstant.UNMARKED_PURE_IDENTITY,
+//                                     "session.created".getBytes(StandardCharsets.UTF_8),
+//                                     KalmiaConstant.UNMARKED_PURE_IDENTITY,
+//                                     BytesUtil.EMPTY,
+//                                     KalmiaConstant.KALMIA_SERVER_IDENTITY
+//                             )
+//                     );
+    }
+
     public void set(PureExtraIdentity sessionIdentity, Session session) {
         this.database.set(sessionIdentity,
                           session

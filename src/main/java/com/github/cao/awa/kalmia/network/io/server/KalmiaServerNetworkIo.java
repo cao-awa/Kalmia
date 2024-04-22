@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.network.io.server;
 import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
+import com.github.cao.awa.kalmia.config.server.bootstrap.network.KalmiaServerBootstrapNetworkConfig;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.network.io.server.channel.KalmiaServerChannelInitializer;
 import com.github.cao.awa.kalmia.network.io.server.channel.kalmiagram.KalmiagramServerChannelInitializer;
@@ -55,9 +55,9 @@ public class KalmiaServerNetworkIo {
 
     public KalmiaServerNetworkIo(KalmiaServer server) {
         this.server = server;
-        if (server.bootstrapConfig()
-                  .translation()
-                  .enable()) {
+        if (server.serverBootstrapConfig.get()
+                .translation.get()
+                .enabled.get()) {
             this.channelInitializer = new TranslationServerChannelInitializer(server).subscribe(this.connections);
         } else {
             this.channelInitializer = new KalmiagramServerChannelInitializer(server).subscribe(this.connections);
@@ -94,7 +94,7 @@ public class KalmiaServerNetworkIo {
         }
     }
 
-    public void start(ServerNetworkConfig config) throws Exception {
+    public void start(KalmiaServerBootstrapNetworkConfig config) throws Exception {
         boolean expectEpoll = this.server.useEpoll();
         boolean epoll = Epoll.isAvailable();
 
@@ -103,6 +103,11 @@ public class KalmiaServerNetworkIo {
                                     "Kalmia network io using Epoll" :
                                     "Kalmia network io expected Epoll, but Epoll is not available, switch to NIO" :
                             "Kalmia network io using NIO");
+
+        LOGGER.info("Server open on {}:{}",
+                    config.bindHost.get(),
+                    config.bindPort.get()
+        );
 
         Supplier<? extends EventLoopGroup> lazy = epoll ? EPOLL_CHANNEL : DEFAULT_CHANNEL;
 
@@ -131,8 +136,8 @@ public class KalmiaServerNetworkIo {
                                           )
                                           .childHandler(this.channelInitializer)
                                           .bind(
-                                                  config.bindHost(),
-                                                  config.bindPort()
+                                                  config.bindHost.get(),
+                                                  config.bindPort.get()
                                           )
                                           .syncUninterruptibly()
                                           .channel()

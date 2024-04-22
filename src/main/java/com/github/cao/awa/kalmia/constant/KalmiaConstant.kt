@@ -48,4 +48,10 @@ object KalmiaConstant {
 
     @JvmField
     val UNMARKED_LONG_AND_EXTRA_IDENTITY = LongAndExtraIdentity.create(-1, byteArrayOf(-1))
+
+    @JvmField
+    val KALMIA_SERVER_IDENTITY = LongAndExtraIdentity.create(
+        0,
+        byteArrayOf(112, -60, -46, 22, 71, -97, 27, -67, -45, 116, -107, -118, 10, -128, 60, -111)
+    )
 }

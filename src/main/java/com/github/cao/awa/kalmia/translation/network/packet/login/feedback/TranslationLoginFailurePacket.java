@@ -9,7 +9,9 @@ import com.github.cao.awa.kalmia.annotations.inaction.DoNotSet;
 import com.github.cao.awa.kalmia.annotations.translation.Translation;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
+import com.github.cao.awa.modmdo.annotation.platform.External;
 
+@External
 @Translation(type = "login", name = "login_failure")
 public class TranslationLoginFailurePacket extends TranslationPacket {
     @AutoData(key = "access_identity")

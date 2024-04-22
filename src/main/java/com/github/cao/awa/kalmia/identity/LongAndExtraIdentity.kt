@@ -1,5 +1,6 @@
 package com.github.cao.awa.kalmia.identity
 
+import com.alibaba.fastjson2.JSONObject
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.mathematic.base.Base256
@@ -27,6 +28,17 @@ open class LongAndExtraIdentity(private val longValue: Long, private val extras:
             return LongAndExtraIdentity(
                 longValue,
                 extras
+            )
+        }
+
+        @JvmStatic
+        fun create(json: JSONObject): LongAndExtraIdentity {
+            return LongAndExtraIdentity(
+                json.getLong("long"),
+                Mathematics.toBytes(
+                    json.getString("extra"),
+                    36
+                )
             )
         }
     }
@@ -61,6 +73,12 @@ open class LongAndExtraIdentity(private val longValue: Long, private val extras:
     override fun hashCode(): Int {
         val millsHash = this.longValue.hashCode()
         return 31 * millsHash + this.extras.contentHashCode()
+    }
+
+    fun toJSON(): JSONObject {
+        return JSONObject()
+            .fluentPut("long", this.longValue)
+            .fluentPut("extra", Mathematics.radix(this.extras, 36))
     }
 
     override fun toString(): String = Mathematics.radix(toBytes(), 36)

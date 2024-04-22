@@ -140,9 +140,7 @@ public class BytesSerializeFramework extends ReflectionFramework {
         LinkedList<Field> fields = ApricotCollectionFactor.linkedList();
         for (Field e : clazz.getDeclaredFields()) {
             if (e.isAnnotationPresent(AutoData.class)) {
-                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName()),
-                                            object
-                ));
+                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName())));
             }
         }
         return fields;
@@ -217,6 +215,20 @@ public class BytesSerializeFramework extends ReflectionFramework {
         }
     }
 
+    public byte[] serialize(Object object) {
+        if (object == null) {
+            return BytesUtil.EMPTY;
+        }
+        BytesSerializer<?> serializer = getSerializer(object.getClass());
+        if (serializer == null) {
+            if (object instanceof BytesSerializable<?> serializable) {
+                return serializable.serialize();
+            }
+            return BytesUtil.EMPTY;
+        }
+        return serializer.serialize(EntrustEnvironment.cast(object));
+    }
+
     public Object deserialize(Class<?> type, BytesReader reader) throws Exception {
         switch (reader.read()) {
             case - 1 -> {
@@ -271,5 +283,11 @@ public class BytesSerializeFramework extends ReflectionFramework {
 
     public <T> BytesSerializer<T> getSerializer(long id) {
         return EntrustEnvironment.cast(this.idToSerializer.get(id));
+    }
+
+    public <T> T breakRefs(T o) throws Exception {
+        return EntrustEnvironment.cast(deserialize(o.getClass(),
+                                                   BytesReader.of(serialize(o))
+        ));
     }
 }

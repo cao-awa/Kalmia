@@ -2,8 +2,8 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.client;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
 import com.github.cao.awa.kalmia.plugin.Plugin;
-import com.github.cao.awa.kalmia.server.KalmiaServer;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +24,8 @@ public class KalmiaClientCore extends Plugin {
 
     @Override
     public boolean forceRegister() {
-        return KalmiaServer.serverBootstrapConfig.translation()
-                                                 .enable();
+        return Kalmia.SERVER.serverBootstrapConfig.get()
+                .translation.get()
+                .enabled.get();
     }
 }

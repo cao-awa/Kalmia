@@ -10,6 +10,7 @@ import com.github.cao.awa.kalmia.annotations.translation.Translation;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 
+@Client
 @Translation(type = "meta", name = "status_notice")
 public class TranslationProxyStatusPacket extends TranslationPacket {
     @AutoData(key = "status")

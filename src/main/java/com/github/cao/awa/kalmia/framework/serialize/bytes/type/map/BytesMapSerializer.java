@@ -51,7 +51,7 @@ public class BytesMapSerializer<K, V> implements BytesSerializer<Map<K, V>> {
     }
 
     public static void write(ByteArrayOutputStream output, Object o) throws IOException {
-        BytesSerializer<Object> keySerializer = KalmiaEnv.bytesSerializerFramework.getSerializer(o);
+        BytesSerializer<Object> keySerializer = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(o);
 
         if (keySerializer != null) {
             // Write key by id mode.
@@ -118,7 +118,7 @@ public class BytesMapSerializer<K, V> implements BytesSerializer<Map<K, V>> {
         switch (readingMode) {
             case 1 -> {
                 long id = SkippedBase256.readLong(reader);
-                BytesSerializer<?> serializer = KalmiaEnv.bytesSerializerFramework.getSerializer(id);
+                BytesSerializer<?> serializer = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(id);
                 reading = serializer.deserialize(reader);
             }
             case 2 -> {

@@ -10,6 +10,7 @@ import com.github.cao.awa.kalmia.message.manager.MessageManager;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMessagePacket;
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectedMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
@@ -26,6 +27,13 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
         int realSelected;
 
         MessageManager manager = Kalmia.SERVER.messageManager();
+
+        Session session = Kalmia.SERVER.sessionManager()
+                                       .session(packet.sessionIdentity());
+
+        if (session == null || ! session.accessible(router.accessIdentity())) {
+            return;
+        }
 
         long currentSeqEnd = manager.seq(packet.sessionIdentity());
 

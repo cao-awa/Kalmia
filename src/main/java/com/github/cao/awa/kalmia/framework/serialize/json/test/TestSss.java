@@ -47,8 +47,8 @@ public class TestSss {
 
     public TestSss(JSONObject json) {
         try {
-            KalmiaEnv.jsonSerializeFramework.create(this,
-                                                    json
+            KalmiaEnv.JSON_SERIALIZE_FRAMEWORK.create(this,
+                                                      json
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,12 +65,12 @@ public class TestSss {
         TestSss sss = new TestSss();
 
         try {
-            JSONObject serialized = KalmiaEnv.jsonSerializeFramework.payload(sss);
+            JSONObject serialized = KalmiaEnv.JSON_SERIALIZE_FRAMEWORK.payload(sss);
             System.out.println(serialized.toString(JSONWriter.Feature.PrettyFormat));
 
             TestSss deserialized = new TestSss(serialized);
 
-            serialized = KalmiaEnv.jsonSerializeFramework.payload(deserialized);
+            serialized = KalmiaEnv.JSON_SERIALIZE_FRAMEWORK.payload(deserialized);
 
             System.out.println("----");
             System.out.println(serialized.toString(JSONWriter.Feature.PrettyFormat));

@@ -4,14 +4,8 @@ import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.await.AwaitManager;
-import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.ClientBootstrapConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.client.bootstrap.network.ClientNetworkConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.ConfigMeta;
-import com.github.cao.awa.kalmia.config.kalmiagram.meta.network.RouterNetworkConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.ServerBootstrapConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.network.ServerNetworkConfig;
-import com.github.cao.awa.kalmia.config.kalmiagram.server.bootstrap.translation.BootstrapTranslationConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
+import com.github.cao.awa.kalmia.framework.config.ConfigFramework;
 import com.github.cao.awa.kalmia.framework.event.EventFramework;
 import com.github.cao.awa.kalmia.framework.network.event.NetworkEventFramework;
 import com.github.cao.awa.kalmia.framework.network.unsolve.PacketFramework;
@@ -36,35 +30,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class KalmiaEnv {
-    public static final String VERSION = "1.0.0";
-
-    public static final ServerBootstrapConfig DEFAULT_SERVER_BOOTSTRAP_CONFIG = new ServerBootstrapConfig(
-            new ConfigMeta(0),
-            new ServerNetworkConfig(
-                    "127.0.0.1",
-                    12345,
-                    true
-            ),
-            new BootstrapTranslationConfig(
-                    false
-            ),
-            "Kalmia server"
-    );
-
-    public static final ClientBootstrapConfig DEFAULT_CLIENT_BOOTSTRAP_CONFIG = new ClientBootstrapConfig(
-            new ConfigMeta(0),
-            new ClientNetworkConfig(
-                    "127.0.0.1",
-                    12345,
-                    true
-            )
-    );
-
-    public static final RouterNetworkConfig DEFAULT_ROUTER_NETWORK_CONFIG = new RouterNetworkConfig(
-            new ConfigMeta(0),
-            1423
-    );
-
     public static final byte[] CHALLENGE_DATA = new byte[]{
             123, 123, 123, 123,
             121, 121, 121, 121,
@@ -82,11 +47,11 @@ public class KalmiaEnv {
     public static final LongAndExtraIdentity testUserIdentity1 = new LongAndExtraIdentity(1,
                                                                                           new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
     );
-
+    public static final String testUserPassword1 = "123456";
     public static final DefaultUser testUser1 = EntrustEnvironment.trys(() -> {
         return new DefaultUser(
                 testUserIdentity1,
-                new UserPassword("123456"),
+                new UserPassword(testUserPassword1),
                 new Settings()
         );
     });
@@ -101,13 +66,15 @@ public class KalmiaEnv {
     public static final LongAndExtraIdentity testUserIdentity2 = new LongAndExtraIdentity(2,
                                                                                           new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
     );
+    public static final String testUserPassword2 = "123456";
     public static final DefaultUser testUser2 = EntrustEnvironment.trys(() -> {
         return new DefaultUser(
                 testUserIdentity2,
-                new UserPassword("123456"),
+                new UserPassword(testUserPassword2),
                 new Settings()
         );
     });
+
 
     public static final PureExtraIdentity testKeypairIdentity0 = new PureExtraIdentity(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
     public static final PureExtraIdentity testKeypairIdentity1 = new PureExtraIdentity(new byte[]{16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1});
@@ -143,12 +110,13 @@ public class KalmiaEnv {
 
     public static boolean setup = false;
     public static boolean serverSideLoading = true;
-    public static final PacketFramework packetFramework = new PacketFramework();
-    public static final BytesSerializeFramework bytesSerializerFramework = new BytesSerializeFramework();
-    public static final JsonSerializeFramework jsonSerializeFramework = new JsonSerializeFramework();
-    public static final PluginFramework pluginFramework = new PluginFramework();
-    public static final EventFramework eventFramework = new EventFramework();
-    public static final NetworkEventFramework networkEventFramework = new NetworkEventFramework();
+    public static final ConfigFramework CONFIG_FRAMEWORK = new ConfigFramework();
+    public static final PacketFramework PACKET_FRAMEWORK = new PacketFramework();
+    public static final BytesSerializeFramework BYTES_SERIALIZE_FRAMEWORK = new BytesSerializeFramework();
+    public static final JsonSerializeFramework JSON_SERIALIZE_FRAMEWORK = new JsonSerializeFramework();
+    public static final PluginFramework PLUGIN_FRAMEWORK = new PluginFramework();
+    public static final EventFramework EVENT_FRAMEWORK = new EventFramework();
+    public static final NetworkEventFramework NETWORK_EVENT_FRAMEWORK = new NetworkEventFramework();
     public static final LanguageTranslationManager languageManager = new LanguageTranslationManager();
     public static final AwaitManager awaitManager = new AwaitManager();
 
@@ -181,12 +149,13 @@ public class KalmiaEnv {
     }
 
     public static void setupFrameworks() {
-        packetFramework.work();
-        bytesSerializerFramework.work();
-        jsonSerializeFramework.work();
-        pluginFramework.work();
-        eventFramework.work();
-        networkEventFramework.work();
+        CONFIG_FRAMEWORK.work();
+        PACKET_FRAMEWORK.work();
+        BYTES_SERIALIZE_FRAMEWORK.work();
+        JSON_SERIALIZE_FRAMEWORK.work();
+        PLUGIN_FRAMEWORK.work();
+        EVENT_FRAMEWORK.work();
+        NETWORK_EVENT_FRAMEWORK.work();
 
         setupLanguage();
     }

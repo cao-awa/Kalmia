@@ -28,7 +28,7 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
     @Override
     public void handle(RequestRouter router, RequestGroupSessionPacket packet) {
         PureExtraIdentity sessionId = Kalmia.SERVER.sessionManager()
-                                                   .add(new GroupSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
+                                                   .create(new GroupSession(PureExtraIdentity.create(BytesRandomIdentifier.create(16)),
                                                                          packet.name(),
                                                                          0
                                                    ));

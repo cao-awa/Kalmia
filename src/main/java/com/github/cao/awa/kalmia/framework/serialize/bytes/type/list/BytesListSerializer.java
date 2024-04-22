@@ -98,7 +98,7 @@ public class BytesListSerializer<V> implements BytesSerializer<List<V>> {
                         output.write(((BytesSerializable<?>) object).serialize());
                     }
                 } else {
-                    BytesSerializer<Object> serializer = EntrustEnvironment.cast(KalmiaEnv.bytesSerializerFramework.getSerializer(type));
+                    BytesSerializer<Object> serializer = EntrustEnvironment.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(type));
                     assert serializer != null;
 
                     // Write marker byte used to distinguish type mode.
@@ -165,7 +165,7 @@ public class BytesListSerializer<V> implements BytesSerializer<List<V>> {
                     } else {
                         // Write marker at data  head.
                         if (repeatCounter == 0) {
-                            serializer = EntrustEnvironment.cast(KalmiaEnv.bytesSerializerFramework.getSerializer(type));
+                            serializer = EntrustEnvironment.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(type));
 
                             // Write type mode marker, 4 is serializer id mode.
                             wrap.write(4);
@@ -233,7 +233,7 @@ public class BytesListSerializer<V> implements BytesSerializer<List<V>> {
                 }
                 // Mode 1 is type all consistent serializer mode.
                 case 1 -> {
-                    BytesSerializer<?> serializer = KalmiaEnv.bytesSerializerFramework.getSerializer(SkippedBase256.readLong(reader));
+                    BytesSerializer<?> serializer = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(SkippedBase256.readLong(reader));
                     for (int i = 0; i < size; i++) {
                         result.add(serializer.deserialize(reader));
                     }
@@ -268,7 +268,7 @@ public class BytesListSerializer<V> implements BytesSerializer<List<V>> {
                             // Mode 3 is serializer id mode in not consistent mode.
                             case 4 -> {
                                 // Read as ByteSerializer deserialize.
-                                BytesSerializer<?> serializer = KalmiaEnv.bytesSerializerFramework.getSerializer(SkippedBase256.readLong(reader));
+                                BytesSerializer<?> serializer = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(SkippedBase256.readLong(reader));
 
                                 for (int c = 0; c < current; c++) {
                                     // Deserialize the bytes and put it to result.

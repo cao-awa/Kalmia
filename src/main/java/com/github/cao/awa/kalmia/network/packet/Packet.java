@@ -30,8 +30,8 @@ public abstract class Packet<T extends PacketHandler<T>> {
 
     public Packet(BytesReader reader) {
         try {
-            KalmiaEnv.packetFramework.create(this,
-                                             reader
+            KalmiaEnv.PACKET_FRAMEWORK.create(this,
+                                              reader
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,7 +72,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
     public byte[] payload() {
         return EntrustEnvironment.trys(
                 // Encode payload.
-                () -> KalmiaEnv.packetFramework.payload(this),
+                () -> KalmiaEnv.PACKET_FRAMEWORK.payload(this),
                 // Handle exception.
                 e -> {
                     // Usually, exception should not be happened, maybe bugs cause this.
@@ -87,7 +87,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
     @Auto
     public byte[] id() {
         // Encode id.
-        return KalmiaEnv.packetFramework.id(this);
+        return KalmiaEnv.PACKET_FRAMEWORK.id(this);
     }
 
     @Auto
@@ -122,9 +122,9 @@ public abstract class Packet<T extends PacketHandler<T>> {
     public void inbound(RequestRouter router, T handler) {
         this.handler = handler;
         try {
-            KalmiaEnv.networkEventFramework.fireEvent(router,
-                                                      handler,
-                                                      this
+            KalmiaEnv.NETWORK_EVENT_FRAMEWORK.fireEvent(router,
+                                                        handler,
+                                                        this
             );
         } catch (Exception e) {
             e.printStackTrace();

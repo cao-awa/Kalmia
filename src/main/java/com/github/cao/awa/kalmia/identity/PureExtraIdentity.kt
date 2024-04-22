@@ -20,6 +20,11 @@ open class PureExtraIdentity(private val extras: ByteArray) {
         fun create(extras: ByteArray): PureExtraIdentity {
             return PureExtraIdentity(extras)
         }
+
+        @JvmStatic
+        fun create(extras: String): PureExtraIdentity {
+            return PureExtraIdentity(Mathematics.toBytes(extras, 36))
+        }
     }
 
     fun extras(): ByteArray = this.extras
