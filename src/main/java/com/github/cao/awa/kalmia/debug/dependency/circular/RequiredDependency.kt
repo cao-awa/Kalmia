@@ -1,23 +1,17 @@
-package com.github.cao.awa.kalmia.debug.dependency.circular;
+package com.github.cao.awa.kalmia.debug.dependency.circular
 
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-
-import java.util.List;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
 import java.util.function.Consumer;
 
-public class RequiredDependency {
-    private final List<Object> required = ApricotCollectionFactor.arrayList();
+class RequiredDependency {
+    private val required: MutableList<Any> = ApricotCollectionFactor.arrayList()
 
-    public RequiredDependency add(Object dependency) {
-        this.required.add(dependency);
-        return this;
+    fun add(dependency: Any): RequiredDependency {
+        this.required.add(dependency)
+        return this
     }
 
-    public List<Object> get() {
-        return this.required;
-    }
+    fun get(): List<Any> = this.required
 
-    public void forEach(Consumer<Object> consumer) {
-        this.required.forEach(consumer);
-    }
+    fun forEach(consumer: Consumer<Any>?) = this.required.forEach(consumer)
 }

@@ -1,60 +1,44 @@
-package com.github.cao.awa.kalmia.debug.dependency.circular;
+package com.github.cao.awa.kalmia.debug.dependency.circular
 
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.exception.auto.CircularDependencyException;
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.kalmia.exception.auto.CircularDependencyException
+import java.util.*
 
-import java.util.Map;
-import java.util.Stack;
+class CircularDependency {
+    private val dependencies: MutableMap<Any, RequiredDependency> = ApricotCollectionFactor.hashMap()
 
-public class CircularDependency {
-    private final Map<Object, RequiredDependency> dependencies = ApricotCollectionFactor.hashMap();
-
-    public void pushRequirement(Object target, RequiredDependency dependency) {
+    fun pushRequirement(target: Any, dependency: RequiredDependency) {
         if (this.dependencies.containsKey(target)) {
-            RequiredDependency oldDep = this.dependencies.get(target);
-            dependency.forEach(oldDep :: add);
+            val oldDep = this.dependencies[target]
+            dependency.forEach { oldDep?.add(it) }
         }
-        this.dependencies.put(target,
-                              dependency
-        );
+        this.dependencies[target] = dependency
 
-        checkCircular(target,
-                      ApricotCollectionFactor.stack(),
-                      false
-        );
+        checkCircular(target, ApricotCollectionFactor.stack(), false)
     }
 
-    public void checkCircular(Object target, Stack<Object> o, boolean inner) {
-        if (! this.dependencies.containsKey(target)) {
-            return;
-        }
-        this.dependencies.get(target)
-                         .forEach(required -> {
-                             o.push(required);
-                             Map<Object, Integer> map = ApricotCollectionFactor.hashMap();
-                             for (Object object : o) {
-                                 map.put(object,
-                                         map.getOrDefault(object,
-                                                          0
-                                         ) + 1
-                                 );
+    private fun checkCircular(target: Any, stack: Stack<Any>, inner: Boolean) {
+        if (this.dependencies.containsKey(target)) {
+            this.dependencies[target]?.forEach {
+                stack.push(it)
+                val map: MutableMap<Any, Int> = ApricotCollectionFactor.hashMap()
+                for (o in stack) {
+                    val currentLooping = map.getOrDefault(o, 0) + 1
 
-                                 if (map.get(object) == 2) {
-                                     o.pop();
-                                     throw new CircularDependencyException(o.stream()
-                                                                            .map(Object :: toString)
-                                                                            .toList(),
-                                                                           object.toString()
-                                     );
-                                 }
-                             }
-                             checkCircular(required,
-                                           o,
-                                           true
-                             );
-                             if (inner) {
-                                 o.pop();
-                             }
-                         });
+                    if (currentLooping == 2) {
+                        stack.pop()
+                        throw CircularDependencyException(
+                            stack.stream().map(Any::toString).toList(),
+                            o.toString()
+                        )
+                    }
+                    map[o] = currentLooping
+                }
+                checkCircular(it, stack, true)
+                if (inner) {
+                    stack.pop()
+                }
+            }
+        }
     }
 }

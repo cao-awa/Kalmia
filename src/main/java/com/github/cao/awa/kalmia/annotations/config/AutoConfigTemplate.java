@@ -14,9 +14,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface AutoConfigTemplate {
     /**
-     * 配置模板文件路径
+     * 配置模板文件名称
      *
-     * @return 配置模板文件路径
+     * @return 配置模板文件名称
      */
     String value();
 }
