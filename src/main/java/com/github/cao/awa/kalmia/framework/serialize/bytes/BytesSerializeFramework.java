@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.framework.serialize.bytes;
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoAllData;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoBytesSerializer;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
@@ -138,9 +139,10 @@ public class BytesSerializeFramework extends ReflectionFramework {
         Class<Packet<?>> clazz = EntrustEnvironment.cast(object.getClass());
         assert clazz != null;
         LinkedList<Field> fields = ApricotCollectionFactor.linkedList();
-        for (Field e : clazz.getDeclaredFields()) {
-            if (e.isAnnotationPresent(AutoData.class)) {
-                fields.add(ensureAccessible(clazz.getDeclaredField(e.getName())));
+        boolean autoAll = clazz.isAnnotationPresent(AutoAllData.class);
+        for (Field field : clazz.getDeclaredFields()) {
+            if ((autoAll && ! Modifier.isStatic(field.getModifiers())) || field.isAnnotationPresent(AutoData.class)) {
+                fields.add(ensureAccessible(clazz.getDeclaredField(field.getName())));
             }
         }
         return fields;

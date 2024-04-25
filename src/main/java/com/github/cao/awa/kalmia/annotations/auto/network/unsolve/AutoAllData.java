@@ -1,6 +1,7 @@
-package com.github.cao.awa.apricot.annotations.auto;
+package com.github.cao.awa.kalmia.annotations.auto.network.unsolve;
 
 import com.github.cao.awa.apricot.annotations.Stable;
+import com.github.cao.awa.apricot.annotations.auto.Auto;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,6 +11,7 @@ import java.lang.annotation.Target;
 @Auto
 @Stable
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.CONSTRUCTOR, ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
-public @interface Auto {
+@Target({ElementType.TYPE})
+public @interface AutoAllData {
+    String key() default "";
 }

@@ -677,7 +677,7 @@ class ConfigFramework : ReflectionFramework() {
                     // 处理此配置的依赖
                     // 配置对象内所有字段都应为ConfigEntry<KalmiaConfig>
                     val config = configEntry.get() as KalmiaConfig
-                    createConfig(config, configEntry.key(), template ?: getTemplate(config), configChain)
+                    createConfig(config, configEntry.key()!!, template ?: getTemplate(config), configChain)
                 },
                 // 处理普通数据
                 creatingWithTemplate

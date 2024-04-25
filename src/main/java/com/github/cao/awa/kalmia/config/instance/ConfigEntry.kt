@@ -1,34 +1,34 @@
-package com.github.cao.awa.kalmia.config.instance;
+package com.github.cao.awa.kalmia.config.instance
 
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.apricot.annotations.auto.Auto
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
 
-public class ConfigEntry<T> {
-    public static final ConfigEntry<?> ENTRY = new ConfigEntry<>();
-    private String key;
-    private T value;
+open class ConfigEntry<T> {
+    companion object {
+        val ENTRY: ConfigEntry<*> = ConfigEntry<Any>()
 
-    public ConfigEntry(Class<T> specifyType) {
-
+        @JvmStatic
+        fun <X> entry(): ConfigEntry<X> = EntrustEnvironment.cast(ENTRY)!!
     }
 
-    public ConfigEntry() {
+    @Auto
+    private val key: String? = null
 
-    }
+    @Auto
+    private var value: T? = null
 
-    public static <X> ConfigEntry<X> entry() {
-        return EntrustEnvironment.cast(ENTRY);
-    }
+    @Auto
+    constructor(@Auto specifyType: Class<T>)
 
-    public String key() {
-        return this.key;
-    }
+    @Auto
+    constructor()
 
-    public T get() {
-        return this.value;
-    }
+    fun key(): String? = this.key
 
-    public ConfigEntry<T> update(T value) {
-        this.value = value;
-        return this;
+    open fun get(): T? = this.value
+
+    open fun update(value: T): ConfigEntry<T>? {
+        this.value = value
+        return this
     }
 }
