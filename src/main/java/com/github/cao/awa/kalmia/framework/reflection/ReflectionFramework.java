@@ -1,11 +1,9 @@
 package com.github.cao.awa.kalmia.framework.reflection;
 
-import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.framework.loader.JarSearchLoader;
 import com.github.cao.awa.trtr.framework.accessor.method.MethodAccess;
-import com.github.cao.awa.trtr.framework.exception.NoAutoAnnotationException;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -113,11 +111,10 @@ public abstract class ReflectionFramework {
     }
 
     @NotNull
-    public static Method ensureAccessible(Method clazz) {
-        if (clazz.getAnnotation(Auto.class) != null) {
-            return MethodAccess.ensureAccessible(clazz);
-        }
-        throw new NoAutoAnnotationException();
+    public static Method ensureAccessible(Object object, Method clazz) {
+        return MethodAccess.ensureAccessible(object,
+                                             clazz
+        );
     }
 
     public static Field ensureAccessible(@NotNull Field field) {
@@ -162,6 +159,33 @@ public abstract class ReflectionFramework {
 
     public static Field fetchField(@NotNull Field field) {
         return EntrustEnvironment.trys(() -> ensureAccessible(field));
+    }
+
+    public static Method fetchMethod(Object object, Class<?> clazz, @NotNull String name, Class<?>... args) {
+        if (clazz == null) {
+            return null;
+        }
+        return EntrustEnvironment.trys(() -> ensureAccessible(object,
+                                                              clazz.getDeclaredMethod(name,
+                                                                                      args
+                                                              )
+                                       ),
+                                       e -> {
+                                           return fetchMethod(object,
+                                                              clazz.getSuperclass(),
+                                                              name,
+                                                              args
+                                           );
+                                       }
+        );
+    }
+
+    public static Method fetchMethod(@NotNull Object object, @NotNull String name, Class<?>... args) {
+        return fetchMethod(object,
+                           object.getClass(),
+                           name,
+                           args
+        );
     }
 
     public static Type[] getGenericType(@NotNull ParameterizedType parameterized) {

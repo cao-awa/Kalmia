@@ -5,9 +5,9 @@ import com.github.cao.awa.kalmia.annotations.config.UseConfigTemplate;
 import com.github.cao.awa.kalmia.config.KalmiaConfig;
 import com.github.cao.awa.kalmia.config.instance.ConfigEntry;
 import com.github.cao.awa.kalmia.config.metadata.MetadataConfig;
-import com.github.cao.awa.kalmia.config.template.server.KalmiaServerConfigTemplate;
+import com.github.cao.awa.kalmia.config.template.server.translation.KalmiaTranslationServerConfigTemplate;
 
-@UseConfigTemplate(KalmiaServerConfigTemplate.class)
+@UseConfigTemplate(KalmiaTranslationServerConfigTemplate.class)
 public class KalmiaTranslationServerConfig extends KalmiaConfig {
     @AutoConfig("metadata")
     public final ConfigEntry<MetadataConfig> metadata = ConfigEntry.entry();

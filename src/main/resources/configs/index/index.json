@@ -3,6 +3,9 @@
     "constant": {
         "C": "kalmia-constants.json"
     },
+    "global": {
+        "G": "kalmia-globals.json"
+    },
     "network": {
         "router": {
             "RequestRouterConfigTemplate": "router-config.json"
@@ -23,5 +26,8 @@
             }
         },
         "KalmiaClientConfigTemplate": "client-config.json"
+    },
+    "translation": {
+        "KalmiaTranslationServerConfigTemplate": "translation-server.json"
     }
 }

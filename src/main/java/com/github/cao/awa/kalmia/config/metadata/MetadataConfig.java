@@ -8,6 +8,6 @@ import com.github.cao.awa.kalmia.config.template.metadata.MetadataConfigTemplate
 
 @UseConfigTemplate(MetadataConfigTemplate.class)
 public class MetadataConfig extends KalmiaConfig {
-    @AutoConfig("config_version")
+    @AutoConfig("version")
     public final ConfigEntry<Integer> configVersion = ConfigEntry.entry();
 }

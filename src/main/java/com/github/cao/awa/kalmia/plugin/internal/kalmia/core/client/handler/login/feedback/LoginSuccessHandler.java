@@ -82,8 +82,8 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
         if (false) {
             router.send(new SendMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
                                               KalmiaEnv.testKeypairIdentity0,
-                                              "Awa".getBytes(StandardCharsets.UTF_8),
                                               KalmiaEnv.testKeypairIdentity1,
+                                              "Awa".getBytes(StandardCharsets.UTF_8),
                                               new byte[]{1},
                                               false
             ).receipt(Packet.createReceipt()));
@@ -106,8 +106,8 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 
                 router.send(new SendMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
                                                   KalmiaEnv.testKeypairIdentity0,
-                                                  msg,
                                                   KalmiaEnv.testKeypairIdentity1,
+                                                  msg,
                                                   sign,
                                                   false
                 ).receipt(Packet.createReceipt()));
@@ -137,8 +137,8 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 
                 router.send(new SendMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
                                                   KalmiaConstant.UNMARKED_PURE_IDENTITY,
-                                                  source,
                                                   KalmiaEnv.testKeypairIdentity1,
+                                                  source,
                                                   sign,
                                                   false
                 ));
@@ -153,8 +153,8 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 
                 router.send(new SendMessagePacket(CommunalSession.TEST_COMMUNAL_IDENTITY,
                                                   KalmiaConstant.UNMARKED_PURE_IDENTITY,
-                                                  source,
                                                   KalmiaConstant.UNMARKED_PURE_IDENTITY,
+                                                  source,
                                                   new byte[]{},
                                                   false
                 ).receipt(Packet.createReceipt()));

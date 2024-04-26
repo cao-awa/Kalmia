@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.plugin.internal.kalmia.core.server;
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
 import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.message.cover.processor.coloregg.MeowMessageProcessor;
 import com.github.cao.awa.kalmia.message.cover.processor.time.TimeMessageProcessor;
 import com.github.cao.awa.kalmia.plugin.Plugin;
@@ -29,8 +30,6 @@ public class KalmiaServerCore extends Plugin {
 
     @Override
     public boolean canLoad() {
-        return ! Kalmia.SERVER.serverBootstrapConfig.get()
-                .translation.get()
-                .enabled.get();
+        return ! KalmiaEnv.globalConfig.get().enabledTranslation.get();
     }
 }

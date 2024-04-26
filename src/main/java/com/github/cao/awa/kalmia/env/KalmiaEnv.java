@@ -3,7 +3,11 @@ package com.github.cao.awa.kalmia.env;
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.apricot.util.io.IOUtil;
+import com.github.cao.awa.kalmia.annotations.config.AutoConfig;
 import com.github.cao.awa.kalmia.await.AwaitManager;
+import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.config.global.KalmiaGlobalConfig;
+import com.github.cao.awa.kalmia.config.instance.ConfigEntry;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.framework.config.ConfigFramework;
 import com.github.cao.awa.kalmia.framework.event.EventFramework;
@@ -108,6 +112,8 @@ public class KalmiaEnv {
             )
     ));
 
+    @AutoConfig
+    public static final ConfigEntry<KalmiaGlobalConfig> globalConfig = ConfigEntry.entry();
     public static boolean setup = false;
     public static boolean serverSideLoading = true;
     public static final ConfigFramework CONFIG_FRAMEWORK = new ConfigFramework();
@@ -121,6 +127,10 @@ public class KalmiaEnv {
     public static final AwaitManager awaitManager = new AwaitManager();
 
     public static final ResourcesManager resourceManager = new ResourcesManager("data/resources");
+
+    public static void main(String[] args) throws Exception {
+        Kalmia.startClient();
+    }
 
     public static void setupClient() {
         UnsolvedPacketFactor.register();
@@ -148,8 +158,11 @@ public class KalmiaEnv {
         KalmiaPreSharedCipher.setupCiphers();
     }
 
-    public static void setupFrameworks() {
+    public static void setupConfigFramework() {
         CONFIG_FRAMEWORK.work();
+    }
+
+    public static void setupFrameworks() {
         PACKET_FRAMEWORK.work();
         BYTES_SERIALIZE_FRAMEWORK.work();
         JSON_SERIALIZE_FRAMEWORK.work();

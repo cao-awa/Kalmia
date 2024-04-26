@@ -24,8 +24,12 @@ public class KalmiaClientCore extends Plugin {
 
     @Override
     public boolean forceRegister() {
-        return Kalmia.SERVER.serverBootstrapConfig.get()
-                .translation.get()
-                .enabled.get();
+        try {
+            return Kalmia.SERVER.serverBootstrapConfig.get()
+                    .translation.get()
+                    .enabled.get();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -103,9 +103,9 @@ public class PluginFramework extends ReflectionFramework {
         } catch (Exception e) {
             LOGGER.warn("Failed load plugin: {} ({})",
                         autoAnnotation.name(),
-                        uuid
+                        uuid,
+                        e
             );
-            e.printStackTrace();
         }
     }
 

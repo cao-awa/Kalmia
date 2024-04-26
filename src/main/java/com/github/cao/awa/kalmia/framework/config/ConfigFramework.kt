@@ -57,7 +57,7 @@ class ConfigFramework : ReflectionFramework() {
             indexFile.createNewFile()
             IOUtil.write(
                 FileOutputStream(indexFile),
-                ResourceLoader.stream("kalmiagram/configs/index/index.json")
+                ResourceLoader.stream("configs/index/index.json")
             )
         }
 
@@ -207,7 +207,14 @@ class ConfigFramework : ReflectionFramework() {
                 try {
                     // 当类型不正确时构建异常链，用以debug
                     EntrustEnvironment.reThrow(
-                        { createTemplate(config, json, CircularDependency()) },
+                        {
+                            createTemplate(
+                                this.templatePaths[templateData.value]!!,
+                                config,
+                                json,
+                                CircularDependency()
+                            )
+                        },
                         FieldParamMismatchException::class.java,
                         { WrongConfigTemplateException(templateClass, it.field, it) }
                     )
@@ -232,6 +239,7 @@ class ConfigFramework : ReflectionFramework() {
     private fun cast(clazz: Class<*>): Class<out ConfigTemplate<*>> = EntrustEnvironment.cast(clazz)!!
 
     private fun createTemplate(
+        basePath: String,
         target: KalmiaConfig,
         getter: JSONObject,
         configChain: CircularDependency
@@ -282,6 +290,7 @@ class ConfigFramework : ReflectionFramework() {
                             if (KalmiaConfig::class.java.isAssignableFrom(listTemplate)) {
                                 newDelegate.add(
                                     createTemplateObject(
+                                        basePath,
                                         listTemplate,
                                         value as JSONObject,
                                         configChain
@@ -340,6 +349,7 @@ class ConfigFramework : ReflectionFramework() {
 
                             // 处理此配置要求的其他依赖
                             createTemplate(
+                                basePath,
                                 configEntry.get() as KalmiaConfig,
                                 getTemplateJsonData(getter, field),
                                 configChain
@@ -353,8 +363,9 @@ class ConfigFramework : ReflectionFramework() {
                     } else {
                         // 不存在"指引"也不存在实际的数据时提示，不影响后续解析
                         LOGGER.warn(
-                            "The template file of '{}' has missing required data '{}' that should inherited from '{}'",
+                            "The template data of '{}' in file '{}' has missing required data '{}' that should inherited from '{}'",
                             target::class.java.simpleName,
+                            basePath,
                             inTemplateFileKey,
                             toClass(getArgType(field)).simpleName
                         )
@@ -390,12 +401,14 @@ class ConfigFramework : ReflectionFramework() {
     }
 
     private fun createTemplateObject(
+        basePath: String,
         configType: Class<*>,
         value: JSONObject,
         configChain: CircularDependency
     ): KalmiaConfig {
         val config = configType.getConstructor().newInstance() as KalmiaConfig
         createTemplate(
+            basePath,
             config,
             value,
             configChain
@@ -556,6 +569,38 @@ class ConfigFramework : ReflectionFramework() {
         createConfig(o, "", getTemplate(o), CircularDependency())
     }
 
+    fun createEntry(target: ConfigEntry<*>, field: Field) {
+        val argType = getArgType(field)
+
+        val configChain = CircularDependency()
+
+        makeKey(target, field)
+
+        postProcessing(
+            target,
+            target,
+            argType,
+            configChain,
+            // 仅为Entry时处理
+            { },
+            {
+                // 当依赖是Entry而不是数据
+
+                // 处理此配置的依赖
+                // 配置对象内所有字段都应为ConfigEntry<KalmiaConfig>
+                val config = target.get() as KalmiaConfig
+                createConfig(
+                    config,
+                    target.key()!!,
+                    getTemplate(config),
+                    configChain
+                )
+            },
+            // 仅为Entry时处理
+            { }
+        )
+    }
+
     private fun createConfig(
         target: Any,
         currentKey: String,
@@ -580,83 +625,13 @@ class ConfigFramework : ReflectionFramework() {
                 // 当依赖是数据而不是Entry
 
                 // 读取模板获得默认值
-                val value = if (template != null) {
-                    val requiredType = toClass(argType)
-
-                    // 首先从当前配置模板中获取
-                    val fetchedTemplate = fetchField(template, field.name)[template]
-                    var fetchResult: Any? = null
-                    if (fetchedTemplate != null && fetchedTemplate != ConfigEntry.ENTRY) {
-                        fetchResult = checkOrDiscard(
-                            requiredType,
-                            (fetchedTemplate as ConfigEntry<*>).get(),
-                            InheritedValue::class.java
-                        )
-                    }
-
-                    // 当前模板找不到时从父模板的默认数据板尝试获取
-                    // 因为父模板可能覆盖了这个模板的默认值
-                    if (parentTemplate != null && fetchResult == null) {
-                        fetchResult = checkOrDiscard(
-                            requiredType,
-                            fetchConfigValue(
-                                // 使用currentKey获取父模板的默认数据
-                                fetchConfig(
-                                    this.configToTemplate[parentTemplate::class.java]!! as? KalmiaConfig,
-                                    currentKey
-                                ),
-                                field
-                            ),
-                            InheritedValue::class.java
-                        )
-                    }
-
-                    // 若当前配置模板和父模板中都不存在需要的目标，则使用此模板的默认数据
-                    if (fetchResult == null) {
-                        // 不要忘记fetch到需要的字段后get，这个默认数据是KalmiaConfig而不是此字段的值()
-                        fetchResult = checkOrDiscard(
-                            requiredType,
-                            fetchConfigValue(
-                                this.configToTemplate[template::class.java]!!,
-                                field
-                            ),
-                            InheritedValue::class.java
-                        )
-                    }
-
-                    // 当获取结果是InheritedValue时说明它引用了其他模板的默认数据
-                    if (fetchResult is InheritedValue) {
-                        val inheritedValue = fetchResult
-                        val config: KalmiaConfig? = this.nameToTemplate[inheritedValue.templateName]
-                        if (config == null) {
-                            LOGGER.warn(
-                                "The inherited data '{}' arent present that inherited by '{}' in template '{}'",
-                                inheritedValue.templateName,
-                                inTemplateFileKey,
-                                target::class.java.simpleName
-                            )
-                        } else {
-                            fetchResult = EntrustEnvironment.get({
-                                fetchOrFindEntry(config, inheritedValue.key).get()
-                            }, null)
-                        }
-                    }
-
-                    if (fetchResult == null) {
-                        LOGGER.warn(
-                            "The data '{}'(named '{}') in config entry of '{}' could not be found or created",
-                            field.name,
-                            inTemplateFileKey,
-                            target::class.java.simpleName
-                        )
-                    }
-
-                    // 返回结果
-                    fetchResult
-                } else {
-                    // 这边没有template，所以永远是null
-                    null
-                }
+                val value = fetchTemplate(
+                    target,
+                    template, parentTemplate,
+                    currentKey, inTemplateFileKey,
+                    argType,
+                    field
+                )
 
                 // 当值存在时则设定
                 if (value != null) {
@@ -685,6 +660,94 @@ class ConfigFramework : ReflectionFramework() {
         }
     }
 
+    private fun fetchTemplate(
+        target: Any,
+        template: KalmiaConfig?,
+        parentTemplate: KalmiaConfig?,
+        currentKey: String,
+        inTemplateFileKey: String,
+        argType: Type,
+        field: Field
+    ): Any? {
+        return if (template != null) {
+            val requiredType = toClass(argType)
+
+            // 首先从当前配置模板中获取
+            val fetchedTemplate = fetchField(template, field.name)[template]
+            var fetchResult: Any? = null
+            if (fetchedTemplate != null && fetchedTemplate != ConfigEntry.ENTRY) {
+                fetchResult = checkOrDiscard(
+                    requiredType,
+                    (fetchedTemplate as ConfigEntry<*>).get(),
+                    InheritedValue::class.java
+                )
+            }
+
+            // 当前模板找不到时从父模板的默认数据板尝试获取
+            // 因为父模板可能覆盖了这个模板的默认值
+            if (parentTemplate != null && fetchResult == null) {
+                fetchResult = checkOrDiscard(
+                    requiredType,
+                    fetchConfigValue(
+                        // 使用currentKey获取父模板的默认数据
+                        fetchConfig(
+                            this.configToTemplate[parentTemplate::class.java]!! as? KalmiaConfig,
+                            currentKey
+                        ),
+                        field
+                    ),
+                    InheritedValue::class.java
+                )
+            }
+
+            // 若当前配置模板和父模板中都不存在需要的目标，则使用此模板的默认数据
+            if (fetchResult == null) {
+                // 不要忘记fetch到需要的字段后get，这个默认数据是KalmiaConfig而不是此字段的值()
+                fetchResult = checkOrDiscard(
+                    requiredType,
+                    fetchConfigValue(
+                        this.configToTemplate[template::class.java]!!,
+                        field
+                    ),
+                    InheritedValue::class.java
+                )
+            }
+
+            // 当获取结果是InheritedValue时说明它引用了其他模板的默认数据
+            if (fetchResult is InheritedValue) {
+                val inheritedValue = fetchResult
+                val config: KalmiaConfig? = this.nameToTemplate[inheritedValue.templateName]
+                if (config == null) {
+                    LOGGER.warn(
+                        "The inherited data '{}' arent present that inherited by '{}' in template '{}'",
+                        inheritedValue.templateName,
+                        inTemplateFileKey,
+                        target::class.java.simpleName
+                    )
+                } else {
+                    fetchResult = EntrustEnvironment.get({
+                        fetchOrFindEntry(config, inheritedValue.key).get()
+                    }, null)
+                }
+            }
+
+            if (fetchResult == null) {
+                LOGGER.warn(
+                    "The data '{}'(named '{}') in config entry of '{}' could not be found or created",
+                    field.name,
+                    inTemplateFileKey,
+                    target::class.java.simpleName
+                )
+            }
+
+            // 返回结果
+            fetchResult
+        } else {
+            // 这边没有template，所以永远是null
+            null
+        }
+    }
+
     private fun fetchOrFindEntry(target: Any, key: String): ConfigEntry<*> {
         val field = fetchField(target, key)
         if (field == null) {
@@ -702,10 +765,14 @@ class ConfigFramework : ReflectionFramework() {
     private fun fetchConfig(template: KalmiaConfig?, field: Field): KalmiaConfig? = fetchConfig(template, field.name)
 
     private fun fetchConfig(template: KalmiaConfig?, field: String): KalmiaConfig? {
-        val fetchedSourceTemplate = fetchField(template ?: return null, field)[template] ?: return null
-        val result = (fetchedSourceTemplate as ConfigEntry<*>).get() as? KalmiaConfig
-            ?: return null
-        return result
+        return try {
+            val fetchedSourceTemplate = fetchField(template ?: return null, field)[template] ?: return null
+            val result = (fetchedSourceTemplate as ConfigEntry<*>).get() as? KalmiaConfig
+                ?: return null
+            result
+        } catch (ex: Exception) {
+            null
+        }
     }
 
     private fun fetchConfigValue(template: KalmiaConfig?, field: Field): Any? = fetchConfigValue(template, field.name)
@@ -735,7 +802,7 @@ class ConfigFramework : ReflectionFramework() {
                 // 当依赖是Entry而不是数据
                 if (KalmiaConfig::class.java.isAssignableFrom(actualClass)) {
                     // 设置新的配置对象
-                    fetchField(configEntry, "value").set(configEntry, actualClass.getConstructor().newInstance())
+                    fetchField(configEntry, "value")[configEntry] = actualClass.getConstructor().newInstance()
 
                     // 提交当前的依赖项，同时检查是否循环依赖
                     // 用以快速打断循环依赖，避免发生StackOverflowError
@@ -760,10 +827,14 @@ class ConfigFramework : ReflectionFramework() {
             if (fieldValue == null || fieldValue == ConfigEntry.ENTRY) null else fieldValue as ConfigEntry<*>
         configEntry = configEntry ?: field.type.getConstructor().newInstance() as ConfigEntry<*>
         // 设置此ConfigEntry的key为字段名称，要用它来获取多个相同模板的数据以及debug
-        fetchField(configEntry, "key")[configEntry] = field.name
+        makeKey(configEntry, field)
         // 将配置设置回字段
         fetchField(field)[target] = configEntry
         return configEntry
+    }
+
+    private fun makeKey(entry: ConfigEntry<*>, field: Field) {
+        fetchField(entry, "key")[entry] = field.name
     }
 
     fun <T : Any> deepCopy(o: T, another: T) {

@@ -42,7 +42,7 @@ object ResourceUpload {
 
     @JvmStatic
     fun upload(file: File, router: RequestRouter) {
-        val receipt = Packet.createReceipt();
+        val receipt = Packet.createReceipt()
 
         upload(file) { startPos, data, isFinal ->
             KalmiaEnv.awaitManager.await(receipt, {

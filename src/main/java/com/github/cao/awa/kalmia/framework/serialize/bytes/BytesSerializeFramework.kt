@@ -1,295 +1,297 @@
-package com.github.cao.awa.kalmia.framework.serialize.bytes;
+package com.github.cao.awa.kalmia.framework.serialize.bytes
 
-import com.github.cao.awa.apricot.annotations.auto.Auto;
-import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
-import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoAllData;
-import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
-import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoBytesSerializer;
-import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
-import com.github.cao.awa.kalmia.mathematic.base.Base256;
-import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.cao.awa.kalmia.network.packet.Packet;
-import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
+import com.github.cao.awa.apricot.annotations.auto.Auto
+import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
+import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoAllData
+import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData
+import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoBytesSerializer
+import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework
+import com.github.cao.awa.kalmia.mathematic.base.Base256
+import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
+import com.github.cao.awa.kalmia.network.packet.Packet
+import com.github.cao.awa.viburnum.util.bytes.BytesUtil
+import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+import org.jetbrains.annotations.NotNull
+import java.io.ByteArrayOutputStream
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import java.nio.charset.StandardCharsets
+import java.util.*
+import java.util.stream.Collectors
 
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+class BytesSerializeFramework : ReflectionFramework() {
+    companion object {
+        private val LOGGER: Logger = LogManager.getLogger("ByteSerializerFramework")
+    }
 
-public class BytesSerializeFramework extends ReflectionFramework {
-    private static final Logger LOGGER = LogManager.getLogger("ByteSerializerFramework");
-    private final Map<Class<?>, BytesSerializer<?>> typeToSerializer = ApricotCollectionFactor.hashMap();
-    private final Map<Long, BytesSerializer<?>> idToSerializer = ApricotCollectionFactor.hashMap();
-    private final Map<Class<? extends BytesSerializer<?>>, Long> typeToId = ApricotCollectionFactor.hashMap();
-    private final Map<Class<? extends BytesSerializer<?>>, Class<?>[]> typeToTarget = ApricotCollectionFactor.hashMap();
+    private val typeToSerializer: MutableMap<Class<*>?, BytesSerializer<*>> = ApricotCollectionFactor.hashMap()
+    private val idToSerializer: MutableMap<Long, BytesSerializer<*>> = ApricotCollectionFactor.hashMap()
+    private val typeToId: MutableMap<Class<out BytesSerializer<*>>, Long> = ApricotCollectionFactor.hashMap()
+    private val typeToTarget: MutableMap<Class<out BytesSerializer<*>>, Array<Class<*>>> =
+        ApricotCollectionFactor.hashMap()
 
-    @Override
-    public void work() {
+    override fun work() {
         // Working stream...
-        reflection().getTypesAnnotatedWith(Auto.class)
-                    .stream()
-                    .filter(this :: match)
-                    .map(this :: cast)
-                    .forEach(this :: build);
+        reflection().getTypesAnnotatedWith(Auto::class.java)
+            .stream()
+            .filter(this::match)
+            .map(this::cast)
+            .forEach(this::build)
     }
 
-    public boolean match(Class<?> clazz) {
-        return clazz.isAnnotationPresent(AutoBytesSerializer.class) && BytesSerializer.class.isAssignableFrom(clazz);
+    fun match(clazz: Class<*>): Boolean {
+        return clazz.isAnnotationPresent(AutoBytesSerializer::class.java) && BytesSerializer::class.java.isAssignableFrom(
+            clazz
+        )
     }
 
-    public Class<? extends BytesSerializer<?>> cast(Class<?> clazz) {
-        return EntrustEnvironment.cast(clazz);
+    fun cast(clazz: Class<*>): Class<out BytesSerializer<*>?> {
+        return clazz.let(EntrustEnvironment::cast)!!
     }
 
-    public void build(Class<? extends BytesSerializer<?>> type) {
+    fun build(type: Class<out BytesSerializer<*>>) {
         try {
-            BytesSerializer<?> serializer = type.getConstructor()
-                                                .newInstance();
-            AutoBytesSerializer annotation = type.getAnnotation(AutoBytesSerializer.class);
-            long id = annotation.value();
-            Class<?>[] target = annotation.target();
-            this.typeToId.put(type,
-                              id
-            );
-            this.typeToTarget.put(type,
-                                  target
-            );
+            val serializer = type.getConstructor()
+                .newInstance()
+            val annotation = type.getAnnotation(AutoBytesSerializer::class.java)
+            val id = annotation.value
+            val target: Array<Class<*>> = annotation.target.map { it.java }.toTypedArray()
+            this.typeToId[type] = id
+            this.typeToTarget[type] = target
 
-            LOGGER.info("Register auto bytes serializer({}): {}",
-                        id,
-                        serializer.getClass()
-                                  .getName()
-            );
-            registerSerializer(serializer,
-                               serializer.target()
-            );
-        } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.info(
+                "Register auto bytes serializer({}): {}",
+                id,
+                serializer.javaClass.name
+            )
+            registerSerializer(
+                serializer,
+                *serializer.target()
+            )
+        } catch (e: Exception) {
+            LOGGER.error(e)
         }
     }
 
-    public Class<?>[] target(BytesSerializer<?> serializer) {
-        return typeTarget(EntrustEnvironment.cast(serializer.getClass()));
+    fun target(serializer: BytesSerializer<*>): Array<Class<*>> {
+        return typeTarget(EntrustEnvironment.cast(serializer.javaClass)!!)
     }
 
-    public Class<?>[] typeTarget(Class<? extends BytesSerializer<?>> type) {
-        return this.typeToTarget.get(type);
+    private fun typeTarget(type: Class<out BytesSerializer<*>>): Array<Class<*>> {
+        return this.typeToTarget[type]!!
     }
 
-    public long id(BytesSerializer<?> serializer) {
-        return typeId(EntrustEnvironment.cast(serializer.getClass()));
+    fun id(serializer: BytesSerializer<*>): Long {
+        return typeId(EntrustEnvironment.cast(serializer.javaClass)!!)
     }
 
-    public long typeId(Class<? extends BytesSerializer<?>> type) {
-        return this.typeToId.getOrDefault(type,
-                                          - 1L
-        );
+    private fun typeId(type: Class<out BytesSerializer<*>>): Long {
+        return this.typeToId.getOrDefault(
+            type,
+            -1L
+        )
     }
 
-    public final <T> void registerSerializer(BytesSerializer<T> serializer, @Nullable Class<?>... matchType) {
-        if (matchType == null) {
-            return;
-        }
+    fun <T> registerSerializer(serializer: BytesSerializer<T>, vararg matchType: Class<*>) {
+        val id = serializer.id()
 
-        long id = serializer.id();
-
-        BytesSerializer<?> current = this.idToSerializer.get(id);
+        val current = this.idToSerializer[id]
 
         if (current != null) {
-            LOGGER.warn("Failed register the bytes serializer {} because id {} has been used by {}",
-                        serializer.getClass()
-                                  .getName(),
-                        id,
-                        current.getClass()
-                               .getName()
-            );
-            return;
+            LOGGER.warn(
+                "Failed register the bytes serializer {} because id {} has been used by {}",
+                serializer.javaClass.name,
+                id,
+                current.javaClass.name
+            )
+            return
         }
-        for (Class<?> t : matchType) {
-            this.typeToSerializer.put(t,
-                                      serializer
-            );
+        for (t in matchType) {
+            this.typeToSerializer[t] = serializer
         }
-        this.idToSerializer.put(id,
-                                serializer
-        );
+        this.idToSerializer[id] = serializer
 
         LOGGER.info("Bytes serializer {} registered by id {}, targeted to {}",
-                    serializer.getClass()
-                              .getName(),
-                    id,
-                    Arrays.stream(matchType)
-                          .filter(Objects :: nonNull)
-                          .map(Class :: getName)
-                          .collect(Collectors.toList())
-        );
+            serializer.javaClass.name,
+            id,
+            Arrays.stream(matchType)
+                .filter(Objects::nonNull)
+                .map { it.name }
+                .collect(Collectors.toList())
+        )
     }
 
-    private LinkedList<Field> autoFields(Object object) throws NoSuchFieldException {
-        Class<Packet<?>> clazz = EntrustEnvironment.cast(object.getClass());
-        assert clazz != null;
-        LinkedList<Field> fields = ApricotCollectionFactor.linkedList();
-        boolean autoAll = clazz.isAnnotationPresent(AutoAllData.class);
-        for (Field field : clazz.getDeclaredFields()) {
-            if ((autoAll && ! Modifier.isStatic(field.getModifiers())) || field.isAnnotationPresent(AutoData.class)) {
-                fields.add(ensureAccessible(clazz.getDeclaredField(field.getName())));
+    @Throws(NoSuchFieldException::class)
+    private fun <T> autoFields(target: T): LinkedList<Field> {
+        val clazz = EntrustEnvironment.cast<Class<Packet<*>>>(target!!::class.java)!!
+        val fields = ApricotCollectionFactor.linkedList<Field>()
+        val autoAll = clazz.isAnnotationPresent(AutoAllData::class.java)
+        for (field in clazz.declaredFields) {
+            if ((autoAll && !Modifier.isStatic(field.modifiers)) || field.isAnnotationPresent(
+                    AutoData::class.java
+                )
+            ) {
+                fields.add(ensureAccessible(clazz.getDeclaredField(field.name)))
             }
         }
-        return fields;
+        return fields
     }
 
-    public <T> byte[] payload(T object) throws Exception {
-        LinkedList<Field> fields = autoFields(object);
+    @Throws(Exception::class)
+    fun <T> payload(target: T): ByteArray {
+        val fields = autoFields(target)
 
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        val output = ByteArrayOutputStream()
 
-        for (Field field : fields) {
+        for (field in fields) {
             output.write(
-                    serialize(field.get(object),
-                              field
-                    )
-            );
+                serialize(
+                    field[target],
+                    field
+                )
+            )
         }
 
-        return output.toByteArray();
+        return output.toByteArray()
     }
 
-    public <T> T create(T object, BytesReader reader) throws Exception {
-        LinkedList<Field> fields = autoFields(object);
+    @Throws(Exception::class)
+    fun <T> create(target: T, reader: BytesReader): T {
+        val fields = autoFields(target)
 
-        for (Field field : fields) {
-            Object deserialized = deserialize(field.getType(),
-                                              reader
-            );
-            field.set(object,
-                      deserialized
-            );
+        for (field in fields) {
+            val deserialized = deserialize(
+                field.type,
+                reader
+            )
+            field[target] = deserialized
         }
 
-        return object;
+        return target
     }
 
-    public byte[] serialize(Object object, Field field) {
-        BytesSerializer<?> serializer = getSerializer(field.getType());
+    fun serialize(target: Any, field: Field): ByteArray {
+        var serializer = getSerializer(field.type)
 
-        if (Modifier.isAbstract(field.getType()
-                                     .getModifiers()) && serializer == null) {
-            if (object instanceof BytesSerializable<?> serializable) {
+        if (Modifier.isAbstract(
+                field.type.modifiers
+            ) && serializer == null
+        ) {
+            if (target is BytesSerializable<*>) {
                 return BytesUtil.concat(
-                        BytesUtil.array(1),
-                        Base256.tagToBuf(serializable.getClass()
-                                                     .getName()
-                                                     .length()),
-                        serializable.getClass()
-                                    .getName()
-                                    .getBytes(StandardCharsets.UTF_8),
-                        serializable.serialize()
-                );
+                    BytesUtil.array(1),
+                    Base256.tagToBuf(
+                        target.javaClass.name.length
+                    ),
+                    target.javaClass
+                        .name
+                        .toByteArray(StandardCharsets.UTF_8),
+                    target.serialize()
+                )
             }
 
-            serializer = getSerializer(object.getClass());
+            serializer = getSerializer(target.javaClass)
 
-            return BytesUtil.concat(BytesUtil.array(2),
-                                    SkippedBase256.longToBuf(serializer.id()),
-                                    serializer.serialize(EntrustEnvironment.cast(object))
-            );
+            return BytesUtil.concat(
+                BytesUtil.array(2),
+                SkippedBase256.longToBuf(serializer!!.id()),
+                serializer.serialize(EntrustEnvironment.cast(target))
+            )
         } else {
-            if (object instanceof BytesSerializable<?> serializable) {
+            if (target is BytesSerializable<*>) {
                 return BytesUtil.concat(
-                        BytesUtil.array(- 1),
-                        serializable.serialize()
-                );
+                    BytesUtil.array(-1),
+                    target.serialize()
+                )
             }
             return BytesUtil.concat(
-                    BytesUtil.array(- 1),
-                    serializer.serialize(EntrustEnvironment.cast(object))
-            );
+                BytesUtil.array(-1),
+                serializer!!.serialize(EntrustEnvironment.cast(target))
+            )
         }
     }
 
-    public byte[] serialize(Object object) {
-        if (object == null) {
-            return BytesUtil.EMPTY;
-        }
-        BytesSerializer<?> serializer = getSerializer(object.getClass());
+    fun serialize(target: Any): ByteArray {
+        val serializer: BytesSerializer<*>? = getSerializer(target.javaClass)
         if (serializer == null) {
-            if (object instanceof BytesSerializable<?> serializable) {
-                return serializable.serialize();
+            if (target is BytesSerializable<*>) {
+                return target.serialize()
             }
-            return BytesUtil.EMPTY;
+            return BytesUtil.EMPTY
         }
-        return serializer.serialize(EntrustEnvironment.cast(object));
+        return serializer.serialize(EntrustEnvironment.cast(target))
     }
 
-    public Object deserialize(Class<?> type, BytesReader reader) throws Exception {
-        switch (reader.read()) {
-            case - 1 -> {
-                if (BytesSerializable.class.isAssignableFrom(type)) {
-                    BytesSerializable<?> serializable = (BytesSerializable<?>) type.getConstructor()
-                                                                                   .newInstance();
-                    serializable.deserialize(reader);
-                    return serializable;
+    @Throws(Exception::class)
+    fun deserialize(type: Class<*>, reader: BytesReader): Any? {
+        when (reader.read().toInt()) {
+            -1 -> {
+                if (BytesSerializable::class.java.isAssignableFrom(type)) {
+                    val serializable = type.getConstructor()
+                        .newInstance() as BytesSerializable<*>
+                    serializable.deserialize(reader)
+                    return serializable
                 }
-                return getSerializer(type).deserialize(reader);
+                return getSerializer(type)!!.deserialize(reader)
             }
-            case 1 -> {
-                BytesSerializable<?> serializable = (BytesSerializable<?>) Class.forName(new String(reader.read(Base256.tagFromBuf(reader.read(2))),
-                                                                                                    StandardCharsets.UTF_8
-                                                                                ))
-                                                                                .getConstructor()
-                                                                                .newInstance();
-                serializable.deserialize(reader);
-                return serializable;
+
+            1 -> {
+                val serializable = Class.forName(
+                    String(
+                        reader.read(Base256.tagFromBuf(reader.read(2))),
+                        StandardCharsets.UTF_8
+                    )
+                )
+                    .getConstructor()
+                    .newInstance() as BytesSerializable<*>
+                serializable.deserialize(reader)
+                return serializable
             }
-            case 2 -> {
-                return getSerializer(SkippedBase256.readLong(reader)).deserialize(reader);
+
+            2 -> {
+                return getSerializer<Any>(SkippedBase256.readLong(reader)).deserialize(reader)
             }
-            default -> {
-                return null;
+
+            else -> {
+                return null
             }
         }
     }
 
-    public <T> BytesSerializer<T> getSerializer(Class<T> type) {
-        if (type == null) {
-            return null;
-        }
-        BytesSerializer<T> serializer = EntrustEnvironment.cast(this.typeToSerializer.get(type));
+    fun <T> getSerializer(@NotNull type: Class<T>): BytesSerializer<T>? {
+        var serializer = EntrustEnvironment.cast<BytesSerializer<T>>(this.typeToSerializer[type] ?: return null)
         if (serializer == null) {
-            serializer = EntrustEnvironment.cast(getSerializer(type.getSuperclass()));
+            serializer = EntrustEnvironment.cast(getSerializer(type.superclass) ?: return null)
             if (serializer == null) {
-                for (Class<?> aInterface : type.getInterfaces()) {
-                    serializer = EntrustEnvironment.cast(getSerializer(aInterface));
+                for (aInterface in type.interfaces) {
+                    serializer = EntrustEnvironment.cast(getSerializer(aInterface) ?: return null)
                     if (serializer != null) {
-                        break;
+                        break
                     }
                 }
             }
         }
-        return serializer;
+        return serializer
     }
 
-    public <T> BytesSerializer<T> getSerializer(T o) {
-        return EntrustEnvironment.cast(getSerializer(o.getClass()));
+    fun <T> getSerializer(o: T): BytesSerializer<T> {
+        return getSerializer(o!!::class.java)?.let(EntrustEnvironment::cast)!!
     }
 
-    public <T> BytesSerializer<T> getSerializer(long id) {
-        return EntrustEnvironment.cast(this.idToSerializer.get(id));
+    fun <T> getSerializer(id: Long): BytesSerializer<T> {
+        return this.idToSerializer[id]?.let(EntrustEnvironment::cast)!!
     }
 
-    public <T> T breakRefs(T o) throws Exception {
-        return EntrustEnvironment.cast(deserialize(o.getClass(),
-                                                   BytesReader.of(serialize(o))
-        ));
+    @Throws(Exception::class)
+    fun <T> breakRefs(o: T): T? {
+        return EntrustEnvironment.cast(
+            deserialize(
+                o!!::class.java,
+                BytesReader.of(serialize(o))
+            )!!
+        )
     }
 }

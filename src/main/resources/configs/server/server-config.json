@@ -11,7 +11,11 @@
         "use_epoll": true
     },
     "translation": {
-        "enable": true
+        "metadata": {
+            "version": 0
+        },
+        "enabled": "@INHERITED:G#enabled_translation"
     },
-    "name": "Kalmia server"
+    "name": "Kalmia server",
+    "use_cipher": "Kalmia/Main"
 }

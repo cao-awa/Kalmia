@@ -3,8 +3,8 @@ package com.github.cao.awa.kalmia.client;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.annotations.config.AutoConfig;
+import com.github.cao.awa.kalmia.config.KalmiaConfig;
 import com.github.cao.awa.kalmia.config.client.KalmiaClientConfig;
-import com.github.cao.awa.kalmia.config.client.bootstrap.network.KalmiaClientBootstrapNetworkConfig;
 import com.github.cao.awa.kalmia.config.instance.ConfigEntry;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
@@ -35,8 +35,6 @@ public class KalmiaClient {
     private static final Logger LOGGER = LogManager.getLogger("KalmiaClient");
     @AutoConfig
     public final ConfigEntry<KalmiaClientConfig> clientBootstrapConfig = ConfigEntry.entry();
-    @AutoConfig
-    public final ConfigEntry<KalmiaClientBootstrapNetworkConfig> bootstrapConfig = ConfigEntry.entry();
     private final MessageManager messageManager;
     private final UserManager userManager;
     private final KeypairManager keypairManager;
@@ -46,6 +44,8 @@ public class KalmiaClient {
 
     public KalmiaClient() {
         try {
+            KalmiaConfig.create(this);
+
             this.messageManager = new MessageManager("data/client/msg");
             this.userManager = new UserManager("data/client/usr");
             this.keypairManager = new KeypairManager("data/client/keypair");
@@ -93,11 +93,11 @@ public class KalmiaClient {
     }
 
     public boolean useEpoll() {
-        return this.bootstrapConfig.get().useEpoll.get();
+        return this.clientBootstrapConfig.get().network.get().useEpoll.get();
     }
 
     public void connect() throws Exception {
-        new KalmiaClientNetworkIo(this).connect(this.bootstrapConfig.get());
+        new KalmiaClientNetworkIo(this).connect(this.clientBootstrapConfig.get().network.get());
     }
 
     public Set<PureExtraIdentity> sessionIds() {

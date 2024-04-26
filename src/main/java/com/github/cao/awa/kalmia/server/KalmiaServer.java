@@ -69,7 +69,7 @@ public class KalmiaServer {
 
     public KalmiaServer() {
         try {
-//            KalmiaEnv.CONFIG_FRAMEWORK.createConfig(this);
+            KalmiaEnv.CONFIG_FRAMEWORK.createConfig(this);
 
             this.networkIo = new KalmiaServerNetworkIo(this);
 

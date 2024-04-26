@@ -28,10 +28,12 @@ public abstract class Packet<T extends PacketHandler<T>> {
         this.receipt = checkReceipt(receipt);
     }
 
-    public Packet(BytesReader reader) {
+    @Auto
+    public void solves(BytesReader reader) {
         try {
-            KalmiaEnv.PACKET_FRAMEWORK.create(this,
-                                              reader
+            KalmiaEnv.PACKET_FRAMEWORK.create(
+                    this,
+                    reader
             );
         } catch (Exception e) {
             e.printStackTrace();

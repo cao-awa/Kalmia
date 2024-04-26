@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.plugin.internal.translation;
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
-import com.github.cao.awa.kalmia.bootstrap.Kalmia;
+import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
@@ -105,8 +105,6 @@ public class KalmiaTranslation extends Plugin {
 
     @Override
     public boolean canLoad() {
-        return Kalmia.SERVER.serverBootstrapConfig.get()
-                .translation.get()
-                .enabled.get();
+        return KalmiaEnv.globalConfig.get().enabledTranslation.get();
     }
 }

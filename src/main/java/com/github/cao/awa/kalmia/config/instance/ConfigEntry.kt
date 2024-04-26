@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.config.instance
 
 import com.github.cao.awa.apricot.annotations.auto.Auto
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
+import org.jetbrains.annotations.NotNull
 
 open class ConfigEntry<T> {
     companion object {
@@ -25,6 +26,7 @@ open class ConfigEntry<T> {
 
     fun key(): String? = this.key
 
+    @NotNull
     open fun get(): T? = this.value
 
     open fun update(value: T): ConfigEntry<T>? {

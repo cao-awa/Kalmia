@@ -2,9 +2,11 @@ package com.github.cao.awa.kalmia.bootstrap;
 
 import com.github.cao.awa.kalmia.client.KalmiaClient;
 import com.github.cao.awa.kalmia.client.polling.PollingClient;
+import com.github.cao.awa.kalmia.config.KalmiaConfig;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
+import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.keypair.pair.ec.EcKeyPair;
 import com.github.cao.awa.kalmia.keypair.pair.empty.EmptyKeyPair;
@@ -46,9 +48,9 @@ public class Kalmia {
 
         LOGGER.info("Starting kalmia server");
 
-        KalmiaEnv.setupServer();
-
         SERVER = new KalmiaServer();
+
+        KalmiaEnv.setupServer();
 
         LOGGER.info("Setup kalmia server");
 
@@ -109,6 +111,18 @@ public class Kalmia {
     }
 
     public static void setupEnvironment() {
+        KalmiaEnv.setupConfigFramework();
+
+        KalmiaConfig.createEntry(
+                KalmiaEnv.globalConfig,
+                ReflectionFramework.fetchField(
+                        KalmiaEnv.class,
+                        "globalConfig"
+                )
+        );
+
+        System.out.println(KalmiaEnv.globalConfig.get().enabledTranslation.get());
+
         UserFactor.register(- 1,
                             UselessUser :: create
         );

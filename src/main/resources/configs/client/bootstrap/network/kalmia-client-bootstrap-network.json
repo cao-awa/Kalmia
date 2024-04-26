@@ -2,7 +2,7 @@
     "metadata": {
         "version": 0
     },
-    "connect_port": "@INHERITED:C#server_port",
     "connect_host": "127.0.0.1",
+    "connect_port": 12345,
     "use_epoll": true
 }
