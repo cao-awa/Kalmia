@@ -1,8 +1,9 @@
 plugins {
     id 'java'
+    id "com.github.ben-manes.versions" version '+'
     id 'org.jetbrains.kotlin.jvm' version '1.9.21'
     id 'org.jetbrains.kotlin.plugin.lombok' version '1.8.0'
-    id 'io.freefair.lombok' version '5.3.0'
+    id 'io.freefair.lombok' version '8.6'
 }
 
 group 'org.example'
@@ -24,32 +25,32 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
 
-    shadow 'io.netty:netty-all:4.1.106.Final'
-    shadow 'io.netty:netty-transport-native-epoll:4.1.106.Final'
-    shadow 'com.alibaba.fastjson2:fastjson2:2.0.22'
+    // Do not use 5.x netty.
+    shadow 'io.netty:netty-all:4.1.109.Final'
+    shadow 'com.alibaba.fastjson2:fastjson2:2.0.49'
 
     shadow 'org.slf4j:slf4j-api:2.0.6'
     shadow 'org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0'
     shadow 'org.apache.logging.log4j:log4j-api:2.19.0'
     shadow 'org.apache.logging.log4j:log4j-core:2.19.0'
-    shadow 'commons-codec:commons-codec:1.15'
-    shadow 'commons-logging:commons-logging:1.2'
-    shadow 'commons-io:commons-io:2.11.0'
-    shadow 'it.unimi.dsi:fastutil:8.5.11'
-    shadow 'com.google.guava:guava:32.1.2-jre'
-    shadow 'com.github.oshi:oshi-core:6.4.1'
+    shadow 'commons-codec:commons-codec:1.16.1'
+    shadow 'commons-logging:commons-logging:1.3.1'
+    shadow 'commons-io:commons-io:2.16.1'
+    shadow 'it.unimi.dsi:fastutil:8.5.13'
+    shadow 'com.google.guava:guava:33.1.0-jre'
+    shadow 'com.github.oshi:oshi-core:6.6.0'
     shadow 'io.github.pcmind:leveldb:1.2'
-    shadow 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
+    shadow 'com.squareup.okhttp3:okhttp:5.0.0-alpha.14'
 
-    shadow 'bot.inker.acj:runtime:1.3'
+    shadow 'bot.inker.acj:runtime:1.5'
 
-    shadow 'org.jetbrains:annotations:23.1.0'
+    shadow 'org.jetbrains:annotations:24.1.0'
 
     shadow 'org.reflections:reflections:0.10.2'
 
-    shadow 'org.java-websocket:Java-WebSocket:1.5.4'
+    shadow 'org.java-websocket:Java-WebSocket:1.5.6'
 
-    shadow 'org.bouncycastle:bcprov-jdk18on:1.76'
+    shadow 'org.bouncycastle:bcprov-jdk18on:1.78.1'
 
     shadow 'org.lz4:lz4-java:1.8.0'
 }
