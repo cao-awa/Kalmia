@@ -102,12 +102,12 @@ public abstract class ReflectionFramework {
         }
     }
 
-    public static <T> Constructor<T> ensureAccessible(Constructor<T> clazz) {
-        if (clazz.canAccess(null)) {
-            return clazz;
+    public static <T> Constructor<T> ensureAccessible(Constructor<T> constructor) {
+        if (constructor.canAccess(null)) {
+            return constructor;
         }
-        clazz.trySetAccessible();
-        return clazz;
+        constructor.trySetAccessible();
+        return constructor;
     }
 
     @NotNull
@@ -185,6 +185,19 @@ public abstract class ReflectionFramework {
                            object.getClass(),
                            name,
                            args
+        );
+    }
+
+    public static <T> Constructor<T> fetchConstructor(Class<T> clazz, Class<?>... args) {
+        if (clazz == null) {
+            return null;
+        }
+        return EntrustEnvironment.trys(() -> ensureAccessible(clazz.getDeclaredConstructor(args)),
+                                       e -> {
+                                           return EntrustEnvironment.cast(fetchConstructor(clazz.getSuperclass(),
+                                                                                           args
+                                           ));
+                                       }
         );
     }
 

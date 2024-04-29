@@ -204,33 +204,9 @@ class ConfigFramework : ReflectionFramework() {
                 }, JSONObject.of())
 
                 // 创建模板
-                try {
-                    // 当类型不正确时构建异常链，用以debug
-                    EntrustEnvironment.reThrow(
-                        {
-                            createTemplate(
-                                this.templatePaths[templateData.value]!!,
-                                config,
-                                json,
-                                CircularDependency()
-                            )
-                        },
-                        FieldParamMismatchException::class.java,
-                        { WrongConfigTemplateException(templateClass, it.field, it) }
-                    )
-                } catch (ex: WrongConfigTemplateException) {
-                    LOGGER.warn(
-                        "Failed to resolve the template '{}' for config '{}'",
-                        templateClass.simpleName,
-                        config::class.java.simpleName,
-                        ex
-                    )
-                }
-                val template = templateClass.getConstructor().newInstance() as ConfigTemplate<*>
+                val template = makeTemplate(this.templatePaths[templateData.value]!!, config, json, templateClass, true)
 
-                // 给模板设置配置内容并存储备用
-                fetchField(template, "config").set(template, config)
-                this.templates[templateClass] = template
+                this.templates[templateClass] = template!!
                 this.configToTemplate[configType] = config
                 this.nameToTemplate[templateData.value] = config
             }
@@ -239,7 +215,7 @@ class ConfigFramework : ReflectionFramework() {
     private fun cast(clazz: Class<*>): Class<out ConfigTemplate<*>> = EntrustEnvironment.cast(clazz)!!
 
     private fun createTemplate(
-        basePath: String,
+        traceName: String,
         target: KalmiaConfig,
         getter: JSONObject,
         configChain: CircularDependency
@@ -290,7 +266,7 @@ class ConfigFramework : ReflectionFramework() {
                             if (KalmiaConfig::class.java.isAssignableFrom(listTemplate)) {
                                 newDelegate.add(
                                     createTemplateObject(
-                                        basePath,
+                                        traceName,
                                         listTemplate,
                                         value as JSONObject,
                                         configChain
@@ -349,7 +325,7 @@ class ConfigFramework : ReflectionFramework() {
 
                             // 处理此配置要求的其他依赖
                             createTemplate(
-                                basePath,
+                                traceName,
                                 configEntry.get() as KalmiaConfig,
                                 getTemplateJsonData(getter, field),
                                 configChain
@@ -365,7 +341,7 @@ class ConfigFramework : ReflectionFramework() {
                         LOGGER.warn(
                             "The template data of '{}' in file '{}' has missing required data '{}' that should inherited from '{}'",
                             target::class.java.simpleName,
-                            basePath,
+                            traceName,
                             inTemplateFileKey,
                             toClass(getArgType(field)).simpleName
                         )
@@ -400,15 +376,58 @@ class ConfigFramework : ReflectionFramework() {
         }
     }
 
+    fun makeTemplate(
+        traceName: String,
+        config: KalmiaConfig,
+        json: JSONObject,
+        templateClass: Class<out ConfigTemplate<*>>,
+        createTemplate: Boolean
+    ): ConfigTemplate<*>? {
+        try {
+            // 当类型不正确时构建异常链，用以debug
+            EntrustEnvironment.reThrow(
+                {
+                    createTemplate(
+                        traceName,
+                        config,
+                        json,
+                        CircularDependency()
+                    )
+                },
+                FieldParamMismatchException::class.java,
+                { WrongConfigTemplateException(templateClass, it.field, it) }
+            )
+        } catch (ex: WrongConfigTemplateException) {
+            LOGGER.warn(
+                "Failed to resolve the template '{}' for config '{}'",
+                templateClass.simpleName,
+                config::class.java.simpleName,
+                ex
+            )
+        }
+
+        // 有些时候不需要创建模板，仅需要构造内部的数据，此时可以避免创建
+        if (createTemplate) {
+            // 创建模板
+            val template = templateClass.getConstructor().newInstance() as ConfigTemplate<*>
+
+            // 给模板设置配置内容并存储备用
+            fetchField(template, "config").set(template, config)
+
+            return template
+        }
+        return null
+    }
+
     private fun createTemplateObject(
-        basePath: String,
+        traceName: String,
         configType: Class<*>,
         value: JSONObject,
         configChain: CircularDependency
     ): KalmiaConfig {
         val config = configType.getConstructor().newInstance() as KalmiaConfig
         createTemplate(
-            basePath,
+            traceName,
             config,
             value,
             configChain
@@ -567,6 +586,50 @@ class ConfigFramework : ReflectionFramework() {
 
     fun createConfig(o: Any) {
         createConfig(o, "", getTemplate(o), CircularDependency())
+    }
+
+    /**
+     * 此方法会根据传入的配置类型创建一个含此配置的ConfigEntry，并根据给定的json来填充配置的值
+     *
+     * 编写以下代码使用此方法
+     * Kotlin代码：
+     *
+     *     val entry: ConfigEntry<XConfig> = createEntry(
+     *         "test",
+     *         XConfig::class.java,
+     *         json,
+     *         XConfigTemplate::class.java
+     *     )
+     *
+     * Java代码：
+     *
+     *     ConfigEntry<XConfig> entry = createEntry(
+     *         "test",
+     *         XConfig.class,
+     *         json,
+     *         XConfigTemplate.class
+     *     );
+     *
+     *
+     * @param traceName 追踪名称，出错时可从日志打印此名称以得知在处理哪个配置时出错
+     * @param configClass 配置类，会创建此类的ConfigEntry
+     * @param json 数据来源
+     * @param templateClass 模板类，此处仅用于在出错时报错
+     * @author 草awa
+     */
+    fun <T : KalmiaConfig> createEntry(
+        traceName: String,
+        configClass: Class<T>,
+        json: JSONObject,
+        templateClass: Class<out ConfigTemplate<*>>
+    ): ConfigEntry<T> {
+        val config = fetchConstructor(configClass).newInstance()
+        makeTemplate(traceName, config, json, templateClass, false)
+        createConfig(config, "", config, CircularDependency())
+        val entry = ConfigEntry<T>()
+        makeKey(entry, traceName)
+        fetchField(entry, "value")[entry] = config
+        return entry
     }
 
     fun createEntry(target: ConfigEntry<*>, field: Field) {
@@ -833,8 +896,10 @@ class ConfigFramework : ReflectionFramework() {
         return configEntry
     }
 
-    private fun makeKey(entry: ConfigEntry<*>, field: Field) {
-        fetchField(entry, "key")[entry] = field.name
+    private fun makeKey(entry: ConfigEntry<*>, field: Field) = makeKey(entry, field.name)
+
+    private fun makeKey(entry: ConfigEntry<*>, name: String) {
+        fetchField(entry, "key")[entry] = name
     }
 
     fun <T : Any> deepCopy(o: T, another: T) {
