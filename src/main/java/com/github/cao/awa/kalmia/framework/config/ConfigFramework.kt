@@ -45,8 +45,7 @@ class ConfigFramework : ReflectionFramework() {
     private val nameToTemplate: MutableMap<String, KalmiaConfig> = ApricotCollectionFactor.hashMap()
     private val templates: MutableMap<Class<out ConfigTemplate<*>>, ConfigTemplate<*>> =
         ApricotCollectionFactor.hashMap()
-    private val configToTemplate: MutableMap<Class<out KalmiaConfig>, KalmiaConfig> =
-        ApricotCollectionFactor.hashMap()
+    private val configToTemplate: MutableMap<Class<out KalmiaConfig>, KalmiaConfig> = ApricotCollectionFactor.hashMap()
 
     override fun work() = loadTemplates()
 
@@ -70,17 +69,16 @@ class ConfigFramework : ReflectionFramework() {
     }
 
     private fun loadPluginIndex(prefix: String, file: File) {
-        if (!file.isDirectory) {
-            return
-        }
-        for (index in file.listFiles()!!) {
-            if (index.isDirectory) {
-                loadPluginIndex("${prefix}${index.name}/", index)
-            } else if (index.isFile) {
-                loadPluginIndex(
-                    "configs/plugin/",
-                    JSONObject.parse(IOUtil.read(FileInputStream("./${prefix}${index.name}")))
-                )
+        if (file.isDirectory) {
+            for (index in file.listFiles()!!) {
+                if (index.isDirectory) {
+                    loadPluginIndex("${prefix}${index.name}/", index)
+                } else if (index.isFile) {
+                    loadPluginIndex(
+                        "configs/plugin/",
+                        JSONObject.parse(IOUtil.read(FileInputStream("./${prefix}${index.name}")))
+                    )
+                }
             }
         }
     }
@@ -109,22 +107,22 @@ class ConfigFramework : ReflectionFramework() {
             } else {
                 val location = "$prefix$value"
                 val file = File("./$location")
-                if (!file.isFile) {
+                if (file.isFile) {
+                    computeDefaultTemplate(file, location)
+                } else {
                     EntrustEnvironment.trys({
                         file.createNewFile()
                         IOUtil.write(
                             FileOutputStream("./$location"),
                             ResourceLoader.stream(location)
                         )
-                    }, { ex ->
+                    }) { ex ->
                         LOGGER.warn(
                             "The template file for '{}' unable to extract",
                             key,
                             ex
                         )
-                    })
-                } else {
-                    computeDefaultTemplate(file, location)
+                    }
                 }
                 this.templatePaths[key] = location
             }
@@ -149,7 +147,7 @@ class ConfigFramework : ReflectionFramework() {
                 // 写入当前模板没有的内容
                 for (entry in defaultTemplate) {
                     if (!currentTemplate.containsKey(entry.key)) {
-                        currentTemplate[entry.key] = entry.value;
+                        currentTemplate[entry.key] = entry.value
                     }
                 }
 
@@ -189,7 +187,7 @@ class ConfigFramework : ReflectionFramework() {
                 // 获取实际类型然后创建实例
                 val configType: Class<out KalmiaConfig> =
                     EntrustEnvironment.cast(toClass(getArgType(templateClass.genericSuperclass)))!!
-                val config = configType.getConstructor().newInstance() as KalmiaConfig
+                val config = fetchConstructor(configType).newInstance() as KalmiaConfig
 
                 // 读取模板格式
                 val json = EntrustEnvironment.get({
@@ -229,11 +227,7 @@ class ConfigFramework : ReflectionFramework() {
 
             val useTemplate = field.getAnnotation(AutoConfig::class.java)
 
-            val inTemplateFileKey = if (useTemplate.equals("")) {
-                field.name
-            } else {
-                useTemplate.value
-            }
+            val inTemplateFileKey = if (useTemplate.equals("")) field.name else useTemplate.value
 
             postProcessing(target, configEntry, argType, configChain,
                 { parameterized ->
@@ -244,17 +238,11 @@ class ConfigFramework : ReflectionFramework() {
 
                     // 如果是集合，只创建array list和hash set，其他特殊指定类型会被忽略
                     if (Collection::class.java.isAssignableFrom(clazz)) {
-                        var newDelegate: MutableCollection<Any>? = null
-                        if (List::class.java == clazz) {
-                            newDelegate = ApricotCollectionFactor.arrayList()
-                        }
-                        if (Set::class.java == clazz) {
-                            newDelegate = ApricotCollectionFactor.hashSet()
-                        }
-
-                        // 确保已经创建了集合对象
-                        if (newDelegate == null) {
-                            return@postProcessing
+                        val newDelegate: MutableCollection<Any> = when (clazz) {
+                            List::class.java -> ApricotCollectionFactor.arrayList()
+                            Set::class.java -> ApricotCollectionFactor.hashSet()
+                            // 无法创建时终止此次处理
+                            else -> return@postProcessing
                         }
 
                         // 获得实际的类型
@@ -280,7 +268,7 @@ class ConfigFramework : ReflectionFramework() {
                                 ) { FieldParamMismatchException(field, listTemplate, value::class.java, it) }
                             }
                         }
-                        fetchField(configEntry, "value").set(configEntry, newDelegate)
+                        fetchField(configEntry, "value")[configEntry] = newDelegate
                     }
 
                     // 如果是Map，只创建hash map，其他特殊指定类型会被忽略
@@ -296,7 +284,7 @@ class ConfigFramework : ReflectionFramework() {
                         for (entry in getTemplateJsonData(getter, field)) {
                             newDelegate[entry.key] = entry.value.toString()
                         }
-                        fetchField(configEntry, "value").set(configEntry, newDelegate)
+                        fetchField(configEntry, "value")[configEntry] = newDelegate
                     }
                 },
                 {
@@ -349,8 +337,6 @@ class ConfigFramework : ReflectionFramework() {
                 }
             ) {
                 // 当依赖是数据而不是Entry
-
-                val requiredType = toClass(argType)
                 val value = getTemplateData(getter, field)
 
                 // 此处的 @INHERITED 与ConfigEntry的完全不同，它会实际地从所指引的目标获取值
@@ -363,6 +349,8 @@ class ConfigFramework : ReflectionFramework() {
                 }
 
                 // 当类型不正确时构建异常链，用以debug
+                val requiredType = toClass(argType)
+
                 EntrustEnvironment.reThrow(
                     {
                         checkType(
@@ -386,17 +374,9 @@ class ConfigFramework : ReflectionFramework() {
         try {
             // 当类型不正确时构建异常链，用以debug
             EntrustEnvironment.reThrow(
-                {
-                    createTemplate(
-                        traceName,
-                        config,
-                        json,
-                        CircularDependency()
-                    )
-                },
-                FieldParamMismatchException::class.java,
-                { WrongConfigTemplateException(templateClass, it.field, it) }
-            )
+                { createTemplate(traceName, config, json, CircularDependency()) },
+                FieldParamMismatchException::class.java
+            ) { WrongConfigTemplateException(templateClass, it.field, it) }
         } catch (ex: WrongConfigTemplateException) {
             LOGGER.warn(
                 "Failed to resolve the template '{}' for config '{}'",
@@ -407,16 +387,16 @@ class ConfigFramework : ReflectionFramework() {
         }
 
         // 有些时候不需要创建模板，仅需要构造内部的数据，此时可以避免创建
-        if (createTemplate) {
+        return if (createTemplate) {
             // 创建模板
-            val template = templateClass.getConstructor().newInstance() as ConfigTemplate<*>
+            val template = fetchConstructor(templateClass).newInstance() as ConfigTemplate<*>
 
             // 给模板设置配置内容并存储备用
-            fetchField(template, "config").set(template, config)
+            fetchField(template, "config")[template] = config
 
-            return template
-        }
-        return null
+            // 返回模板
+            template
+        } else null
     }
 
     private fun createTemplateObject(
@@ -425,7 +405,7 @@ class ConfigFramework : ReflectionFramework() {
         value: JSONObject,
         configChain: CircularDependency
     ): KalmiaConfig {
-        val config = configType.getConstructor().newInstance() as KalmiaConfig
+        val config = fetchConstructor(configType).newInstance() as KalmiaConfig
         createTemplate(
             traceName,
             config,
@@ -435,33 +415,17 @@ class ConfigFramework : ReflectionFramework() {
         return config
     }
 
-    private fun isTemplateDataPresent(getter: JSONObject, field: Field): Boolean {
-        return getter.containsKey(field.name) || getter.containsKey(field.getAnnotation(AutoConfig::class.java).value)
-    }
+    private fun isTemplateDataPresent(getter: JSONObject, field: Field): Boolean =
+        getter.containsKey(field.name) || getter.containsKey(field.getAnnotation(AutoConfig::class.java).value)
 
-    private fun getTemplateData(getter: JSONObject, field: Field): Any {
-        var data = getter.get(field.name)
-        if (data == null) {
-            data = getter.get(field.getAnnotation(AutoConfig::class.java).value)
-        }
-        return data
-    }
+    private fun getTemplateData(getter: JSONObject, field: Field): Any =
+        getter[field.name] ?: getter[field.getAnnotation(AutoConfig::class.java).value]
 
-    private fun getTemplateJsonData(getter: JSONObject, field: Field): JSONObject {
-        var data = getter.getJSONObject(field.name)
-        if (data == null) {
-            data = getter.getJSONObject(field.getAnnotation(AutoConfig::class.java).value)
-        }
-        return data
-    }
+    private fun getTemplateJsonData(getter: JSONObject, field: Field): JSONObject =
+        getter.getJSONObject(field.name) ?: getter.getJSONObject(field.getAnnotation(AutoConfig::class.java).value)
 
-    private fun getTemplateJsonArray(getter: JSONObject, field: Field): JSONArray {
-        var data = getter.getJSONArray(field.name)
-        if (data == null) {
-            data = getter.getJSONArray(field.getAnnotation(AutoConfig::class.java).value)
-        }
-        return data
-    }
+    private fun getTemplateJsonArray(getter: JSONObject, field: Field): JSONArray =
+        getter.getJSONArray(field.name) ?: getter.getJSONArray(field.getAnnotation(AutoConfig::class.java).value)
 
     /**
      * @param target 此参数为要处理的对象
@@ -489,11 +453,9 @@ class ConfigFramework : ReflectionFramework() {
         // 当parentTemplate存在时，这意味着当前的配置的模板重写了目标模板
         if (parentTemplate != null && usedTemplate != null) {
             for (field in getFields(parentTemplate)) {
-                val configEntryField = fetchField(
-                    parentTemplate,
-                    field.name
-                )
-                if (getArgType(configEntryField) == usedTemplate!!::class.java && (field.name.equals(currentKey))) {
+                usedTemplate!!
+                val configEntryField = fetchField(parentTemplate, field.name)
+                if (getArgType(configEntryField) == usedTemplate::class.java && field.name == currentKey) {
                     val configEntry = (configEntryField[parentTemplate] as ConfigEntry<*>).get()
                     if (configEntry != null) {
                         usedTemplate = configEntry as KalmiaConfig
@@ -505,88 +467,71 @@ class ConfigFramework : ReflectionFramework() {
 
         if (usedTemplate != null) {
             for (field in getFields(usedTemplate)) {
-                if (fetchField(target, field.name) == null) {
-                    throw IllegalStateException("The '" + clazz.name + "' doesn't match to the config template '" + useTemplate.value.java.name + "'")
-                }
+                fetchField(target, field.name)
+                    ?: throw IllegalStateException("The '" + clazz.name + "' doesn't match to the config template '" + useTemplate.value.java.name + "'")
             }
         }
 
-        Arrays.stream(
-            clazz.declaredFields
-        ).filter {
-            it.isAnnotationPresent(AutoConfig::class.java)
-        }.filter(
-            Objects::nonNull
-        ).forEach {
-            // 当声明的自动配置字段不是ConfigEntry时不做处理
-            if (it.type != ConfigEntry::class.java && !ConfigEntry::class.java.isAssignableFrom(it.type)) {
-                LOGGER.warn(
-                    "The field '{}' is not ConfigEntry, unable to be process",
-                    it.name
-                )
-                return@forEach
-            }
-            if (!Modifier.isFinal(it.modifiers)) {
-                LOGGER.warn(
-                    "The field '{}' declared in '{}' is not final modified, may cause explicit changes",
-                    it.name,
-                    target::class.java.name
-                )
-            }
-            ensureAccessible(it)
+        Arrays.stream(clazz.declaredFields)
+            .filter { it.isAnnotationPresent(AutoConfig::class.java) }
+            .filter(Objects::nonNull)
+            .forEach {
+                // 当声明的自动配置字段不是ConfigEntry时不做处理
+                if (it.type != ConfigEntry::class.java && !ConfigEntry::class.java.isAssignableFrom(it.type)) {
+                    LOGGER.warn(
+                        "The field '{}' is not ConfigEntry, unable to be process",
+                        it.name
+                    )
+                    return@forEach
+                }
+                if (!Modifier.isFinal(it.modifiers)) {
+                    LOGGER.warn(
+                        "The field '{}' declared in '{}' is not final modified, may cause explicit changes",
+                        it.name,
+                        target::class.java.name
+                    )
+                }
+                ensureAccessible(it)
 
-            var template = usedTemplate
+                var template = usedTemplate
 
-            if (hasInherited && usedTemplate != null) {
-                val configEntry = fetchField(
-                    usedTemplate,
-                    it.name
-                )
-                if (KalmiaConfig::class.java.isAssignableFrom(
-                        toClass(
-                            getArgType(
-                                fetchField(
-                                    usedTemplate,
-                                    it.name
+                if (hasInherited && usedTemplate != null) {
+                    val configEntry = fetchField(usedTemplate, it.name)
+                    if (KalmiaConfig::class.java.isAssignableFrom(
+                            toClass(
+                                getArgType(
+                                    configEntry
                                 )
                             )
-                        )
-                    ) && getArgType(configEntry) == usedTemplate::class.java
-                ) {
-                    template = (fetchField(
-                        usedTemplate,
-                        it.name
-                    )[usedTemplate] as ConfigEntry<*>).get() as KalmiaConfig
+                        ) && getArgType(configEntry) == usedTemplate::class.java
+                    ) {
+                        template = (configEntry[usedTemplate] as ConfigEntry<*>).get() as KalmiaConfig
+                    }
                 }
-            }
 
-            handler.accept(it, template)
-        }
+                handler.accept(it, template)
+            }
     }
 
     fun getTemplate(o: Any): KalmiaConfig? {
-        return fetchTemplateConfig(
-            getAnnotation(
-                o,
-                UseConfigTemplate::class.java
-            )?.value?.java?.let { getTemplate(it) }
-        )
+        return fetchTemplateConfig(getAnnotation(
+            o,
+            UseConfigTemplate::class.java
+        )?.value?.java?.let { getTemplate(it) })
     }
 
     private fun fetchTemplateConfig(configTemplate: ConfigTemplate<*>?): KalmiaConfig? {
-        return if (configTemplate != null) fetchField(
+        configTemplate ?: return null
+        return fetchField(
             configTemplate,
             "config"
-        )[configTemplate] as KalmiaConfig else null
+        )[configTemplate] as KalmiaConfig
     }
 
-    private fun <T : ConfigTemplate<*>> getTemplateConfig(configTemplate: Class<T>): KalmiaConfig? {
-        return fetchTemplateConfig(getTemplate(configTemplate))
-    }
+    private fun <T : ConfigTemplate<*>> getTemplateConfig(configTemplate: Class<T>): KalmiaConfig? =
+        fetchTemplateConfig(getTemplate(configTemplate))
 
-    fun createConfig(o: Any) {
-        createConfig(o, "", getTemplate(o), CircularDependency())
-    }
+    fun createConfig(o: Any) = createConfig(o, "", getTemplate(o), CircularDependency())
 
     /**
      * 此方法会根据传入的配置类型创建一个含此配置的ConfigEntry，并根据给定的json来填充配置的值
@@ -623,11 +568,14 @@ class ConfigFramework : ReflectionFramework() {
         json: JSONObject,
         templateClass: Class<out ConfigTemplate<*>>
     ): ConfigEntry<T> {
+        // 创建并填充配置
         val config = fetchConstructor(configClass).newInstance()
         makeTemplate(traceName, config, json, templateClass, false)
         createConfig(config, "", config, CircularDependency())
+        // 创建Entry
         val entry = ConfigEntry<T>()
         makeKey(entry, traceName)
+        // 设置Entry的配置并返回
         fetchField(entry, "value")[entry] = config
         return entry
     }
@@ -678,11 +626,7 @@ class ConfigFramework : ReflectionFramework() {
 
             val useTemplate = field.getAnnotation(AutoConfig::class.java)
 
-            val inTemplateFileKey = if (useTemplate.equals("")) {
-                field.name
-            } else {
-                useTemplate.value
-            }
+            val inTemplateFileKey = if (useTemplate.equals("")) field.name else useTemplate.value
 
             val creatingWithTemplate = {
                 // 当依赖是数据而不是Entry
@@ -699,14 +643,16 @@ class ConfigFramework : ReflectionFramework() {
                 // 当值存在时则设定
                 if (value != null) {
                     checkType(
-                        toClass(argType),
-                        value
-                    ) { fetchField(configEntry, "value").set(configEntry, it) }
+                        toClass(argType), value
+                    ) { fetchField(configEntry, "value")[configEntry] = it }
                 }
             }
 
             postProcessing(
-                target, configEntry, argType, configChain,
+                target,
+                configEntry,
+                argType,
+                configChain,
                 // 处理泛型的方式和处理普通数据一样
                 { creatingWithTemplate() },
                 {
@@ -830,8 +776,7 @@ class ConfigFramework : ReflectionFramework() {
     private fun fetchConfig(template: KalmiaConfig?, field: String): KalmiaConfig? {
         return try {
             val fetchedSourceTemplate = fetchField(template ?: return null, field)[template] ?: return null
-            val result = (fetchedSourceTemplate as ConfigEntry<*>).get() as? KalmiaConfig
-                ?: return null
+            val result = (fetchedSourceTemplate as ConfigEntry<*>).get() as? KalmiaConfig ?: return null
             result
         } catch (ex: Exception) {
             null
@@ -865,7 +810,7 @@ class ConfigFramework : ReflectionFramework() {
                 // 当依赖是Entry而不是数据
                 if (KalmiaConfig::class.java.isAssignableFrom(actualClass)) {
                     // 设置新的配置对象
-                    fetchField(configEntry, "value")[configEntry] = actualClass.getConstructor().newInstance()
+                    fetchField(configEntry, "value")[configEntry] = fetchConstructor(actualClass).newInstance()
 
                     // 提交当前的依赖项，同时检查是否循环依赖
                     // 用以快速打断循环依赖，避免发生StackOverflowError
@@ -880,15 +825,13 @@ class ConfigFramework : ReflectionFramework() {
         }
     }
 
-    private fun getTemplate(clazz: Class<out ConfigTemplate<*>>): ConfigTemplate<*>? {
-        return this.templates[clazz]
-    }
+    private fun getTemplate(clazz: Class<out ConfigTemplate<*>>): ConfigTemplate<*>? = this.templates[clazz]
 
     private fun ensureEntryNotNull(target: Any, field: Field): ConfigEntry<*> {
         val fieldValue = field[target]
         var configEntry: ConfigEntry<*>? =
             if (fieldValue == null || fieldValue == ConfigEntry.ENTRY) null else fieldValue as ConfigEntry<*>
-        configEntry = configEntry ?: field.type.getConstructor().newInstance() as ConfigEntry<*>
+        configEntry = configEntry ?: fetchConstructor(field.type).newInstance() as ConfigEntry<*>
         // 设置此ConfigEntry的key为字段名称，要用它来获取多个相同模板的数据以及debug
         makeKey(configEntry, field)
         // 将配置设置回字段
@@ -902,67 +845,60 @@ class ConfigFramework : ReflectionFramework() {
         fetchField(entry, "key")[entry] = name
     }
 
-    fun <T : Any> deepCopy(o: T, another: T) {
-        deepCopy(o, another, CircularDependency())
-    }
+    fun <T : Any> deepCopy(o: T, another: T) = deepCopy(o, another, CircularDependency())
 
     private fun <T : Any> deepCopy(o: T, another: T, configChain: CircularDependency) {
         val clazz = o::class.java
 
-        Arrays.stream(
-            clazz.declaredFields
-        ).filter {
-            it.isAnnotationPresent(AutoConfig::class.java)
-        }.filter(
-            Objects::nonNull
-        ).forEach {
-            // 当声明的自动配置字段不是ConfigEntry时不做处理
-            if (it.type != ConfigEntry::class.java && !ConfigEntry::class.java.isAssignableFrom(it.type)) {
-                LOGGER.warn(
-                    "The field '{}' is not ConfigEntry, unable to be process",
-                    it.name
-                )
-                return@forEach
-            }
-            // 确保ConfigEntry不为空不
-            val fieldValue = it[o]
-            val configEntry = if (fieldValue == null) null else fieldValue as ConfigEntry<*>?
-            if (configEntry == null) {
-                return@forEach
-            }
-            // 先创建用来复制的ConfigEntry
-            val newConfigEntry = it.type.getConstructor().newInstance() as ConfigEntry<*>
-            // 设置此ConfigEntry的key为字段名称
-            fetchField(newConfigEntry, "key").set(newConfigEntry, it.name)
-            // 将ConfigEntry设置到新字段
-            fetchField(another, it.name).set(another, newConfigEntry)
+        Arrays.stream(clazz.declaredFields)
+            .filter { it.isAnnotationPresent(AutoConfig::class.java) }
+            .filter(Objects::nonNull)
+            .forEach {
+                // 当声明的自动配置字段不是ConfigEntry时不做处理
+                if (it.type != ConfigEntry::class.java && !ConfigEntry::class.java.isAssignableFrom(it.type)) {
+                    LOGGER.warn(
+                        "The field '{}' is not ConfigEntry, unable to be process",
+                        it.name
+                    )
+                    return@forEach
+                }
+                // 确保ConfigEntry不为空不
+                val fieldValue = it[o]
+                val configEntry = if (fieldValue == null) null else fieldValue as ConfigEntry<*>?
+                if (configEntry == null) {
+                    return@forEach
+                }
+                // 先创建用来复制的ConfigEntry
+                val newConfigEntry = fetchConstructor(it.type).newInstance() as ConfigEntry<*>
+                // 设置此ConfigEntry的key为字段名称
+                fetchField(newConfigEntry, "key")[newConfigEntry] = it.name
+                // 将ConfigEntry设置到新字段
+                fetchField(another, it.name)[another] = newConfigEntry
 
-            // 将配置内容深拷贝到新的ConfigEntry
-            postProcessing(o, newConfigEntry, getArgType(it), configChain,
-                {
-                    // TODO 泛型复制
-                },
-                {
-                    // 当依赖是Entry而不是数据
+                // 将配置内容深拷贝到新的ConfigEntry
+                postProcessing(o, newConfigEntry, getArgType(it), configChain,
+                    {
+                        // TODO 泛型复制
+                    },
+                    {
+                        // 当依赖是Entry而不是数据
 
-                    // 处理此配置的依赖
-                    // 配置对象内所有字段都应为ConfigEntry<KalmiaConfig>
-                    val oldConfig = configEntry.get() as KalmiaConfig
-                    val newConfig = newConfigEntry.get() as KalmiaConfig
-                    deepCopy(oldConfig, newConfig, configChain)
-                },
-                {
+                        // 处理此配置的依赖
+                        // 配置对象内所有字段都应为ConfigEntry<KalmiaConfig>
+                        val oldConfig = configEntry.get() as KalmiaConfig
+                        val newConfig = newConfigEntry.get() as KalmiaConfig
+                        deepCopy(oldConfig, newConfig, configChain)
+                    }
+                ) {
                     // 使用序列化器破坏引用
                     EntrustEnvironment.notNull(
                         fetchField(newConfigEntry, "value")
                     ) { field ->
-                        field.set(
-                            newConfigEntry,
-                            KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.breakRefs(configEntry.get() ?: return@notNull)
+                        field[newConfigEntry] = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.breakRefs(
+                            configEntry.get() ?: return@notNull
                         )
                     }
                 }
-            )
-        }
+            }
     }
 }
