@@ -17,6 +17,7 @@ import com.github.cao.awa.kalmia.translation.network.packet.login.feedback.Trans
 import com.github.cao.awa.kalmia.translation.network.packet.message.notice.TranslationNewMessageNoticePacket;
 import com.github.cao.awa.kalmia.translation.network.packet.message.select.TranslationSelectedMessagePacket;
 import com.github.cao.awa.kalmia.translation.network.packet.meta.status.TranslationProxyStatusPacket;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -89,8 +90,8 @@ public class KalmiaTranslation extends Plugin {
 
             KalmiaTranslationEnv.translationRouter(router)
                                 .send(new TranslationSelectedMessagePacket(sessionIdentity,
-                                                                           messages.stream()
-                                                                                   .map(message -> {
+                                                                           Catheter.of(messages)
+                                                                                   .vary(message -> {
                                                                                        long seq = from + index.getAndIncrement();
 
                                                                                        return ClientMessage.create(sessionIdentity,
@@ -98,7 +99,7 @@ public class KalmiaTranslation extends Plugin {
                                                                                                                    message
                                                                                        );
                                                                                    })
-                                                                                   .toList()
+                                                                                   .list()
                                 ));
         }));
     }

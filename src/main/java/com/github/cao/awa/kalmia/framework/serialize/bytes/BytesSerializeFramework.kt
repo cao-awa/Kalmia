@@ -10,6 +10,7 @@ import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.network.packet.Packet
+import com.github.cao.awa.lilium.catheter.Catheter
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
 import org.apache.logging.log4j.LogManager
@@ -20,7 +21,6 @@ import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.nio.charset.StandardCharsets
 import java.util.*
-import java.util.stream.Collectors
 
 class BytesSerializeFramework : ReflectionFramework() {
     companion object {
@@ -35,11 +35,10 @@ class BytesSerializeFramework : ReflectionFramework() {
 
     override fun work() {
         // Working stream...
-        reflection().getTypesAnnotatedWith(Auto::class.java)
-            .stream()
+        Catheter.of(reflection().getTypesAnnotatedWith(Auto::class.java))
             .filter(this::match)
-            .map(this::cast)
-            .forEach(this::build)
+            .vary(this::cast)
+            .each(this::build)
     }
 
     fun match(clazz: Class<*>): Boolean {
@@ -117,10 +116,10 @@ class BytesSerializeFramework : ReflectionFramework() {
         LOGGER.info("Bytes serializer {} registered by id {}, targeted to {}",
             serializer.javaClass.name,
             id,
-            Arrays.stream(matchType)
+            Catheter.of(matchType)
                 .filter(Objects::nonNull)
-                .map { it.name }
-                .collect(Collectors.toList())
+                .vary { it.name }
+                .list()
         )
     }
 

@@ -5,12 +5,12 @@ import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.io.IOUtil;
 import com.github.cao.awa.kalmia.constant.KalmiaConstant;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
@@ -111,11 +111,11 @@ public class LanguageTranslationManager {
             return translationKey;
         }
 
-        args = Arrays.stream(args)
-                     .map(o -> translation(languageKey,
+        args = Catheter.of(args)
+                       .vary(o -> translation(languageKey,
                                            o.toString()
                      ))
-                     .toArray();
+                       .array();
 
         return translationValue.formatted(args);
     }

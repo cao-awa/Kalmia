@@ -19,6 +19,7 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv
 import com.github.cao.awa.kalmia.exception.auto.config.FieldParamMismatchException
 import com.github.cao.awa.kalmia.exception.auto.config.WrongConfigTemplateException
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework
+import com.github.cao.awa.lilium.catheter.Catheter
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
 import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer
 import org.apache.commons.codec.binary.StringUtils
@@ -472,17 +473,17 @@ class ConfigFramework : ReflectionFramework() {
             }
         }
 
-        Arrays.stream(clazz.declaredFields)
+        Catheter.of(clazz.declaredFields)
             .filter { it.isAnnotationPresent(AutoConfig::class.java) }
             .filter(Objects::nonNull)
-            .forEach {
+            .each {
                 // 当声明的自动配置字段不是ConfigEntry时不做处理
                 if (it.type != ConfigEntry::class.java && !ConfigEntry::class.java.isAssignableFrom(it.type)) {
                     LOGGER.warn(
                         "The field '{}' is not ConfigEntry, unable to be process",
                         it.name
                     )
-                    return@forEach
+                    return@each
                 }
                 if (!Modifier.isFinal(it.modifiers)) {
                     LOGGER.warn(
@@ -850,23 +851,23 @@ class ConfigFramework : ReflectionFramework() {
     private fun <T : Any> deepCopy(o: T, another: T, configChain: CircularDependency) {
         val clazz = o::class.java
 
-        Arrays.stream(clazz.declaredFields)
+        Catheter.of(clazz.declaredFields)
             .filter { it.isAnnotationPresent(AutoConfig::class.java) }
             .filter(Objects::nonNull)
-            .forEach {
+            .each {
                 // 当声明的自动配置字段不是ConfigEntry时不做处理
                 if (it.type != ConfigEntry::class.java && !ConfigEntry::class.java.isAssignableFrom(it.type)) {
                     LOGGER.warn(
                         "The field '{}' is not ConfigEntry, unable to be process",
                         it.name
                     )
-                    return@forEach
+                    return@each
                 }
                 // 确保ConfigEntry不为空不
                 val fieldValue = it[o]
                 val configEntry = if (fieldValue == null) null else fieldValue as ConfigEntry<*>?
                 if (configEntry == null) {
-                    return@forEach
+                    return@each
                 }
                 // 先创建用来复制的ConfigEntry
                 val newConfigEntry = fetchConstructor(it.type).newInstance() as ConfigEntry<*>

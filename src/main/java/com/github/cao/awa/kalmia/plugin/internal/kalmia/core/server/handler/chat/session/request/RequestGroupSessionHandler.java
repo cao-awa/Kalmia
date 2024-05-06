@@ -13,11 +13,11 @@ import com.github.cao.awa.kalmia.session.Session;
 import com.github.cao.awa.kalmia.session.SessionAccessibleData;
 import com.github.cao.awa.kalmia.session.Sessions;
 import com.github.cao.awa.kalmia.session.group.GroupSession;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Auto
 @Server
@@ -46,9 +46,9 @@ public class RequestGroupSessionHandler implements RequestGroupSessionEventHandl
                              SessionAccessibleData :: accessibleChat
                      );
 
-        List<Session> sessions = listeners.stream()
-                                          .map(Kalmia.SERVER.sessionManager() :: session)
-                                          .collect(Collectors.toList());
+        List<Session> sessions = Catheter.of(listeners)
+                                         .vary(Kalmia.SERVER.sessionManager() :: session)
+                                         .list();
 
         router.send(new SessionListenersUpdatePacket(sessions));
     }

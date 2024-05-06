@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoJsonSerializer;
 import com.github.cao.awa.kalmia.annotations.auto.serializer.Missing;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.network.packet.Packet;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,11 +27,10 @@ public class JsonSerializeFramework extends ReflectionFramework {
     @Override
     public void work() {
         // Working stream...
-        reflection().getTypesAnnotatedWith(Auto.class)
-                    .stream()
-                    .filter(this :: match)
-                    .map(this :: cast)
-                    .forEach(this :: build);
+        Catheter.of(reflection().getTypesAnnotatedWith(Auto.class))
+                .filter(this :: match)
+                .vary(this :: cast)
+                .each(this :: build);
     }
 
     public boolean match(Class<?> clazz) {

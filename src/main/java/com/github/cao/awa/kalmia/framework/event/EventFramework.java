@@ -14,6 +14,7 @@ import com.github.cao.awa.kalmia.framework.AnnotationUtil;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.kalmia.threading.ThreadingUtil;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
@@ -39,17 +40,15 @@ public class EventFramework extends ReflectionFramework {
 
     public void work() {
         // Working stream...
-        reflection().getTypesAnnotatedWith(AutoHandler.class)
-                    .stream()
-                    .filter(this :: match)
-                    .map(this :: cast)
-                    .forEach(this :: autoHandler);
+        Catheter.of(reflection().getTypesAnnotatedWith(AutoHandler.class))
+                .filter(this :: match)
+                .vary(this :: cast)
+                .each(this :: autoHandler);
 
-        reflection().getTypesAnnotatedWith(Auto.class)
-                    .stream()
-                    .filter(this :: match)
-                    .map(this :: cast)
-                    .forEach(this :: build);
+        Catheter.of(reflection().getTypesAnnotatedWith(Auto.class))
+                .filter(this :: match)
+                .vary(this :: cast)
+                .each(this :: build);
     }
 
     public boolean match(Class<?> clazz) {

@@ -11,6 +11,7 @@ import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectMes
 import com.github.cao.awa.kalmia.network.packet.inbound.message.select.SelectedMessagePacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.session.Session;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
 
 import java.util.List;
@@ -98,8 +99,8 @@ public class SelectMessageHandler implements SelectMessageEventHandler {
                                                   start + realSelected,
                                                   currentSeqEnd,
                                                   // Copy the list, because it will be cleared immediately.
-                                                  messages.stream()
-                                                          .toList()
+                                                  Catheter.of(messages)
+                                                          .list()
             ).receipt(packet.receipt()));
 
             start += selected + 1;

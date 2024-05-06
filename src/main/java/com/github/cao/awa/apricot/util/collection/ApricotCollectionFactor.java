@@ -52,7 +52,11 @@ public class ApricotCollectionFactor {
         return Collections.synchronizedList(arrayList(capacity));
     }
 
-    public static <V> List<V> syncList(List<V> delegate) {
+    public static <V> List<V> syncList(Collection<V> delegate) {
+        return Collections.synchronizedList(arrayList(delegate));
+    }
+
+    public static <V> List<V> syncList(V[] delegate) {
         return Collections.synchronizedList(arrayList(delegate));
     }
 
@@ -64,7 +68,11 @@ public class ApricotCollectionFactor {
         return new ObjectArrayList<>(capacity);
     }
 
-    public static <V> ObjectArrayList<V> arrayList(List<V> delegate) {
+    public static <V> ObjectArrayList<V> arrayList(Collection<V> delegate) {
+        return new ObjectArrayList<>(delegate);
+    }
+
+    public static <V> ObjectArrayList<V> arrayList(V[] delegate) {
         return new ObjectArrayList<>(delegate);
     }
 
@@ -84,6 +92,18 @@ public class ApricotCollectionFactor {
 
     public static <V> ObjectOpenHashSet<V> hashSet() {
         return new ObjectOpenHashSet<>();
+    }
+
+    public static <V> ObjectOpenHashSet<V> hashSet(int capacity) {
+        return new ObjectOpenHashSet<>(capacity);
+    }
+
+    public static <V> ObjectOpenHashSet<V> hashSet(Collection<V> delegate) {
+        return new ObjectOpenHashSet<>(delegate);
+    }
+
+    public static <V> ObjectOpenHashSet<V> hashSet(V[] delegate) {
+        return new ObjectOpenHashSet<>(delegate);
     }
 
     public static <V> Set<V> concurrentHashSet() {

@@ -1,17 +1,16 @@
 package com.github.cao.awa.kalmia.mathematic;
 
+import com.github.cao.awa.lilium.catheter.Catheter;
 import org.jetbrains.annotations.Range;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Comparator;
 
 public class Mathematics {
     @SafeVarargs
     public static <T extends Number> T streamMax(T... targets) {
-        return Arrays.stream(targets)
-                     .max(Comparator.comparingDouble(Number :: doubleValue))
-                     .orElseGet(() -> forMax(targets));
+        return Catheter.of(targets)
+                       .max(Comparator.comparingDouble(Number :: doubleValue));
     }
 
     @SafeVarargs

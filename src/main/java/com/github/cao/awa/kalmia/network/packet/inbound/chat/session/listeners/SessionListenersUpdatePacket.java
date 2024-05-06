@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
 import com.github.cao.awa.kalmia.network.handler.inbound.AuthedRequestHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.session.Session;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,6 @@ import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @AutoAllData
@@ -28,8 +28,8 @@ public class SessionListenersUpdatePacket extends Packet<AuthedRequestHandler> {
     private List<Session> sessions;
 
     public Set<PureExtraIdentity> mapId() {
-        return sessions().stream()
-                         .map(Session :: identity)
-                         .collect(Collectors.toSet());
+        return Catheter.of(sessions())
+                       .vary(Session :: identity)
+                       .set();
     }
 }

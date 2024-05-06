@@ -6,6 +6,7 @@ import com.github.cao.awa.kalmia.annotations.translation.Translation;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.cao.awa.trtr.util.string.StringConcat;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
@@ -17,11 +18,10 @@ public class TranslationPacketFramework extends ReflectionFramework {
 
     @Override
     public void work() {
-        reflection().getTypesAnnotatedWith(Translation.class)
-                    .stream()
-                    .filter(this :: match)
-                    .map(this :: cast)
-                    .forEach(this :: build);
+        Catheter.of(reflection().getTypesAnnotatedWith(Translation.class))
+                .filter(this :: match)
+                .vary(this :: cast)
+                .each(this :: build);
     }
 
     public boolean match(Class<?> clazz) {

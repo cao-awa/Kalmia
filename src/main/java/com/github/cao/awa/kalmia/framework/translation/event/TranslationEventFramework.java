@@ -8,6 +8,7 @@ import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.translation.event.TranslationEvent;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 import com.github.cao.awa.kalmia.translation.network.router.TranslationRouter;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,11 +22,10 @@ public class TranslationEventFramework extends ReflectionFramework {
 
     public void work() {
         // Working stream...
-        reflection().getTypesAnnotatedWith(Auto.class)
-                    .stream()
-                    .filter(this :: match)
-                    .map(this :: cast)
-                    .forEach(this :: build);
+        Catheter.of(reflection().getTypesAnnotatedWith(Auto.class))
+                .filter(this :: match)
+                .vary(this :: cast)
+                .each(this :: build);
     }
 
     public boolean match(Class<?> clazz) {
@@ -68,9 +68,9 @@ public class TranslationEventFramework extends ReflectionFramework {
             );
         } else {
             KalmiaEnv.EVENT_FRAMEWORK.fireEvent(h
-                                                       .apply(router,
-                                                              packet
-                                                       ));
+                                                        .apply(router,
+                                                               packet
+                                                        ));
         }
     }
 }

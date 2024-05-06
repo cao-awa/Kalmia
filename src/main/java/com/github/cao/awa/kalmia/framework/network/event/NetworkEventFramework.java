@@ -9,6 +9,7 @@ import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,11 +23,10 @@ public class NetworkEventFramework extends ReflectionFramework {
 
     public void work() {
         // Working stream...
-        reflection().getTypesAnnotatedWith(Auto.class)
-                    .stream()
+        Catheter.of(reflection().getTypesAnnotatedWith(Auto.class))
                     .filter(this :: match)
-                    .map(this :: cast)
-                    .forEach(this :: build);
+                .vary(this :: cast)
+                .each(this :: build);
     }
 
     public boolean match(Class<?> clazz) {

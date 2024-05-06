@@ -10,6 +10,7 @@ import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.network.packet.Packet
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket
 import com.github.cao.awa.kalmia.network.packet.factor.unsolve.UnsolvedPacketFactor
+import com.github.cao.awa.lilium.catheter.Catheter
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -28,11 +29,10 @@ class PacketFramework : ReflectionFramework() {
 
     override fun work() {
         // Working stream...
-        reflection().getTypesAnnotatedWith(Auto::class.java)
-            .stream()
+        Catheter.of(reflection().getTypesAnnotatedWith(Auto::class.java))
             .filter(this::match)
-            .map(this::cast)
-            .forEach(this::build)
+            .vary(this::cast)
+            .each(this::build)
     }
 
     fun match(clazz: Class<*>): Boolean =
