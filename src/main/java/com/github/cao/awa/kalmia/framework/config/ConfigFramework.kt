@@ -34,7 +34,6 @@ import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.nio.charset.StandardCharsets
-import java.util.*
 import java.util.function.BiConsumer
 
 class ConfigFramework : ReflectionFramework() {
@@ -174,14 +173,14 @@ class ConfigFramework : ReflectionFramework() {
     private fun loadTemplates() {
         extractDefaultTemplates()
 
-        reflection().getTypesAnnotatedWith(AutoConfigTemplate::class.java)
+        Catheter.of(reflection().getTypesAnnotatedWith(AutoConfigTemplate::class.java))
             .filter { template ->
                 template == ConfigTemplate::class.java
                         || ConfigTemplate::class.java.isAssignableFrom(template)
             }
-            .filter(Objects::nonNull)
-            .map(this::cast)
-            .forEach { templateClass ->
+            .exists()
+            .vary(this::cast)
+            .each { templateClass ->
                 // 获取此配置的模板路径
                 val templateData = templateClass.getAnnotation(AutoConfigTemplate::class.java)
 
@@ -474,8 +473,8 @@ class ConfigFramework : ReflectionFramework() {
         }
 
         Catheter.of(clazz.declaredFields)
-            .filter { it.isAnnotationPresent(AutoConfig::class.java) }
-            .filter(Objects::nonNull)
+            .filter(AutoConfig::class.java, Field::isAnnotationPresent)
+            .exists()
             .each {
                 // 当声明的自动配置字段不是ConfigEntry时不做处理
                 if (it.type != ConfigEntry::class.java && !ConfigEntry::class.java.isAssignableFrom(it.type)) {
@@ -852,8 +851,8 @@ class ConfigFramework : ReflectionFramework() {
         val clazz = o::class.java
 
         Catheter.of(clazz.declaredFields)
-            .filter { it.isAnnotationPresent(AutoConfig::class.java) }
-            .filter(Objects::nonNull)
+            .filter(AutoConfig::class.java, Field::isAnnotationPresent)
+            .exists()
             .each {
                 // 当声明的自动配置字段不是ConfigEntry时不做处理
                 if (it.type != ConfigEntry::class.java && !ConfigEntry::class.java.isAssignableFrom(it.type)) {
