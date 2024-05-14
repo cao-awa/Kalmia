@@ -3,7 +3,6 @@ package com.github.cao.awa.kalmia.await;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.apricot.util.time.TimeUtil;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.util.List;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class AwaitManager {
     }
 
     public <T> T awaitGet(byte[] awaitIdentity, Supplier<T> supplier, Runnable trigger) throws InterruptedException {
-        T getNow = EntrustEnvironment.trys(supplier :: get);
+        T getNow = supplier.get();
         if (getNow == null) {
             await(awaitIdentity,
                   trigger
@@ -75,7 +74,7 @@ public class AwaitManager {
     }
 
     public <T> T awaitGet(byte[] awaitIdentity, Supplier<T> supplier, Runnable trigger, boolean forceAwait) throws InterruptedException {
-        T getNow = forceAwait ? null : EntrustEnvironment.trys(supplier :: get);
+        T getNow = forceAwait ? null : supplier.get();
         if (getNow == null) {
             await(awaitIdentity,
                   trigger

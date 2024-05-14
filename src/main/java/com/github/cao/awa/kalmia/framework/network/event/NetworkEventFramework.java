@@ -2,6 +2,7 @@ package com.github.cao.awa.kalmia.framework.network.event;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.catheter.Catheter;
 import com.github.cao.awa.kalmia.annotations.auto.event.network.NetworkEventTarget;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.event.kalmiagram.network.NetworkEvent;
@@ -9,8 +10,7 @@ import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
-import com.github.cao.awa.lilium.catheter.Catheter;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +24,7 @@ public class NetworkEventFramework extends ReflectionFramework {
     public void work() {
         // Working stream...
         Catheter.of(reflection().getTypesAnnotatedWith(Auto.class))
-                    .filter(this :: match)
+                .filter(this :: match)
                 .vary(this :: cast)
                 .each(this :: build);
     }
@@ -34,24 +34,21 @@ public class NetworkEventFramework extends ReflectionFramework {
     }
 
     public Class<? extends Packet<?>> cast(Class<?> clazz) {
-        return EntrustEnvironment.cast(clazz);
+        return Manipulate.cast(clazz);
     }
 
     public void build(Class<? extends Packet<?>> clazz) {
         NetworkEventTarget target = clazz.getAnnotation(NetworkEventTarget.class);
         registerNetworkEvent(clazz,
-                             (router, packet) -> EntrustEnvironment.trys(() -> target.value()
-                                                                                     .getConstructor(RequestRouter.class,
-                                                                                                     clazz
-                                                                                     )
-                                                                                     .newInstance(router,
-                                                                                                  packet
-                                                                                     ),
-                                                                         ex -> {
-                                                                             ex.printStackTrace();
-                                                                             return;
-                                                                         }
-                             )
+                             (router, packet) -> Manipulate.supply(() -> target.value()
+                                                                               .getConstructor(RequestRouter.class,
+                                                                                               clazz
+                                                                               )
+                                                                               .newInstance(router,
+                                                                                            packet
+                                                                               )
+                                                           )
+                                                           .get()
         );
     }
 

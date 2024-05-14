@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.framework.event;
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.thread.pool.ExecutorFactor;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.catheter.Catheter;
 import com.github.cao.awa.kalmia.annotations.auto.event.AutoHandler;
 import com.github.cao.awa.kalmia.annotations.plugin.PluginRegister;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
@@ -14,10 +15,9 @@ import com.github.cao.awa.kalmia.framework.AnnotationUtil;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.kalmia.threading.ThreadingUtil;
-import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +56,7 @@ public class EventFramework extends ReflectionFramework {
     }
 
     public Class<? extends EventHandler<?>> cast(Class<?> clazz) {
-        return EntrustEnvironment.cast(clazz);
+        return Manipulate.cast(clazz);
     }
 
     public void build(Class<? extends EventHandler<?>> clazz) {
@@ -127,7 +127,7 @@ public class EventFramework extends ReflectionFramework {
                     }
 
                     for (Class<?> interfaceOf : (clazz.getInterfaces())) {
-                        adder.accept(target(EntrustEnvironment.cast(interfaceOf)));
+                        adder.accept(target(Manipulate.cast(interfaceOf)));
                     }
 
                     // Auto register in undeclared.
@@ -306,7 +306,7 @@ public class EventFramework extends ReflectionFramework {
 
     public void handleEvent(EventHandler<?> handler, Event event) {
         Runnable handleAction = () -> {
-            handler.handle(EntrustEnvironment.cast(event));
+            handler.handle(Manipulate.cast(event));
         };
 
         if (ThreadingUtil.forceMainThread(handler.getClass())) {

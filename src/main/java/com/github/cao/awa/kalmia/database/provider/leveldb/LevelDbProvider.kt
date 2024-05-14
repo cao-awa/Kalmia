@@ -2,8 +2,7 @@ package com.github.cao.awa.kalmia.database.provider.leveldb
 
 import com.github.cao.awa.kalmia.database.KeyValueBytesDatabase
 import com.github.cao.awa.kalmia.database.key.BytesKey
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.function.ExceptingSupplier
+import com.github.cao.awa.sinuatum.manipulate.Manipulate
 import org.iq80.leveldb.CompressionType
 import org.iq80.leveldb.DB
 import org.iq80.leveldb.Options
@@ -39,14 +38,11 @@ class LevelDbProvider(cacheDelegate: Supplier<Map<BytesKey, ByteArray>>, path: S
     }
 
     override fun close(): Boolean {
-        return EntrustEnvironment.trys(
-            ExceptingSupplier {
-                this.db.close()
-                cache().clear()
-                true
-            },
-            ExceptingSupplier { false }
-        )
+        return Manipulate.supply {
+            this.db.close()
+            cache().clear()
+            true
+        }.getOrDefault(false)
     }
 
     override fun forEach(operator: BiConsumer<BytesKey, ByteArray>) {

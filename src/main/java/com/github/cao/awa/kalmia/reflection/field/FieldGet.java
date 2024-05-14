@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.reflection.field;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.util.List;
 import java.util.function.Function;
@@ -12,11 +12,11 @@ public class FieldGet<R, I> {
     private final List<Function<Class<I>, R>> backups = ApricotCollectionFactor.arrayList();
 
     private FieldGet(I target) {
-        this.target = EntrustEnvironment.cast(target.getClass());
+        this.target = Manipulate.cast(target.getClass());
     }
 
     private FieldGet(Class<I> target) {
-        this.target = EntrustEnvironment.cast(target);
+        this.target = Manipulate.cast(target);
     }
 
     public static <X, Y> FieldGet<X, Y> create(Y target, String name) {
@@ -39,7 +39,7 @@ public class FieldGet<R, I> {
 
     @SuppressWarnings("unchecked")
     public <Z> Z get() {
-        Class<I> clazz = EntrustEnvironment.cast(this.target);
+        Class<I> clazz = Manipulate.cast(this.target);
 
         assert clazz != null;
         for (String name : this.gets) {

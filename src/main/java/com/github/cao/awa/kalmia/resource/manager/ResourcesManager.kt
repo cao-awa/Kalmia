@@ -7,7 +7,7 @@ import com.github.cao.awa.apricot.util.io.IOUtil
 import com.github.cao.awa.apricot.util.time.TimeUtil
 import com.github.cao.awa.kalmia.mathematic.Mathematics
 import com.github.cao.awa.kalmia.resource.manager.writer.ResourceWriter
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.function.TriConsumer
+import com.github.cao.awa.sinuatum.function.consumer.TriConsumer
 import java.io.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledThreadPoolExecutor

@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity
 import com.github.cao.awa.kalmia.protocol.RequestProtocol
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
+import com.github.cao.awa.sinuatum.manipulate.Manipulate
 
 object KalmiaConstant {
     const val PROTOCOL_VERSION: Long = 1
@@ -36,7 +36,7 @@ object KalmiaConstant {
     const val LANGUAGE_TRANSLATION_MAIN_RESOURCE_PATH = "resources/lang/main"
 
     @JvmField
-    val LANGUAGE_TRANSLATION_DEFAULT_RESOURCES: Map<String, String> = EntrustEnvironment.operation(
+    val LANGUAGE_TRANSLATION_DEFAULT_RESOURCES: Map<String, String> = Manipulate.operation(
         ApricotCollectionFactor.hashMap()
     ) { map ->
         map["en_us"] = "kalmiagram/lang/en_us.json"

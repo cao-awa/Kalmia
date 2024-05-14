@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONWriter
 import com.github.cao.awa.apricot.resource.loader.ResourceLoader
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
 import com.github.cao.awa.apricot.util.io.IOUtil
+import com.github.cao.awa.catheter.Catheter
 import com.github.cao.awa.kalmia.annotations.config.AutoConfig
 import com.github.cao.awa.kalmia.annotations.config.AutoConfigTemplate
 import com.github.cao.awa.kalmia.annotations.config.UseConfigTemplate
@@ -19,16 +20,12 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv
 import com.github.cao.awa.kalmia.exception.auto.config.FieldParamMismatchException
 import com.github.cao.awa.kalmia.exception.auto.config.WrongConfigTemplateException
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework
-import com.github.cao.awa.lilium.catheter.Catheter
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
+import com.github.cao.awa.sinuatum.manipulate.Manipulate
 import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer
 import org.apache.commons.codec.binary.StringUtils
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.FileReader
+import java.io.*
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
@@ -110,19 +107,18 @@ class ConfigFramework : ReflectionFramework() {
                 if (file.isFile) {
                     computeDefaultTemplate(file, location)
                 } else {
-                    EntrustEnvironment.trys({
+                    Manipulate.action {
                         file.createNewFile()
                         IOUtil.write(
-                            FileOutputStream("./$location"),
-                            ResourceLoader.stream(location)
+                            FileOutputStream("./$location"), ResourceLoader.stream(location)
                         )
-                    }) { ex ->
+                    }.catching(IOException::class.java) { ex ->
                         LOGGER.warn(
                             "The template file for '{}' unable to extract",
                             key,
                             ex
                         )
-                    }
+                    }.execute()
                 }
                 this.templatePaths[key] = location
             }
@@ -186,11 +182,11 @@ class ConfigFramework : ReflectionFramework() {
 
                 // 获取实际类型然后创建实例
                 val configType: Class<out KalmiaConfig> =
-                    EntrustEnvironment.cast(toClass(getArgType(templateClass.genericSuperclass)))!!
+                    Manipulate.cast(toClass(getArgType(templateClass.genericSuperclass)))!!
                 val config = fetchConstructor(configType).newInstance() as KalmiaConfig
 
                 // 读取模板格式
-                val json = EntrustEnvironment.get({
+                val json = Manipulate.supply {
                     JSONObject.parse(
                         IOUtil.read(
                             FileReader(
@@ -199,7 +195,7 @@ class ConfigFramework : ReflectionFramework() {
                             )
                         )
                     )
-                }, JSONObject.of())
+                }.getOrCreate(JSONObject::of)
 
                 // 创建模板
                 val template = makeTemplate(this.templatePaths[templateData.value]!!, config, json, templateClass, true)
@@ -210,7 +206,7 @@ class ConfigFramework : ReflectionFramework() {
             }
     }
 
-    private fun cast(clazz: Class<*>): Class<out ConfigTemplate<*>> = EntrustEnvironment.cast(clazz)!!
+    private fun cast(clazz: Class<*>): Class<out ConfigTemplate<*>> = Manipulate.cast(clazz)!!
 
     private fun createTemplate(
         traceName: String,
@@ -262,7 +258,7 @@ class ConfigFramework : ReflectionFramework() {
                                 )
                             } else {
                                 // 当类型不正确时构建异常链，用以debug
-                                EntrustEnvironment.reThrow(
+                                Manipulate.reThrow(
                                     { checkType(listTemplate, value, newDelegate::add) },
                                     ClassCastException::class.java,
                                 ) { FieldParamMismatchException(field, listTemplate, value::class.java, it) }
@@ -351,7 +347,7 @@ class ConfigFramework : ReflectionFramework() {
                 // 当类型不正确时构建异常链，用以debug
                 val requiredType = toClass(argType)
 
-                EntrustEnvironment.reThrow(
+                Manipulate.reThrow(
                     {
                         checkType(
                             requiredType,
@@ -373,7 +369,7 @@ class ConfigFramework : ReflectionFramework() {
     ): ConfigTemplate<*>? {
         try {
             // 当类型不正确时构建异常链，用以debug
-            EntrustEnvironment.reThrow(
+            Manipulate.reThrow(
                 { createTemplate(traceName, config, json, CircularDependency()) },
                 FieldParamMismatchException::class.java
             ) { WrongConfigTemplateException(templateClass, it.field, it) }
@@ -734,9 +730,9 @@ class ConfigFramework : ReflectionFramework() {
                         target::class.java.simpleName
                     )
                 } else {
-                    fetchResult = EntrustEnvironment.get({
+                    fetchResult = Manipulate.supply {
                         fetchOrFindEntry(config, inheritedValue.key).get()
-                    }, null)
+                    }.get()
                 }
             }
 
@@ -891,7 +887,7 @@ class ConfigFramework : ReflectionFramework() {
                     }
                 ) {
                     // 使用序列化器破坏引用
-                    EntrustEnvironment.notNull(
+                    Manipulate.notNull(
                         fetchField(newConfigEntry, "value")
                     ) { field ->
                         field[newConfigEntry] = KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.breakRefs(

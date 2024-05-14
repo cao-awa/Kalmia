@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.framework.serialize.bytes
 import com.github.cao.awa.apricot.annotations.auto.Auto
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor
+import com.github.cao.awa.catheter.Catheter
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoAllData
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData
 import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoBytesSerializer
@@ -10,9 +11,8 @@ import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework
 import com.github.cao.awa.kalmia.mathematic.base.Base256
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256
 import com.github.cao.awa.kalmia.network.packet.Packet
-import com.github.cao.awa.lilium.catheter.Catheter
+import com.github.cao.awa.sinuatum.manipulate.Manipulate
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.jetbrains.annotations.NotNull
@@ -48,7 +48,7 @@ class BytesSerializeFramework : ReflectionFramework() {
     }
 
     fun cast(clazz: Class<*>): Class<out BytesSerializer<*>?> {
-        return clazz.let(EntrustEnvironment::cast)!!
+        return clazz.let { Manipulate.cast(it) }!!
     }
 
     fun build(type: Class<out BytesSerializer<*>>) {
@@ -76,7 +76,7 @@ class BytesSerializeFramework : ReflectionFramework() {
     }
 
     fun target(serializer: BytesSerializer<*>): Array<Class<*>> {
-        return typeTarget(EntrustEnvironment.cast(serializer.javaClass)!!)
+        return typeTarget(Manipulate.cast(serializer.javaClass)!!)
     }
 
     private fun typeTarget(type: Class<out BytesSerializer<*>>): Array<Class<*>> {
@@ -84,7 +84,7 @@ class BytesSerializeFramework : ReflectionFramework() {
     }
 
     fun id(serializer: BytesSerializer<*>): Long {
-        return typeId(EntrustEnvironment.cast(serializer.javaClass)!!)
+        return typeId(Manipulate.cast(serializer.javaClass)!!)
     }
 
     private fun typeId(type: Class<out BytesSerializer<*>>): Long {
@@ -125,7 +125,7 @@ class BytesSerializeFramework : ReflectionFramework() {
 
     @Throws(NoSuchFieldException::class)
     private fun <T> autoFields(target: T): LinkedList<Field> {
-        val clazz = EntrustEnvironment.cast<Class<Packet<*>>>(target!!::class.java)!!
+        val clazz = Manipulate.cast<Class<Packet<*>>>(target!!::class.java)!!
         val fields = ApricotCollectionFactor.linkedList<Field>()
         val autoAll = clazz.isAnnotationPresent(AutoAllData::class.java)
         for (field in clazz.declaredFields) {
@@ -197,7 +197,7 @@ class BytesSerializeFramework : ReflectionFramework() {
             return BytesUtil.concat(
                 BytesUtil.array(2),
                 SkippedBase256.longToBuf(serializer!!.id()),
-                serializer.serialize(EntrustEnvironment.cast(target))
+                serializer.serialize(Manipulate.cast(target))
             )
         } else {
             if (target is BytesSerializable<*>) {
@@ -208,7 +208,7 @@ class BytesSerializeFramework : ReflectionFramework() {
             }
             return BytesUtil.concat(
                 BytesUtil.array(-1),
-                serializer!!.serialize(EntrustEnvironment.cast(target))
+                serializer!!.serialize(Manipulate.cast(target))
             )
         }
     }
@@ -221,7 +221,7 @@ class BytesSerializeFramework : ReflectionFramework() {
             }
             return BytesUtil.EMPTY
         }
-        return serializer.serialize(EntrustEnvironment.cast(target))
+        return serializer.serialize(Manipulate.cast(target))
     }
 
     @Throws(Exception::class)
@@ -261,12 +261,12 @@ class BytesSerializeFramework : ReflectionFramework() {
     }
 
     fun <T> getSerializer(@NotNull type: Class<T>): BytesSerializer<T>? {
-        var serializer = EntrustEnvironment.cast<BytesSerializer<T>>(this.typeToSerializer[type] ?: return null)
+        var serializer = Manipulate.cast<BytesSerializer<T>>(this.typeToSerializer[type] ?: return null)
         if (serializer == null) {
-            serializer = EntrustEnvironment.cast(getSerializer(type.superclass) ?: return null)
+            serializer = Manipulate.cast(getSerializer(type.superclass) ?: return null)
             if (serializer == null) {
                 for (aInterface in type.interfaces) {
-                    serializer = EntrustEnvironment.cast(getSerializer(aInterface) ?: return null)
+                    serializer = Manipulate.cast(getSerializer(aInterface) ?: return null)
                     if (serializer != null) {
                         break
                     }
@@ -277,16 +277,16 @@ class BytesSerializeFramework : ReflectionFramework() {
     }
 
     fun <T> getSerializer(o: T): BytesSerializer<T> {
-        return getSerializer(o!!::class.java)?.let(EntrustEnvironment::cast)!!
+        return getSerializer(o!!::class.java)?.let { Manipulate.cast(it) }!!
     }
 
     fun <T> getSerializer(id: Long): BytesSerializer<T> {
-        return this.idToSerializer[id]?.let(EntrustEnvironment::cast)!!
+        return this.idToSerializer[id]?.let { Manipulate.cast(it) }!!
     }
 
     @Throws(Exception::class)
     fun <T> breakRefs(o: T): T? {
-        return EntrustEnvironment.cast(
+        return Manipulate.cast(
             deserialize(
                 o!!::class.java,
                 BytesReader.of(serialize(o))

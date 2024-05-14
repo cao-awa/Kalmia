@@ -1,11 +1,11 @@
 package com.github.cao.awa.kalmia.session
 
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
+import com.github.cao.awa.sinuatum.manipulate.Manipulate
 import java.util.*
 
 class SessionAccessible {
     companion object {
-        val DEFAULT_SETTINGS: ByteArray = EntrustEnvironment.operation(
+        val DEFAULT_SETTINGS: ByteArray = Manipulate.operation(
                 ByteArray(16)
         ) {
             Arrays.fill(it, 127.toByte())

@@ -28,9 +28,9 @@ import com.github.cao.awa.kalmia.network.packet.inbound.invalid.operation.Operat
 import com.github.cao.awa.kalmia.network.router.NetworkRouter;
 import com.github.cao.awa.kalmia.network.router.meta.RequestRouterMetadata;
 import com.github.cao.awa.kalmia.network.router.status.RequestState;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
 import com.github.zhuaidadaya.rikaishinikui.handler.universal.affair.Affair;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
@@ -45,18 +45,18 @@ import java.util.function.Consumer;
 public class RequestRouter extends NetworkRouter<UnsolvedPacket<?>> {
     private static final Logger LOGGER = LogManager.getLogger("RequestRouter");
     private final ExecutorService executor = ExecutorFactor.intensiveIo();
-    private final Map<RequestState, PacketHandler<?>> handlers = EntrustEnvironment.operation(ApricotCollectionFactor.hashMap(),
-                                                                                              handlers -> {
-                                                                                                  handlers.put(RequestState.HELLO,
-                                                                                                               new HandshakeHandler()
-                                                                                                  );
-                                                                                                  handlers.put(RequestState.AUTH,
-                                                                                                               new LoginHandler()
-                                                                                                  );
-                                                                                                  handlers.put(RequestState.AUTHED,
-                                                                                                               new AuthedRequestHandler()
-                                                                                                  );
-                                                                                              }
+    private final Map<RequestState, PacketHandler<?>> handlers = Manipulate.operation(ApricotCollectionFactor.hashMap(),
+                                                                                      handlers -> {
+                                                                                          handlers.put(RequestState.HELLO,
+                                                                                                       new HandshakeHandler()
+                                                                                          );
+                                                                                          handlers.put(RequestState.AUTH,
+                                                                                                       new LoginHandler()
+                                                                                          );
+                                                                                          handlers.put(RequestState.AUTHED,
+                                                                                                       new AuthedRequestHandler()
+                                                                                          );
+                                                                                      }
     );
     private final CryptoTransportLayer transportLayer = new CryptoTransportLayer();
     private RequestState states;

@@ -11,6 +11,14 @@ version project.version_name
 
 repositories {
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = "https://maven.pkg.github.com/cao-awa/Catheter"
+        credentials {
+            username = "cao-awa"
+            password = "ghp_8yGFQIhfc0wz43ws" + "Orpdne0yOkzhN20XimQl"
+        }
+    }
 }
 
 configurations {
@@ -52,6 +60,9 @@ dependencies {
 
     shadow 'org.bouncycastle:bcprov-jdk18on:1.78.1'
 
+    shadow 'com.github.cao.awa:catheter:1.0.3'
+    shadow 'com.github.cao.awa:sinuatum:1.0.10'
+
     shadow 'org.lz4:lz4-java:1.8.0'
 }
 
@@ -61,6 +72,10 @@ dependencies {
 
 java {
     withSourcesJar()
+
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 // Exclude the secret private key.
@@ -102,14 +117,11 @@ test {
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '21'
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '21'
     }
 }
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17

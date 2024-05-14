@@ -2,7 +2,7 @@ package com.github.cao.awa.apricot.identifier;
 
 import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.kalmia.constant.IntegerConstants;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.util.Random;
 
@@ -16,7 +16,7 @@ public class RandomIdentifier {
     }
 
     public static String create(int size) {
-        return new String(EntrustEnvironment.operation(
+        return new String(Manipulate.operation(
                 new char[size],
                 result -> {
                     for (int i = 0; i < size; i++) {

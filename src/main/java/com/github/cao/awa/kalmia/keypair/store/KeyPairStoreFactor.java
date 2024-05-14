@@ -2,7 +2,7 @@ package com.github.cao.awa.kalmia.keypair.store;
 
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.identity.PureExtraIdentity;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.function.TriFunction;
+import com.github.cao.awa.sinuatum.function.function.TriFunction;
 
 import java.util.Map;
 

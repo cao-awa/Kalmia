@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 @Auto
 public interface JsonSerializer<T> {
@@ -33,6 +33,6 @@ public interface JsonSerializer<T> {
     }
 
     default Class<T>[] target() {
-        return EntrustEnvironment.cast(KalmiaEnv.JSON_SERIALIZE_FRAMEWORK.target(this));
+        return Manipulate.cast(KalmiaEnv.JSON_SERIALIZE_FRAMEWORK.target(this));
     }
 }

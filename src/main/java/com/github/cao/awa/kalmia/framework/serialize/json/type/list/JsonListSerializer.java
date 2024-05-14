@@ -8,7 +8,7 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializeFramework;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializer;
 import com.github.cao.awa.kalmia.framework.serialize.json.JsonSerializer;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class JsonListSerializer implements JsonSerializer<List<?>> {
         for (Object o : target) {
             array.add(
                     KalmiaEnv.JSON_SERIALIZE_FRAMEWORK.getSerializer(o.getClass())
-                                                      .getObject(EntrustEnvironment.cast(o))
+                                                      .getObject(Manipulate.cast(o))
             );
         }
         ob.put("type",
@@ -62,14 +62,14 @@ public class JsonListSerializer implements JsonSerializer<List<?>> {
             List<?> list = ApricotCollectionFactor.arrayList();
 
             for (Object o : json.getJSONArray(key)) {
-                JSONObject ob = EntrustEnvironment.cast(o);
+                JSONObject ob = Manipulate.cast(o);
 
                 JSONObject delegate = new JSONObject();
                 delegate.put("key",
                              ob
                 );
 
-                list.add(EntrustEnvironment.cast(serializer.deserialize(delegate,
+                list.add(Manipulate.cast(serializer.deserialize(delegate,
                                                                         "key"
                 )));
             }

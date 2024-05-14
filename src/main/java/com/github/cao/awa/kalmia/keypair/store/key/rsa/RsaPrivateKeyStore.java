@@ -4,7 +4,7 @@ import com.github.cao.awa.apricot.util.encryption.Crypto;
 import com.github.cao.awa.kalmia.keypair.exception.NotEncryptedException;
 import com.github.cao.awa.kalmia.keypair.store.KeyPairStore;
 import com.github.cao.awa.kalmia.keypair.store.key.KeyStore;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.security.interfaces.RSAPrivateKey;
 
@@ -28,7 +28,8 @@ public class RsaPrivateKeyStore extends KeyStore<RSAPrivateKey> {
                 return null;
             }
         }
-        return EntrustEnvironment.trys(() -> Crypto.decodeRsaPrikey(key()));
+        return Manipulate.supply(() -> Crypto.decodeRsaPrikey(key()))
+                         .get();
     }
 
     @Override

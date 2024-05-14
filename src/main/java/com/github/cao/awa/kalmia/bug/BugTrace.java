@@ -6,14 +6,14 @@ import org.apache.logging.log4j.Logger;
 public class BugTrace {
     private static final Logger LOGGER = LogManager.getLogger("BugTracer");
 
-    public static void trace(Exception exception, String info) {
+    public static void trace(Throwable exception, String info) {
         trace(exception,
               info,
               false
         );
     }
 
-    public static void trace(Exception exception, String info, boolean pleaseReport) {
+    public static void trace(Throwable exception, String info, boolean pleaseReport) {
         LOGGER.error((pleaseReport ? "[Please report] " : "") + info,
                      exception
         );

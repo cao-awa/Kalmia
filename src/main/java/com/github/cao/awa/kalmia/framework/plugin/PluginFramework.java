@@ -3,14 +3,14 @@ package com.github.cao.awa.kalmia.framework.plugin;
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.catheter.Catheter;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.plugin.Plugin;
 import com.github.cao.awa.kalmia.reflection.field.FieldGet;
-import com.github.cao.awa.lilium.catheter.Catheter;
 import com.github.cao.awa.modmdo.annotation.platform.Client;
 import com.github.cao.awa.modmdo.annotation.platform.Server;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import com.google.common.collect.BiMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +25,7 @@ public class PluginFramework extends ReflectionFramework {
     public void work() {
         // Working stream...
         Catheter.of(reflection().getTypesAnnotatedWith(Auto.class))
-                    .filter(this :: match)
+                .filter(this :: match)
                 .vary(this :: cast)
                 .each(this :: build);
     }
@@ -35,7 +35,7 @@ public class PluginFramework extends ReflectionFramework {
     }
 
     public Class<? extends Plugin> cast(Class<?> clazz) {
-        return EntrustEnvironment.cast(clazz);
+        return Manipulate.cast(clazz);
     }
 
     public void build(Class<? extends Plugin> clazz) {

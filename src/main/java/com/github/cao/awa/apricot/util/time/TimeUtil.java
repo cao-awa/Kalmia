@@ -1,6 +1,7 @@
 package com.github.cao.awa.apricot.util.time;
 
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,7 +30,8 @@ public class TimeUtil {
     }
 
     public static void coma(long millions) {
-        EntrustEnvironment.trys(() -> Thread.sleep(millions));
+        Manipulate.action(() -> Thread.sleep(millions))
+                  .execute();
     }
 
     public static long nanoId() {

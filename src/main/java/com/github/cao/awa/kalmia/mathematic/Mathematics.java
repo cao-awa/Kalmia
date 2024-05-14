@@ -1,6 +1,6 @@
 package com.github.cao.awa.kalmia.mathematic;
 
-import com.github.cao.awa.lilium.catheter.Catheter;
+import com.github.cao.awa.catheter.Catheter;
 import org.jetbrains.annotations.Range;
 
 import java.math.BigInteger;

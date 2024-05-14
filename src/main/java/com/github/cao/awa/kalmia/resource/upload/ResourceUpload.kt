@@ -4,7 +4,7 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv
 import com.github.cao.awa.kalmia.network.packet.Packet
 import com.github.cao.awa.kalmia.network.packet.inbound.resource.write.WriteResourcePacket
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.function.TriConsumer
+import com.github.cao.awa.sinuatum.function.consumer.TriConsumer
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream

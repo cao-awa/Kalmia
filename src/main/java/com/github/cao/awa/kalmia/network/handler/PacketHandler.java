@@ -5,7 +5,7 @@ import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.packet.UnsolvedPacket;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestState;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +15,7 @@ public abstract class PacketHandler<H extends PacketHandler<H>> {
     private static final Logger LOGGER = LogManager.getLogger("PacketHandler");
 
     public Packet<H> handle(UnsolvedPacket<?> packet) {
-        return EntrustEnvironment.cast(packet.packet());
+        return Manipulate.cast(packet.packet());
     }
 
     public Packet<H> tryHandle(UnsolvedPacket<?> packet) {
@@ -31,27 +31,27 @@ public abstract class PacketHandler<H extends PacketHandler<H>> {
 
     public boolean tryInbound(UnsolvedPacket<?> packet, RequestRouter router) {
         if (allowStates().contains(router.getStates())) {
-            return EntrustEnvironment.get(() -> {
-                                              Packet<H> p = tryHandle(packet);
+            return Manipulate.supply(() -> {
+                                         Packet<H> p = tryHandle(packet);
 
-                                              LOGGER.info("Inbounding packet: {}",
-                                                          p.getClass()
-                                              );
+                                         LOGGER.info("Inbounding packet: {}",
+                                                     p.getClass()
+                                         );
 
-//                                              EntrustEnvironment.trys(
+//                                              Manipulate.action(
 //                                                      () ->
-                                              inbound(
-                                                      p,
-                                                      router
-                                              );
+                                         inbound(
+                                                 p,
+                                                 router
+                                         );
 //                                                      ,
 //                                                      Throwable :: printStackTrace
 //                                              );
 
-                                              return true;
-                                          },
-                                          false
-            );
+                                         return true;
+                                     }
+                             )
+                             .getOrDefault(false);
         } else {
             return false;
         }

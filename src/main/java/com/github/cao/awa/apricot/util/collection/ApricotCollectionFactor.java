@@ -1,7 +1,7 @@
 package com.github.cao.awa.apricot.util.collection;
 
 import com.github.cao.awa.kalmia.collection.timed.TimedList;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ApricotCollectionFactor {
     public static <V> V[] array(int size) {
-        return EntrustEnvironment.cast(new Object[size]);
+        return Manipulate.cast(new Object[size]);
     }
 
     public static <K, V> HashBiMap<K, V> hashBiMap() {

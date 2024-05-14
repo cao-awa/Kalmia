@@ -1,7 +1,7 @@
 package com.github.cao.awa.kalmia.config.instance
 
 import com.github.cao.awa.apricot.annotations.auto.Auto
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment
+import com.github.cao.awa.sinuatum.manipulate.Manipulate
 import org.jetbrains.annotations.NotNull
 
 open class ConfigEntry<T> {
@@ -9,7 +9,7 @@ open class ConfigEntry<T> {
         val ENTRY: ConfigEntry<*> = ConfigEntry<Any>()
 
         @JvmStatic
-        fun <X> entry(): ConfigEntry<X> = EntrustEnvironment.cast(ENTRY)!!
+        fun <X> entry(): ConfigEntry<X> = Manipulate.cast(ENTRY)!!
     }
 
     @Auto

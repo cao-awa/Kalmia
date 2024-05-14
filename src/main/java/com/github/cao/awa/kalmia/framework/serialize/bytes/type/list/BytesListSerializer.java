@@ -8,7 +8,7 @@ import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializable;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializeFramework;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializer;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Constructor;
@@ -98,7 +98,7 @@ public class BytesListSerializer<V> implements BytesSerializer<List<V>> {
                         output.write(((BytesSerializable<?>) object).serialize());
                     }
                 } else {
-                    BytesSerializer<Object> serializer = EntrustEnvironment.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(type));
+                    BytesSerializer<Object> serializer = Manipulate.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(type));
                     assert serializer != null;
 
                     // Write marker byte used to distinguish type mode.
@@ -165,7 +165,7 @@ public class BytesListSerializer<V> implements BytesSerializer<List<V>> {
                     } else {
                         // Write marker at data  head.
                         if (repeatCounter == 0) {
-                            serializer = EntrustEnvironment.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(type));
+                            serializer = Manipulate.cast(KalmiaEnv.BYTES_SERIALIZE_FRAMEWORK.getSerializer(type));
 
                             // Write type mode marker, 4 is serializer id mode.
                             wrap.write(4);
@@ -282,7 +282,7 @@ public class BytesListSerializer<V> implements BytesSerializer<List<V>> {
                     }
                 }
             }
-            return EntrustEnvironment.cast(result);
+            return Manipulate.cast(result);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

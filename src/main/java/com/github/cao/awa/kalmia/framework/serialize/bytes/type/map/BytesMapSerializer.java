@@ -7,7 +7,7 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializable;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.BytesSerializer;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -106,8 +106,8 @@ public class BytesMapSerializer<K, V> implements BytesSerializer<Map<K, V>> {
 
         Object value = read(reader);
 
-        map.put(EntrustEnvironment.cast(key),
-                EntrustEnvironment.cast(value)
+        map.put(Manipulate.cast(key),
+                Manipulate.cast(value)
         );
     }
 

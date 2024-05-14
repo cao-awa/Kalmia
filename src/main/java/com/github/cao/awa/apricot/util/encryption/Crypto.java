@@ -1,7 +1,7 @@
 package com.github.cao.awa.apricot.util.encryption;
 
 import com.github.cao.awa.apricot.annotations.Stable;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -240,7 +240,7 @@ public class Crypto {
         try {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return EntrustEnvironment.cast(keyFactory.generatePublic(keySpec));
+            return Manipulate.cast(keyFactory.generatePublic(keySpec));
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
@@ -250,7 +250,7 @@ public class Crypto {
         try {
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(key);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return EntrustEnvironment.cast(keyFactory.generatePrivate(keySpec));
+            return Manipulate.cast(keyFactory.generatePrivate(keySpec));
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
@@ -300,7 +300,7 @@ public class Crypto {
         try {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);
             KeyFactory keyFactory = KeyFactory.getInstance("EC");
-            return EntrustEnvironment.cast(keyFactory.generatePublic(keySpec));
+            return Manipulate.cast(keyFactory.generatePublic(keySpec));
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
@@ -310,7 +310,7 @@ public class Crypto {
         try {
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(key);
             KeyFactory keyFactory = KeyFactory.getInstance("EC");
-            return EntrustEnvironment.cast(keyFactory.generatePrivate(keySpec));
+            return Manipulate.cast(keyFactory.generatePrivate(keySpec));
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }

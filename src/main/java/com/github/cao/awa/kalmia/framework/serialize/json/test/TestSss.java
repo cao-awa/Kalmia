@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONWriter;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -37,7 +37,7 @@ public class TestSss {
     @AutoData
     private TestSerializable testSerializable = new TestSerializable("awa");
     @AutoData
-    private List<Integer> testList = EntrustEnvironment.operation(ApricotCollectionFactor.arrayList(),
+    private List<Integer> testList = Manipulate.operation(ApricotCollectionFactor.arrayList(),
                                                                   list -> {
                                                                       list.add(123);
                                                                       list.add(456);

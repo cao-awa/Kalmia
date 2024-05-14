@@ -5,12 +5,12 @@ import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.packet.Packet;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
 import com.github.cao.awa.kalmia.network.router.status.RequestState;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.util.Set;
 
 public class LoginHandler extends PacketHandler<LoginHandler> {
-    private static final Set<RequestState> ALLOW_STATUS = EntrustEnvironment.operation(ApricotCollectionFactor.hashSet(),
+    private static final Set<RequestState> ALLOW_STATUS = Manipulate.operation(ApricotCollectionFactor.hashSet(),
                                                                                        set -> {
                                                                                            set.add(RequestState.AUTH);
                                                                                        }

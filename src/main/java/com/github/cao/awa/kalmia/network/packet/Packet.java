@@ -10,8 +10,8 @@ import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.mathematic.base.SkippedBase256;
 import com.github.cao.awa.kalmia.network.handler.PacketHandler;
 import com.github.cao.awa.kalmia.network.router.kalmia.RequestRouter;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import com.github.cao.awa.viburnum.util.bytes.BytesUtil;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,9 +72,11 @@ public abstract class Packet<T extends PacketHandler<T>> {
     @Auto
     @DoNotOverride
     public byte[] payload() {
-        return EntrustEnvironment.trys(
+        return Manipulate.make(
                 // Encode payload.
-                () -> KalmiaEnv.PACKET_FRAMEWORK.payload(this),
+                KalmiaEnv.PACKET_FRAMEWORK :: payload
+                         )
+                         .catching(
                 // Handle exception.
                 e -> {
                     // Usually, exception should not be happened, maybe bugs cause this.
@@ -83,7 +85,8 @@ public abstract class Packet<T extends PacketHandler<T>> {
                                  e
                     );
                 }
-        );
+                         )
+                         .operate(this);
     }
 
     @Auto
@@ -142,7 +145,7 @@ public abstract class Packet<T extends PacketHandler<T>> {
     @DoNotOverride
     public final <X extends Packet<T>> X receipt(byte[] receipt) {
         this.receipt = checkReceipt(receipt);
-        return EntrustEnvironment.cast(this);
+        return Manipulate.cast(this);
     }
 
     @DoNotOverride

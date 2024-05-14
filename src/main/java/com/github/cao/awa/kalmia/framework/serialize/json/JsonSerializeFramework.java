@@ -3,13 +3,13 @@ package com.github.cao.awa.kalmia.framework.serialize.json;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.catheter.Catheter;
 import com.github.cao.awa.kalmia.annotations.auto.network.unsolve.AutoData;
 import com.github.cao.awa.kalmia.annotations.auto.serializer.AutoJsonSerializer;
 import com.github.cao.awa.kalmia.annotations.auto.serializer.Missing;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.network.packet.Packet;
-import com.github.cao.awa.lilium.catheter.Catheter;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +38,7 @@ public class JsonSerializeFramework extends ReflectionFramework {
     }
 
     public Class<? extends JsonSerializer<?>> cast(Class<?> clazz) {
-        return EntrustEnvironment.cast(clazz);
+        return Manipulate.cast(clazz);
     }
 
     public void build(Class<? extends JsonSerializer<?>> type) {
@@ -105,7 +105,7 @@ public class JsonSerializeFramework extends ReflectionFramework {
     }
 
     public Class<?>[] target(JsonSerializer<?> serializer) {
-        return typeTarget(EntrustEnvironment.cast(serializer.getClass()));
+        return typeTarget(Manipulate.cast(serializer.getClass()));
     }
 
     public Class<?>[] typeTarget(Class<? extends JsonSerializer<?>> type) {
@@ -113,7 +113,7 @@ public class JsonSerializeFramework extends ReflectionFramework {
     }
 
     private LinkedList<Field> autoFields(Object object) throws NoSuchFieldException {
-        Class<Packet<?>> clazz = EntrustEnvironment.cast(object.getClass());
+        Class<Packet<?>> clazz = Manipulate.cast(object.getClass());
         assert clazz != null;
         LinkedList<Field> fields = ApricotCollectionFactor.linkedList();
         for (Field e : clazz.getDeclaredFields()) {
@@ -190,7 +190,7 @@ public class JsonSerializeFramework extends ReflectionFramework {
         } else {
             serializer.serialize(json,
                                  key,
-                                 EntrustEnvironment.cast(object)
+                                 Manipulate.cast(object)
             );
         }
     }
@@ -223,12 +223,12 @@ public class JsonSerializeFramework extends ReflectionFramework {
         if (type == null) {
             return null;
         }
-        JsonSerializer<T> serializer = EntrustEnvironment.cast(this.targetToSerializer.get(type));
+        JsonSerializer<T> serializer = Manipulate.cast(this.targetToSerializer.get(type));
         if (serializer == null) {
-            serializer = EntrustEnvironment.cast(getSerializer(type.getSuperclass()));
+            serializer = Manipulate.cast(getSerializer(type.getSuperclass()));
             if (serializer == null) {
                 for (Class<?> aInterface : type.getInterfaces()) {
-                    serializer = EntrustEnvironment.cast(getSerializer(aInterface));
+                    serializer = Manipulate.cast(getSerializer(aInterface));
                     if (serializer != null) {
                         break;
                     }

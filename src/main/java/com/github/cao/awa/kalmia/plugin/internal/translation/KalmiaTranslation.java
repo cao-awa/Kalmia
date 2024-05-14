@@ -3,6 +3,7 @@ package com.github.cao.awa.kalmia.plugin.internal.translation;
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.annotations.auto.AutoPlugin;
 import com.github.cao.awa.apricot.identifier.BytesRandomIdentifier;
+import com.github.cao.awa.catheter.Catheter;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.env.KalmiaTranslationEnv;
 import com.github.cao.awa.kalmia.identity.LongAndExtraIdentity;
@@ -17,7 +18,6 @@ import com.github.cao.awa.kalmia.translation.network.packet.login.feedback.Trans
 import com.github.cao.awa.kalmia.translation.network.packet.message.notice.TranslationNewMessageNoticePacket;
 import com.github.cao.awa.kalmia.translation.network.packet.message.select.TranslationSelectedMessagePacket;
 import com.github.cao.awa.kalmia.translation.network.packet.meta.status.TranslationProxyStatusPacket;
-import com.github.cao.awa.lilium.catheter.Catheter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

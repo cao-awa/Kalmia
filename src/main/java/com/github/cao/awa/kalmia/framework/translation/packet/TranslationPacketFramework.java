@@ -2,13 +2,13 @@ package com.github.cao.awa.kalmia.framework.translation.packet;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.catheter.Catheter;
 import com.github.cao.awa.kalmia.annotations.translation.Translation;
 import com.github.cao.awa.kalmia.bug.BugTrace;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
-import com.github.cao.awa.lilium.catheter.Catheter;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import com.github.cao.awa.trtr.util.string.StringConcat;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class TranslationPacketFramework extends ReflectionFramework {
     }
 
     public Class<? extends TranslationPacket> cast(Class<?> clazz) {
-        return EntrustEnvironment.cast(clazz);
+        return Manipulate.cast(clazz);
     }
 
     public void build(Class<? extends TranslationPacket> packet) {
@@ -38,27 +38,32 @@ public class TranslationPacketFramework extends ReflectionFramework {
         String type = translationAnnotation.type();
         String name = translationAnnotation.name();
 
-        Constructor<? extends TranslationPacket> constructor = EntrustEnvironment.trys(() -> EntrustEnvironment.cast(ensureAccessible(packet.getConstructor(JSONObject.class))),
-                                                                                       ex -> {
-                                                                                           return EntrustEnvironment.trys(() -> ensureAccessible(packet.getConstructor()),
-                                                                                                                          ex0 -> {
-                                                                                                                              BugTrace.trace(ex0,
-                                                                                                                                             StringConcat.concat(
-                                                                                                                                                     "The packet '",
-                                                                                                                                                     packet.getName(),
-                                                                                                                                                     "' are missing the standard constructor, but it using @Translation annotation to invert control by type '",
-                                                                                                                                                     type,
-                                                                                                                                                     "' and name '",
-                                                                                                                                                     name,
-                                                                                                                                                     "'"
-                                                                                                                                             ),
-                                                                                                                                             true
-                                                                                                                              );
-                                                                                                                              return null;
-                                                                                                                          }
-                                                                                           );
-                                                                                       }
-        );
+        Constructor<? extends TranslationPacket> constructor = Manipulate
+                .supply(
+                        () -> ensureAccessible(packet.getConstructor(JSONObject.class))
+                )
+                .get(
+                        ex -> Manipulate.cast(
+                                Manipulate.supply(() -> ensureAccessible(packet.getConstructor()))
+                                          .get(
+                                                  ex0 -> {
+                                                      BugTrace.trace(ex0,
+                                                                     StringConcat.concat(
+                                                                             "The packet '",
+                                                                             packet.getName(),
+                                                                             "' are missing the standard constructor, but it using @Translation annotation to invert control by type '",
+                                                                             type,
+                                                                             "' and name '",
+                                                                             name,
+                                                                             "'"
+                                                                     ),
+                                                                     true
+                                                      );
+                                                      return null;
+                                                  }
+                                          )
+                        )
+                );
 
         this.constructors.compute(type,
                                   (key, value) -> {

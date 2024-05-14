@@ -41,7 +41,7 @@ public class LoginSuccessHandler implements LoginSuccessEventHandler {
 
         router.setStates(RequestState.AUTHED);
 
-//        EntrustEnvironment.thread(() -> {
+//        Manipulate.thread(() -> {
 //                              for (int i = 0; i < 500; i++) {
 //                                  router.send(new SendMessageRequest(123,
 //                                                                     BytesRandomIdentifier.create(16),

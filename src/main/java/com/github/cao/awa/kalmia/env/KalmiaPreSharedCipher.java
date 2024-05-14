@@ -7,7 +7,7 @@ import com.github.cao.awa.kalmia.constant.KalmiaConstant;
 import com.github.cao.awa.kalmia.env.security.key.PreSharedCipherEncode;
 import com.github.cao.awa.kalmia.security.cipher.manager.ec.EcPrikeyManager;
 import com.github.cao.awa.kalmia.security.cipher.manager.ec.EcPubkeyManager;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +51,8 @@ public class KalmiaPreSharedCipher {
             );
         }
 
-        JSONObject metadata = EntrustEnvironment.trys(() -> JSONObject.parse(IOUtil.read(new FileReader(metaFile))));
+        JSONObject metadata = Manipulate.supply(() -> JSONObject.parse(IOUtil.read(new FileReader(metaFile))))
+                                        .get();
 
         assert metadata != null;
         String cipherName = metadata.getString("cipher-name");
@@ -71,7 +72,8 @@ public class KalmiaPreSharedCipher {
 
     public static void setupPublicKey(File file, String fieldName) {
         if (file.isFile()) {
-            JSONObject secretPublic = EntrustEnvironment.trys(() -> JSONObject.parse(IOUtil.read(new FileReader(file))));
+            JSONObject secretPublic = Manipulate.supply(() -> JSONObject.parse(IOUtil.read(new FileReader(file))))
+                                                .get();
 
             if (secretPublic != null) {
                 ECPublicKey publicKey = PreSharedCipherEncode.decodeEcPublic(secretPublic);
@@ -85,7 +87,8 @@ public class KalmiaPreSharedCipher {
 
     public static void setupPrivateKey(File file, String fieldName) {
         if (file.isFile()) {
-            JSONObject secretPrivate = EntrustEnvironment.trys(() -> JSONObject.parse(IOUtil.read(new FileReader(file))));
+            JSONObject secretPrivate = Manipulate.supply(() -> JSONObject.parse(IOUtil.read(new FileReader(file))))
+                                                 .get();
 
             if (secretPrivate != null) {
                 ECPrivateKey publicKey = PreSharedCipherEncode.decodeEcPrivate(secretPrivate);
@@ -100,14 +103,14 @@ public class KalmiaPreSharedCipher {
     private static void setupMain() {
         new File("ciphers/main").mkdirs();
 
-        EntrustEnvironment.trys(() -> {
+        Manipulate.action(() -> {
                                     IOUtil.write(new FileOutputStream(KalmiaConstant.MAIN_KEYPAIR_META_PATH),
                                                  ResourceLoader.stream("kalmiagram/secret/main/cipher.json")
                                     );
                                 }
         );
 
-        EntrustEnvironment.trys(() -> {
+        Manipulate.action(() -> {
             InputStream input = ResourceLoader.stream("kalmiagram/secret/main/SECRET_PRIVATE");
 
                                     if (input == null) {
@@ -120,7 +123,7 @@ public class KalmiaPreSharedCipher {
                                 }
         );
 
-        EntrustEnvironment.trys(() -> {
+        Manipulate.action(() -> {
                                     IOUtil.write(new FileOutputStream(KalmiaConstant.MAIN_PUBLIC_KEY_PATH),
                                                  ResourceLoader.stream("kalmiagram/secret/main/SECRET_PUBLIC")
                                     );

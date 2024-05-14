@@ -3,7 +3,7 @@ package com.github.cao.awa.kalmia.setting;
 import com.github.cao.awa.apricot.io.bytes.reader.BytesReader;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
 import com.github.cao.awa.kalmia.framework.serialize.bytes.type.map.BytesMapSerializer;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public class Settings {
         if (settingValue == null) {
             return setting;
         }
-        return EntrustEnvironment.cast(settingValue);
+        return Manipulate.cast(settingValue);
     }
 
     public <T extends Setting> Settings set(T setting) {
@@ -31,7 +31,7 @@ public class Settings {
 
         mapSerializer.deserialize(reader)
                      .forEach((key, value) -> {
-                         settings.set(EntrustEnvironment.cast(value));
+                         settings.set(Manipulate.cast(value));
                      });
 
         return settings;

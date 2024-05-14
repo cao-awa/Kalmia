@@ -2,7 +2,7 @@ package com.github.cao.awa.apricot.util.digger;
 
 import com.github.cao.awa.apricot.annotations.Stable;
 import com.github.cao.awa.kalmia.mathematic.Mathematics;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -14,7 +14,8 @@ public class MessageDigger {
     private static final int BUF_SIZE = 16384;
 
     public static String digest(byte[] message, DigestAlgorithm sha) {
-        MessageDigest digest = EntrustEnvironment.trys(() -> MessageDigest.getInstance(sha.instanceName()));
+        MessageDigest digest = Manipulate.supply(() -> MessageDigest.getInstance(sha.instanceName()))
+                                         .get();
         if (digest == null) {
             return null;
         }

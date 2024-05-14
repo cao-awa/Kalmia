@@ -2,14 +2,14 @@ package com.github.cao.awa.kalmia.framework.translation.event;
 
 import com.github.cao.awa.apricot.annotations.auto.Auto;
 import com.github.cao.awa.apricot.util.collection.ApricotCollectionFactor;
+import com.github.cao.awa.catheter.Catheter;
 import com.github.cao.awa.kalmia.annotations.auto.event.translation.TranslationEventTarget;
 import com.github.cao.awa.kalmia.env.KalmiaEnv;
 import com.github.cao.awa.kalmia.framework.reflection.ReflectionFramework;
 import com.github.cao.awa.kalmia.translation.event.TranslationEvent;
 import com.github.cao.awa.kalmia.translation.network.packet.TranslationPacket;
 import com.github.cao.awa.kalmia.translation.network.router.TranslationRouter;
-import com.github.cao.awa.lilium.catheter.Catheter;
-import com.github.zhuaidadaya.rikaishinikui.handler.universal.entrust.EntrustEnvironment;
+import com.github.cao.awa.sinuatum.manipulate.Manipulate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,20 +33,22 @@ public class TranslationEventFramework extends ReflectionFramework {
     }
 
     public Class<? extends TranslationPacket> cast(Class<?> clazz) {
-        return EntrustEnvironment.cast(clazz);
+        return Manipulate.cast(clazz);
     }
 
     public void build(Class<? extends TranslationPacket> clazz) {
         TranslationEventTarget target = clazz.getAnnotation(TranslationEventTarget.class);
         try {
             registerNetworkEvent(clazz,
-                                 (router, packet) -> EntrustEnvironment.trys(() -> target.value()
-                                                                                         .getConstructor(TranslationRouter.class,
-                                                                                                         clazz
-                                                                                         )
-                                                                                         .newInstance(router,
-                                                                                                      packet
-                                                                                         ))
+                                 (router, packet) -> Manipulate.supply(() -> target.value()
+                                                                                   .getConstructor(TranslationRouter.class,
+                                                                                                   clazz
+                                                                                   )
+                                                                                   .newInstance(router,
+                                                                                                packet
+                                                                                   )
+                                                               )
+                                                               .get()
             );
         } catch (Exception e) {
             e.printStackTrace();
