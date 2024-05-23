@@ -215,12 +215,12 @@ public abstract class ReflectionFramework {
         return (Class<?>) type;
     }
 
-    public static void checkType(Class<?> target, Object object, Consumer<Object> consumer) {
+    public static void checkTypeExact(Class<?> target, Object object, Consumer<Object> consumer) {
         if (object == null) {
             return;
         }
         if (target != object.getClass()) {
-            Object casted = Manipulate.supply(() -> SPECIALLY_CAST.get(object.getClass())
+            Object casted = Manipulate.action(() -> SPECIALLY_CAST.get(object.getClass())
                                                                   .get(target)
                                                                   .apply(object))
                                       .get();
@@ -228,8 +228,32 @@ public abstract class ReflectionFramework {
                 throw new ClassCastException("The parameter has specified '" + target + "' but got '" + object.getClass() + "'");
             }
             consumer.accept(casted);
+        } else {
+            consumer.accept(object);
         }
-        consumer.accept(object);
+    }
+
+    public static void checkType(Class<?> target, Object object, Consumer<Object> consumer) {
+        if (object == null) {
+            return;
+        }
+        if (target != object.getClass()) {
+            Object casted = Manipulate.action(() -> SPECIALLY_CAST.get(object.getClass())
+                                                                  .get(target)
+                                                                  .apply(object))
+                                      .get();
+            if (casted == null) {
+                if (target.isAssignableFrom(object.getClass())) {
+                    casted = object;
+                }
+            }
+            if (casted == null) {
+                throw new ClassCastException("The parameter has specified '" + target + "' but got '" + object.getClass() + "'");
+            }
+            consumer.accept(casted);
+        } else {
+            consumer.accept(object);
+        }
     }
 
     public static <T> T checkOrDiscard(Class<?> target, T object) {
@@ -239,8 +263,15 @@ public abstract class ReflectionFramework {
         return object;
     }
 
-    public static <T> T checkOrDiscard(Class<?> target, T object, Class<?> except) {
+    public static <T> T checkOrDiscardExact(Class<?> target, T object, Class<?> except) {
         if ((object == null || (target != object.getClass() && object.getClass() != except))) {
+            return null;
+        }
+        return object;
+    }
+
+    public static <T> T checkOrDiscard(Class<?> target, T object, Class<?> except) {
+        if ((object == null || (! target.isAssignableFrom(object.getClass()) && ! except.isAssignableFrom(object.getClass())))) {
             return null;
         }
         return object;

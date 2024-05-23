@@ -624,7 +624,7 @@ class ConfigFramework : ReflectionFramework() {
 
             val inTemplateFileKey = if (useTemplate.equals("")) field.name else useTemplate.value
 
-            val creatingWithTemplate = {
+            val creatingWithTemplate = { parameterized: Boolean ->
                 // 当依赖是数据而不是Entry
 
                 // 读取模板获得默认值
@@ -633,34 +633,46 @@ class ConfigFramework : ReflectionFramework() {
                     template, parentTemplate,
                     currentKey, inTemplateFileKey,
                     argType,
-                    field
+                    field,
+                    parameterized
                 )
+
+                val argActualizedType =
+                    if (parameterized)
+                        toClass((argType as ParameterizedType).rawType)
+                    else
+                        toClass(argType)
+
 
                 // 当值存在时则设定
                 if (value != null) {
                     checkType(
-                        toClass(argType), value
+                        argActualizedType, value
                     ) { fetchField(configEntry, "value")[configEntry] = it }
                 }
             }
+
+            val creatingWithTemplateNoParameterized = { creatingWithTemplate(false) }
 
             postProcessing(
                 target,
                 configEntry,
                 argType,
                 configChain,
-                // 处理泛型的方式和处理普通数据一样
-                { creatingWithTemplate() },
+                {
+                    // 处理泛型数据
+                    creatingWithTemplate(true)
+                },
                 {
                     // 当依赖是Entry而不是数据
 
                     // 处理此配置的依赖
-                    // 配置对象内所有字段都应为ConfigEntry<KalmiaConfig>
+                    // 配置对象内所有字段都应为ConfigEntry<LiliumConfig>
                     val config = configEntry.get() as KalmiaConfig
                     createConfig(config, configEntry.key()!!, template ?: getTemplate(config), configChain)
                 },
                 // 处理普通数据
-                creatingWithTemplate
+                creatingWithTemplateNoParameterized
             )
         }
     }
@@ -672,10 +684,15 @@ class ConfigFramework : ReflectionFramework() {
         currentKey: String,
         inTemplateFileKey: String,
         argType: Type,
-        field: Field
+        field: Field,
+        parameterized: Boolean
     ): Any? {
         return if (template != null) {
-            val requiredType = toClass(argType)
+            val requiredType =
+                if (parameterized)
+                    toClass((argType as ParameterizedType).rawType)
+                else
+                    toClass(argType)
 
             // 首先从当前配置模板中获取
             val fetchedTemplate = fetchField(template, field.name)[template]
