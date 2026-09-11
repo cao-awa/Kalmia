@@ -641,9 +641,9 @@ Tested by [OHA](https://crates.io/crates/oha) on an ``Intel I5 10600 CPU``, Ubun
 
 With JVM options (`-server -XX:+UseZGC`)
 
-Using the simple test case, assets manager managed 'assets' directory, use ``GET`` to fetch ``http://127.0.0.1:12345``.
+Using the simple test case, assets manager managed 'assets' directory (21kb home page), use ``GET`` to fetch ``http://127.0.0.1:12345``.
 
-|          | 128M      |
+| Transport / Memory | 128M      |
 |----------|-----------|
 | NIO      | 29000 RPS |
 | EPOLL    | 37000 RPS |
