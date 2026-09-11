@@ -38,8 +38,6 @@ fun main() {
 //        }
 //    }
 //    KalmiaHttpServer(api).start()
-
-    Thread.sleep(10000000)
 }
 
 object TestEntry {
