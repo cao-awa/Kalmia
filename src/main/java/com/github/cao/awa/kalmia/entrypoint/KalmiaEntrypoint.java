@@ -56,7 +56,6 @@ public class KalmiaEntrypoint {
 
         LOGGER.info("Stopping Kalmia");
         LOGGER.info("Kalmia stopped");
-        System.exit(0);
     }
 
     private static boolean launch(String[] args) {

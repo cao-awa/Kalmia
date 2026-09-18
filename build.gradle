@@ -49,7 +49,11 @@ dependencies {
     implementation 'com.github.oshi:oshi-core:6.6.3'
     implementation "com.github.cao-awa:Cason:$project.cason_version"
     implementation "com.github.cao-awa:CaperTML:$project.capertml_version"
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:6.1.3'
+//    compileOnly 'org.junit.jupiter:junit-jupiter-api:6.1.3'
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    compileOnly 'org.junit.jupiter:junit-jupiter'
+    compileOnly 'org.junit.platform:junit-platform-engine:6.1.3'
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 application {
@@ -78,4 +82,12 @@ tasks.named("startScripts"){
 
 tasks.named("startShadowScripts") {
     dependsOn jar
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(AbstractTestTask).configureEach {
+    failOnNoDiscoveredTests = false
 }
