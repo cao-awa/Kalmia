@@ -63,9 +63,9 @@ open class KalmiaNettyServerConfig : KalmiaConfig() {
     private var io: KalmiaEventLoopGroupFactory = KalmiaEventLoopGroupFactory.epoll()
     private var backlog: Int = 8192
     private var keepalive: Boolean = true
-    private var rcvBuf: Int = 65536
+    private var rcvBuf: Int = 65535
     private var reuseAddr: Boolean = true
-    private var sndBuf: Int = 65536
+    private var sndBuf: Int = 65535
     private var allocator: ByteBufAllocator = PooledByteBufAllocator.DEFAULT
     private var writeBufferWaterMark: WriteBufferWaterMark = WriteBufferWaterMark(
         32 * 1024 * 1024,

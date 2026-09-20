@@ -178,6 +178,7 @@ The delegate ``arg`` or ``placeholder`` can only access in request scope, cannot
 Kalmia will throw a ``IllegalStateException`` to notice it.
 
 ## Placeholder route
+
 You can use placeholder to create routes, this will save you time from writing ``{xxx}`` several times:
 
 ```kotlin
@@ -210,7 +211,8 @@ object TestEntry {
 
 The order of the string and placeholder is arbitrary, you can swap orders it as you like.
 
-Unfortunately, you can't use delegate way to build routes, only raw placeholder can do this, so for future conveniences, you maybe need define a ``val xxx by xxxHolder``, and use ``xxx`` in the next stages, abandon the ``xxxHolder``.
+Unfortunately, you can't use delegate way to build routes, only raw placeholder can do this, so for future conveniences,
+you maybe need define a ``val xxx by xxxHolder``, and use ``xxx`` in the next stages, abandon the ``xxxHolder``.
 
 Or maybe you want to use ``xxx(this)`` to get the value, it also ok, the choice is yours.
 
@@ -243,7 +245,8 @@ object TestEntry {
 }
 ```
 
-In Kalmia, you can use ``build`` method to build your custom class in request scope, just input the args and constructor.
+In Kalmia, you can use ``build`` method to build your custom class in request scope, just input the args and
+constructor.
 
 And build method can only input most 7 args or placeholders, if your code ned more input, maybe you need to think is
 there a problem with your design architecture?
@@ -285,7 +288,8 @@ supports ``build(T1, T2 ... T7, R)``.
 
 ## Abort
 
-Kalmia uses a scoped abort model where execution and error handling are strictly separated into non-overlapping lifetimes.
+Kalmia uses a scoped abort model where execution and error handling are strictly separated into non-overlapping
+lifetimes.
 
 In Kalmia, aborting execution is not an exceptional case.\
 It is a first-class, structured control flow with explicit scope boundaries.
@@ -326,28 +330,28 @@ The client will receive data similar to:
 
 ```json
 {
-    "error_message": "Test if logic error occurs NPE",
-    "stacktrace": [
-        "java.lang.NullPointerException: Test if logic error occurs NPE",
-        " - at MainKt.testError$lambda$0$0$0(Main.kt:68)",
-        " - at com.github.cao.awa.kalmia.server.network.http.handler.KalmiaHttpRequestHandler.handle(KalmiaHttpRequestHandler.kt:42)",
-        " - at com.github.cao.awa.kalmia.server.network.http.pipeline.KalmiaHttpRequestPipeline$handleFull$1.invokeSuspend$lambda$0(KalmiaHttpRequestPipeline.kt:107)",
-        " - at com.github.cao.awa.kalmia.server.network.pipeline.KalmiaRequestPipeline.abortable(KalmiaRequestPipeline.kt:22)",
-        " - at com.github.cao.awa.kalmia.server.network.http.pipeline.KalmiaHttpRequestPipeline$handleFull$1.invokeSuspend(KalmiaHttpRequestPipeline.kt:102)",
-        " - at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)",
-        " - at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)",
-        " - at kotlinx.coroutines.internal.LimitedDispatcher$Worker.run(LimitedDispatcher.kt:124)",
-        " - at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:89)",
-        " - at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:586)",
-        " - at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:820)",
-        " - at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:717)",
-        " - at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:704)"
-    ],
-    "internal_error_name": "Internal Server Error",
-    "http_meta": {
-        "http_version": "HTTP/1.1"
-    },
-    "error": "Server protocol (Kalmia/1.0.0, HTTP/1.1) error: Internal Server Error"
+  "error_message": "Test if logic error occurs NPE",
+  "stacktrace": [
+    "java.lang.NullPointerException: Test if logic error occurs NPE",
+    " - at MainKt.testError$lambda$0$0$0(Main.kt:68)",
+    " - at com.github.cao.awa.kalmia.server.network.http.handler.KalmiaHttpRequestHandler.handle(KalmiaHttpRequestHandler.kt:42)",
+    " - at com.github.cao.awa.kalmia.server.network.http.pipeline.KalmiaHttpRequestPipeline$handleFull$1.invokeSuspend$lambda$0(KalmiaHttpRequestPipeline.kt:107)",
+    " - at com.github.cao.awa.kalmia.server.network.pipeline.KalmiaRequestPipeline.abortable(KalmiaRequestPipeline.kt:22)",
+    " - at com.github.cao.awa.kalmia.server.network.http.pipeline.KalmiaHttpRequestPipeline$handleFull$1.invokeSuspend(KalmiaHttpRequestPipeline.kt:102)",
+    " - at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)",
+    " - at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)",
+    " - at kotlinx.coroutines.internal.LimitedDispatcher$Worker.run(LimitedDispatcher.kt:124)",
+    " - at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:89)",
+    " - at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:586)",
+    " - at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:820)",
+    " - at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:717)",
+    " - at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:704)"
+  ],
+  "internal_error_name": "Internal Server Error",
+  "http_meta": {
+    "http_version": "HTTP/1.1"
+  },
+  "error": "Server protocol (Kalmia/1.0.0, HTTP/1.1) error: Internal Server Error"
 }
 ```
 
@@ -493,7 +497,8 @@ object TestEntry {
 
 # Assets manager mode
 
-Use ``-jar Kalmia-{kalmia_version}.jar`` to run a Kalmia HTTP server will automatically running on assets manager mode, if
+Use ``-jar Kalmia-{kalmia_version}.jar`` to run a Kalmia HTTP server will automatically running on assets manager mode,
+if
 kalmia running on assets manager mode, when url not fetch (such as ``http://127.0.0.1/test``), then Kalmia will
 automatically redirect to ``http://127.0.0.1/test/index.html``, if still not found, finally, it will get an error
 response, you can modify ``error_page`` config in ``configs/kalmia_http.json`` config file to custom your 404 page,
@@ -571,11 +576,11 @@ HTTP metadata injection is a transport-level concern and is configurable.
 
 ```json
 {
-    "type": "post",
-    "http_meta": {
-        "http_version": "HTTP/1.1",
-        "http_status": 200
-    }
+  "type": "post",
+  "http_meta": {
+    "http_version": "HTTP/1.1",
+    "http_status": 200
+  }
 }
 ```
 
@@ -637,14 +642,23 @@ Or if a return value is missing, Kalmia will automatically return a `204 NO CONT
 
 ## Benchmark Test
 
-Tested by [OHA](https://crates.io/crates/oha) on an ``Intel I5 10600 CPU``, Ubuntu 24.04, with default settings
+Tested by [OHA](https://crates.io/crates/oha) on an ``Intel Core Ultra5 125H``, Ubuntu 24.04, with default settings
 
 With JVM options (`-server -XX:+UseZGC`)
 
-Using the simple test case, assets manager managed 'assets' directory (21kb home page), use ``GET`` to fetch ``http://127.0.0.1:12345``.
+Using the simple test case, assets manager managed 'assets' directory (21kb home page), use ``GET`` to fetch
+``http://127.0.0.1:12345/index.html``:
 
 | Transport / Memory | 128M      |
-|----------|-----------|
-| NIO      | 29000 RPS |
-| EPOLL    | 37000 RPS |
-| IO_URING | 32000 RPS |
+|--------------------|-----------|
+| NIO                | 51000 RPS |
+| EPOLL              | 55000 RPS |
+| IO_URING           | 54000 RPS |
+
+Fetch```http://127.0.0.1:12345```(auto redirect):
+
+| Transport / Memory | 128M      |
+|--------------------|-----------|
+| NIO                | 34000 RPS |
+| EPOLL              | 39000 RPS |
+| IO_URING           | 37000 RPS |
