@@ -68,12 +68,12 @@ Use ``./gradlew run`` to launch Kalmia quickly, Kalmia will generate a config fi
 {
     "print_config_details": true,
     "entrypoint": [
-        "com.github.cao.awa.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry"
+        "com.github.kusa233.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry"
     ]
 }
 ```
 
-It means Kalmia will call the entrypoint ``com.github.cao.awa.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry``, this entrypoint method starts an asset manager http server (as mentioned above).
+It means Kalmia will call the entrypoint ``com.github.kusa233.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry``, this entrypoint method starts an asset manager http server (as mentioned above).
 
 It can automatically serve HTML or other files in assets path, or redirect path to "path/index.html" file.
 

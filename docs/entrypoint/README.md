@@ -4,7 +4,7 @@ Kalmia will generate a config file when it first startup, it seems like:
 {
     "print_config_details": true,
     "entrypoint": [
-        "com.github.cao.awa.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry"
+        "com.github.kusa233.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry"
     ]
 }
 ```
@@ -23,7 +23,7 @@ And writes code like this:
 ```kotlin
 package com.github.xxx.entry
 
-import com.github.cao.awa.kalmia.launch.config.KalmiaLaunchConfig
+import com.github.kusa233.kalmia.launch.config.KalmiaLaunchConfig
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
@@ -54,5 +54,5 @@ If ``entrypoint`` config are missing or defined to empty:
 }
 `````
 
-Kalmia will automatically reset it to ``com.github.cao.awa.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry``, an asset manager web server, you may need to configure the ``asset_path``, ``error_page`` and other configs in ``configs/kalmia_http.json``.
+Kalmia will automatically reset it to ``com.github.kusa233.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry``, an asset manager web server, you may need to configure the ``asset_path``, ``error_page`` and other configs in ``configs/kalmia_http.json``.
 

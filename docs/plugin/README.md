@@ -5,7 +5,7 @@ Kalmia allows plugin load, you can only depend on Kalmia, and write code:
 ```kotlin
 package com.xxx.plugin.entry
 
-import com.github.cao.awa.kalmia.launch.config.KalmiaLaunchConfig
+import com.github.kusa233.kalmia.launch.config.KalmiaLaunchConfig
 
 object TestPlugin {
     @JvmStatic
@@ -61,7 +61,7 @@ optionally, input arg can choose 3 different way:
 ```kotlin
 package com.xxx.plugin.entry
 
-import com.github.cao.awa.kalmia.launch.config.KalmiaLaunchConfig
+import com.github.kusa233.kalmia.launch.config.KalmiaLaunchConfig
 
 object TestPlugin {
     @JvmStatic
@@ -144,7 +144,7 @@ Sample:
 ```kotlin
 package com.xxx.plugin.entry
 
-import com.github.cao.awa.kalmia.launch.config.KalmiaLaunchConfig
+import com.github.kusa233.kalmia.launch.config.KalmiaLaunchConfig
 
 object TestPlugin {
     @JvmStatic
@@ -165,7 +165,7 @@ Or use a special signature method, receive a ``Throwable`` instance to got the e
 ```kotlin
 package com.xxx.plugin.entry
 
-import com.github.cao.awa.kalmia.launch.config.KalmiaLaunchConfig
+import com.github.kusa233.kalmia.launch.config.KalmiaLaunchConfig
 
 object TestPlugin {
     @JvmStatic
