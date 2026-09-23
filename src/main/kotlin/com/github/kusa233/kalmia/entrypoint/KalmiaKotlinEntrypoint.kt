@@ -137,7 +137,7 @@ object KalmiaKotlinEntrypoint {
             var executed = false
             if (entryClass.isInstance(KalmiaHttpService::class.java)) {
                 entryClass.getMethod("start").also {
-                    it(null)
+                    it(entryClass.getConstructor().newInstance())
                     executed = true
                 }
             } else {
