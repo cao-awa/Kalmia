@@ -7,6 +7,7 @@ import com.github.kusa233.kalmia.plugin.KalmiaPlugin
 import com.github.kusa233.kalmia.plugin.markEntrypointLoaded
 import com.github.kusa233.kalmia.plugin.markPluginLoaded
 import com.github.kusa233.kalmia.server.network.http.entrypoint.service.KalmiaHttpService
+import com.github.kusa233.kalmia.server.network.websocket.entrypoint.service.KalmiaWebSocketService
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.lang.reflect.InvocationTargetException
@@ -135,37 +136,31 @@ object KalmiaKotlinEntrypoint {
         try {
             val entryClass = classLoader.loadClass(entryClassName)
             var executed = false
-            if (entryClass.isInstance(KalmiaHttpService::class.java)) {
-                entryClass.getMethod("start").also {
-                    it(entryClass.getConstructor().newInstance())
-                    executed = true
-                }
-            } else {
-                for (method in entryClass.methods) {
-                    if (Modifier.isStatic(method.modifiers) && method.name == entryMethodName) {
-                        if (method.parameterCount == 1) {
-                            val parameterType = method.parameterTypes[0].kotlin
-                            if (parameterType == KalmiaLaunchConfig::class) {
-                                method(null, config)
-                                executed = true
-                                break
-                            }
-                            if (parameterType == Array<String>::class) {
-                                method(null, args)
-                                executed = true
-                                break
-                            }
 
-                            if (isFallback && parameterType == Throwable::class) {
-                                method(null, config.error())
-                                executed = true
-                                break
-                            }
-                        } else {
-                            method(null)
+            for (method in entryClass.methods) {
+                if (Modifier.isStatic(method.modifiers) && method.name == entryMethodName) {
+                    if (method.parameterCount == 1) {
+                        val parameterType = method.parameterTypes[0].kotlin
+                        if (parameterType == KalmiaLaunchConfig::class) {
+                            method(null, config)
                             executed = true
                             break
                         }
+                        if (parameterType == Array<String>::class) {
+                            method(null, args)
+                            executed = true
+                            break
+                        }
+
+                        if (isFallback && parameterType == Throwable::class) {
+                            method(null, config.error())
+                            executed = true
+                            break
+                        }
+                    } else {
+                        method(null)
+                        executed = true
+                        break
                     }
                 }
             }

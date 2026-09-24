@@ -49,7 +49,7 @@ open class KalmiaLaunchConfig: KalmiaConfig() {
     private var printConfigDetails: Boolean = true
     private var entrypoint: LinkedList<String> =
         LinkedList<String>().also {
-            it.add("com.github.kusa233.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#entry")
+            it.add("com.github.kusa233.kalmia.server.network.http.entrypoint.KalmiaHttpServerEntrypoint#start")
         }
     private var error: Throwable? = null
     private var sharedContext: MutableMap<String, String> = mutableMapOf()

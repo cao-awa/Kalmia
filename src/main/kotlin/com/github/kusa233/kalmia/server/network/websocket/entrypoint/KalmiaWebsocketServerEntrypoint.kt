@@ -5,19 +5,19 @@ import com.github.kusa233.kalmia.server.network.http.KalmiaHttpServer
 import com.github.kusa233.kalmia.server.network.http.builder.http
 import com.github.kusa233.kalmia.server.network.http.config.KalmiaHttpServerConfig
 import com.github.kusa233.kalmia.server.network.http.exception.path.HttpPathNotRegisteredException
-import com.github.kusa233.kalmia.server.network.websocket.KalmiaWebSocketServer
 import com.github.kusa233.kalmia.server.network.websocket.builder.websocket
 import com.github.kusa233.kalmia.server.network.websocket.config.KalmiaWebsocketServerConfig
+import com.github.kusa233.kalmia.server.network.websocket.entrypoint.service.KalmiaWebSocketService
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
 
 object KalmiaWebsocketServerEntrypoint {
-    private val LOGGER: Logger = LogManager.getLogger("KalmiaWebsocketServerEntrypoint")
+    private val LOGGER: Logger = LogManager.getLogger("KalmiaHttpServerEntrypoint")
 
     @JvmStatic
-    fun entry(config: KalmiaLaunchConfig) {
-        val serverConfig = KalmiaWebsocketServerConfig.create(File("configs/kalmia_websocket.json"))
+    fun start(config: KalmiaLaunchConfig) {
+        val serverConfig = KalmiaWebsocketServerConfig.create(File("configs/kalmia_http.json"))
 
         val nettyConfig = serverConfig.nettyServerConfig()
 
@@ -33,9 +33,7 @@ object KalmiaWebsocketServerEntrypoint {
             LOGGER.info("Config 'tcp_no_delay': {}", nettyConfig.tcpNoDelay())
         }
 
-        val websocket = websocket {
-        }
-
-        KalmiaWebSocketServer(websocket).start(serverConfig)
+        KalmiaWebSocketService.start(websocket {
+        })
     }
 }

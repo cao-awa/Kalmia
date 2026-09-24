@@ -4,6 +4,7 @@ import com.github.kusa233.kalmia.launch.config.KalmiaLaunchConfig
 import com.github.kusa233.kalmia.server.network.http.KalmiaHttpServer
 import com.github.kusa233.kalmia.server.network.http.builder.http
 import com.github.kusa233.kalmia.server.network.http.config.KalmiaHttpServerConfig
+import com.github.kusa233.kalmia.server.network.http.entrypoint.service.KalmiaHttpService
 import com.github.kusa233.kalmia.server.network.http.exception.path.HttpPathNotRegisteredException
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -13,7 +14,7 @@ object KalmiaHttpServerEntrypoint {
     private val LOGGER: Logger = LogManager.getLogger("KalmiaHttpServerEntrypoint")
 
     @JvmStatic
-    fun entry(config: KalmiaLaunchConfig) {
+    fun start(config: KalmiaLaunchConfig) {
         val serverConfig = KalmiaHttpServerConfig.create(File("configs/kalmia_http.json"))
 
         val nettyConfig = serverConfig.nettyServerConfig()
@@ -38,13 +39,11 @@ object KalmiaHttpServerEntrypoint {
             LOGGER.info("Config 'tcp_no_delay': {}", nettyConfig.tcpNoDelay())
         }
 
-        val http = http {
+        KalmiaHttpService.start(http {
             // Redirect all no registered query to 404 page.
             ifAbort(HttpPathNotRegisteredException::class) {
                 withAsset(redirectAsset = assetManagerConfig.errorPage())
             }
-        }
-
-        KalmiaHttpServer(http).start(serverConfig)
+        })
     }
 }
