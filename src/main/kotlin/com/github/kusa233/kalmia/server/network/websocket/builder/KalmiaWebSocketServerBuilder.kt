@@ -4,10 +4,10 @@ import com.github.kusa233.kalmia.server.network.websocket.builder.route.KalmiaWe
 import com.github.kusa233.kalmia.server.network.websocket.adapter.protocol.KalmiaWebSocketServerProtocolAdapter
 import java.net.URLEncoder
 
-class KalmiaWebsocketServerBuilder {
+class KalmiaWebsocketGraph {
     private val routes: MutableMap<String, KalmiaWebSocketRouteBuilder> = mutableMapOf()
 
-    constructor(builder: KalmiaWebsocketServerBuilder.() -> Unit) {
+    constructor(builder: KalmiaWebsocketGraph.() -> Unit) {
         builder(this)
     }
 
@@ -44,6 +44,6 @@ class KalmiaWebsocketServerBuilder {
     }
 }
 
-fun websocket(handler: KalmiaWebsocketServerBuilder.() -> Unit): KalmiaWebsocketServerBuilder {
-    return KalmiaWebsocketServerBuilder(handler)
+fun websocket(handler: KalmiaWebsocketGraph.() -> Unit): KalmiaWebsocketGraph {
+    return KalmiaWebsocketGraph(handler)
 }

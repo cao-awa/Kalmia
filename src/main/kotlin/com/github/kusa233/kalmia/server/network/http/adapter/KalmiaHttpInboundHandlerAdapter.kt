@@ -1,6 +1,6 @@
 package com.github.kusa233.kalmia.server.network.http.adapter
 
-import com.github.kusa233.kalmia.server.network.http.builder.KalmiaHttpServerBuilder
+import com.github.kusa233.kalmia.server.network.http.builder.KalmiaHttpGraph
 import com.github.kusa233.kalmia.server.network.http.config.KalmiaHttpServerConfig
 import com.github.kusa233.kalmia.server.network.http.pipeline.KalmiaHttpRequestPipeline
 import com.github.kusa233.kalmia.server.network.http.context.KalmiaHttpContext
@@ -16,7 +16,7 @@ class KalmiaHttpInboundHandlerAdapter: ChannelInboundHandlerAdapter {
     val pipeline: KalmiaHttpRequestPipeline
     private val config: KalmiaHttpServerConfig
 
-    constructor(builder: KalmiaHttpServerBuilder, config: KalmiaHttpServerConfig) {
+    constructor(builder: KalmiaHttpGraph, config: KalmiaHttpServerConfig) {
         this.pipeline = KalmiaHttpRequestPipeline(
             KalmiaHttpRequestAbortHandler(builder.abortHandlers),
             config

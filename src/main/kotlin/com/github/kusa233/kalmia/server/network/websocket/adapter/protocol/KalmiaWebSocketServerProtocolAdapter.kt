@@ -1,6 +1,6 @@
 package com.github.kusa233.kalmia.server.network.websocket.adapter.protocol
 
-import com.github.kusa233.kalmia.server.network.websocket.builder.KalmiaWebsocketServerBuilder
+import com.github.kusa233.kalmia.server.network.websocket.builder.KalmiaWebsocketGraph
 import com.github.kusa233.kalmia.server.network.websocket.config.KalmiaWebSocketServerProtocolConfig
 import com.github.kusa233.kalmia.server.network.websocket.config.decoder.KalmiaWebSocketDecoderConfig
 import com.github.kusa233.kalmia.server.network.websocket.context.KalmiaWebSocketContext
@@ -68,7 +68,7 @@ class KalmiaWebSocketServerProtocolAdapter(
         dropPongFrames: Boolean,
         decoderConfig: KalmiaWebSocketDecoderConfig,
         handshakeTimeoutMillis: Long,
-        builder: KalmiaWebsocketServerBuilder
+        builder: KalmiaWebsocketGraph
     ) : this(
         KalmiaWebSocketServerProtocolConfig(
             subprotocols,
@@ -85,7 +85,7 @@ class KalmiaWebSocketServerProtocolAdapter(
 
     constructor(
         config: KalmiaWebSocketServerProtocolConfig,
-        builder: KalmiaWebsocketServerBuilder
+        builder: KalmiaWebsocketGraph
     ) : this(config, KalmiaWebSocketRequestPipeline()) {
         builder.applyRoute(this)
     }

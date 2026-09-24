@@ -7,12 +7,12 @@ import com.github.kusa233.kalmia.server.network.http.placeholder.url.type.TypedH
 import java.net.URLEncoder
 import kotlin.reflect.KClass
 
-class KalmiaHttpServerBuilder {
+class KalmiaHttpGraph {
     private val routes: MutableMap<String, KalmiaHttpServerRouteBuilder> = mutableMapOf()
     private var assetsPath: String = ""
     val abortHandlers: MutableMap<KClass<out Throwable>, KalmiaAbortHttpContext.(Throwable) -> Any> = mutableMapOf()
 
-    constructor(builder: KalmiaHttpServerBuilder.() -> Unit) {
+    constructor(builder: KalmiaHttpGraph.() -> Unit) {
         builder(this)
     }
 
@@ -90,6 +90,6 @@ class KalmiaHttpServerBuilder {
     }
 }
 
-fun http(handler: KalmiaHttpServerBuilder.() -> Unit): KalmiaHttpServerBuilder {
-    return KalmiaHttpServerBuilder(handler)
+fun http(handler: KalmiaHttpGraph.() -> Unit): KalmiaHttpGraph {
+    return KalmiaHttpGraph(handler)
 }

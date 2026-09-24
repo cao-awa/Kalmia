@@ -1,5 +1,7 @@
 package com.github.kusa233.kalmia.status
 
+import com.github.kusa233.kalmia.status.locker.KalmiaStatusLocker
+
 object KalmiaStatus {
     private val reloadListeners: MutableList<() -> Unit> = mutableListOf()
     private val stopListeners: MutableList<() -> Unit> = mutableListOf()

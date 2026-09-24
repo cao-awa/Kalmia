@@ -2,11 +2,12 @@ package com.github.kusa233.kalmia.server.network.http
 
 import com.github.kusa233.kalmia.constant.KalmiaInformation
 import com.github.kusa233.kalmia.server.network.group.KalmiaEventLoopGroupFactory
-import com.github.kusa233.kalmia.server.network.http.builder.KalmiaHttpServerBuilder
+import com.github.kusa233.kalmia.server.network.http.builder.KalmiaHttpGraph
 import com.github.kusa233.kalmia.server.network.http.adapter.KalmiaHttpInboundHandlerAdapter
 import com.github.kusa233.kalmia.server.network.http.config.KalmiaHttpDefaultServerConfig
 import com.github.kusa233.kalmia.server.network.http.config.KalmiaHttpServerConfig
 import com.github.kusa233.kalmia.status.KalmiaStatus
+import com.github.kusa233.kalmia.status.locker.KalmiaHttpServerLocker
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.ChannelOption
@@ -30,10 +31,10 @@ class KalmiaHttpServer {
     }
 
     private val locker: KalmiaHttpServerLocker = KalmiaHttpServerLocker()
-    private val serverBuilder: KalmiaHttpServerBuilder
+    private val serverBuilder: KalmiaHttpGraph
     private var running = false
 
-    constructor(builder: KalmiaHttpServerBuilder) {
+    constructor(builder: KalmiaHttpGraph) {
         this.serverBuilder = builder
     }
 
@@ -110,6 +111,8 @@ class KalmiaHttpServer {
                 }
 
                 this.locker.await()
+
+                this.running = false
             } finally {
                 bossGroup.shutdownGracefully().sync()
                 workerGroup.shutdownGracefully().sync()

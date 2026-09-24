@@ -1,5 +1,6 @@
 package com.github.kusa233.kalmia.server.network.http.config
 
+import com.github.kusa233.kalmia.server.network.config.KalmiaNettyServerConfig
 import com.github.kusa233.kalmia.server.network.http.asset.config.KalmiaAssetManagerConfig
 
 object KalmiaHttpDefaultServerConfig: KalmiaHttpServerConfig() {
@@ -16,6 +17,10 @@ object KalmiaHttpDefaultServerConfig: KalmiaHttpServerConfig() {
     }
 
     override fun assetManagerConfig(config: KalmiaAssetManagerConfig): KalmiaHttpServerConfig {
+        throwWhenSet()
+    }
+
+    override fun nettyServerConfig(config: KalmiaNettyServerConfig): KalmiaHttpServerConfig {
         throwWhenSet()
     }
 }

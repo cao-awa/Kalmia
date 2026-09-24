@@ -1,4 +1,4 @@
-package com.github.kusa233.kalmia.status
+package com.github.kusa233.kalmia.status.locker
 
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
