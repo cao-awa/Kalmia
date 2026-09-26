@@ -85,7 +85,7 @@ class KalmiaWebSocketRequestPipeline :
 
             else -> {
                 responseJSON(handlerContext, kalmiaContext) {
-                    JSONEncoder.encode(response)
+                    JSONEncoder.encodeData(response)
                 }
             }
         }

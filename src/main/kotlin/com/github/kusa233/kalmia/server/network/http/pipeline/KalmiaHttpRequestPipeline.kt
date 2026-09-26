@@ -362,7 +362,7 @@ class KalmiaHttpRequestPipeline(
 
             else -> {
                 responseJSON(handlerContext, kalmiaContext) {
-                    JSONEncoder.encode(response)
+                    JSONEncoder.encodeData(response)
                 }
             }
         }
