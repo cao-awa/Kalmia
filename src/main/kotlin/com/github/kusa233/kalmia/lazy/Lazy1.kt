@@ -9,6 +9,9 @@ class Lazy1<I, T: Any> {
     }
 
     fun get(input: I): T {
+        if (!::value.isInitialized) {
+            this.value = this.provider(input)
+        }
         return this.value
     }
 }
