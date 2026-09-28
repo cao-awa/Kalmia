@@ -139,6 +139,7 @@ open class KalmiaHttpContext : KalmiaContext<KalmiaFullHttpRequestHolder, Kalmia
 
     constructor(context: KalmiaHttpContext) : super(context) {
         this.msg = context.msg
+        this.requestId = context.requestId
         this.arguments = context.arguments
         this.headers = DefaultHttpHeaders()
         this.responseHeaders = DefaultHttpHeaders()

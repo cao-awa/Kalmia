@@ -10,7 +10,7 @@ import io.netty.handler.codec.http.HttpVersion
 import kotlin.reflect.KClass
 
 object KalmiaHttpErrors {
-    private val ERRORS: MutableMap<KClass<out Throwable>,  (HttpVersion, Throwable, String, String, KalmiaHttpContext?) -> FullHttpResponse> = HashMap()
+    private val ERRORS: MutableMap<KClass<out Throwable>, (HttpVersion, Throwable, String, String, KalmiaHttpContext?) -> FullHttpResponse> = HashMap()
 
     val FAILURE_NOT_FULL: (HttpVersion, Throwable, String, String,  KalmiaHttpContext?) -> FullHttpResponse = { httpVersion, exception, _, requestPath, context ->
         KalmiaHttpError(
@@ -55,6 +55,10 @@ object KalmiaHttpErrors {
             requestPath,
             context
         ).createResponse()
+    }
+
+    fun registerError(type: KClass<out Throwable>, producer: (HttpVersion, Throwable, String, String, KalmiaHttpContext?) -> FullHttpResponse) {
+        ERRORS[type] = producer
     }
 
     fun adapter(httpVersion: HttpVersion, requestPath: String, error: Throwable): FullHttpResponse {

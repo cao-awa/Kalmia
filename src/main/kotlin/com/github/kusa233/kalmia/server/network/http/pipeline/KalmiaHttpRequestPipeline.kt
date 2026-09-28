@@ -267,7 +267,7 @@ class KalmiaHttpRequestPipeline(
         kalmiaContext.withContentType(HttpContentTypes.JSON)
         handlerContext.writeAndFlush(
             KalmiaHttpErrors.adapter(
-                HttpVersion.HTTP_1_0,
+                HttpVersion.HTTP_1_1,
                 exception,
                 kalmiaContext
             ).setContentType(HttpContentTypes.JSON).setLength()
