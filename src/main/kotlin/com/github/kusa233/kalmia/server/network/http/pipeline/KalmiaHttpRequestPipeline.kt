@@ -139,7 +139,9 @@ class KalmiaHttpRequestPipeline(
     fun handleFull(handlerContext: ChannelHandlerContext, kalmiaContext: KalmiaHttpContext) {
         // Launch on coroutine scope.
         this.executionScope.launch(
-            TypedHttpArgument.THREAD_LOCAL.asContextElement(kalmiaContext) + TypedHttpUrlPlaceholder.THREAD_LOCAL.asContextElement(kalmiaContext)
+            TypedHttpArgument.THREAD_LOCAL.asContextElement(kalmiaContext) + TypedHttpUrlPlaceholder.THREAD_LOCAL.asContextElement(
+                kalmiaContext
+            )
         ) {
             val handler: KalmiaHttpRequestHandler? = handlers[kalmiaContext.method()]
             if (handler != null) {
@@ -245,7 +247,8 @@ class KalmiaHttpRequestPipeline(
     fun handleExceptionCaught(handlerContext: ChannelHandlerContext, cause: Throwable) {
         // Response an error message.
         handlerContext.writeAndFlush(
-            KalmiaHttpErrors.INTERNAL_SERVER_ERROR(
+            KalmiaHttpErrors.adapter(
+                HttpResponseStatus.INTERNAL_SERVER_ERROR,
                 HttpVersion.HTTP_1_1,
                 cause,
                 cause.message ?: "Unhandled internal server error",
@@ -333,9 +336,12 @@ class KalmiaHttpRequestPipeline(
                 responseFull(handlerContext, kalmiaContext) {
                     kalmiaContext.withContentType(HttpContentTypes.JSON)
                     KalmiaHttpErrors.adapter(
+                        HttpResponseStatus.INTERNAL_SERVER_ERROR,
                         kalmiaContext.protocolVersion(),
+                        response,
+                        response.message ?: "{UNKNOWN}",
                         kalmiaContext.path(),
-                        response
+                        kalmiaContext
                     )
                 }
             }

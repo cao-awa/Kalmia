@@ -12,62 +12,33 @@ import kotlin.reflect.KClass
 object KalmiaHttpErrors {
     private val ERRORS: MutableMap<KClass<out Throwable>, (HttpVersion, Throwable, String, String, KalmiaHttpContext?) -> FullHttpResponse> = HashMap()
 
-    val FAILURE_NOT_FULL: (HttpVersion, Throwable, String, String,  KalmiaHttpContext?) -> FullHttpResponse = { httpVersion, exception, _, requestPath, context ->
-        KalmiaHttpError(
-            HttpResponseStatus.BAD_REQUEST,
+    fun createResponse(httpVersion: HttpVersion, error: Throwable, msg: String, path: String, context: KalmiaHttpContext): FullHttpResponse {
+        return KalmiaHttpError(
+            context.status(),
             httpVersion,
-            exception,
-            "Request is not full",
-            requestPath,
+            error,
+            msg,
+            path,
             context
         ).createResponse()
     }
 
-    val NOT_FOUND: (HttpVersion, Throwable, String, String,   KalmiaHttpContext?) -> FullHttpResponse = { httpVersion, exception, _, requestPath,  context ->
-        KalmiaHttpError(
-            HttpResponseStatus.NOT_FOUND,
-            httpVersion,
-            exception,
-            "Page not found",
-            requestPath,
-            context
-        ).createResponse()
-    }
-
-
-    val BAD_REQUEST: (HttpVersion, Throwable, String, String,  KalmiaHttpContext?) -> FullHttpResponse = { httpVersion, exception, message, requestPath,  context ->
-        KalmiaHttpError(
-            HttpResponseStatus.BAD_REQUEST,
+    fun adapter(
+        status: HttpResponseStatus,
+        httpVersion: HttpVersion,
+        exception: Throwable,
+        message: String,
+        requestPath: String,
+        context: KalmiaHttpContext?
+    ): FullHttpResponse {
+        return KalmiaHttpError(
+            status,
             httpVersion,
             exception,
             message,
             requestPath,
             context
         ).createResponse()
-    }
-
-    val INTERNAL_SERVER_ERROR: (HttpVersion, Throwable, String, String,   KalmiaHttpContext?) -> FullHttpResponse = { httpVersion, exception, message, requestPath,  context ->
-        KalmiaHttpError(
-            HttpResponseStatus.INTERNAL_SERVER_ERROR,
-            httpVersion,
-            exception,
-            message,
-            requestPath,
-            context
-        ).createResponse()
-    }
-
-    fun registerError(type: KClass<out Throwable>, producer: (HttpVersion, Throwable, String, String, KalmiaHttpContext?) -> FullHttpResponse) {
-        ERRORS[type] = producer
-    }
-
-    fun adapter(httpVersion: HttpVersion, requestPath: String, error: Throwable): FullHttpResponse {
-        val errorProducer = ERRORS[error::class]
-
-        if (errorProducer != null) {
-            return errorProducer(httpVersion, error, error.message ?: "Unknown error", requestPath, null)
-        }
-        return INTERNAL_SERVER_ERROR(httpVersion, error, error.message?: "Unknown error", requestPath, null)
     }
 
     fun adapter(httpVersion: HttpVersion, error: Throwable, kalmiaContext: KalmiaHttpContext): FullHttpResponse {
@@ -76,12 +47,6 @@ object KalmiaHttpErrors {
         if (errorProducer != null) {
             return errorProducer(httpVersion, error, error.message ?: "Unknown error", kalmiaContext.path(), kalmiaContext)
         }
-        return INTERNAL_SERVER_ERROR(httpVersion, error, error.message?: "Unknown error", kalmiaContext.path(), kalmiaContext)
-    }
-
-    init {
-        ERRORS[TypedHttpArgumentMissingException::class] = BAD_REQUEST
-        ERRORS[TypedHttpArgumentValidateException::class] = BAD_REQUEST
-        ERRORS[HttpPathNotRegisteredException::class] = NOT_FOUND
+        return createResponse(httpVersion, error, error.message?: "Unknown error", kalmiaContext.path(), kalmiaContext)
     }
 }

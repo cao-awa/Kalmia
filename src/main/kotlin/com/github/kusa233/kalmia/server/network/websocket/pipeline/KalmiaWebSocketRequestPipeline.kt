@@ -12,6 +12,7 @@ import com.github.kusa233.kalmia.server.network.websocket.phase.KalmiaWebSocketP
 import com.github.kusa233.kalmia.server.network.websocket.response.KalmiaWebSocketResponses
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
+import io.netty.handler.codec.http.HttpResponseStatus
 import io.netty.handler.codec.http.HttpVersion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +68,14 @@ class KalmiaWebSocketRequestPipeline :
         cause.printStackTrace()
         // Response an error message.
         handlerContext.writeAndFlush(
-            KalmiaHttpErrors.INTERNAL_SERVER_ERROR(HttpVersion.HTTP_1_0, cause, "Unhandleable request", "{UNKNOWN}", null)
+            KalmiaHttpErrors.adapter(
+                HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                HttpVersion.HTTP_1_0,
+                cause,
+                "Unhandleable request",
+                "{UNKNOWN}",
+                null
+            )
         ).addListener(ChannelFutureListener.CLOSE)
     }
 
