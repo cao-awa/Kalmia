@@ -155,8 +155,12 @@ class KalmiaHttpRequestPipeline(
                             handler.handle(kalmiaContext)
                         )
                     } catch (e: Throwable) {
-                        // When error, default status is 500 INTERNAL_SERVER_ERROR.
-                        var httpStatus = HttpResponseStatus.INTERNAL_SERVER_ERROR
+                        var httpStatus = if (kalmiaContext.status() == HttpResponseStatus.OK) {
+                            // When error, default status is 500 INTERNAL_SERVER_ERROR.
+                            HttpResponseStatus.INTERNAL_SERVER_ERROR
+                        } else {
+                            kalmiaContext.status()
+                        }
 
                         // When path not registered, use asset manager to delegate the response.
                         if (e is HttpPathNotRegisteredException) {
