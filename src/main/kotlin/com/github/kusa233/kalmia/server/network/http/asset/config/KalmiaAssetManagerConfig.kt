@@ -19,7 +19,7 @@ open class KalmiaAssetManagerConfig : KalmiaConfig() {
                 ifString("error_page") {
                     config.errorPage = this
                 }
-                ifBoolean("cache_assets") {
+                ifBoolean("cache") {
                     config.cache = this
                 }
 
