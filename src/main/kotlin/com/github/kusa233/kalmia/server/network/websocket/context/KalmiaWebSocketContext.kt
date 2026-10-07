@@ -5,9 +5,10 @@ import com.github.kusa233.kalmia.server.network.exception.abort.UnexpectedBehavi
 import com.github.kusa233.kalmia.server.network.websocket.context.abort.KalmiaAbortWebSocketContext
 import com.github.kusa233.kalmia.server.network.websocket.holder.KalmiaTextWebsocketFrameHolder
 import com.github.kusa233.kalmia.server.network.websocket.phase.KalmiaWebSocketPhase
+import io.netty.channel.ChannelHandlerContext
 
 @Suppress("unused")
-open class KalmiaWebSocketContext(val msg: KalmiaTextWebsocketFrameHolder, val phase: KalmiaWebSocketPhase): KalmiaContext<KalmiaTextWebsocketFrameHolder, KalmiaWebSocketContext, KalmiaAbortWebSocketContext>(msg) {
+open class KalmiaWebSocketContext(val msg: KalmiaTextWebsocketFrameHolder, val phase: KalmiaWebSocketPhase, val channel: ChannelHandlerContext): KalmiaContext<KalmiaTextWebsocketFrameHolder, KalmiaWebSocketContext, KalmiaAbortWebSocketContext>(msg) {
     companion object {
 
     }
@@ -51,7 +52,7 @@ open class KalmiaWebSocketContext(val msg: KalmiaTextWebsocketFrameHolder, val p
     }
 
     override fun createInherited(): KalmiaWebSocketContext {
-        return KalmiaWebSocketContext(this.msg, this.phase).also {
+        return KalmiaWebSocketContext(this.msg, this.phase, this.channel).also {
             it.promiseClose = this.promiseClose
         }
     }

@@ -4,7 +4,7 @@ import com.github.kusa233.kalmia.server.network.context.abort.KalmiaAbortContext
 import com.github.kusa233.kalmia.server.network.websocket.context.KalmiaWebSocketContext
 import com.github.kusa233.kalmia.server.network.websocket.holder.KalmiaTextWebsocketFrameHolder
 
-class KalmiaAbortWebSocketContext(context: KalmiaWebSocketContext): KalmiaWebSocketContext(context.msg, context.phase), KalmiaAbortContext<KalmiaTextWebsocketFrameHolder> {
+class KalmiaAbortWebSocketContext(context: KalmiaWebSocketContext): KalmiaWebSocketContext(context.msg, context.phase, context.channel), KalmiaAbortContext<KalmiaTextWebsocketFrameHolder> {
     init {
         if (context.isPromiseClose()) {
             promiseClose()

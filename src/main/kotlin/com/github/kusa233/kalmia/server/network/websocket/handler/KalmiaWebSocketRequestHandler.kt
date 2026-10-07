@@ -6,10 +6,12 @@ import com.github.kusa233.kalmia.server.network.websocket.context.KalmiaWebSocke
 import com.github.kusa233.kalmia.server.network.websocket.context.abort.KalmiaAbortWebSocketContext
 import com.github.kusa233.kalmia.server.network.websocket.holder.KalmiaTextWebsocketFrameHolder
 import com.github.kusa233.kalmia.server.network.websocket.phase.KalmiaWebSocketPhase
+import io.netty.channel.ChannelHandlerContext
 import kotlin.reflect.KClass
 
 class KalmiaWebSocketRequestHandler: KalmiaRequestHandler<KalmiaTextWebsocketFrameHolder, KalmiaWebSocketContext, KalmiaAbortWebSocketContext>() {
     private val routes: MutableMap<String, MutableMap<KalmiaWebSocketPhase, KalmiaWebSocketContext.() -> Any>> = mutableMapOf()
+    private val connectionRoutes: MutableMap<KalmiaWebSocketPhase, ChannelHandlerContext.() -> Any> = mutableMapOf()
     private val exceptionHandler: MutableMap<KClass<out Throwable>, MutableMap<String, KalmiaAbortWebSocketContext.(Throwable) -> Any>> =
         mutableMapOf()
 
@@ -19,6 +21,22 @@ class KalmiaWebSocketRequestHandler: KalmiaRequestHandler<KalmiaTextWebsocketFra
         }
         this.routes[path]?.put(phase, handler)
         return this
+    }
+
+    fun connectionRoute(phase: KalmiaWebSocketPhase, builder: ChannelHandlerContext.() -> Any) {
+        this.connectionRoutes[phase] = builder
+    }
+
+    fun onConnect(context: ChannelHandlerContext): Any? {
+        return this.connectionRoutes[KalmiaWebSocketPhase.CONNECT]?.let {
+            it(context)
+        }
+    }
+
+    fun onDisconnect(context: ChannelHandlerContext): Any? {
+        return this.connectionRoutes[KalmiaWebSocketPhase.DISCONNECT]?.let {
+            it(context)
+        }
     }
 
     fun routeExceptionHandler(

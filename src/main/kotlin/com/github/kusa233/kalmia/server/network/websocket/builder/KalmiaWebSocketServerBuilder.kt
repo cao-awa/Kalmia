@@ -2,13 +2,21 @@ package com.github.kusa233.kalmia.server.network.websocket.builder
 
 import com.github.kusa233.kalmia.server.network.websocket.builder.route.KalmiaWebSocketRouteBuilder
 import com.github.kusa233.kalmia.server.network.websocket.adapter.protocol.KalmiaWebSocketServerProtocolAdapter
+import com.github.kusa233.kalmia.server.network.websocket.context.KalmiaWebSocketContext
+import com.github.kusa233.kalmia.server.network.websocket.phase.KalmiaWebSocketPhase
+import io.netty.channel.ChannelHandlerContext
 import java.net.URLEncoder
 
 class KalmiaWebsocketGraph {
     private val routes: MutableMap<String, KalmiaWebSocketRouteBuilder> = mutableMapOf()
+    private val connectionRoute: MutableMap<KalmiaWebSocketPhase, ChannelHandlerContext.() -> Unit> = mutableMapOf()
 
     constructor(builder: KalmiaWebsocketGraph.() -> Unit) {
         builder(this)
+    }
+
+    fun onConnection(builder: ChannelHandlerContext.() -> Unit) {
+        this.connectionRoute[KalmiaWebSocketPhase.CONNECT] = builder
     }
 
     fun route(targetPath: String, handler: KalmiaWebSocketRouteBuilder.() -> Unit) {
@@ -38,8 +46,12 @@ class KalmiaWebsocketGraph {
     }
 
     fun applyRoute(adapter: KalmiaWebSocketServerProtocolAdapter) {
-        for ((path, builder) in this.routes) {
+        for ((_, builder) in this.routes) {
             builder.applyRoute(adapter)
+        }
+
+        for ((phase, builder) in this.connectionRoute) {
+            adapter.pipeline.connectionRoute(phase, builder)
         }
     }
 }

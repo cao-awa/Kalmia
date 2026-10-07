@@ -4,6 +4,7 @@ import com.github.cao.awa.cason.codec.encoder.JSONEncoder
 import com.github.cao.awa.cason.obj.JSONObject
 import com.github.kusa233.kalmia.server.network.http.error.KalmiaHttpErrors
 import com.github.kusa233.kalmia.server.network.pipeline.KalmiaRequestPipeline
+import com.github.kusa233.kalmia.server.network.websocket.builder.route.KalmiaWebSocketRouteBuilder
 import com.github.kusa233.kalmia.server.network.websocket.context.KalmiaWebSocketContext
 import com.github.kusa233.kalmia.server.network.websocket.context.abort.KalmiaAbortWebSocketContext
 import com.github.kusa233.kalmia.server.network.websocket.handler.KalmiaWebSocketRequestHandler
@@ -29,12 +30,28 @@ class KalmiaWebSocketRequestPipeline :
         this.handler.route(path, phase, handler)
     }
 
+    fun connectionRoute(phase: KalmiaWebSocketPhase, builder: ChannelHandlerContext.() -> Any) {
+        this.handler.connectionRoute(phase, builder)
+    }
+
     fun routeExceptionHandler(
         path: String,
         type: KClass<out Throwable>,
         handler: KalmiaAbortWebSocketContext.(Throwable) -> Any
     ) {
         this.handler.routeExceptionHandler(path, type, handler)
+    }
+
+    fun onConnect(context: ChannelHandlerContext) {
+        this.handler.onConnect(context)?.let {
+            response(context, it)
+        }
+    }
+
+    fun onDisconnect(context: ChannelHandlerContext) {
+        this.handler.onDisconnect(context)?.let {
+            response(context, it)
+        }
     }
 
     fun handle(handlerContext: ChannelHandlerContext, kalmiaContext: KalmiaWebSocketContext) {
@@ -79,6 +96,26 @@ class KalmiaWebSocketRequestPipeline :
         ).addListener(ChannelFutureListener.CLOSE)
     }
 
+    fun response(handlerContext: ChannelHandlerContext, response: Any) {
+        when (response) {
+            is JSONObject -> {
+                responseJSON(handlerContext) {
+                    response
+                }
+            }
+
+            is Unit -> {
+                // Do nothing.
+            }
+
+            else -> {
+                responseJSON(handlerContext) {
+                    JSONEncoder.encodeData(response)
+                }
+            }
+        }
+    }
+
     override fun response(handlerContext: ChannelHandlerContext, kalmiaContext: KalmiaWebSocketContext, response: Any) {
         when (response) {
             is JSONObject -> {
@@ -110,10 +147,17 @@ class KalmiaWebSocketRequestPipeline :
             KalmiaWebSocketResponses.createDefaultResponse(
                 msg
             )
-        ).also {
-            if (kalmiaContext.isPromiseClose()) {
-                it.addListener(ChannelFutureListener.CLOSE)
-            }
+        )
+    }
+
+    private fun responseJSON(
+        handlerContext: ChannelHandlerContext,
+        responser: ChannelHandlerContext.() -> JSONObject
+    ) {
+        val msg: JSONObject = responser(handlerContext)
+
+        response(handlerContext) {
+            JSONEncoder.renderJSON(msg)
         }
     }
 

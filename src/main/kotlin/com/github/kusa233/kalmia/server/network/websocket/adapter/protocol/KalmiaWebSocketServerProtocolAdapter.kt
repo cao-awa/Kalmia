@@ -116,6 +116,7 @@ class KalmiaWebSocketServerProtocolAdapter(
     override fun userEventTriggered(ctx: ChannelHandlerContext, evt: Any) {
         if (evt is WebSocketServerProtocolHandler.HandshakeComplete) {
             this.uri = evt.requestUri()
+            this.pipeline.onConnect(ctx)
         }
     }
 
@@ -150,7 +151,8 @@ class KalmiaWebSocketServerProtocolAdapter(
                 ctx,
                 KalmiaWebSocketContext(
                     holder,
-                    KalmiaWebSocketPhase.MESSAGE
+                    KalmiaWebSocketPhase.MESSAGE,
+                    ctx
                 )
             )
         }
@@ -160,6 +162,7 @@ class KalmiaWebSocketServerProtocolAdapter(
         if (!ctx.channel().isActive) {
             ctx.close(promise)
         } else {
+            this.pipeline.onDisconnect(ctx)
             if (this.closeSent == null) {
                 write(ctx, CloseWebSocketFrame(this.closeStatus), ctx.newPromise())
             }
