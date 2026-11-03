@@ -48,13 +48,11 @@ class KalmiaPlaceholderURL {
 
     fun placeholders(): MutableMap<String, Int> {
         val placeholders: MutableMap<String, Int> = HashMap()
-        var seq = 0
-        for (path in this.url) {
+        for ((seq, path) in this.url.withIndex()) {
             if (path.startsWith("{") && path.endsWith("}")) {
                 val clearPath = path.replace("{", "").replace("}", "")
                 placeholders[clearPath] = seq
             }
-            seq++
         }
         return placeholders
     }

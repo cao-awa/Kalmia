@@ -6,6 +6,7 @@ import com.github.kusa233.kalmia.entrypoint.KalmiaEntrypoint
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import java.io.IOException
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.jar.JarFile
@@ -17,12 +18,22 @@ object KalmiaLibraryLoader {
 
     @JvmStatic
     fun loadJars() {
+        val previousLoader = if (this::classLoader.isInitialized) this.classLoader else null
+
         val customLoader = addJarToClassLoader(collectJars(File("libs"), mutableListOf()))
 
         this.classLoader = customLoader
         Thread.currentThread().contextClassLoader = customLoader
 
-        customLoader.close()
+        previousLoader?.closeSafely()
+    }
+
+    private fun URLClassLoader.closeSafely() {
+        try {
+            close()
+        } catch (exception: IOException) {
+            LOGGER.warn("Failed to close the previous class loader", exception)
+        }
     }
 
     fun collectJars(file: File, jarFiles: MutableList<File>): MutableList<File> {

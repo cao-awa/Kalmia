@@ -121,6 +121,7 @@ class KalmiaWebSocketServerProtocolAdapter(
     }
 
     override fun channelRead(ctx: ChannelHandlerContext, frame: Any) {
+        println(ctx)
         if (this.serverConfig.handleCloseFrames && frame is CloseWebSocketFrame) {
             val handshaker: WebSocketServerHandshaker? = getHandshaker(ctx.channel())
             if (handshaker != null) {
