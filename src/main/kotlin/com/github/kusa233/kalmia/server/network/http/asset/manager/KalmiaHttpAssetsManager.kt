@@ -3,6 +3,7 @@ package com.github.kusa233.kalmia.server.network.http.asset.manager
 import com.github.kusa233.kalmia.constant.KalmiaInformation
 import com.github.kusa233.kalmia.server.network.http.asset.KalmiaAsset
 import com.github.kusa233.kalmia.server.network.http.asset.KalmiaBinaryAsset
+import com.github.kusa233.kalmia.server.network.http.asset.config.KalmiaAssetManagerConfig
 import com.github.kusa233.kalmia.server.network.http.content.type.HttpContentTypes
 import com.github.kusa233.kalmia.server.network.http.context.KalmiaHttpContext
 import com.github.kusa233.kalmia.server.network.http.file.header.KalmiaHttpFileExtentions
@@ -19,10 +20,21 @@ class KalmiaHttpAssetsManager {
         private val LOGGER: Logger = LogManager.getLogger("KalmiaHttpAssetsManager")
     }
 
+    private val config: KalmiaAssetManagerConfig
     private var path: String = ""
     private var available: Boolean = false
     private var enableCache: Boolean = true
-    private val caches: MutableMap<String, KalmiaAsset<*>> = HashMap()
+    private val caches: MutableMap<String, KalmiaAsset<*>> = mutableMapOf()
+    private val headers: MutableMap<String, String> = mutableMapOf()
+
+    constructor(config: KalmiaAssetManagerConfig) {
+        this.config = config
+        toggleCache(config.cache())
+        setAssetsPath(config.assetPath())
+        for ((name, value) in config.headers()) {
+            this.headers[name] = value
+        }
+    }
 
     fun setAssetsPath(path: String) {
         this.path = File(path).absolutePath
@@ -69,6 +81,12 @@ class KalmiaHttpAssetsManager {
 
     fun createFile(name: String): File {
         return File("${this.path}/${name}")
+    }
+
+    fun instructHeaders(context: KalmiaHttpContext) {
+        for ((name, value) in this.headers) {
+            context.withHeader(name, value)
+        }
     }
 
     fun handlePhp(context: KalmiaHttpContext, asset: KalmiaAsset<*>): String {

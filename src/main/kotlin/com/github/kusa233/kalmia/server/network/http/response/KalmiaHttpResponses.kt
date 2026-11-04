@@ -75,8 +75,8 @@ object KalmiaHttpResponses {
     }
 
     fun FullHttpResponse.headers(kalmiaHttpContext: KalmiaHttpContext): FullHttpResponse {
-        for ((header, value) in kalmiaHttpContext.responseHeaders()) {
-            headers().set(header, value)
+        kalmiaHttpContext.responseHeaders().forEach { (name, value) ->
+            headers().set(name, value)
         }
         return this
     }

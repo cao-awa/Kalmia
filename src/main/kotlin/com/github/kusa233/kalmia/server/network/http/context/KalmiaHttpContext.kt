@@ -57,13 +57,13 @@ open class KalmiaHttpContext : KalmiaContext<KalmiaFullHttpRequestHolder, Kalmia
     private var msg: PathByteBufHolder
     private var requestId: Long = RANDOM.nextLong()
     private var arguments: HttpRequestArguments = HttpRequestArguments.EMPTY
-    private var headers: HttpHeaders = DefaultHttpHeaders()
+    private var requestHeaders: HttpHeaders = DefaultHttpHeaders()
     private var responseHeaders: HttpHeaders = DefaultHttpHeaders()
     private var body: Lazy1<PathByteBufHolder, KalmiaHttpBody> = Lazy1 { msg ->
         if (msg.content().readableBytes() == 0) {
             return@Lazy1 KalmiaHttpEmptyBody
         } else {
-            var contentType = this.headers[HttpHeaderNames.CONTENT_TYPE]
+            var contentType = this.requestHeaders[HttpHeaderNames.CONTENT_TYPE]
             var charset = StandardCharsets.UTF_8
             if (contentType.contains(";")) {
                 for (data in contentType.split(";")) {
@@ -122,7 +122,7 @@ open class KalmiaHttpContext : KalmiaContext<KalmiaFullHttpRequestHolder, Kalmia
     constructor(msg: KalmiaFullHttpRequestHolder) : super(msg) {
         this.msg = msg
         this.arguments = produceArguments(msg)
-        this.headers = msg.headers()
+        this.requestHeaders = msg.headers()
         this.path = super.path().let {
             var result = it
             if (result.contains("?")) {
@@ -141,7 +141,7 @@ open class KalmiaHttpContext : KalmiaContext<KalmiaFullHttpRequestHolder, Kalmia
         this.msg = context.msg
         this.requestId = context.requestId
         this.arguments = context.arguments
-        this.headers = DefaultHttpHeaders()
+        this.requestHeaders = DefaultHttpHeaders()
         this.responseHeaders = DefaultHttpHeaders()
         this.promiseClose = context.promiseClose
         this.status = context.status
@@ -180,7 +180,7 @@ open class KalmiaHttpContext : KalmiaContext<KalmiaFullHttpRequestHolder, Kalmia
             HttpResponseStatus.MOVED_PERMANENTLY,
             HttpResponseStatus.PERMANENT_REDIRECT,
             HttpResponseStatus.TEMPORARY_REDIRECT -> {
-                responseHeaders()[HttpHeaderNames.LOCATION] = this.redirectURL
+                this.responseHeaders[HttpHeaderNames.LOCATION] = this.redirectURL
             }
         }
         return this
@@ -199,6 +199,10 @@ open class KalmiaHttpContext : KalmiaContext<KalmiaFullHttpRequestHolder, Kalmia
     open fun withHost(host: String): KalmiaHttpContext {
         this.host = host
         return this
+    }
+
+    open fun withHeader(name: String, value: String) {
+        this.responseHeaders[name] = value
     }
 
     fun redirect(redirectUrl: String, permanently: Boolean = false): KalmiaHttpContext {
@@ -255,12 +259,12 @@ open class KalmiaHttpContext : KalmiaContext<KalmiaFullHttpRequestHolder, Kalmia
         return this.host
     }
 
-    fun getHeader(name: String): String? {
-        return this.headers[name]
+    fun getRequestHeader(name: String): String? {
+        return this.requestHeaders[name]
     }
 
-    fun headers(): HttpHeaders {
-        return this.headers.copy()
+    fun requestHeaders(): HttpHeaders {
+        return this.requestHeaders.copy()
     }
 
     open fun promiseClose() {

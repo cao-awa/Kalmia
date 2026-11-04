@@ -112,7 +112,7 @@ class KalmiaHttpRequestPipeline(
             put(HttpMethod.GET, KalmiaHttpGetHandler())
             put(HttpMethod.POST, KalmiaHttpPostHandler())
         }
-    private val assetsManager: KalmiaHttpAssetsManager = KalmiaHttpAssetsManager()
+    private val assetsManager: KalmiaHttpAssetsManager = KalmiaHttpAssetsManager(this.config.assetManagerConfig())
     private val executionScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {
@@ -177,6 +177,7 @@ class KalmiaHttpRequestPipeline(
 
                                 // If asset not null. response the asset.
                                 if (asset != null) {
+                                    assetsManager.instructHeaders(kalmiaContext)
                                     response(
                                         handlerContext,
                                         kalmiaContext,

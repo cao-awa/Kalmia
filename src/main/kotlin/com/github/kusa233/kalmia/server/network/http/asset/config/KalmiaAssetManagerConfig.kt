@@ -22,6 +22,11 @@ open class KalmiaAssetManagerConfig : KalmiaConfig() {
                 ifBoolean("cache") {
                     config.cache = this
                 }
+                ifJSON("headers") {
+                    forEach { name, value ->
+                        config.headers[name] = value.toString()
+                    }
+                }
 
                 config
             }
@@ -32,6 +37,7 @@ open class KalmiaAssetManagerConfig : KalmiaConfig() {
     private var assetPath: String = "assets/"
     private var errorPage: String = ""
     private var cache: Boolean = true
+    private var headers: MutableMap<String, String> = hashMapOf()
 
     fun enable(): Boolean {
         return this.enable
@@ -69,12 +75,35 @@ open class KalmiaAssetManagerConfig : KalmiaConfig() {
         return this
     }
 
+    fun headers(): Map<String, String> {
+        return this.headers
+    }
+
+    open fun headers(headers: MutableMap<String, String>): KalmiaAssetManagerConfig {
+        this.headers = headers
+        return this
+    }
+
+    fun header(name: String): String? {
+        return this.headers[name]
+    }
+
+    open fun header(name: String, value: String): KalmiaAssetManagerConfig {
+        this.headers[name] = value
+        return this
+    }
+
     override fun toJSON(): JSONObject {
         return JSONObject {
             "enable" set enable
             "asset_path" set assetPath
             "error_page" set errorPage
             "cache" set cache
+            "headers" set JSONObject {
+                for ((name, value) in headers) {
+                    name set value
+                }
+            }
         }
     }
 }

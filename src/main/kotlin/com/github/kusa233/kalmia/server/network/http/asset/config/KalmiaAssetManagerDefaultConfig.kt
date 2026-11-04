@@ -19,4 +19,14 @@ object KalmiaAssetManagerDefaultConfig: KalmiaAssetManagerConfig() {
         throwWhenSet()
         return this
     }
+
+    override fun headers(headers: MutableMap<String, String>): KalmiaAssetManagerConfig {
+        throwWhenSet()
+        return this
+    }
+
+    override fun header(name: String, value: String): KalmiaAssetManagerConfig {
+        throwWhenSet()
+        return this
+    }
 }
