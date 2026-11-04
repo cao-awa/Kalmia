@@ -19,6 +19,7 @@ object KalmiaHttpServerEntrypoint {
 
         val nettyConfig = serverConfig.nettyServerConfig()
         val assetManagerConfig = serverConfig.assetManagerConfig()
+        val tlsConfig = serverConfig.tlsConfig()
 
         if (config.printConfigDetails()) {
             // Asset manager configs
@@ -37,6 +38,13 @@ object KalmiaHttpServerEntrypoint {
             LOGGER.info("Config 'reuse_address': {}", nettyConfig.reuseAddr())
             LOGGER.info("Config 'allocator': {}", nettyConfig.allocatorName())
             LOGGER.info("Config 'tcp_no_delay': {}", nettyConfig.tcpNoDelay())
+
+            // TLS configs.
+            LOGGER.info("-- TLS configs --")
+            LOGGER.info("Config 'enable': {}", tlsConfig.enable())
+            LOGGER.info("Config 'certificate': {}", tlsConfig.certificate())
+            LOGGER.info("Config 'private_key': {}", tlsConfig.privateKey())
+            LOGGER.info("Config 'format': {}", tlsConfig.format())
         }
 
         KalmiaHttpService.start(http {

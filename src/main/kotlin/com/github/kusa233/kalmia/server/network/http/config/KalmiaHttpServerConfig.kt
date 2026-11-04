@@ -6,6 +6,7 @@ import com.github.kusa233.kalmia.server.network.config.KalmiaNettyServerConfig
 import com.github.kusa233.kalmia.server.network.config.KalmiaNettyServerDefaultConfig
 import com.github.kusa233.kalmia.server.network.http.asset.config.KalmiaAssetManagerConfig
 import com.github.kusa233.kalmia.server.network.http.asset.config.KalmiaAssetManagerDefaultConfig
+import com.github.kusa233.kalmia.server.network.http.tls.config.KalmiaTlsConfig
 import java.io.File
 
 open class KalmiaHttpServerConfig: KalmiaConfig() {
@@ -26,6 +27,9 @@ open class KalmiaHttpServerConfig: KalmiaConfig() {
                 ifJSON("netty") {
                     config.nettyServerConfig = KalmiaNettyServerConfig.createFromJSON(this)
                 }
+                ifJSON("tls") {
+                    config.tlsConfig = KalmiaTlsConfig.createFromJSON(this)
+                }
                 config
             }
         }
@@ -35,6 +39,7 @@ open class KalmiaHttpServerConfig: KalmiaConfig() {
     private var serverHost: String = "0.0.0.0"
     private var assetManagerConfig: KalmiaAssetManagerConfig = KalmiaAssetManagerDefaultConfig
     private var nettyServerConfig: KalmiaNettyServerConfig = KalmiaNettyServerDefaultConfig
+    private var tlsConfig: KalmiaTlsConfig = KalmiaTlsConfig()
 
     fun serverPort(): Int {
         return this.serverPort
@@ -72,12 +77,22 @@ open class KalmiaHttpServerConfig: KalmiaConfig() {
         return this
     }
 
+    fun tlsConfig(): KalmiaTlsConfig {
+        return this.tlsConfig
+    }
+
+    open fun tlsConfig(config: KalmiaTlsConfig): KalmiaHttpServerConfig {
+        this.tlsConfig = config
+        return this
+    }
+
     override fun toJSON(): JSONObject {
         return JSONObject {
             "server_port" set serverPort
             "server_host" set serverHost
             "asset_manager" set assetManagerConfig.toJSON()
             "netty" set nettyServerConfig.toJSON()
+            "tls" set tlsConfig.toJSON()
         }
     }
 }

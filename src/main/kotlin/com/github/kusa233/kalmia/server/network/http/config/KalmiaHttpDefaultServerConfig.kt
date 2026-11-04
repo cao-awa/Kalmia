@@ -2,6 +2,7 @@ package com.github.kusa233.kalmia.server.network.http.config
 
 import com.github.kusa233.kalmia.server.network.config.KalmiaNettyServerConfig
 import com.github.kusa233.kalmia.server.network.http.asset.config.KalmiaAssetManagerConfig
+import com.github.kusa233.kalmia.server.network.http.tls.config.KalmiaTlsConfig
 
 object KalmiaHttpDefaultServerConfig: KalmiaHttpServerConfig() {
     private fun throwWhenSet(): Nothing {
@@ -21,6 +22,10 @@ object KalmiaHttpDefaultServerConfig: KalmiaHttpServerConfig() {
     }
 
     override fun nettyServerConfig(config: KalmiaNettyServerConfig): KalmiaHttpServerConfig {
+        throwWhenSet()
+    }
+
+    override fun tlsConfig(config: KalmiaTlsConfig): KalmiaHttpServerConfig {
         throwWhenSet()
     }
 }
