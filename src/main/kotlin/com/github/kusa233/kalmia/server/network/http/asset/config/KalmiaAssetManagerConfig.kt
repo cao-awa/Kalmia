@@ -1,6 +1,7 @@
 package com.github.kusa233.kalmia.server.network.http.asset.config
 
 import com.github.cao.awa.cason.obj.JSONObject
+import com.github.cao.awa.cason.primary.JSONString
 import com.github.kusa233.kalmia.config.KalmiaConfig
 
 open class KalmiaAssetManagerConfig : KalmiaConfig() {
@@ -24,7 +25,12 @@ open class KalmiaAssetManagerConfig : KalmiaConfig() {
                 }
                 ifJSON("headers") {
                     forEach { name, value ->
-                        config.headers[name] = value.toString()
+                        when (value) {
+                            is JSONString -> {
+                                config.headers[name] = value.asString()
+                            }
+                            else -> config.headers[name] = value.toString()
+                        }
                     }
                 }
 

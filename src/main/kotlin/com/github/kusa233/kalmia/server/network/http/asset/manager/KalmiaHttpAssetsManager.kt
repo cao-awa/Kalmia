@@ -73,7 +73,9 @@ class KalmiaHttpAssetsManager {
         }
         if (file.isFile && file.exists()) {
             return KalmiaBinaryAsset(file).also {
-                this.caches[file.absolutePath] = it
+                if (this.enableCache) {
+                    this.caches[file.absolutePath] = it
+                }
             }
         }
         HttpPathNotRegisteredException.notFound(name, "auto redirect")
@@ -165,6 +167,7 @@ class KalmiaHttpAssetsManager {
             context.withContentType(
                 contentType
             )
+            instructHeaders(context)
             return data
         }
         HttpPathNotRegisteredException.notFound(context.path())
