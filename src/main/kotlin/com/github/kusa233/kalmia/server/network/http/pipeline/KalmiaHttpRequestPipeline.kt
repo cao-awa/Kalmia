@@ -164,6 +164,7 @@ class KalmiaHttpRequestPipeline(
 
                         // When path not registered, use asset manager to delegate the response.
                         if (e is HttpPathNotRegisteredException) {
+                            httpStatus = HttpResponseStatus.NOT_FOUND
                             if (assetManagerConfig.enable() && assetsManager.available()) {
                                 val asset = assetsManager.getNullable(kalmiaContext.path(), "index.html")
 
@@ -188,9 +189,6 @@ class KalmiaHttpRequestPipeline(
                                         return@abortable
                                     }
                                 }
-                            } else {
-                                // When error is page path not registered and asset manager are not available, it should be 404 NOT_FOUND.
-                                httpStatus = HttpResponseStatus.NOT_FOUND
                             }
                         }
 
