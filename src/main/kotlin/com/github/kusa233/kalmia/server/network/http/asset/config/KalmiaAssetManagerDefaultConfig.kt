@@ -15,7 +15,7 @@ object KalmiaAssetManagerDefaultConfig: KalmiaAssetManagerConfig() {
         return this
     }
 
-    override fun errorPage(errorPage: String): KalmiaAssetManagerConfig {
+    override fun errorPath(errorPage: String): KalmiaAssetManagerConfig {
         throwWhenSet()
         return this
     }

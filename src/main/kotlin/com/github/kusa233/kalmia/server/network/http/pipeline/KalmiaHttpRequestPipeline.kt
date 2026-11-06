@@ -165,15 +165,7 @@ class KalmiaHttpRequestPipeline(
                         // When path not registered, use asset manager to delegate the response.
                         if (e is HttpPathNotRegisteredException) {
                             if (assetManagerConfig.enable() && assetsManager.available()) {
-                                val asset: KalmiaAsset<*>? = if (assetsManager.hasAsset(kalmiaContext)) {
-                                    assetsManager.getAsset(kalmiaContext)
-                                } else {
-                                    if (assetsManager.createFile(kalmiaContext.path()).isDirectory) {
-                                        assetsManager.getAsset(kalmiaContext.path() + "/index.html")
-                                    } else {
-                                        null
-                                    }
-                                }
+                                val asset = assetsManager.getNullable(kalmiaContext.path(), "index.html")
 
                                 // If asset not null. response the asset.
                                 if (asset != null) {
@@ -184,6 +176,17 @@ class KalmiaHttpRequestPipeline(
                                         asset
                                     )
                                     return@abortable
+                                } else {
+                                    val asset = assetsManager.getNullable(assetManagerConfig.errorPath(), "404.html")
+                                    if (asset != null) {
+                                        assetsManager.instructHeaders(kalmiaContext)
+                                        response(
+                                            handlerContext,
+                                            kalmiaContext,
+                                            asset
+                                        )
+                                        return@abortable
+                                    }
                                 }
                             } else {
                                 // When error is page path not registered and asset manager are not available, it should be 404 NOT_FOUND.

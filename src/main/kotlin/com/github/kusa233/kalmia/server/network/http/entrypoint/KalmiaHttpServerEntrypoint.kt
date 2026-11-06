@@ -1,7 +1,6 @@
 package com.github.kusa233.kalmia.server.network.http.entrypoint
 
 import com.github.kusa233.kalmia.launch.config.KalmiaLaunchConfig
-import com.github.kusa233.kalmia.server.network.http.KalmiaHttpServer
 import com.github.kusa233.kalmia.server.network.http.builder.http
 import com.github.kusa233.kalmia.server.network.http.config.KalmiaHttpServerConfig
 import com.github.kusa233.kalmia.server.network.http.entrypoint.service.KalmiaHttpService
@@ -26,7 +25,7 @@ object KalmiaHttpServerEntrypoint {
             LOGGER.info("-- Asset manager configs --")
             LOGGER.info("Config 'enable': {}", assetManagerConfig.enable())
             LOGGER.info("Config 'asset_path': {}", assetManagerConfig.assetPath())
-            LOGGER.info("Config 'error_page': {}", assetManagerConfig.errorPage())
+            LOGGER.info("Config 'error_page': {}", assetManagerConfig.errorPath())
             LOGGER.info("Config 'cache': {}", assetManagerConfig.cache())
 
             // Netty configs.
@@ -50,7 +49,7 @@ object KalmiaHttpServerEntrypoint {
         KalmiaHttpService.start(http {
             // Redirect all no registered query to 404 page.
             ifAbort(HttpPathNotRegisteredException::class) {
-                withAsset(redirectAsset = assetManagerConfig.errorPage())
+                withAsset(redirectAsset = assetManagerConfig.errorPath())
             }
         })
     }

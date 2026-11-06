@@ -19,6 +19,12 @@ object KalmiaHttpFileExtentions {
             "php" -> HttpContentTypes.PHP
             "css" -> HttpContentTypes.CSS
             "js" -> HttpContentTypes.JAVASCRIPT
+            "png" -> HttpContentTypes.PNG
+            "jpg" -> HttpContentTypes.JPEG
+            "jpeg" -> HttpContentTypes.JPEG
+            "webp" -> HttpContentTypes.WEBP
+            "webm" -> HttpContentTypes.WEBM
+            "gif" -> HttpContentTypes.GIF
             else -> {
                 HttpContentTypes.JSON
             }

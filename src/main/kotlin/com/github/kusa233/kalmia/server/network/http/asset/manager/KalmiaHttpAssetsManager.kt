@@ -54,6 +54,22 @@ class KalmiaHttpAssetsManager {
         return createFile(context.path()).isFile
     }
 
+    fun hasAsset(path: String): Boolean {
+        return createFile(path).isFile
+    }
+
+    fun getNullable(path: String, subName: String): KalmiaAsset<*>? {
+        return if (hasAsset(path)) {
+            getAsset(path)
+        } else {
+            if (createFile(path).isDirectory) {
+                getAsset("$path/$subName")
+            } else {
+                null
+            }
+        }
+    }
+
     fun getAsset(context: KalmiaHttpContext): KalmiaAsset<*> {
         val assetName = if (context.redirectAsset() == "") {
             context.path()
